@@ -5,61 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Giveaway Game</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { font-family: 'Inter', sans-serif; }
     body { background: #050508; color: white; overflow-x: hidden; }
     .bg-mesh { position: fixed; inset: 0; z-index: -1; background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(83, 252, 24, 0.08), transparent), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255, 51, 102, 0.05), transparent); }
     .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
-    .glass-strong { background: rgba(20, 20, 28, 0.7); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .text-glow { text-shadow: 0 0 30px rgba(83, 252, 24, 0.3); }
-    .btn-primary { background: linear-gradient(135deg, #53fc18 0%, #3dd10f 100%); color: #020202; font-weight: 800; transition: all 0.3s; position: relative; overflow: hidden; }
+    .btn-primary { background: linear-gradient(135deg, #53fc18 0%, #3dd10f 100%); color: #020202; font-weight: 800; transition: all 0.3s; }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(83, 252, 24, 0.25); }
-    .btn-primary:active { transform: scale(0.98); }
-    .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; font-weight: 600; transition: all 0.3s; }
+    .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; font-weight: 600; }
     .btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: rgba(83, 252, 24, 0.3); }
-    .btn-danger { background: linear-gradient(135deg, #ff3366 0%, #e11d48 100%); color: white; font-weight: 800; transition: all 0.3s; }
+    .btn-danger { background: linear-gradient(135deg, #ff3366 0%, #e11d48 100%); color: white; font-weight: 800; }
     .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(255, 51, 102, 0.3); }
     .input-field { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.3s; }
     .input-field:focus { border-color: #53fc18; box-shadow: 0 0 0 3px rgba(83, 252, 24, 0.1); outline: none; }
-    .stat-card { background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s; }
-    .stat-card:hover { border-color: rgba(83, 252, 24, 0.2); transform: translateY(-2px); }
-    .entrant-pill { animation: slideIn 0.4s ease; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); transition: all 0.2s; }
-    .entrant-pill:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(83, 252, 24, 0.3); transform: scale(1.02); }
+    .stat-card { background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%); border: 1px solid rgba(255, 255, 255, 0.05); }
+    .entrant-pill { animation: slideIn 0.4s ease; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); }
     @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
     .live-dot { animation: pulse 2s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-    .countdown-number { font-size: 20vw; font-weight: 900; background: linear-gradient(135deg, #53fc18, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 40px rgba(83, 252, 24, 0.3)); }
-    .winner-text { font-size: 8vw; font-weight: 900; background: linear-gradient(135deg, #ffd700, #ffaa00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 60px rgba(255, 215, 0, 0.4)); }
+    .countdown-number { font-size: 20vw; font-weight: 900; background: linear-gradient(135deg, #53fc18, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .winner-text { font-size: 8vw; font-weight: 900; background: linear-gradient(135deg, #ffd700, #ffaa00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .confetti { position: absolute; width: 10px; height: 10px; animation: confetti-fall 3s ease-out forwards; }
     @keyframes confetti-fall { 0% { transform: translateY(-100px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
   </style>
 </head>
 <body>
 
 <div class="bg-mesh"></div>
 
-<!-- ==================== SETUP SCREEN ==================== -->
-<div id="setup-screen" class="min-h-screen flex flex-col items-center justify-center p-6 relative">
-  <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#53fc18] to-transparent opacity-30"></div>
+<!-- SETUP -->
+<div id="setup-screen" class="min-h-screen flex flex-col items-center justify-center p-6">
   <div class="text-center mb-10">
     <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-semibold text-[#53fc18] mb-6 tracking-wider uppercase">
       <span class="w-1.5 h-1.5 rounded-full bg-[#53fc18] live-dot"></span>
       Giveaway Tool
     </div>
-    <h1 class="text-6xl md:text-7xl font-black text-white mb-4 tracking-tight">
-      Giveaway <span class="text-[#53fc18] text-glow">Game</span>
+    <h1 class="text-6xl md:text-7xl font-black text-white mb-4">
+      Giveaway <span class="text-[#53fc18]">Game</span>
     </h1>
-    <p class="text-gray-400 text-lg max-w-md mx-auto leading-relaxed">
-      Turn chat giveaways into <span class="text-white font-semibold">viral stream moments</span>
-    </p>
   </div>
-  <div class="w-full max-w-lg glass rounded-3xl p-8 md:p-10 relative overflow-hidden">
-    <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#53fc18]/30 to-transparent"></div>
+  <div class="w-full max-w-lg glass rounded-3xl p-8 md:p-10">
     <div class="space-y-6">
       <div>
         <label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Giveaway Title</label>
@@ -70,19 +56,19 @@
         <input type="text" id="keyword" value="!join" class="input-field w-full px-5 py-4 rounded-xl text-white text-lg font-mono">
       </div>
       <div>
-        <label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Kick Channel Name</label>
-        <input type="text" id="kick-channel" value="chetootv" class="input-field w-full px-5 py-4 rounded-xl text-white text-lg">
-        <p class="text-gray-600 text-xs mt-2">Your Kick username (just the name, not URL)</p>
+        <label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Kick Chatroom ID</label>
+        <input type="text" id="chatroom-id" value="107612" class="input-field w-full px-5 py-4 rounded-xl text-white text-lg font-mono">
+        <p class="text-gray-600 text-xs mt-2">chetootv = 107612 | Find yours at kick.com/api/v2/channels/YOURNAME</p>
       </div>
-      <button onclick="createGiveaway()" class="btn-primary w-full py-5 rounded-xl text-lg mt-2">
+      <button onclick="createGiveaway()" class="btn-primary w-full py-5 rounded-xl text-lg">
         Create Giveaway →
       </button>
     </div>
   </div>
 </div>
 
-<!-- ==================== DASHBOARD SCREEN ==================== -->
-<div id="dashboard-screen" class="hidden min-h-screen p-6 md:p-10 relative">
+<!-- DASHBOARD -->
+<div id="dashboard-screen" class="hidden min-h-screen p-6 md:p-10">
   <div class="max-w-6xl mx-auto">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
       <div>
@@ -93,45 +79,31 @@
         <h1 id="dash-title" class="text-4xl md:text-5xl font-black text-white">Giveaway</h1>
       </div>
       <div class="flex gap-3 flex-wrap">
-        <button onclick="addFakeBatch()" class="btn-secondary px-5 py-3 rounded-xl text-sm font-bold flex items-center gap-2">
-          <span>⚡</span> Add 10 Test Entries
+        <button onclick="addFakeBatch()" class="btn-secondary px-5 py-3 rounded-xl text-sm font-bold">
+          ⚡ Add 10 Test
         </button>
-        <button onclick="copyOverlayUrl()" class="glass px-5 py-3 rounded-xl text-sm font-bold text-white hover:border-[#53fc18]/40 transition-all flex items-center gap-2 group">
-          <span>📋</span>
-          <span class="group-hover:text-[#53fc18] transition-colors">Copy OBS URL</span>
+        <button onclick="copyOverlayUrl()" class="glass px-5 py-3 rounded-xl text-sm font-bold text-white">
+          📋 Copy OBS URL
         </button>
-        <button onclick="launchGame()" id="launch-btn" class="btn-danger px-6 py-3 rounded-xl text-sm font-bold flex items-center gap-2">
-          <span>🚀</span> Launch Game
+        <button onclick="launchGame()" class="btn-danger px-6 py-3 rounded-xl text-sm font-bold">
+          🚀 Launch Game
         </button>
       </div>
     </div>
 
-    <!-- Connection Panel -->
-    <div class="glass rounded-2xl p-6 mb-8">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold flex items-center gap-2">
-          <span>🔌</span> Kick Chat Connection
-        </h3>
-        <span id="conn-status-badge" class="px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-xs font-bold">DISCONNECTED</span>
+    <!-- Connection -->
+    <div class="glass rounded-2xl p-5 mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-bold">🔌 Kick Chat Connection</h3>
+        <span id="conn-badge" class="px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-xs font-bold">DISCONNECTED</span>
       </div>
-      <div class="flex gap-3 mb-4">
-        <input id="dash-kick-channel" placeholder="Enter Kick channel (e.g. chetootv)" class="input-field flex-1 px-4 py-3 rounded-xl text-white text-sm">
-        <button onclick="connectKickChat()" id="connect-btn" class="btn-primary px-6 py-3 rounded-xl text-sm font-bold whitespace-nowrap">
-          Auto Connect
+      <div class="flex gap-3 mb-3">
+        <input id="dash-chatroom-id" value="107612" class="input-field flex-1 px-4 py-3 rounded-xl text-white text-sm font-mono">
+        <button onclick="connectRawWS()" id="ws-connect-btn" class="btn-primary px-6 py-3 rounded-xl text-sm font-bold">
+          Connect
         </button>
       </div>
-      <div class="flex items-center gap-3 mb-4">
-        <div class="h-px flex-1 bg-white/5"></div>
-        <span class="text-gray-600 text-xs">OR ENTER CHATROOM ID MANUALLY</span>
-        <div class="h-px flex-1 bg-white/5"></div>
-      </div>
-      <div class="flex gap-3">
-        <input id="manual-chatroom-id" value="107612" placeholder="Chatroom ID" class="input-field flex-1 px-4 py-3 rounded-xl text-white text-sm font-mono">
-        <button onclick="connectManual()" class="glass px-6 py-3 rounded-xl text-sm font-bold text-white hover:border-[#53fc18]/40 transition-all whitespace-nowrap">
-          Manual Connect
-        </button>
-      </div>
-      <div id="connection-status" class="mt-3 text-sm min-h-[20px] font-mono"></div>
+      <div id="conn-status" class="text-sm font-mono text-gray-500">Click Connect to join Kick chat</div>
     </div>
 
     <!-- Stats -->
@@ -146,35 +118,33 @@
       </div>
       <div class="stat-card rounded-2xl p-6">
         <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Keyword</div>
-        <div id="stat-keyword" class="text-4xl font-black text-[#ff3366] truncate">!join</div>
+        <div id="stat-keyword" class="text-4xl font-black text-[#ff3366]">!join</div>
       </div>
     </div>
 
     <!-- URL -->
-    <div class="glass rounded-2xl p-5 mb-8 flex flex-col md:flex-row items-center gap-4">
-      <div class="flex-1 min-w-0">
-        <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1.5">Overlay URL for OBS</div>
-        <div id="overlay-url" class="font-mono text-sm text-[#53fc18] truncate">Waiting to generate...</div>
-      </div>
+    <div class="glass rounded-2xl p-5 mb-8">
+      <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1.5">Overlay URL for OBS</div>
+      <div id="overlay-url" class="font-mono text-sm text-[#53fc18] truncate">Waiting...</div>
     </div>
 
     <!-- Entrants -->
     <div class="glass rounded-3xl p-6 md:p-8">
       <div class="flex items-center justify-between mb-6">
-        <h3 class="text-xl font-bold flex items-center gap-2"><span>👥</span> Live Entrants</h3>
-        <span id="entrant-badge" class="px-3 py-1 rounded-full bg-[#53fc18]/10 text-[#53fc18] text-xs font-bold">0 active</span>
+        <h3 class="text-xl font-bold">👥 Live Entrants</h3>
+        <span id="entrant-badge" class="px-3 py-1 rounded-full bg-[#53fc18]/10 text-[#53fc18] text-xs font-bold">0</span>
       </div>
       <div id="entrants-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-80 overflow-y-auto pr-2">
         <div class="col-span-full text-center py-12 text-gray-600">
           <div class="text-4xl mb-3">💬</div>
-          <p>Waiting for chatters to type <span id="waiting-keyword" class="text-[#53fc18] font-bold">!join</span>...</p>
+          <p>Waiting for chatters...</p>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ==================== GAME OVERLAY ==================== -->
+<!-- GAME OVERLAY -->
 <div id="game-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
   <div id="countdown-phase" class="absolute inset-0 flex items-center justify-center">
     <div id="countdown-num" class="countdown-number">3</div>
@@ -183,30 +153,132 @@
   <div id="winner-phase" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm">
     <div id="confetti-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
     <div class="winner-text text-center mb-4">🎉 WINNER 🎉</div>
-    <div id="winner-name" class="text-6xl md:text-8xl font-black text-white text-center mb-6 text-glow"></div>
+    <div id="winner-name" class="text-6xl md:text-8xl font-black text-white text-center mb-6"></div>
     <div id="winner-prize" class="text-2xl text-gray-300 font-medium"></div>
   </div>
 </div>
 
 <script>
+  // ==================== RAW WEBSOCKET (THE FIX) ====================
+  let ws = null;
+  let wsReconnectInterval = null;
+
+  function connectRawWS() {
+    const chatroomId = document.getElementById('dash-chatroom-id').value.trim();
+    const status = document.getElementById('conn-status');
+    const badge = document.getElementById('conn-badge');
+    const btn = document.getElementById('ws-connect-btn');
+
+    if (!chatroomId) return alert('Enter chatroom ID');
+
+    // Disconnect existing
+    if (ws) {
+      ws.close();
+      ws = null;
+    }
+
+    status.innerHTML = '<span class="text-yellow-500">⏳ Connecting to Kick WebSocket...</span>';
+    badge.textContent = 'CONNECTING';
+    badge.className = 'px-3 py-1 rounded-full bg-yellow-900/30 text-yellow-400 text-xs font-bold';
+
+    // THE CORRECT KICK PUSHER ENDPOINT (raw WebSocket)
+    const wsUrl = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0-rc2&flash=false';
+
+    ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      console.log('WebSocket opened');
+      status.innerHTML = '<span class="text-yellow-500">⏳ Handshaking...</span>';
+    };
+
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      console.log('WS msg:', msg);
+
+      // Connection established
+      if (msg.event === 'pusher:connection_established') {
+        const socketId = JSON.parse(msg.data).socket_id;
+        console.log('Socket ID:', socketId);
+
+        // Subscribe to chatroom
+        ws.send(JSON.stringify({
+          event: 'pusher:subscribe',
+          data: {
+            auth: '',
+            channel: `chatrooms.${chatroomId}.v2`
+          }
+        }));
+
+        status.innerHTML = '<span class="text-[#53fc18]">✅ Connected to Kick!</span> <span class="text-gray-500 text-xs">Waiting for chat messages...</span>';
+        badge.textContent = 'LIVE';
+        badge.className = 'px-3 py-1 rounded-full bg-[#53fc18]/10 text-[#53fc18] text-xs font-bold';
+        btn.textContent = '✅ Connected';
+        btn.style.background = '#1a1a24';
+        btn.style.color = '#53fc18';
+        btn.style.border = '1px solid #53fc18';
+      }
+
+      // Subscription succeeded
+      if (msg.event === 'pusher_internal:subscription_succeeded') {
+        status.innerHTML += `<div class="text-[#53fc18] text-xs">📡 Subscribed to room ${chatroomId}</div>`;
+      }
+
+      // CHAT MESSAGE!
+      if (msg.event === 'App\\Events\\ChatMessageEvent') {
+        const data = JSON.parse(msg.data);
+        console.log('Chat message:', data);
+
+        const text = (data.content || '').trim();
+        const username = data.sender?.username || 'unknown';
+        const color = data.sender?.identity?.color || '#53fc18';
+
+        // Check keyword
+        if (text.toLowerCase() === state.keyword.toLowerCase()) {
+          addEntrant(username, color, false);
+          status.innerHTML = `<span class="text-[#53fc18]">✅ ${username} entered!</span>`;
+        }
+      }
+    };
+
+    ws.onerror = (err) => {
+      console.error('WS error:', err);
+      status.innerHTML = '<span class="text-red-500">❌ WebSocket error. Retrying...</span>';
+      badge.textContent = 'ERROR';
+      badge.className = 'px-3 py-1 rounded-full bg-red-900/30 text-red-400 text-xs font-bold';
+    };
+
+    ws.onclose = () => {
+      console.log('WS closed');
+      status.innerHTML = '<span class="text-yellow-500">⚠️ Disconnected. Click Connect to retry.</span>';
+      badge.textContent = 'OFFLINE';
+      badge.className = 'px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-xs font-bold';
+      btn.textContent = 'Connect';
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.style.border = '';
+    };
+  }
+
+  // ==================== STATE ====================
   let state = {
-    title: '', keyword: '', entrants: [], gameActive: false,
-    pusherClient: null, isConnected: false
+    title: '', keyword: '', entrants: [], gameActive: false
   };
 
-  const fakeNames = ['sniperelite','kickfan99','xqcow','ninja','pokimane','shroud','timthetatman','drdisrespect','summit1g','loltyler1','hasanabi','moistcr1tikal','forsen','asmongold','xchocobars'];
+  const fakeNames = ['sniperelite','kickfan99','xqcow','ninja','pokimane','shroud','timthetatman','drdisrespect','summit1g','loltyler1'];
   const colors = ['#53fc18','#ff3366','#00d4ff','#ffd700','#ff6b35','#c084fc','#22d3ee','#f472b6','#a3e635','#fb923c'];
 
   function createGiveaway() {
     state.title = document.getElementById('title').value || 'Giveaway';
     state.keyword = document.getElementById('keyword').value || '!join';
-    const kickChannel = document.getElementById('kick-channel').value.trim();
+    const chatroomId = document.getElementById('chatroom-id').value.trim();
+
     document.getElementById('setup-screen').classList.add('hidden');
     document.getElementById('dashboard-screen').classList.remove('hidden');
+
     document.getElementById('dash-title').textContent = state.title;
     document.getElementById('stat-keyword').textContent = state.keyword;
-    document.getElementById('waiting-keyword').textContent = state.keyword;
-    document.getElementById('dash-kick-channel').value = kickChannel;
+    document.getElementById('dash-chatroom-id').value = chatroomId;
+
     updateOverlayUrl();
   }
 
@@ -239,7 +311,7 @@
 
   function updateDashboard() {
     document.getElementById('stat-count').textContent = state.entrants.length;
-    document.getElementById('entrant-badge').textContent = state.entrants.length + ' active';
+    document.getElementById('entrant-badge').textContent = state.entrants.length;
     const grid = document.getElementById('entrants-grid');
     if (state.entrants.length === 0) {
       grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-600"><div class="text-4xl mb-3">💬</div><p>Waiting for chatters to type <span class="text-[#53fc18] font-bold">${state.keyword}</span>...</p></div>`;
@@ -247,7 +319,7 @@
     }
     const displayEntrants = state.entrants.slice(-50).reverse();
     grid.innerHTML = displayEntrants.map((e, i) => `
-      <div class="entrant-pill flex items-center gap-2.5 px-4 py-3 rounded-xl" style="animation-delay: ${i * 0.03}s">
+      <div class="entrant-pill flex items-center gap-2.5 px-4 py-3 rounded-xl">
         <div class="w-3 h-3 rounded-full shrink-0" style="background: ${e.color}; box-shadow: 0 0 10px ${e.color}60"></div>
         <span class="font-semibold text-sm truncate">${e.name}</span>
         ${e.isTest ? '<span class="text-[10px] text-gray-500 bg-white/5 px-1.5 py-0.5 rounded">TEST</span>' : ''}
@@ -256,133 +328,12 @@
     grid.scrollTop = 0;
   }
 
-  // ==================== KICK CONNECTION (FIXED) ====================
-  async function connectKickChat() {
-    const channelName = document.getElementById('dash-kick-channel').value.trim().toLowerCase();
-    if (!channelName) return alert('Enter your Kick channel name');
-    const btn = document.getElementById('connect-btn');
-    const status = document.getElementById('connection-status');
-    const badge = document.getElementById('conn-status-badge');
-    btn.textContent = 'Looking up...';
-    btn.disabled = true;
-    status.innerHTML = '<span class="text-yellow-500">⏳ Fetching chatroom ID...</span>';
-    try {
-      const res = await fetch(`/api/chatroom?name=${encodeURIComponent(channelName)}`);
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      status.innerHTML = `<span class="text-[#53fc18]">✅ Found chatroom ${data.chatroomId}</span>`;
-      setupPusher(data.chatroomId, channelName);
-    } catch (err) {
-      status.innerHTML = `<span class="text-red-500">❌ Auto lookup failed: ${err.message}</span><br><span class="text-gray-500 text-xs">Use Manual Connect below with chatroom ID</span>`;
-      btn.textContent = 'Auto Connect';
-      btn.disabled = false;
-      badge.textContent = 'FAILED';
-      badge.className = 'px-3 py-1 rounded-full bg-red-900/30 text-red-400 text-xs font-bold';
-    }
-  }
-
-  function connectManual() {
-    const chatroomId = document.getElementById('manual-chatroom-id').value.trim();
-    const channelName = document.getElementById('dash-kick-channel').value.trim() || 'manual';
-    if (!chatroomId || isNaN(chatroomId)) return alert('Enter a valid numeric Chatroom ID');
-    setupPusher(chatroomId, channelName);
-  }
-
-  function setupPusher(chatroomId, channelName) {
-    const status = document.getElementById('connection-status');
-    const badge = document.getElementById('conn-status-badge');
-    const btn = document.getElementById('connect-btn');
-
-    if (state.pusherClient) {
-      try { state.pusherClient.disconnect(); } catch(e) {}
-      state.pusherClient = null;
-    }
-
-    status.innerHTML = '<span class="text-yellow-500">⏳ Connecting to Kick chat...</span>';
-
-    try {
-      const pusher = new Pusher('eb1d5f283081a78b932c', {
-        cluster: 'us2',
-        enabledTransports: ['ws', 'wss'],
-        disabledTransports: []
-      });
-
-      // Log all state changes for debugging
-      pusher.connection.bind('state_change', (states) => {
-        console.log('Pusher state:', states.current);
-        status.innerHTML += `<div class="text-gray-600 text-xs">State: ${states.current}</div>`;
-      });
-
-      pusher.connection.bind('connected', () => {
-        console.log('Pusher connected!');
-        status.innerHTML = `<span class="text-[#53fc18]">✅ Connected to Kick</span> <span class="text-gray-500 text-xs">Reading ${channelName}'s chat</span>`;
-        badge.textContent = 'LIVE';
-        badge.className = 'px-3 py-1 rounded-full bg-[#53fc18]/10 text-[#53fc18] text-xs font-bold';
-        btn.textContent = '✅ Connected';
-        btn.style.background = '#1a1a24';
-        btn.style.color = '#53fc18';
-        btn.style.border = '1px solid #53fc18';
-        state.isConnected = true;
-      });
-
-      pusher.connection.bind('disconnected', () => {
-        status.innerHTML = '<span class="text-yellow-500">⚠️ Disconnected</span>';
-        badge.textContent = 'OFFLINE';
-        badge.className = 'px-3 py-1 rounded-full bg-yellow-900/30 text-yellow-400 text-xs font-bold';
-      });
-
-      pusher.connection.bind('failed', (err) => {
-        console.error('Pusher failed:', err);
-        status.innerHTML = `<span class="text-red-500">❌ Connection failed</span><div class="text-gray-600 text-xs">${JSON.stringify(err)}</div>`;
-        badge.textContent = 'FAILED';
-        badge.className = 'px-3 py-1 rounded-full bg-red-900/30 text-red-400 text-xs font-bold';
-        btn.textContent = 'Retry';
-        btn.disabled = false;
-      });
-
-      const channel = pusher.subscribe(`chatrooms.${chatroomId}.v2`);
-
-      channel.bind('pusher:subscription_succeeded', () => {
-        console.log('Subscribed to chatroom!');
-        status.innerHTML += `<div class="text-[#53fc18] text-xs">📡 Subscribed to room ${chatroomId}</div>`;
-      });
-
-      channel.bind('pusher:subscription_error', (err) => {
-        console.error('Subscription error:', err);
-        status.innerHTML = `<span class="text-red-500">❌ Cannot join room: ${JSON.stringify(err)}</span>`;
-      });
-
-      // THE ACTUAL CHAT MESSAGE EVENT
-      channel.bind('App\\Events\\ChatMessageEvent', (msg) => {
-        console.log('Chat msg received:', msg);
-        if (!msg.content) return;
-        const text = msg.content.trim();
-
-        if (text.toLowerCase() === state.keyword.toLowerCase()) {
-          const username = msg.sender?.username || msg.user?.username || 'unknown';
-          const color = msg.sender?.identity?.color || msg.user?.color || '#53fc18';
-          addEntrant(username, color, false);
-          status.innerHTML = `<span class="text-[#53fc18]">✅ ${username} entered!</span>`;
-        }
-      });
-
-      state.pusherClient = pusher;
-
-    } catch (err) {
-      console.error('Setup error:', err);
-      status.innerHTML = `<span class="text-red-500">❌ Setup error: ${err.message}</span>`;
-      badge.textContent = 'ERROR';
-      badge.className = 'px-3 py-1 rounded-full bg-red-900/30 text-red-400 text-xs font-bold';
-    }
-  }
-
   function copyOverlayUrl() {
     if (state.entrants.length === 0) return alert('Wait for entrants first!');
-    const url = updateOverlayUrl();
-    navigator.clipboard.writeText(url).then(() => {
+    navigator.clipboard.writeText(updateOverlayUrl()).then(() => {
       const btn = event.target.closest('button');
       const orig = btn.innerHTML;
-      btn.innerHTML = '<span>✅</span> <span>Copied!</span>';
+      btn.innerHTML = '✅ Copied!';
       setTimeout(() => btn.innerHTML = orig, 2000);
     });
   }
@@ -390,9 +341,8 @@
   function launchGame() {
     if (state.entrants.length < 2) return alert('Need at least 2 entrants!');
     state.gameActive = true;
-    if (state.pusherClient) { try { state.pusherClient.disconnect(); } catch(e) {} }
-    const url = updateOverlayUrl();
-    window.open(url, '_blank', 'width=1920,height=1080');
+    if (ws) { ws.close(); ws = null; }
+    window.open(updateOverlayUrl(), '_blank', 'width=1920,height=1080');
   }
 
   // ==================== OVERLAY MODE ====================
