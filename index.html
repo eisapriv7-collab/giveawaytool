@@ -5,207 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Giveaway Game</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { font-family: 'Inter', sans-serif; }
-    
-    body {
-      background: #050508;
-      color: white;
-      overflow-x: hidden;
-    }
-
-    /* Animated background mesh */
-    .bg-mesh {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      background: 
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(83, 252, 24, 0.08), transparent),
-        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255, 51, 102, 0.05), transparent),
-        radial-gradient(ellipse 50% 50% at 20% 60%, rgba(0, 212, 255, 0.04), transparent);
-    }
-
-    .glass {
-      background: rgba(255, 255, 255, 0.02);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    }
-
-    .glass-strong {
-      background: rgba(20, 20, 28, 0.7);
-      backdrop-filter: blur(30px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .glow-green {
-      box-shadow: 0 0 20px rgba(83, 252, 24, 0.15), 0 0 60px rgba(83, 252, 24, 0.05);
-    }
-
-    .glow-pink {
-      box-shadow: 0 0 20px rgba(255, 51, 102, 0.2), 0 0 60px rgba(255, 51, 102, 0.08);
-    }
-
-    .text-glow {
-      text-shadow: 0 0 30px rgba(83, 252, 24, 0.3);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #53fc18 0%, #3dd10f 100%);
-      color: #020202;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn-primary::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.2) 100%);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 40px rgba(83, 252, 24, 0.25);
-    }
-
-    .btn-primary:hover::before {
-      opacity: 1;
-    }
-
-    .btn-primary:active {
-      transform: translateY(0) scale(0.98);
-    }
-
-    .btn-danger {
-      background: linear-gradient(135deg, #ff3366 0%, #e11d48 100%);
-      color: white;
-      font-weight: 800;
-      transition: all 0.3s;
-    }
-
-    .btn-danger:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 40px rgba(255, 51, 102, 0.3);
-    }
-
-    .input-field {
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: all 0.3s;
-    }
-
-    .input-field:focus {
-      border-color: #53fc18;
-      box-shadow: 0 0 0 3px rgba(83, 252, 24, 0.1), 0 0 20px rgba(83, 252, 24, 0.05);
-      outline: none;
-    }
-
-    .stat-card {
-      background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: all 0.3s;
-    }
-
-    .stat-card:hover {
-      border-color: rgba(83, 252, 24, 0.2);
-      transform: translateY(-2px);
-    }
-
-    .entrant-pill {
-      animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      transition: all 0.2s;
-    }
-
-    .entrant-pill:hover {
-      background: rgba(255, 255, 255, 0.06);
-      border-color: rgba(83, 252, 24, 0.3);
-      transform: scale(1.02);
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-10px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-
-    @keyframes pulse-glow {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    .live-dot {
-      animation: pulse-glow 2s infinite;
-    }
-
-    /* Scrollbar */
+    body { background: #050508; color: white; overflow-x: hidden; }
+    .bg-mesh { position: fixed; inset: 0; z-index: -1; background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(83, 252, 24, 0.08), transparent), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255, 51, 102, 0.05), transparent); }
+    .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
+    .glass-strong { background: rgba(20, 20, 28, 0.7); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glow-green { box-shadow: 0 0 20px rgba(83, 252, 24, 0.15); }
+    .text-glow { text-shadow: 0 0 30px rgba(83, 252, 24, 0.3); }
+    .btn-primary { background: linear-gradient(135deg, #53fc18 0%, #3dd10f 100%); color: #020202; font-weight: 800; transition: all 0.3s; position: relative; overflow: hidden; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(83, 252, 24, 0.25); }
+    .btn-primary:active { transform: translateY(0) scale(0.98); }
+    .btn-danger { background: linear-gradient(135deg, #ff3366 0%, #e11d48 100%); color: white; font-weight: 800; transition: all 0.3s; }
+    .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(255, 51, 102, 0.3); }
+    .input-field { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.3s; }
+    .input-field:focus { border-color: #53fc18; box-shadow: 0 0 0 3px rgba(83, 252, 24, 0.1); outline: none; }
+    .stat-card { background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s; }
+    .stat-card:hover { border-color: rgba(83, 252, 24, 0.2); transform: translateY(-2px); }
+    .entrant-pill { animation: slideIn 0.4s ease; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+    .live-dot { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .countdown-number { font-size: 20vw; font-weight: 900; background: linear-gradient(135deg, #53fc18, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 40px rgba(83, 252, 24, 0.3)); }
+    .winner-text { font-size: 8vw; font-weight: 900; background: linear-gradient(135deg, #ffd700, #ffaa00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 60px rgba(255, 215, 0, 0.4)); }
+    .confetti { position: absolute; width: 10px; height: 10px; animation: confetti-fall 3s ease-out forwards; }
+    @keyframes confetti-fall { 0% { transform: translateY(-100px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
-
-    /* Countdown */
-    .countdown-number {
-      font-size: 20vw;
-      font-weight: 900;
-      background: linear-gradient(135deg, #53fc18, #22c55e);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 40px rgba(83, 252, 24, 0.3));
-      animation: countPop 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    @keyframes countPop {
-      0% { transform: scale(2); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    /* Winner */
-    .winner-text {
-      font-size: 8vw;
-      font-weight: 900;
-      background: linear-gradient(135deg, #ffd700, #ffaa00);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 60px rgba(255, 215, 0, 0.4));
-      animation: winnerIn 1s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    @keyframes winnerIn {
-      0% { transform: scale(0) rotate(-10deg); opacity: 0; }
-      60% { transform: scale(1.1) rotate(2deg); }
-      100% { transform: scale(1) rotate(0); opacity: 1; }
-    }
-
-    .confetti {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      animation: confetti-fall 3s ease-out forwards;
-    }
-
-    @keyframes confetti-fall {
-      0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-    }
-
-    .shimmer {
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-      background-size: 200% 100%;
-      animation: shimmer 2s infinite;
-    }
-
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
   </style>
 </head>
 <body>
@@ -216,7 +45,7 @@
 <div id="setup-screen" class="min-h-screen flex flex-col items-center justify-center p-6 relative">
   <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#53fc18] to-transparent opacity-30"></div>
   
-  <div class="text-center mb-10 relative">
+  <div class="text-center mb-10">
     <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-semibold text-[#53fc18] mb-6 tracking-wider uppercase">
       <span class="w-1.5 h-1.5 rounded-full bg-[#53fc18] live-dot"></span>
       Live Giveaway Tool
@@ -225,7 +54,7 @@
       Giveaway <span class="text-[#53fc18] text-glow">Game</span>
     </h1>
     <p class="text-gray-400 text-lg max-w-md mx-auto leading-relaxed">
-      Turn boring chat giveaways into <span class="text-white font-semibold">viral stream moments</span>. Your viewers will clip this.
+      Turn boring chat giveaways into <span class="text-white font-semibold">viral stream moments</span>
     </p>
   </div>
 
@@ -235,17 +64,18 @@
     <div class="space-y-6">
       <div>
         <label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Giveaway Title</label>
-        <input type="text" id="title" value="Sub Sunday $50 Gift Card" 
-          class="input-field w-full px-5 py-4 rounded-xl text-white text-lg placeholder-gray-600">
+        <input type="text" id="title" value="Sub Sunday $50 Gift Card" class="input-field w-full px-5 py-4 rounded-xl text-white text-lg">
       </div>
 
       <div>
         <label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Chat Keyword</label>
-        <div class="relative">
-          <input type="text" id="keyword" value="!join" 
-            class="input-field w-full px-5 py-4 rounded-xl text-white text-lg font-mono">
-          <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm"> viewers type this</div>
-        </div>
+        <input type="text" id="keyword" value="!join" class="input-field w-full px-5 py-4 rounded-xl text-white text-lg font-mono">
+      </div>
+
+      <div>
+        <label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Kick Channel Name</label>
+        <input type="text" id="kick-channel" placeholder="e.g. xqc" class="input-field w-full px-5 py-4 rounded-xl text-white text-lg">
+        <p class="text-gray-600 text-xs mt-2">Your Kick username (not URL, just the name)</p>
       </div>
 
       <div>
@@ -265,8 +95,6 @@
       <button onclick="createGiveaway()" class="btn-primary w-full py-5 rounded-xl text-lg mt-2">
         Create Giveaway →
       </button>
-      
-      <p class="text-center text-gray-600 text-sm">No account needed. Works with Kick & Twitch.</p>
     </div>
   </div>
 </div>
@@ -274,6 +102,7 @@
 <!-- ==================== DASHBOARD SCREEN ==================== -->
 <div id="dashboard-screen" class="hidden min-h-screen p-6 md:p-10 relative">
   <div class="max-w-6xl mx-auto">
+    
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
       <div>
@@ -295,7 +124,23 @@
       </div>
     </div>
 
-    <!-- Stats Grid -->
+    <!-- Kick Connection -->
+    <div class="glass rounded-2xl p-5 mb-8 flex flex-col md:flex-row items-center gap-4">
+      <div class="flex-1 min-w-0 w-full">
+        <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1.5">Kick Chat Connection</div>
+        <div class="flex gap-3">
+          <input id="dash-kick-channel" placeholder="Enter Kick channel" class="input-field flex-1 px-4 py-3 rounded-xl text-white text-sm">
+          <button onclick="connectKickChat()" id="connect-btn" class="btn-primary px-6 py-3 rounded-xl text-sm font-bold whitespace-nowrap">
+            Connect
+          </button>
+        </div>
+      </div>
+      <div id="connection-status" class="text-gray-600 text-xs md:text-right">
+        Connect to read real chat
+      </div>
+    </div>
+
+    <!-- Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       <div class="stat-card rounded-2xl p-6 relative overflow-hidden">
         <div class="absolute top-0 right-0 w-32 h-32 bg-[#53fc18]/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
@@ -305,7 +150,6 @@
           <div class="text-gray-600 text-sm mt-1">and counting...</div>
         </div>
       </div>
-
       <div class="stat-card rounded-2xl p-6 relative overflow-hidden">
         <div class="absolute top-0 right-0 w-32 h-32 bg-[#00d4ff]/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
         <div class="relative">
@@ -314,7 +158,6 @@
           <div class="text-gray-600 text-sm mt-1">Collecting entries</div>
         </div>
       </div>
-
       <div class="stat-card rounded-2xl p-6 relative overflow-hidden">
         <div class="absolute top-0 right-0 w-32 h-32 bg-[#ff3366]/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
         <div class="relative">
@@ -325,7 +168,7 @@
       </div>
     </div>
 
-    <!-- URL Display -->
+    <!-- URL -->
     <div class="glass rounded-2xl p-5 mb-8 flex flex-col md:flex-row items-center gap-4">
       <div class="flex-1 min-w-0">
         <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1.5">Overlay URL for OBS</div>
@@ -336,10 +179,9 @@
       </div>
     </div>
 
-    <!-- Entrants Grid -->
+    <!-- Entrants -->
     <div class="glass rounded-3xl p-6 md:p-8 relative overflow-hidden">
-      <div class="shimmer absolute inset-0 pointer-events-none"></div>
-      <div class="flex items-center justify-between mb-6 relative">
+      <div class="flex items-center justify-between mb-6">
         <h3 class="text-xl font-bold flex items-center gap-2">
           <span>👥</span> Live Entrants
         </h3>
@@ -358,15 +200,10 @@
 
 <!-- ==================== GAME OVERLAY ==================== -->
 <div id="game-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
-  <!-- Countdown -->
   <div id="countdown-phase" class="absolute inset-0 flex items-center justify-center">
     <div id="countdown-num" class="countdown-number">3</div>
   </div>
-
-  <!-- Canvas Game -->
   <canvas id="game-canvas" class="absolute inset-0 w-full h-full hidden"></canvas>
-
-  <!-- Winner -->
   <div id="winner-phase" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm">
     <div id="confetti-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
     <div class="winner-text text-center mb-4">🎉 WINNER 🎉</div>
@@ -378,29 +215,26 @@
 <script>
   // ==================== STATE ====================
   let state = {
-    step: 'setup',
     title: '',
     keyword: '',
     entrants: [],
-    gameActive: false
+    gameActive: false,
+    fakeInterval: null,
+    pusherConnection: null
   };
 
   const fakeNames = [
     'sniperelite','kickfan99','xqcow','ninja','pokimane','shroud',
     'timthetatman','drdisrespect','summit1g','loltyler1','hasanabi',
-    'moistcr1tikal','forsen','asmongold','xchocobars','adept','fanfan',
-    'willneff','cyr','erobb221','kaceytron','quqco','jakefuture'
+    'moistcr1tikal','forsen','asmongold','xchocobars','adept','fanfan'
   ];
-
-  const colors = [
-    '#53fc18','#ff3366','#00d4ff','#ffd700','#ff6b35',
-    '#c084fc','#22d3ee','#f472b6','#a3e635','#fb923c','#e879f9'
-  ];
+  const colors = ['#53fc18','#ff3366','#00d4ff','#ffd700','#ff6b35','#c084fc','#22d3ee','#f472b6','#a3e635','#fb923c'];
 
   // ==================== SETUP ====================
   function createGiveaway() {
     state.title = document.getElementById('title').value || 'Giveaway';
     state.keyword = document.getElementById('keyword').value || '!join';
+    const kickChannel = document.getElementById('kick-channel').value.trim();
     
     document.getElementById('setup-screen').classList.add('hidden');
     document.getElementById('dashboard-screen').classList.remove('hidden');
@@ -408,11 +242,9 @@
     document.getElementById('dash-title').textContent = state.title;
     document.getElementById('stat-keyword').textContent = state.keyword;
     document.getElementById('waiting-keyword').textContent = state.keyword;
+    document.getElementById('dash-kick-channel').value = kickChannel;
     
-    // Generate overlay URL
     updateOverlayUrl();
-    
-    // Start fake chat simulation
     startFakeChat();
   }
 
@@ -426,22 +258,20 @@
 
   // ==================== FAKE CHAT ====================
   function startFakeChat() {
-    const interval = setInterval(() => {
-      if (state.gameActive) {
-        clearInterval(interval);
-        return;
-      }
-      
+    state.fakeInterval = setInterval(() => {
+      if (state.gameActive || state.pusherConnection) return;
       const base = fakeNames[Math.floor(Math.random() * fakeNames.length)];
       const name = base + Math.floor(Math.random() * 999);
       const color = colors[Math.floor(Math.random() * colors.length)];
-      
-      if (!state.entrants.find(e => e.name === name)) {
-        state.entrants.push({ name, color });
-        updateDashboard();
-        updateOverlayUrl();
-      }
-    }, 1000 + Math.random() * 1500);
+      addEntrant(name, color);
+    }, 1200);
+  }
+
+  function addEntrant(name, color) {
+    if (state.entrants.find(e => e.name === name)) return;
+    state.entrants.push({ name, color });
+    updateDashboard();
+    updateOverlayUrl();
   }
 
   function updateDashboard() {
@@ -449,17 +279,80 @@
     document.getElementById('entrant-badge').textContent = state.entrants.length + ' active';
     
     const grid = document.getElementById('entrants-grid');
-    if (state.entrants.length === 0) return;
+    if (state.entrants.length === 0) {
+      grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-600"><div class="text-4xl mb-3">💬</div><p>Waiting for chatters to type <span class="text-[#53fc18] font-bold">${state.keyword}</span>...</p></div>`;
+      return;
+    }
     
     grid.innerHTML = state.entrants.slice().reverse().map((e, i) => `
       <div class="entrant-pill flex items-center gap-2.5 px-4 py-3 rounded-xl" style="animation-delay: ${i * 0.05}s">
-        <div class="w-3 h-3 rounded-full shrink-0 shadow-lg" style="background: ${e.color}; box-shadow: 0 0 8px ${e.color}40"></div>
+        <div class="w-3 h-3 rounded-full shrink-0" style="background: ${e.color}; box-shadow: 0 0 8px ${e.color}40"></div>
         <span class="font-semibold text-sm truncate">${e.name}</span>
       </div>
     `).join('');
   }
 
-  // ==================== COPY URL ====================
+  // ==================== KICK CHAT CONNECTION ====================
+  async function connectKickChat() {
+    const channelName = document.getElementById('dash-kick-channel').value.trim();
+    if (!channelName) return alert('Enter your Kick channel name');
+    
+    const btn = document.getElementById('connect-btn');
+    const status = document.getElementById('connection-status');
+    btn.textContent = 'Connecting...';
+    btn.disabled = true;
+    
+    try {
+      // Get chatroom ID from our API
+      const res = await fetch(`/api/chatroom?name=${encodeURIComponent(channelName)}`);
+      const data = await res.json();
+      
+      if (data.error) throw new Error(data.error);
+      
+      const chatroomId = data.chatroomId;
+      
+      // Connect to Kick's Pusher
+      const pusher = new Pusher('eb1d5f283081a78b932c', { 
+        cluster: 'us2',
+        enabledTransports: ['ws', 'wss']
+      });
+      
+      const channel = pusher.subscribe(`chatrooms.${chatroomId}.v2`);
+      
+      channel.bind('App\\Events\\ChatMessageEvent', (msg) => {
+        if (!msg.content) return;
+        const text = msg.content.trim();
+        
+        // Check if message matches keyword (case insensitive)
+        if (text.toLowerCase() === state.keyword.toLowerCase()) {
+          const username = msg.sender?.username || 'unknown';
+          const color = msg.sender?.identity?.color || '#53fc18';
+          addEntrant(username, color);
+          
+          // Stop fake chat if running
+          if (state.fakeInterval) {
+            clearInterval(state.fakeInterval);
+            state.fakeInterval = null;
+          }
+        }
+      });
+      
+      state.pusherConnection = pusher;
+      btn.textContent = '✅ Connected';
+      btn.classList.remove('btn-primary');
+      btn.style.background = '#1a1a24';
+      btn.style.color = '#53fc18';
+      btn.style.border = '1px solid #53fc18';
+      status.innerHTML = `<span class="text-[#53fc18] font-bold">● Live</span> Reading ${channelName}'s chat`;
+      
+    } catch (err) {
+      alert('Failed: ' + err.message);
+      btn.textContent = 'Connect';
+      btn.disabled = false;
+    }
+  }
+
+  // ==================== COPY & LAUNCH ====================
   function copyOverlayUrl() {
     if (state.entrants.length === 0) {
       alert('Wait for some entrants first!');
@@ -468,21 +361,18 @@
     const url = updateOverlayUrl();
     navigator.clipboard.writeText(url).then(() => {
       const btn = event.target.closest('button');
-      const original = btn.innerHTML;
+      const orig = btn.innerHTML;
       btn.innerHTML = '<span>✅</span> <span>Copied!</span>';
-      setTimeout(() => btn.innerHTML = original, 2000);
+      setTimeout(() => btn.innerHTML = orig, 2000);
     });
   }
 
-  // ==================== LAUNCH GAME ====================
   function launchGame() {
     if (state.entrants.length < 2) {
       alert('Need at least 2 entrants!');
       return;
     }
     state.gameActive = true;
-    
-    // Open overlay in new tab
     const url = updateOverlayUrl();
     window.open(url, '_blank', 'width=1920,height=1080');
   }
@@ -506,7 +396,6 @@
     const entrants = data.entrants || [];
     const title = data.title || 'Giveaway';
     
-    // Countdown
     let count = 3;
     const countEl = document.getElementById('countdown-num');
     countEl.textContent = count;
@@ -516,7 +405,7 @@
       if (count > 0) {
         countEl.textContent = count;
         countEl.style.animation = 'none';
-        countEl.offsetHeight; // trigger reflow
+        countEl.offsetHeight;
         countEl.style.animation = '';
       } else {
         clearInterval(cdInterval);
@@ -534,7 +423,6 @@
     canvas.height = 1080;
     const ctx = canvas.getContext('2d');
     
-    // Scale to window
     function resize() {
       canvas.style.width = window.innerWidth + 'px';
       canvas.style.height = window.innerHeight + 'px';
@@ -542,7 +430,6 @@
     resize();
     window.addEventListener('resize', resize);
     
-    // Create balls
     const balls = entrants.map((e, i) => ({
       x: 150 + (i % 14) * 125 + Math.random() * 40,
       y: -50 - Math.floor(i / 14) * 60,
@@ -551,44 +438,30 @@
       radius: 24 + Math.random() * 8,
       color: e.color,
       name: e.name.substring(0, 8),
-      glow: 0
     }));
     
-    // Create pegs (Plinko)
     const pegs = [];
     for (let row = 2; row < 14; row++) {
       for (let col = 0; col < 16; col++) {
-        pegs.push({
-          x: 120 + col * 115 + (row % 2) * 57,
-          y: 180 + row * 58,
-          r: 5,
-          hit: 0
-        });
+        pegs.push({ x: 120 + col * 115 + (row % 2) * 57, y: 180 + row * 58, r: 5, hit: 0 });
       }
     }
     
-    // Winner slot
     const winnerSlotX = 200 + Math.floor(Math.random() * 12) * 115;
     const winnerIndex = Math.floor(Math.random() * balls.length);
     let winnerName = '';
-    let phase = 'dropping'; // dropping, settling, done
+    let phase = 'dropping';
     let frame = 0;
     
     function animate() {
       ctx.fillStyle = '#050508';
       ctx.fillRect(0, 0, 1920, 1080);
       
-      // Draw subtle grid
       ctx.strokeStyle = 'rgba(255,255,255,0.015)';
       ctx.lineWidth = 1;
-      for (let x = 0; x < 1920; x += 80) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 1080); ctx.stroke();
-      }
-      for (let y = 0; y < 1080; y += 80) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1920, y); ctx.stroke();
-      }
+      for (let x = 0; x < 1920; x += 80) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 1080); ctx.stroke(); }
+      for (let y = 0; y < 1080; y += 80) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1920, y); ctx.stroke(); }
       
-      // Draw winner slot glow
       ctx.save();
       ctx.shadowColor = 'rgba(255, 215, 0, 0.3)';
       ctx.shadowBlur = 40;
@@ -596,33 +469,24 @@
       ctx.fillRect(winnerSlotX - 50, 950, 100, 130);
       ctx.restore();
       
-      // Draw pegs
       pegs.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        if (p.hit > 0) {
-          ctx.fillStyle = `rgba(83, 252, 24, ${p.hit})`;
-          p.hit *= 0.95;
-        } else {
-          ctx.fillStyle = 'rgba(255,255,255,0.08)';
-        }
+        if (p.hit > 0) { ctx.fillStyle = `rgba(83, 252, 24, ${p.hit})`; p.hit *= 0.95; }
+        else { ctx.fillStyle = 'rgba(255,255,255,0.08)'; }
         ctx.fill();
       });
       
-      // Physics & draw balls
       let settledCount = 0;
       
       balls.forEach((b, i) => {
-        // Gravity
         b.vy += 0.5;
         b.x += b.vx;
         b.y += b.vy;
         
-        // Wall bounce
         if (b.x < b.radius) { b.x = b.radius; b.vx *= -0.6; }
         if (b.x > 1920 - b.radius) { b.x = 1920 - b.radius; b.vx *= -0.6; }
         
-        // Peg collision
         pegs.forEach(p => {
           const dx = b.x - p.x;
           const dy = b.y - p.y;
@@ -638,7 +502,6 @@
           }
         });
         
-        // Bottom
         if (b.y > 1000 - b.radius) {
           b.y = 1000 - b.radius;
           b.vy *= -0.3;
@@ -646,14 +509,12 @@
           if (Math.abs(b.vy) < 1 && Math.abs(b.vx) < 0.5) settledCount++;
         }
         
-        // Winner magnet (last phase)
         if (phase === 'settling' && i === winnerIndex) {
           const dx = winnerSlotX - b.x;
           b.vx += dx * 0.008;
           b.x += dx * 0.005;
         }
         
-        // Draw ball with glow
         ctx.save();
         ctx.shadowColor = b.color;
         ctx.shadowBlur = 20;
@@ -663,13 +524,11 @@
         ctx.fill();
         ctx.restore();
         
-        // Inner highlight
         ctx.beginPath();
         ctx.arc(b.x - b.radius*0.3, b.y - b.radius*0.3, b.radius*0.3, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(255,255,255,0.15)';
         ctx.fill();
         
-        // Name
         ctx.fillStyle = 'rgba(255,255,255,0.9)';
         ctx.font = 'bold 10px Inter, sans-serif';
         ctx.textAlign = 'center';
@@ -680,12 +539,7 @@
       });
       
       frame++;
-      
-      // Phase transitions
-      if (phase === 'dropping' && frame > 180) {
-        phase = 'settling';
-      }
-      
+      if (phase === 'dropping' && frame > 180) phase = 'settling';
       if (phase === 'settling' && settledCount >= balls.length * 0.8) {
         phase = 'done';
         winnerName = balls[winnerIndex].name;
@@ -695,7 +549,6 @@
       
       requestAnimationFrame(animate);
     }
-    
     animate();
   }
 
@@ -705,10 +558,8 @@
     document.getElementById('winner-name').textContent = name;
     document.getElementById('winner-prize').textContent = prize;
     
-    // Confetti
     const container = document.getElementById('confetti-container');
     const confettiColors = ['#53fc18', '#ffd700', '#ff3366', '#00d4ff', '#c084fc'];
-    
     for (let i = 0; i < 60; i++) {
       const el = document.createElement('div');
       el.className = 'confetti';
@@ -723,7 +574,6 @@
     }
   }
 
-  // ==================== INIT ====================
   initOverlay();
 </script>
 
