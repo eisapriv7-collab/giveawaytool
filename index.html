@@ -2,17 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Giveaway Game</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    * { font-family: 'Inter', sans-serif; }
-    body { background: #050508; color: white; overflow-x: hidden; }
+    * { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: #050508; color: white; overflow-x: hidden; touch-action: manipulation; }
     .bg-mesh { position: fixed; inset: 0; z-index: -1; background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(83, 252, 24, 0.08), transparent), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255, 51, 102, 0.05), transparent); }
     .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
     .btn-primary { background: linear-gradient(135deg, #53fc18 0%, #3dd10f 100%); color: #020202; font-weight: 800; transition: all 0.3s; }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(83, 252, 24, 0.25); }
+    .btn-primary:disabled { opacity: 0.4; transform: none; cursor: not-allowed; }
     .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; font-weight: 600; }
     .btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: rgba(83, 252, 24, 0.3); }
     .btn-danger { background: linear-gradient(135deg, #ff3366 0%, #e11d48 100%); color: white; font-weight: 800; }
@@ -26,6 +29,29 @@
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
     .countdown-number { font-size: 20vw; font-weight: 900; background: linear-gradient(135deg, #53fc18, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .winner-text { font-size: 8vw; font-weight: 900; background: linear-gradient(135deg, #ffd700, #ffaa00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    /* RACE */
+    .race-track { position: relative; height: 180px; background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%); border-radius: 20px; overflow: hidden; border: 2px solid rgba(255,255,255,0.08); }
+    .race-lane { position: relative; height: 50%; border-bottom: 2px dashed rgba(255,255,255,0.1); display: flex; align-items: center; }
+    .race-lane:last-child { border-bottom: none; }
+    .road-stripe { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: repeating-linear-gradient(90deg, rgba(255,255,255,0.15) 0px, rgba(255,255,255,0.15) 50px, transparent 50px, transparent 100px); }
+    .finish-line { position: absolute; right: 80px; top: 0; bottom: 0; width: 16px; background: repeating-linear-gradient(45deg, #000 0px, #000 8px, #fff 8px, #fff 16px); opacity: 0.5; }
+    .race-car { position: absolute; top: 50%; transform: translateY(-50%); width: 70px; height: 36px; transition: left 0.08s linear; z-index: 10; }
+    .car-body { width: 100%; height: 100%; border-radius: 8px 18px 8px 8px; position: relative; box-shadow: 0 0 15px currentColor; }
+    .car-window { position: absolute; top: 3px; right: 10px; width: 22px; height: 14px; background: rgba(0,0,0,0.6); border-radius: 3px 10px 3px 3px; }
+    .car-wheel { position: absolute; bottom: -5px; width: 14px; height: 14px; background: #222; border-radius: 50%; border: 2px solid #555; }
+    .car-wheel.front { right: 6px; }
+    .car-wheel.back { left: 6px; }
+    .car-spoiler { position: absolute; top: -6px; left: -3px; width: 10px; height: 14px; background: currentColor; border-radius: 2px; }
+    .car-glow { position: absolute; inset: -3px; border-radius: 12px 22px 12px 12px; opacity: 0.3; filter: blur(6px); background: currentColor; }
+    .speed-bar { height: 8px; border-radius: 4px; background: rgba(255,255,255,0.08); overflow: hidden; }
+    .speed-fill { height: 100%; border-radius: 4px; transition: width 0.1s; }
+    .tap-zone { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #050508; cursor: pointer; user-select: none; -webkit-user-select: none; }
+    .tap-zone:active { background: #0a0a14; }
+    .tap-ripple { position: absolute; border-radius: 50%; background: rgba(83, 252, 24, 0.25); transform: scale(0); animation: ripple 0.5s ease-out; pointer-events: none; }
+    @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+    .player-hud { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: none; }
+    .link-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(83,252,24,0.2); border-radius: 8px; padding: 10px 14px; font-family: monospace; font-size: 12px; color: #53fc18; word-break: break-all; }
     .confetti { position: absolute; width: 10px; height: 10px; animation: confetti-fall 3s ease-out forwards; }
     @keyframes confetti-fall { 0% { transform: translateY(-100px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
   </style>
@@ -34,7 +60,7 @@
 
 <div class="bg-mesh"></div>
 
-<!-- SETUP -->
+<!-- ==================== SETUP SCREEN ==================== -->
 <div id="setup-screen" class="min-h-screen flex flex-col items-center justify-center p-6">
   <div class="text-center mb-10">
     <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-semibold text-[#53fc18] mb-6 tracking-wider uppercase">
@@ -58,7 +84,7 @@
       <div>
         <label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Kick Chatroom ID</label>
         <input type="text" id="chatroom-id" value="107612" class="input-field w-full px-5 py-4 rounded-xl text-white text-lg font-mono">
-        <p class="text-gray-600 text-xs mt-2">chetootv = 107612 | Find yours at kick.com/api/v2/channels/YOURNAME</p>
+        <p class="text-gray-600 text-xs mt-2">chetootv = 107612</p>
       </div>
       <button onclick="createGiveaway()" class="btn-primary w-full py-5 rounded-xl text-lg">
         Create Giveaway →
@@ -67,7 +93,7 @@
   </div>
 </div>
 
-<!-- DASHBOARD -->
+<!-- ==================== DASHBOARD SCREEN ==================== -->
 <div id="dashboard-screen" class="hidden min-h-screen p-6 md:p-10">
   <div class="max-w-6xl mx-auto">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
@@ -79,15 +105,9 @@
         <h1 id="dash-title" class="text-4xl md:text-5xl font-black text-white">Giveaway</h1>
       </div>
       <div class="flex gap-3 flex-wrap">
-        <button onclick="addFakeBatch()" class="btn-secondary px-5 py-3 rounded-xl text-sm font-bold">
-          ⚡ Add 10 Test
-        </button>
-        <button onclick="copyOverlayUrl()" class="glass px-5 py-3 rounded-xl text-sm font-bold text-white">
-          📋 Copy OBS URL
-        </button>
-        <button onclick="launchGame()" class="btn-danger px-6 py-3 rounded-xl text-sm font-bold">
-          🚀 Launch Game
-        </button>
+        <button onclick="addFakeBatch()" class="btn-secondary px-5 py-3 rounded-xl text-sm font-bold">⚡ Add 10 Test</button>
+        <button onclick="copyOverlayUrl()" class="glass px-5 py-3 rounded-xl text-sm font-bold text-white">📋 Copy OBS URL</button>
+        <button onclick="launchGame()" class="btn-danger px-6 py-3 rounded-xl text-sm font-bold">🚀 Launch Game</button>
       </div>
     </div>
 
@@ -99,9 +119,7 @@
       </div>
       <div class="flex gap-3 mb-3">
         <input id="dash-chatroom-id" value="107612" class="input-field flex-1 px-4 py-3 rounded-xl text-white text-sm font-mono">
-        <button onclick="connectRawWS()" id="ws-connect-btn" class="btn-primary px-6 py-3 rounded-xl text-sm font-bold">
-          Connect
-        </button>
+        <button onclick="connectRawWS()" id="ws-connect-btn" class="btn-primary px-6 py-3 rounded-xl text-sm font-bold">Connect</button>
       </div>
       <div id="conn-status" class="text-sm font-mono text-gray-500">Click Connect to join Kick chat</div>
     </div>
@@ -129,7 +147,7 @@
     </div>
 
     <!-- Entrants -->
-    <div class="glass rounded-3xl p-6 md:p-8">
+    <div class="glass rounded-3xl p-6 md:p-8 mb-8">
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-xl font-bold">👥 Live Entrants</h3>
         <span id="entrant-badge" class="px-3 py-1 rounded-full bg-[#53fc18]/10 text-[#53fc18] text-xs font-bold">0</span>
@@ -141,10 +159,51 @@
         </div>
       </div>
     </div>
+
+    <!-- ===== RACE SETUP ===== -->
+    <div class="glass rounded-3xl p-6 md:p-8 border-[#53fc18]/20 border">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="text-3xl">🏁</div>
+        <div>
+          <h3 class="text-xl font-bold text-white">Race Arena</h3>
+          <p class="text-gray-500 text-sm">2 winners race for the prize. Streamer spectates.</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Player 1 (Winner)</label>
+          <input type="text" id="race-p1" placeholder="Enter winner name" class="input-field w-full px-4 py-3 rounded-xl text-white">
+        </div>
+        <div>
+          <label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Player 2 (Winner)</label>
+          <input type="text" id="race-p2" placeholder="Enter winner name" class="input-field w-full px-4 py-3 rounded-xl text-white">
+        </div>
+      </div>
+      <button onclick="generateRace()" class="btn-primary w-full py-4 rounded-xl text-lg mb-6">
+        🏁 Generate Race Links
+      </button>
+      <div id="race-links" class="hidden space-y-4">
+        <div class="glass rounded-xl p-4">
+          <div class="text-gray-400 text-xs font-bold uppercase mb-2">🔗 Spectator Link (Streamer — Open This)</div>
+          <div id="link-spec" class="link-box mb-2"></div>
+          <button onclick="openLink('spec')" class="text-[#53fc18] text-sm font-bold hover:underline">Open Spectator →</button>
+        </div>
+        <div class="glass rounded-xl p-4">
+          <div class="text-gray-400 text-xs font-bold uppercase mb-2">🔗 Player 1 Link (Send to Winner 1)</div>
+          <div id="link-p1" class="link-box mb-2"></div>
+          <button onclick="copyLink('p1')" class="text-[#53fc18] text-sm font-bold hover:underline">Copy Link</button>
+        </div>
+        <div class="glass rounded-xl p-4">
+          <div class="text-gray-400 text-xs font-bold uppercase mb-2">🔗 Player 2 Link (Send to Winner 2)</div>
+          <div id="link-p2" class="link-box mb-2"></div>
+          <button onclick="copyLink('p2')" class="text-[#53fc18] text-sm font-bold hover:underline">Copy Link</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- GAME OVERLAY -->
+<!-- ==================== GIVEAWAY GAME OVERLAY ==================== -->
 <div id="game-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
   <div id="countdown-phase" class="absolute inset-0 flex items-center justify-center">
     <div id="countdown-num" class="countdown-number">3</div>
@@ -158,127 +217,132 @@
   </div>
 </div>
 
+<!-- ==================== RACE SPECTATOR ==================== -->
+<div id="race-spectator" class="hidden fixed inset-0 bg-[#050508] z-50 overflow-auto">
+  <div class="min-h-screen p-6 md:p-10 flex flex-col items-center justify-center">
+    <div class="max-w-4xl w-full">
+      <div class="text-center mb-8">
+        <div class="text-[#53fc18] text-sm font-bold uppercase tracking-widest mb-2">🏁 Race Arena — Spectator Mode</div>
+        <h1 class="text-4xl md:text-5xl font-black text-white">Winner Takes All</h1>
+        <div id="spec-room" class="text-gray-500 font-mono mt-2">Room: ---</div>
+      </div>
+      <div class="text-center mb-6">
+        <span id="race-status-badge" class="px-4 py-2 rounded-full bg-gray-800 text-gray-400 text-sm font-bold">WAITING FOR PLAYERS</span>
+      </div>
+      <div class="race-track mb-8 relative">
+        <div class="finish-line"></div>
+        <div class="race-lane" id="lane-1">
+          <div class="road-stripe"></div>
+          <div class="race-car" id="car-1" style="left: 0%; color: #ff3366;">
+            <div class="car-glow"></div>
+            <div class="car-body" style="background: linear-gradient(135deg, #ff3366, #e11d48);">
+              <div class="car-spoiler"></div>
+              <div class="car-window"></div>
+              <div class="car-wheel front"></div>
+              <div class="car-wheel back"></div>
+            </div>
+          </div>
+          <div class="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-[#ff3366]" id="label-p1">Player 1</div>
+          <div class="absolute right-24 top-1/2 -translate-y-1/2 text-xs text-gray-500 font-mono" id="dist-p1">0%</div>
+        </div>
+        <div class="race-lane" id="lane-2">
+          <div class="road-stripe"></div>
+          <div class="race-car" id="car-2" style="left: 0%; color: #00d4ff;">
+            <div class="car-glow"></div>
+            <div class="car-body" style="background: linear-gradient(135deg, #00d4ff, #0891b2);">
+              <div class="car-spoiler"></div>
+              <div class="car-window"></div>
+              <div class="car-wheel front"></div>
+              <div class="car-wheel back"></div>
+            </div>
+          </div>
+          <div class="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-[#00d4ff]" id="label-p2">Player 2</div>
+          <div class="absolute right-24 top-1/2 -translate-y-1/2 text-xs text-gray-500 font-mono" id="dist-p2">0%</div>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-6 mb-8">
+        <div>
+          <div class="flex justify-between text-xs text-gray-500 mb-1"><span id="speed-label-p1">Player 1</span><span id="speed-val-p1">0%</span></div>
+          <div class="speed-bar"><div class="speed-fill" id="speed-bar-p1" style="width: 0%; background: linear-gradient(90deg, #ff3366, #e11d48);"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs text-gray-500 mb-1"><span id="speed-label-p2">Player 2</span><span id="speed-val-p2">0%</span></div>
+          <div class="speed-bar"><div class="speed-fill" id="speed-bar-p2" style="width: 0%; background: linear-gradient(90deg, #00d4ff, #0891b2);"></div></div>
+        </div>
+      </div>
+      <div class="text-center">
+        <button id="start-race-btn" onclick="startRace()" class="btn-primary px-12 py-5 rounded-2xl text-2xl disabled:opacity-30" disabled>
+          🔒 WAITING FOR PLAYERS
+        </button>
+      </div>
+      <div id="race-winner-display" class="hidden text-center mt-10">
+        <div class="text-6xl font-black text-[#ffd700] mb-2" id="race-winner-name">WINNER</div>
+        <div class="text-xl text-gray-400">takes the prize!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== RACE PLAYER ==================== -->
+<div id="race-player" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="tap-zone" id="tap-zone">
+    <div class="text-center pointer-events-none">
+      <div id="player-waiting" class="mb-4">
+        <div class="text-2xl text-gray-500 mb-2">Waiting for streamer...</div>
+        <div class="text-sm text-gray-600">Get ready to tap!</div>
+      </div>
+      <div id="player-ready" class="hidden mb-4">
+        <div class="text-6xl font-black text-[#53fc18] mb-2" id="race-go-text">GO!</div>
+        <div class="text-xl text-gray-400" id="tap-instruction">TAP SCREEN FAST!</div>
+      </div>
+      <div id="player-finished" class="hidden">
+        <div class="text-5xl font-black text-[#ffd700] mb-2">FINISHED!</div>
+        <div class="text-xl text-gray-400" id="player-result">Waiting for results...</div>
+      </div>
+      <div class="mt-8">
+        <div class="text-sm text-gray-600 mb-1">YOUR SPEED</div>
+        <div class="w-64 h-3 bg-white/10 rounded-full overflow-hidden mx-auto">
+          <div id="player-speed-bar" class="h-full bg-[#53fc18] transition-all" style="width: 0%"></div>
+        </div>
+        <div class="text-3xl font-black text-white mt-4" id="player-distance">0m</div>
+      </div>
+    </div>
+    <div class="player-hud">
+      <div class="text-xs text-gray-600" id="player-name-display">Player</div>
+    </div>
+  </div>
+</div>
+
 <script>
-  // ==================== RAW WEBSOCKET (THE FIX) ====================
-  let ws = null;
-  let wsReconnectInterval = null;
-
-  function connectRawWS() {
-    const chatroomId = document.getElementById('dash-chatroom-id').value.trim();
-    const status = document.getElementById('conn-status');
-    const badge = document.getElementById('conn-badge');
-    const btn = document.getElementById('ws-connect-btn');
-
-    if (!chatroomId) return alert('Enter chatroom ID');
-
-    // Disconnect existing
-    if (ws) {
-      ws.close();
-      ws = null;
-    }
-
-    status.innerHTML = '<span class="text-yellow-500">⏳ Connecting to Kick WebSocket...</span>';
-    badge.textContent = 'CONNECTING';
-    badge.className = 'px-3 py-1 rounded-full bg-yellow-900/30 text-yellow-400 text-xs font-bold';
-
-    // THE CORRECT KICK PUSHER ENDPOINT (raw WebSocket)
-    const wsUrl = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0-rc2&flash=false';
-
-    ws = new WebSocket(wsUrl);
-
-    ws.onopen = () => {
-      console.log('WebSocket opened');
-      status.innerHTML = '<span class="text-yellow-500">⏳ Handshaking...</span>';
-    };
-
-    ws.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-      console.log('WS msg:', msg);
-
-      // Connection established
-      if (msg.event === 'pusher:connection_established') {
-        const socketId = JSON.parse(msg.data).socket_id;
-        console.log('Socket ID:', socketId);
-
-        // Subscribe to chatroom
-        ws.send(JSON.stringify({
-          event: 'pusher:subscribe',
-          data: {
-            auth: '',
-            channel: `chatrooms.${chatroomId}.v2`
-          }
-        }));
-
-        status.innerHTML = '<span class="text-[#53fc18]">✅ Connected to Kick!</span> <span class="text-gray-500 text-xs">Waiting for chat messages...</span>';
-        badge.textContent = 'LIVE';
-        badge.className = 'px-3 py-1 rounded-full bg-[#53fc18]/10 text-[#53fc18] text-xs font-bold';
-        btn.textContent = '✅ Connected';
-        btn.style.background = '#1a1a24';
-        btn.style.color = '#53fc18';
-        btn.style.border = '1px solid #53fc18';
-      }
-
-      // Subscription succeeded
-      if (msg.event === 'pusher_internal:subscription_succeeded') {
-        status.innerHTML += `<div class="text-[#53fc18] text-xs">📡 Subscribed to room ${chatroomId}</div>`;
-      }
-
-      // CHAT MESSAGE!
-      if (msg.event === 'App\\Events\\ChatMessageEvent') {
-        const data = JSON.parse(msg.data);
-        console.log('Chat message:', data);
-
-        const text = (data.content || '').trim();
-        const username = data.sender?.username || 'unknown';
-        const color = data.sender?.identity?.color || '#53fc18';
-
-        // Check keyword
-        if (text.toLowerCase() === state.keyword.toLowerCase()) {
-          addEntrant(username, color, false);
-          status.innerHTML = `<span class="text-[#53fc18]">✅ ${username} entered!</span>`;
-        }
-      }
-    };
-
-    ws.onerror = (err) => {
-      console.error('WS error:', err);
-      status.innerHTML = '<span class="text-red-500">❌ WebSocket error. Retrying...</span>';
-      badge.textContent = 'ERROR';
-      badge.className = 'px-3 py-1 rounded-full bg-red-900/30 text-red-400 text-xs font-bold';
-    };
-
-    ws.onclose = () => {
-      console.log('WS closed');
-      status.innerHTML = '<span class="text-yellow-500">⚠️ Disconnected. Click Connect to retry.</span>';
-      badge.textContent = 'OFFLINE';
-      badge.className = 'px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-xs font-bold';
-      btn.textContent = 'Connect';
-      btn.style.background = '';
-      btn.style.color = '';
-      btn.style.border = '';
-    };
-  }
-
-  // ==================== STATE ====================
-  let state = {
-    title: '', keyword: '', entrants: [], gameActive: false
+  // ==================== YOUR FIREBASE CONFIG ====================
+  const firebaseConfig = {
+    apiKey: "AIzaSyCtW8Uw6aE4eQjdq3i0CdFA4WrTOWaaoLE",
+    authDomain: "giveawaytool-b8e54.firebaseapp.com",
+    databaseURL: "https://giveawaytool-b8e54-default-rtdb.firebaseio.com",
+    projectId: "giveawaytool-b8e54",
+    storageBucket: "giveawaytool-b8e54.firebasestorage.app",
+    messagingSenderId: "657513939535",
+    appId: "1:657513939535:web:5c5a4b79f305495d6ca03a",
+    measurementId: "G-8LFLDZZZEY"
   };
 
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // ==================== GIVEAWAY STATE ====================
+  let state = { title: '', keyword: '', entrants: [], gameActive: false };
+  let ws = null;
   const fakeNames = ['sniperelite','kickfan99','xqcow','ninja','pokimane','shroud','timthetatman','drdisrespect','summit1g','loltyler1'];
   const colors = ['#53fc18','#ff3366','#00d4ff','#ffd700','#ff6b35','#c084fc','#22d3ee','#f472b6','#a3e635','#fb923c'];
 
   function createGiveaway() {
     state.title = document.getElementById('title').value || 'Giveaway';
     state.keyword = document.getElementById('keyword').value || '!join';
-    const chatroomId = document.getElementById('chatroom-id').value.trim();
-
     document.getElementById('setup-screen').classList.add('hidden');
     document.getElementById('dashboard-screen').classList.remove('hidden');
-
     document.getElementById('dash-title').textContent = state.title;
     document.getElementById('stat-keyword').textContent = state.keyword;
-    document.getElementById('dash-chatroom-id').value = chatroomId;
-
+    document.getElementById('dash-chatroom-id').value = document.getElementById('chatroom-id').value;
     updateOverlayUrl();
   }
 
@@ -328,24 +392,244 @@
     grid.scrollTop = 0;
   }
 
+  function connectRawWS() {
+    const chatroomId = document.getElementById('dash-chatroom-id').value.trim();
+    const status = document.getElementById('conn-status');
+    const badge = document.getElementById('conn-badge');
+    const btn = document.getElementById('ws-connect-btn');
+    if (!chatroomId) return alert('Enter chatroom ID');
+    if (ws) { ws.close(); ws = null; }
+    status.innerHTML = '<span class="text-yellow-500">⏳ Connecting...</span>';
+    badge.textContent = 'CONNECTING'; badge.className = 'px-3 py-1 rounded-full bg-yellow-900/30 text-yellow-400 text-xs font-bold';
+    const wsUrl = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0-rc2&flash=false';
+    ws = new WebSocket(wsUrl);
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      if (msg.event === 'pusher:connection_established') {
+        ws.send(JSON.stringify({ event: 'pusher:subscribe', data: { auth: '', channel: `chatrooms.${chatroomId}.v2` } }));
+        status.innerHTML = '<span class="text-[#53fc18]">✅ Connected to Kick!</span>'; badge.textContent = 'LIVE'; badge.className = 'px-3 py-1 rounded-full bg-[#53fc18]/10 text-[#53fc18] text-xs font-bold';
+        btn.textContent = '✅ Connected'; btn.style.background = '#1a1a24'; btn.style.color = '#53fc18'; btn.style.border = '1px solid #53fc18';
+      }
+      if (msg.event === 'App\\Events\\ChatMessageEvent') {
+        const data = JSON.parse(msg.data);
+        const text = (data.content || '').trim();
+        if (text.toLowerCase() === state.keyword.toLowerCase()) {
+          const username = data.sender?.username || 'unknown';
+          const color = data.sender?.identity?.color || '#53fc18';
+          addEntrant(username, color, false);
+          status.innerHTML = `<span class="text-[#53fc18]">✅ ${username} entered!</span>`;
+        }
+      }
+    };
+    ws.onerror = () => { status.innerHTML = '<span class="text-red-500">❌ Error</span>'; badge.textContent = 'ERROR'; badge.className = 'px-3 py-1 rounded-full bg-red-900/30 text-red-400 text-xs font-bold'; };
+    ws.onclose = () => { status.innerHTML = '<span class="text-yellow-500">⚠️ Disconnected</span>'; badge.textContent = 'OFFLINE'; badge.className = 'px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-xs font-bold'; };
+  }
+
   function copyOverlayUrl() {
     if (state.entrants.length === 0) return alert('Wait for entrants first!');
     navigator.clipboard.writeText(updateOverlayUrl()).then(() => {
-      const btn = event.target.closest('button');
-      const orig = btn.innerHTML;
-      btn.innerHTML = '✅ Copied!';
-      setTimeout(() => btn.innerHTML = orig, 2000);
+      const btn = event.target.closest('button'); const orig = btn.innerHTML;
+      btn.innerHTML = '✅ Copied!'; setTimeout(() => btn.innerHTML = orig, 2000);
     });
   }
 
   function launchGame() {
     if (state.entrants.length < 2) return alert('Need at least 2 entrants!');
-    state.gameActive = true;
-    if (ws) { ws.close(); ws = null; }
+    state.gameActive = true; if (ws) { ws.close(); ws = null; }
     window.open(updateOverlayUrl(), '_blank', 'width=1920,height=1080');
   }
 
-  // ==================== OVERLAY MODE ====================
+  // ==================== RACE SYSTEM ====================
+  let raceRef = null;
+  let raceRoom = null;
+  let raceLinks = {};
+
+  function generateRace() {
+    const p1 = document.getElementById('race-p1').value.trim() || 'Player 1';
+    const p2 = document.getElementById('race-p2').value.trim() || 'Player 2';
+    raceRoom = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const base = window.location.origin + window.location.pathname;
+    raceLinks = {
+      spec: `${base}?mode=race-spec&room=${raceRoom}&p1=${encodeURIComponent(p1)}&p2=${encodeURIComponent(p2)}`,
+      p1: `${base}?mode=race-p&room=${raceRoom}&p=1&name=${encodeURIComponent(p1)}`,
+      p2: `${base}?mode=race-p&room=${raceRoom}&p=2&name=${encodeURIComponent(p2)}`
+    };
+    document.getElementById('link-spec').textContent = raceLinks.spec;
+    document.getElementById('link-p1').textContent = raceLinks.p1;
+    document.getElementById('link-p2').textContent = raceLinks.p2;
+    document.getElementById('race-links').classList.remove('hidden');
+  }
+
+  function copyLink(type) {
+    navigator.clipboard.writeText(raceLinks[type]);
+    event.target.textContent = '✅ Copied!';
+    setTimeout(() => event.target.textContent = 'Copy Link', 2000);
+  }
+
+  function openLink(type) {
+    window.open(raceLinks[type], '_blank');
+  }
+
+  // ==================== RACE SPECTATOR ====================
+  function initRaceSpectator() {
+    const params = new URLSearchParams(window.location.search);
+    const room = params.get('room');
+    const p1Name = params.get('p1') || 'Player 1';
+    const p2Name = params.get('p2') || 'Player 2';
+    raceRoom = room;
+
+    document.getElementById('setup-screen').classList.add('hidden');
+    document.getElementById('dashboard-screen').classList.add('hidden');
+    document.getElementById('race-spectator').classList.remove('hidden');
+    document.getElementById('spec-room').textContent = `Room: ${room}`;
+    document.getElementById('label-p1').textContent = p1Name;
+    document.getElementById('label-p2').textContent = p2Name;
+    document.getElementById('speed-label-p1').textContent = p1Name;
+    document.getElementById('speed-label-p2').textContent = p2Name;
+
+    raceRef = db.ref(`races/${room}`);
+    raceRef.set({ status: 'waiting', p1: { connected: false, distance: 0, speed: 0 }, p2: { connected: false, distance: 0, speed: 0 }, winner: null });
+
+    raceRef.on('value', (snap) => {
+      const data = snap.val() || {};
+      const p1Conn = data.p1?.connected || false;
+      const p2Conn = data.p2?.connected || false;
+
+      if (p1Conn && p2Conn) {
+        document.getElementById('race-status-badge').textContent = 'READY TO RACE';
+        document.getElementById('race-status-badge').className = 'px-4 py-2 rounded-full bg-[#53fc18]/10 text-[#53fc18] text-sm font-bold';
+        document.getElementById('start-race-btn').disabled = false;
+        document.getElementById('start-race-btn').textContent = '🚀 START RACE';
+      } else {
+        document.getElementById('race-status-badge').textContent = `P1: ${p1Conn ? '✅' : '⏳'} | P2: ${p2Conn ? '✅' : '⏳'}`;
+        document.getElementById('start-race-btn').disabled = true;
+        document.getElementById('start-race-btn').textContent = '🔒 WAITING FOR PLAYERS';
+      }
+
+      if (data.p1) {
+        document.getElementById('car-1').style.left = Math.min(data.p1.distance, 92) + '%';
+        document.getElementById('dist-p1').textContent = Math.floor(data.p1.distance) + '%';
+        document.getElementById('speed-bar-p1').style.width = Math.min(data.p1.speed * 2, 100) + '%';
+        document.getElementById('speed-val-p1').textContent = Math.floor(data.p1.speed) + '%';
+      }
+      if (data.p2) {
+        document.getElementById('car-2').style.left = Math.min(data.p2.distance, 92) + '%';
+        document.getElementById('dist-p2').textContent = Math.floor(data.p2.distance) + '%';
+        document.getElementById('speed-bar-p2').style.width = Math.min(data.p2.speed * 2, 100) + '%';
+        document.getElementById('speed-val-p2').textContent = Math.floor(data.p2.speed) + '%';
+      }
+
+      if (data.winner && data.status === 'finished') {
+        const winnerName = data.winner === 'p1' ? p1Name : p2Name;
+        document.getElementById('race-winner-display').classList.remove('hidden');
+        document.getElementById('race-winner-name').textContent = winnerName + ' WINS!';
+        document.getElementById('start-race-btn').textContent = '🏁 RACE FINISHED';
+      }
+    });
+  }
+
+  function startRace() {
+    raceRef.update({ status: 'countdown' });
+    let count = 3;
+    document.getElementById('start-race-btn').textContent = `STARTING IN ${count}...`;
+    const cd = setInterval(() => {
+      count--;
+      if (count > 0) {
+        document.getElementById('start-race-btn').textContent = `STARTING IN ${count}...`;
+      } else {
+        clearInterval(cd);
+        document.getElementById('start-race-btn').textContent = '🏎️ RACING!';
+        raceRef.update({ status: 'racing', startedAt: Date.now() });
+      }
+    }, 1000);
+  }
+
+  // ==================== RACE PLAYER ====================
+  let playerNum = null;
+  let playerSpeed = 0;
+  let playerDistance = 0;
+  let raceActive = false;
+
+  function initRacePlayer() {
+    const params = new URLSearchParams(window.location.search);
+    raceRoom = params.get('room');
+    playerNum = params.get('p');
+    const name = params.get('name') || `Player ${playerNum}`;
+
+    document.getElementById('setup-screen').classList.add('hidden');
+    document.getElementById('dashboard-screen').classList.add('hidden');
+    document.getElementById('race-player').classList.remove('hidden');
+    document.getElementById('player-name-display').textContent = name;
+
+    raceRef = db.ref(`races/${raceRoom}`);
+    raceRef.child(`p${playerNum}`).update({ connected: true });
+
+    raceRef.on('value', (snap) => {
+      const data = snap.val() || {};
+      if (data.status === 'countdown') {
+        document.getElementById('player-waiting').classList.add('hidden');
+        document.getElementById('player-ready').classList.remove('hidden');
+        document.getElementById('race-go-text').textContent = 'GET READY...';
+      }
+      if (data.status === 'racing' && !raceActive) {
+        raceActive = true;
+        document.getElementById('race-go-text').textContent = 'GO GO GO!';
+        document.getElementById('tap-instruction').textContent = 'TAP SCREEN / SPACEBAR!';
+        startPlayerLoop();
+      }
+      if (data.status === 'finished') {
+        raceActive = false;
+        document.getElementById('player-ready').classList.add('hidden');
+        document.getElementById('player-finished').classList.remove('hidden');
+        const won = data.winner === `p${playerNum}`;
+        document.getElementById('player-result').textContent = won ? '🎉 YOU WON!' : '❌ You lost!';
+        document.getElementById('player-result').className = won ? 'text-xl text-[#53fc18] font-bold' : 'text-xl text-gray-400';
+      }
+    });
+
+    const tapZone = document.getElementById('tap-zone');
+    tapZone.addEventListener('touchstart', (e) => { e.preventDefault(); handleTap(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+    tapZone.addEventListener('mousedown', (e) => { handleTap(e.clientX, e.clientY); });
+    document.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); handleTap(); } });
+  }
+
+  function handleTap(x, y) {
+    if (!raceActive) return;
+    playerSpeed = Math.min(playerSpeed + 4, 50);
+    if (x && y) createRipple(x, y);
+    if (navigator.vibrate) navigator.vibrate(10);
+  }
+
+  function createRipple(x, y) {
+    const ripple = document.createElement('div');
+    ripple.className = 'tap-ripple';
+    ripple.style.left = (x - 50) + 'px';
+    ripple.style.top = (y - 50) + 'px';
+    ripple.style.width = '100px';
+    ripple.style.height = '100px';
+    document.getElementById('tap-zone').appendChild(ripple);
+    setTimeout(() => ripple.remove(), 500);
+  }
+
+  function startPlayerLoop() {
+    const loop = setInterval(() => {
+      if (!raceActive) { clearInterval(loop); return; }
+      playerSpeed *= 0.96;
+      playerDistance += playerSpeed * 0.06;
+      document.getElementById('player-speed-bar').style.width = Math.min(playerSpeed * 2, 100) + '%';
+      document.getElementById('player-distance').textContent = Math.floor(playerDistance) + 'm';
+
+      raceRef.child(`p${playerNum}`).update({ speed: playerSpeed, distance: playerDistance });
+
+      if (playerDistance >= 100) {
+        raceActive = false;
+        raceRef.update({ status: 'finished', winner: `p${playerNum}` });
+        clearInterval(loop);
+      }
+    }, 50);
+  }
+
+  // ==================== GIVEAWAY OVERLAY ====================
   function initOverlay() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('mode') !== 'overlay') return;
@@ -363,9 +647,7 @@
       count--;
       if (count > 0) {
         countEl.textContent = count;
-        countEl.style.animation = 'none';
-        countEl.offsetHeight;
-        countEl.style.animation = '';
+        countEl.style.animation = 'none'; countEl.offsetHeight; countEl.style.animation = '';
       } else {
         clearInterval(cdInterval);
         document.getElementById('countdown-phase').classList.add('hidden');
@@ -375,7 +657,6 @@
     }, 1000);
   }
 
-  // ==================== GAME PHYSICS ====================
   function startGame(entrants, title) {
     const canvas = document.getElementById('game-canvas');
     canvas.width = 1920; canvas.height = 1080;
@@ -384,19 +665,16 @@
     resize(); window.addEventListener('resize', resize);
 
     const balls = entrants.map((e, i) => ({
-      x: 150 + (i % 14) * 125 + Math.random() * 40,
-      y: -50 - Math.floor(i / 14) * 60,
+      x: 150 + (i % 14) * 125 + Math.random() * 40, y: -50 - Math.floor(i / 14) * 60,
       vx: (Math.random() - 0.5) * 2, vy: Math.random() * 2,
       radius: 24 + Math.random() * 8, color: e.color, name: e.name.substring(0, 8),
     }));
-
     const pegs = [];
     for (let row = 2; row < 14; row++) {
       for (let col = 0; col < 16; col++) {
         pegs.push({ x: 120 + col * 115 + (row % 2) * 57, y: 180 + row * 58, r: 5, hit: 0 });
       }
     }
-
     const winnerSlotX = 200 + Math.floor(Math.random() * 12) * 115;
     const winnerIndex = Math.floor(Math.random() * balls.length);
     let phase = 'dropping', frame = 0;
@@ -406,7 +684,6 @@
       ctx.strokeStyle = 'rgba(255,255,255,0.015)'; ctx.lineWidth = 1;
       for (let x = 0; x < 1920; x += 80) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 1080); ctx.stroke(); }
       for (let y = 0; y < 1080; y += 80) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1920, y); ctx.stroke(); }
-
       ctx.save(); ctx.shadowColor = 'rgba(255, 215, 0, 0.3)'; ctx.shadowBlur = 40;
       ctx.fillStyle = 'rgba(255, 215, 0, 0.08)'; ctx.fillRect(winnerSlotX - 50, 950, 100, 130); ctx.restore();
 
@@ -422,7 +699,6 @@
         b.vy += 0.5; b.x += b.vx; b.y += b.vy;
         if (b.x < b.radius) { b.x = b.radius; b.vx *= -0.6; }
         if (b.x > 1920 - b.radius) { b.x = 1920 - b.radius; b.vx *= -0.6; }
-
         pegs.forEach(p => {
           const dx = b.x - p.x, dy = b.y - p.y, dist = Math.sqrt(dx*dx + dy*dy);
           if (dist < b.radius + p.r + 2) {
@@ -433,23 +709,18 @@
             b.y = p.y + Math.sin(angle) * (b.radius + p.r + 4);
           }
         });
-
         if (b.y > 1000 - b.radius) {
           b.y = 1000 - b.radius; b.vy *= -0.3; b.vx *= 0.9;
           if (Math.abs(b.vy) < 1 && Math.abs(b.vx) < 0.5) settledCount++;
         }
-
         if (phase === 'settling' && i === winnerIndex) {
           const dx = winnerSlotX - b.x; b.vx += dx * 0.008; b.x += dx * 0.005;
         }
-
         ctx.save(); ctx.shadowColor = b.color; ctx.shadowBlur = 20;
         ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
         ctx.fillStyle = b.color; ctx.fill(); ctx.restore();
-
         ctx.beginPath(); ctx.arc(b.x - b.radius*0.3, b.y - b.radius*0.3, b.radius*0.3, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(255,255,255,0.15)'; ctx.fill();
-
         ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.font = 'bold 10px Inter, sans-serif';
         ctx.textAlign = 'center'; ctx.shadowColor = 'black'; ctx.shadowBlur = 4;
         ctx.fillText(b.name, b.x, b.y + 3); ctx.shadowBlur = 0;
@@ -485,7 +756,12 @@
     }
   }
 
-  initOverlay();
+  // ==================== ROUTING ====================
+  const params = new URLSearchParams(window.location.search);
+  const mode = params.get('mode');
+  if (mode === 'race-spec') initRaceSpectator();
+  else if (mode === 'race-p') initRacePlayer();
+  else initOverlay();
 </script>
 
 </body>
