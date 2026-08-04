@@ -13,11 +13,10 @@
     .bg-mesh { position: fixed; inset: 0; z-index: -1; background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(83, 252, 24, 0.08), transparent), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255, 51, 102, 0.05), transparent); }
     .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
     .glass-strong { background: rgba(20, 20, 28, 0.7); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .glow-green { box-shadow: 0 0 20px rgba(83, 252, 24, 0.15); }
     .text-glow { text-shadow: 0 0 30px rgba(83, 252, 24, 0.3); }
-    .btn-primary { background: linear-gradient(135deg, #53fc18 0%, #3dd10f 100%); color: #020202; font-weight: 800; transition: all 0.3s; position: relative; overflow: hidden; }
+    .btn-primary { background: linear-gradient(135deg, #53fc18 0%, #3dd10f 100%); color: #020202; font-weight: 800; transition: all 0.3s; }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(83, 252, 24, 0.25); }
-    .btn-primary:active { transform: translateY(0) scale(0.98); }
+    .btn-primary:active { transform: scale(0.98); }
     .btn-danger { background: linear-gradient(135deg, #ff3366 0%, #e11d48 100%); color: white; font-weight: 800; transition: all 0.3s; }
     .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(255, 51, 102, 0.3); }
     .input-field { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.3s; }
@@ -48,13 +47,13 @@
   <div class="text-center mb-10">
     <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-semibold text-[#53fc18] mb-6 tracking-wider uppercase">
       <span class="w-1.5 h-1.5 rounded-full bg-[#53fc18] live-dot"></span>
-      Live Giveaway Tool
+      Giveaway Tool
     </div>
     <h1 class="text-6xl md:text-7xl font-black text-white mb-4 tracking-tight">
       Giveaway <span class="text-[#53fc18] text-glow">Game</span>
     </h1>
     <p class="text-gray-400 text-lg max-w-md mx-auto leading-relaxed">
-      Turn boring chat giveaways into <span class="text-white font-semibold">viral stream moments</span>
+      Turn chat giveaways into <span class="text-white font-semibold">viral stream moments</span>
     </p>
   </div>
 
@@ -75,21 +74,7 @@
       <div>
         <label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Kick Channel Name</label>
         <input type="text" id="kick-channel" placeholder="e.g. xqc" class="input-field w-full px-5 py-4 rounded-xl text-white text-lg">
-        <p class="text-gray-600 text-xs mt-2">Your Kick username (not URL, just the name)</p>
-      </div>
-
-      <div>
-        <label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Game Mode</label>
-        <div class="glass-strong rounded-xl p-4 flex items-center gap-4 border-[#53fc18]/20 border">
-          <div class="w-12 h-12 rounded-xl bg-[#53fc18]/10 flex items-center justify-center text-2xl">🎯</div>
-          <div>
-            <div class="font-bold text-white">The Drop</div>
-            <div class="text-sm text-gray-500">Plinko physics • 15s duration • Free</div>
-          </div>
-          <div class="ml-auto">
-            <span class="px-3 py-1 rounded-full bg-[#53fc18]/10 text-[#53fc18] text-xs font-bold">ACTIVE</span>
-          </div>
-        </div>
+        <p class="text-gray-600 text-xs mt-2">Your Kick username (just the name, not URL)</p>
       </div>
 
       <button onclick="createGiveaway()" class="btn-primary w-full py-5 rounded-xl text-lg mt-2">
@@ -125,46 +110,47 @@
     </div>
 
     <!-- Kick Connection -->
-    <div class="glass rounded-2xl p-5 mb-8 flex flex-col md:flex-row items-center gap-4">
-      <div class="flex-1 min-w-0 w-full">
-        <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1.5">Kick Chat Connection</div>
-        <div class="flex gap-3">
-          <input id="dash-kick-channel" placeholder="Enter Kick channel" class="input-field flex-1 px-4 py-3 rounded-xl text-white text-sm">
-          <button onclick="connectKickChat()" id="connect-btn" class="btn-primary px-6 py-3 rounded-xl text-sm font-bold whitespace-nowrap">
-            Connect
-          </button>
-        </div>
+    <div class="glass rounded-2xl p-5 mb-8">
+      <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-3">Kick Chat Connection</div>
+      
+      <!-- Auto Connect -->
+      <div class="flex gap-3 mb-4">
+        <input id="dash-kick-channel" placeholder="Enter Kick channel" class="input-field flex-1 px-4 py-3 rounded-xl text-white text-sm">
+        <button onclick="connectKickChat()" id="connect-btn" class="btn-primary px-6 py-3 rounded-xl text-sm font-bold whitespace-nowrap">
+          Auto Connect
+        </button>
       </div>
-      <div id="connection-status" class="text-gray-600 text-xs md:text-right">
-        Connect to read real chat
+      
+      <!-- Manual Fallback -->
+      <div class="flex gap-3 items-center">
+        <div class="h-px flex-1 bg-white/5"></div>
+        <span class="text-gray-600 text-xs">OR</span>
+        <div class="h-px flex-1 bg-white/5"></div>
       </div>
+      
+      <div class="flex gap-3 mt-4">
+        <input id="manual-chatroom-id" placeholder="Paste Chatroom ID here (if auto fails)" class="input-field flex-1 px-4 py-3 rounded-xl text-white text-sm">
+        <button onclick="connectManual()" class="glass px-6 py-3 rounded-xl text-sm font-bold text-white hover:border-[#53fc18]/40 transition-all whitespace-nowrap">
+          Manual Connect
+        </button>
+      </div>
+      
+      <div id="connection-status" class="mt-3 text-sm"></div>
     </div>
 
     <!-- Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-      <div class="stat-card rounded-2xl p-6 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-[#53fc18]/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
-        <div class="relative">
-          <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Total Entrants</div>
-          <div id="stat-count" class="text-5xl font-black text-[#53fc18]">0</div>
-          <div class="text-gray-600 text-sm mt-1">and counting...</div>
-        </div>
+      <div class="stat-card rounded-2xl p-6">
+        <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Total Entrants</div>
+        <div id="stat-count" class="text-5xl font-black text-[#53fc18]">0</div>
       </div>
-      <div class="stat-card rounded-2xl p-6 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-[#00d4ff]/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
-        <div class="relative">
-          <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Status</div>
-          <div class="text-5xl font-black text-[#00d4ff]">LIVE</div>
-          <div class="text-gray-600 text-sm mt-1">Collecting entries</div>
-        </div>
+      <div class="stat-card rounded-2xl p-6">
+        <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Status</div>
+        <div class="text-5xl font-black text-[#00d4ff]">LIVE</div>
       </div>
-      <div class="stat-card rounded-2xl p-6 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-[#ff3366]/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
-        <div class="relative">
-          <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Keyword</div>
-          <div id="stat-keyword" class="text-4xl font-black text-[#ff3366] truncate">!join</div>
-          <div class="text-gray-600 text-sm mt-1">type in chat</div>
-        </div>
+      <div class="stat-card rounded-2xl p-6">
+        <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Keyword</div>
+        <div id="stat-keyword" class="text-4xl font-black text-[#ff3366] truncate">!join</div>
       </div>
     </div>
 
@@ -174,21 +160,15 @@
         <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1.5">Overlay URL for OBS</div>
         <div id="overlay-url" class="font-mono text-sm text-[#53fc18] truncate">Waiting to generate...</div>
       </div>
-      <div class="text-gray-600 text-xs md:text-right">
-        Paste into OBS → Browser Source → 1920×1080
-      </div>
     </div>
 
     <!-- Entrants -->
-    <div class="glass rounded-3xl p-6 md:p-8 relative overflow-hidden">
+    <div class="glass rounded-3xl p-6 md:p-8">
       <div class="flex items-center justify-between mb-6">
-        <h3 class="text-xl font-bold flex items-center gap-2">
-          <span>👥</span> Live Entrants
-        </h3>
+        <h3 class="text-xl font-bold flex items-center gap-2"><span>👥</span> Live Entrants</h3>
         <span id="entrant-badge" class="px-3 py-1 rounded-full bg-[#53fc18]/10 text-[#53fc18] text-xs font-bold">0 active</span>
       </div>
-      
-      <div id="entrants-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-80 overflow-y-auto relative pr-2">
+      <div id="entrants-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-80 overflow-y-auto pr-2">
         <div class="col-span-full text-center py-12 text-gray-600">
           <div class="text-4xl mb-3">💬</div>
           <p>Waiting for chatters to type <span id="waiting-keyword" class="text-[#53fc18] font-bold">!join</span>...</p>
@@ -213,24 +193,14 @@
 </div>
 
 <script>
-  // ==================== STATE ====================
   let state = {
-    title: '',
-    keyword: '',
-    entrants: [],
-    gameActive: false,
-    fakeInterval: null,
-    pusherConnection: null
+    title: '', keyword: '', entrants: [], gameActive: false,
+    fakeInterval: null, pusherConnection: null
   };
 
-  const fakeNames = [
-    'sniperelite','kickfan99','xqcow','ninja','pokimane','shroud',
-    'timthetatman','drdisrespect','summit1g','loltyler1','hasanabi',
-    'moistcr1tikal','forsen','asmongold','xchocobars','adept','fanfan'
-  ];
+  const fakeNames = ['sniperelite','kickfan99','xqcow','ninja','pokimane','shroud','timthetatman','drdisrespect','summit1g','loltyler1','hasanabi','moistcr1tikal','forsen','asmongold'];
   const colors = ['#53fc18','#ff3366','#00d4ff','#ffd700','#ff6b35','#c084fc','#22d3ee','#f472b6','#a3e635','#fb923c'];
 
-  // ==================== SETUP ====================
   function createGiveaway() {
     state.title = document.getElementById('title').value || 'Giveaway';
     state.keyword = document.getElementById('keyword').value || '!join';
@@ -256,7 +226,6 @@
     return url;
   }
 
-  // ==================== FAKE CHAT ====================
   function startFakeChat() {
     state.fakeInterval = setInterval(() => {
       if (state.gameActive || state.pusherConnection) return;
@@ -264,7 +233,7 @@
       const name = base + Math.floor(Math.random() * 999);
       const color = colors[Math.floor(Math.random() * colors.length)];
       addEntrant(name, color);
-    }, 1200);
+    }, 1500);
   }
 
   function addEntrant(name, color) {
@@ -292,7 +261,7 @@
     `).join('');
   }
 
-  // ==================== KICK CHAT CONNECTION ====================
+  // ==================== AUTO CONNECT ====================
   async function connectKickChat() {
     const channelName = document.getElementById('dash-kick-channel').value.trim();
     if (!channelName) return alert('Enter your Kick channel name');
@@ -301,17 +270,37 @@
     const status = document.getElementById('connection-status');
     btn.textContent = 'Connecting...';
     btn.disabled = true;
+    status.innerHTML = '<span class="text-yellow-500">Searching for channel...</span>';
     
     try {
-      // Get chatroom ID from our API
       const res = await fetch(`/api/chatroom?name=${encodeURIComponent(channelName)}`);
       const data = await res.json();
       
       if (data.error) throw new Error(data.error);
       
-      const chatroomId = data.chatroomId;
+      setupPusher(data.chatroomId, channelName, status);
       
-      // Connect to Kick's Pusher
+    } catch (err) {
+      status.innerHTML = `<span class="text-red-500">❌ ${err.message}</span><br><span class="text-gray-500 text-xs">Try the Manual Connect option below with the Chatroom ID</span>`;
+      btn.textContent = 'Auto Connect';
+      btn.disabled = false;
+    }
+  }
+
+  // ==================== MANUAL CONNECT ====================
+  function connectManual() {
+    const chatroomId = document.getElementById('manual-chatroom-id').value.trim();
+    const channelName = document.getElementById('dash-kick-channel').value.trim() || 'manual';
+    
+    if (!chatroomId) return alert('Paste the Chatroom ID');
+    
+    const status = document.getElementById('connection-status');
+    setupPusher(chatroomId, channelName, status);
+  }
+
+  // ==================== PUSHER SETUP ====================
+  function setupPusher(chatroomId, channelName, statusEl) {
+    try {
       const pusher = new Pusher('eb1d5f283081a78b932c', { 
         cluster: 'us2',
         enabledTransports: ['ws', 'wss']
@@ -323,13 +312,11 @@
         if (!msg.content) return;
         const text = msg.content.trim();
         
-        // Check if message matches keyword (case insensitive)
         if (text.toLowerCase() === state.keyword.toLowerCase()) {
           const username = msg.sender?.username || 'unknown';
           const color = msg.sender?.identity?.color || '#53fc18';
           addEntrant(username, color);
           
-          // Stop fake chat if running
           if (state.fakeInterval) {
             clearInterval(state.fakeInterval);
             state.fakeInterval = null;
@@ -338,26 +325,23 @@
       });
       
       state.pusherConnection = pusher;
+      
+      // Update UI
+      const btn = document.getElementById('connect-btn');
       btn.textContent = '✅ Connected';
-      btn.classList.remove('btn-primary');
       btn.style.background = '#1a1a24';
       btn.style.color = '#53fc18';
       btn.style.border = '1px solid #53fc18';
-      status.innerHTML = `<span class="text-[#53fc18] font-bold">● Live</span> Reading ${channelName}'s chat`;
+      
+      statusEl.innerHTML = `<span class="text-[#53fc18] font-bold">● Live</span> Reading ${channelName}'s chat • Chatroom: ${chatroomId}`;
       
     } catch (err) {
-      alert('Failed: ' + err.message);
-      btn.textContent = 'Connect';
-      btn.disabled = false;
+      statusEl.innerHTML = `<span class="text-red-500">Pusher error: ${err.message}</span>`;
     }
   }
 
-  // ==================== COPY & LAUNCH ====================
   function copyOverlayUrl() {
-    if (state.entrants.length === 0) {
-      alert('Wait for some entrants first!');
-      return;
-    }
+    if (state.entrants.length === 0) return alert('Wait for entrants first!');
     const url = updateOverlayUrl();
     navigator.clipboard.writeText(url).then(() => {
       const btn = event.target.closest('button');
@@ -368,10 +352,7 @@
   }
 
   function launchGame() {
-    if (state.entrants.length < 2) {
-      alert('Need at least 2 entrants!');
-      return;
-    }
+    if (state.entrants.length < 2) return alert('Need at least 2 entrants!');
     state.gameActive = true;
     const url = updateOverlayUrl();
     window.open(url, '_blank', 'width=1920,height=1080');
@@ -449,7 +430,6 @@
     
     const winnerSlotX = 200 + Math.floor(Math.random() * 12) * 115;
     const winnerIndex = Math.floor(Math.random() * balls.length);
-    let winnerName = '';
     let phase = 'dropping';
     let frame = 0;
     
@@ -542,8 +522,7 @@
       if (phase === 'dropping' && frame > 180) phase = 'settling';
       if (phase === 'settling' && settledCount >= balls.length * 0.8) {
         phase = 'done';
-        winnerName = balls[winnerIndex].name;
-        showWinner(winnerName, title);
+        showWinner(balls[winnerIndex].name, title);
         return;
       }
       
