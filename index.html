@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Giveaway Game</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #0f0f13; color: white; min-height: 100vh; padding: 40px; }
+    
+    .header { text-align: center; margin-bottom: 40px; }
+    .header h1 { color: #53fc18; font-size: 42px; margin-bottom: 10px; }
+    .header p { color: #888; font-size: 18px; }
+    
+    .container { max-width: 800px; margin: 0 auto; }
+    
+    .card { background: #1a1a24; border-radius: 16px; padding: 30px; margin-bottom: 20px; border: 1px solid #2a2a35; }
+    
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; color: #aaa; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+    .form-group input, .form-group select { 
+      width: 100%; padding: 14px; background: #0f0f13; border: 1px solid #333; 
+      border-radius: 8px; color: white; font-size: 16px; outline: none;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: #53fc18; }
+    
+    .btn { 
+      width: 100%; padding: 16px; background: #53fc18; color: #0f0f13; 
+      border: none; border-radius: 8px; font-size: 18px; font-weight: bold; 
+      cursor: pointer; transition: all 0.3s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(83, 252, 24, 0.3); }
+    .btn:disabled { background: #333; color: #666; cursor: not-allowed; transform: none; }
+    
+    .btn-red { background: #ff3366; color: white; }
+    .btn-red:hover { box-shadow: 0 10px 30px rgba(255, 51, 102, 0.3); }
+    
+    .stats { display: flex; gap: 20px; margin: 20px 0; }
+    .stat-box { flex: 1; background: #0f0f13; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #2a2a35; }
+    .stat-box .number { font-size: 36px; font-weight: bold; color: #53fc18; }
+    .stat-box .label { color: #888; font-size: 12px; margin-top: 5px; text-transform: uppercase; }
+    
+    .hidden { display: none !important; }
+    
+    /* Game Overlay Simulation */
+    #game-screen { 
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+      background: rgba(0,0,0,0.9); z-index: 100; display: flex; 
+      flex-direction: column; align-items: center; justify-content: center;
+    }
+    
+    .game-area { width: 800px; height: 500px; position: relative; background: #0f0f13; border-radius: 16px; border: 2px solid #53fc18; overflow: hidden; }
+    
+    .ball { 
+      position: absolute; width: 40px; height: 40px; border-radius: 50%; 
+      display: flex; align-items: center; justify-content: center; 
+      font-size: 10px; font-weight: bold; color: white; text-shadow: 0 1px 3px black;
+      transition: all 0.1s linear;
+    }
+    
+    .winner-banner { 
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-size: 48px; font-weight: bold; color: #ffd700; text-align: center;
+      text-shadow: 0 0 30px rgba(255, 215, 0, 0.8); animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.1); } }
+    
+    .countdown { font-size: 120px; font-weight: bold; color: #53fc18; }
+    
+    .recent-chatters { max-height: 200px; overflow-y: auto; margin-top: 20px; }
+    .chatter { padding: 8px 12px; background: #0f0f13; border-radius: 6px; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+    .chatter-dot { width: 8px; height: 8px; border-radius: 50%; background: #53fc18; }
+    
+    .overlay-url { background: #0f0f13; padding: 12px; border-radius: 8px; font-family: monospace; color: #53fc18; font-size: 12px; word-break: break-all; margin: 10px 0; }
+  </style>
+</head>
+<body>
+
+  <!-- SETUP SCREEN -->
+  <div id="setup-screen">
+    <div class="header">
+      <h1>🎮 Giveaway Game</h1>
+      <p>Turn your chat giveaways into hype content</p>
+    </div>
+    
+    <div class="container">
+      <div class="card">
+        <div class="form-group">
+          <label>Giveaway Title</label>
+          <input type="text" id="title" value="Sub Sunday $50 Gift Card" placeholder="e.g. Sub Sunday Giveaway">
+        </div>
+        
+        <div class="form-group">
+          <label>Keyword (what viewers type)</label>
+          <input type="text" id="keyword" value="!join" placeholder="e.g. !join">
+        </div>
+        
+        <div class="form-group">
+          <label>Game</label>
+          <select id="gameType">
+            <option value="drop">The Drop (Free)</option>
+          </select>
+        </div>
+        
+        <button class="btn" onclick="createGiveaway()">Create Giveaway</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD SCREEN -->
+  <div id="dashboard-screen" class="hidden">
+    <div class="header">
+      <h1 id="dash-title">Giveaway</h1>
+      <p>Your overlay is ready!</p>
+    </div>
+    
+    <div class="container">
+      <div class="card">
+        <h3 style="margin-bottom: 15px; color: #53fc18;">🔗 Overlay URL (paste in OBS)</h3>
+        <div class="overlay-url">https://yourapp.com/overlay?g=abc123&t=secret_xyz</div>
+        <p style="color: #888; font-size: 14px;">In OBS: Add Source → Browser → Paste URL → Width: 1920, Height: 1080</p>
+      </div>
+      
+      <div class="stats">
+        <div class="stat-box">
+          <div class="number" id="entrant-count">0</div>
+          <div class="label">Entrants</div>
+        </div>
+        <div class="stat-box">
+          <div class="number" id="time-left">--</div>
+          <div class="label">Status</div>
+        </div>
+        <div class="stat-box">
+          <div class="number" id="keyword-display">!join</div>
+          <div class="label">Keyword</div>
+        </div>
+      </div>
+      
+      <button class="btn btn-red" id="start-btn" onclick="startGame()">🚀 START THE GAME</button>
+      
+      <div class="card" style="margin-top: 20px;">
+        <h3 style="margin-bottom: 15px;">Recent Entrants</h3>
+        <div class="recent-chatters" id="chatters-list">
+          <p style="color: #555; text-align: center;">Waiting for chatters...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" class="hidden">
+    <div class="countdown" id="countdown">3</div>
+    <div class="game-area hidden" id="game-area">
+      <div id="balls-container"></div>
+      <div class="winner-banner hidden" id="winner-display"></div>
+    </div>
+    <button class="btn" style="margin-top: 30px; width: auto; padding: 12px 40px;" onclick="closeGame()">Close</button>
+  </div>
+
+<script>
+  // FAKE DATA - We'll replace this with real chat later
+  const fakeNames = [
+    'sniperelite','kickfan99','xqcow','ninja','pokimane',
+    'shroud','timthetatman','drdisrespect','summit1g','loltyler1',
+    'hasanabi','moistcr1tikal','forsen','asmongold','xchocobars'
+  ];
+  
+  let entrants = [];
+  let gameActive = false;
+  let giveawayTitle = '';
+  let keyword = '';
+
+  function createGiveaway() {
+    giveawayTitle = document.getElementById('title').value;
+    keyword = document.getElementById('keyword').value;
+    
+    document.getElementById('dash-title').textContent = giveawayTitle;
+    document.getElementById('keyword-display').textContent = keyword;
+    
+    document.getElementById('setup-screen').classList.add('hidden');
+    document.getElementById('dashboard-screen').classList.remove('hidden');
+    
+    // Start fake chat simulation
+    startFakeChat();
+  }
+
+  function startFakeChat() {
+    // Every 1-3 seconds, add a fake entrant
+    setInterval(() => {
+      if (gameActive) return;
+      
+      const name = fakeNames[Math.floor(Math.random() * fakeNames.length)] + Math.floor(Math.random() * 999);
+      const color = '#' + Math.floor(Math.random()*16777215).toString(16);
+      
+      if (!entrants.find(e => e.name === name)) {
+        entrants.push({ name, color });
+        updateDashboard();
+      }
+    }, 1500);
+  }
+
+  function updateDashboard() {
+    document.getElementById('entrant-count').textContent = entrants.length;
+    document.getElementById('time-left').textContent = 'COLLECTING';
+    
+    const list = document.getElementById('chatters-list');
+    if (entrants.length > 0) {
+      list.innerHTML = entrants.slice(-10).reverse().map(e => 
+        `<div class="chatter"><div class="chatter-dot" style="background:${e.color}"></div>${e.name}</div>`
+      ).join('');
+    }
+  }
+
+  function startGame() {
+    if (entrants.length === 0) {
+      alert('Wait for some entrants first!');
+      return;
+    }
+    gameActive = true;
+    
+    document.getElementById('game-screen').classList.remove('hidden');
+    document.getElementById('game-area').classList.add('hidden');
+    document.getElementById('countdown').classList.remove('hidden');
+    document.getElementById('winner-display').classList.add('hidden');
+    
+    let count = 3;
+    document.getElementById('countdown').textContent = count;
+    
+    const timer = setInterval(() => {
+      count--;
+      if (count > 0) {
+        document.getElementById('countdown').textContent = count;
+      } else {
+        clearInterval(timer);
+        document.getElementById('countdown').classList.add('hidden');
+        document.getElementById('game-area').classList.remove('hidden');
+        runGame();
+      }
+    }, 1000);
+  }
+
+  function runGame() {
+    const container = document.getElementById('balls-container');
+    container.innerHTML = '';
+    
+    // Create balls
+    const balls = entrants.map((e, i) => {
+      const ball = document.createElement('div');
+      ball.className = 'ball';
+      ball.style.background = e.color;
+      ball.style.left = (100 + (i % 10) * 65) + 'px';
+      ball.style.top = '-50px';
+      ball.textContent = e.name.substring(0, 6);
+      container.appendChild(ball);
+      return { el: ball, x: 100 + (i % 10) * 65, y: -50, vy: 0, vx: (Math.random() - 0.5) * 4 };
+    });
+    
+    // Animate
+    let frame = 0;
+    const anim = setInterval(() => {
+      frame++;
+      balls.forEach(b => {
+        b.vy += 0.8; // gravity
+        b.y += b.vy;
+        b.x += b.vx;
+        
+        // Bounce off walls
+        if (b.x < 20 || b.x > 740) b.vx *= -0.8;
+        
+        // Bounce off bottom
+        if (b.y > 430) {
+          b.y = 430;
+          b.vy *= -0.6;
+          b.vx *= 0.95;
+        }
+        
+        b.el.style.left = b.x + 'px';
+        b.el.style.top = b.y + 'px';
+      });
+      
+      // After 5 seconds, pick winner
+      if (frame === 150) {
+        clearInterval(anim);
+        const winner = entrants[Math.floor(Math.random() * entrants.length)];
+        document.getElementById('winner-display').innerHTML = 
+          `🎉 ${winner.name} WINS! 🎉<br><span style="font-size:24px; color:white;">${giveawayTitle}</span>`;
+        document.getElementById('winner-display').classList.remove('hidden');
+      }
+    }, 33); // ~30fps
+  }
+
+  function closeGame() {
+    document.getElementById('game-screen').classList.add('hidden');
+    gameActive = false;
+    entrants = [];
+    updateDashboard();
+    document.getElementById('chatters-list').innerHTML = '<p style="color: #555; text-align: center;">Waiting for chatters...</p>';
+    startFakeChat();
+  }
+</script>
+
+</body>
+</html>
