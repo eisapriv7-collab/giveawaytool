@@ -30,10 +30,8 @@
     @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
     .live-dot { animation: pulse 2s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-    .countdown-number { font-size: 20vw; font-weight: 900; background: linear-gradient(135deg, #53fc18, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 40px rgba(83, 252, 24, 0.3)); animation: countPop 0.8s ease; }
-    @keyframes countPop { 0% { transform: scale(2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-    .winner-text { font-size: 8vw; font-weight: 900; background: linear-gradient(135deg, #ffd700, #ffaa00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 60px rgba(255, 215, 0, 0.4)); animation: winnerIn 1s ease; }
-    @keyframes winnerIn { 0% { transform: scale(0) rotate(-10deg); opacity: 0; } 60% { transform: scale(1.1) rotate(2deg); } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+    .countdown-number { font-size: 20vw; font-weight: 900; background: linear-gradient(135deg, #53fc18, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 40px rgba(83, 252, 24, 0.3)); }
+    .winner-text { font-size: 8vw; font-weight: 900; background: linear-gradient(135deg, #ffd700, #ffaa00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 60px rgba(255, 215, 0, 0.4)); }
     .confetti { position: absolute; width: 10px; height: 10px; animation: confetti-fall 3s ease-out forwards; }
     @keyframes confetti-fall { 0% { transform: translateY(-100px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
     ::-webkit-scrollbar { width: 6px; }
@@ -78,7 +76,7 @@
 
       <div>
         <label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Kick Channel Name</label>
-        <input type="text" id="kick-channel" placeholder="e.g. xqc" class="input-field w-full px-5 py-4 rounded-xl text-white text-lg">
+        <input type="text" id="kick-channel" value="chetootv" class="input-field w-full px-5 py-4 rounded-xl text-white text-lg">
         <p class="text-gray-600 text-xs mt-2">Your Kick username (just the name, not URL)</p>
       </div>
 
@@ -117,6 +115,41 @@
       </div>
     </div>
 
+    <!-- Kick Connection Panel -->
+    <div class="glass rounded-2xl p-6 mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold flex items-center gap-2">
+          <span>🔌</span> Kick Chat Connection
+        </h3>
+        <span id="conn-status-badge" class="px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-xs font-bold">DISCONNECTED</span>
+      </div>
+      
+      <!-- Auto Connect Row -->
+      <div class="flex gap-3 mb-4">
+        <input id="dash-kick-channel" placeholder="Enter Kick channel (e.g. chetootv)" class="input-field flex-1 px-4 py-3 rounded-xl text-white text-sm">
+        <button onclick="connectKickChat()" id="connect-btn" class="btn-primary px-6 py-3 rounded-xl text-sm font-bold whitespace-nowrap">
+          Auto Connect
+        </button>
+      </div>
+      
+      <!-- Divider -->
+      <div class="flex items-center gap-3 mb-4">
+        <div class="h-px flex-1 bg-white/5"></div>
+        <span class="text-gray-600 text-xs">OR ENTER CHATROOM ID MANUALLY</span>
+        <div class="h-px flex-1 bg-white/5"></div>
+      </div>
+      
+      <!-- Manual Connect Row -->
+      <div class="flex gap-3">
+        <input id="manual-chatroom-id" placeholder="Chatroom ID (e.g. 107612 for chetootv)" class="input-field flex-1 px-4 py-3 rounded-xl text-white text-sm font-mono">
+        <button onclick="connectManual()" class="glass px-6 py-3 rounded-xl text-sm font-bold text-white hover:border-[#53fc18]/40 transition-all whitespace-nowrap">
+          Manual Connect
+        </button>
+      </div>
+      
+      <div id="connection-status" class="mt-3 text-sm min-h-[20px]"></div>
+    </div>
+
     <!-- Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       <div class="stat-card rounded-2xl p-6 relative overflow-hidden">
@@ -124,7 +157,6 @@
         <div class="relative">
           <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Total Entrants</div>
           <div id="stat-count" class="text-5xl font-black text-[#53fc18]">0</div>
-          <div class="text-gray-600 text-sm mt-1">and counting...</div>
         </div>
       </div>
       <div class="stat-card rounded-2xl p-6 relative overflow-hidden">
@@ -132,7 +164,6 @@
         <div class="relative">
           <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Status</div>
           <div class="text-5xl font-black text-[#00d4ff]">LIVE</div>
-          <div class="text-gray-600 text-sm mt-1">Collecting entries</div>
         </div>
       </div>
       <div class="stat-card rounded-2xl p-6 relative overflow-hidden">
@@ -140,7 +171,6 @@
         <div class="relative">
           <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Keyword</div>
           <div id="stat-keyword" class="text-4xl font-black text-[#ff3366] truncate">!join</div>
-          <div class="text-gray-600 text-sm mt-1">type in chat</div>
         </div>
       </div>
     </div>
@@ -150,9 +180,6 @@
       <div class="flex-1 min-w-0">
         <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1.5">Overlay URL for OBS</div>
         <div id="overlay-url" class="font-mono text-sm text-[#53fc18] truncate">Waiting to generate...</div>
-      </div>
-      <div class="text-gray-600 text-xs md:text-right">
-        Paste into OBS → Browser Source → 1920×1080
       </div>
     </div>
 
@@ -193,27 +220,25 @@
     keyword: '',
     entrants: [],
     gameActive: false,
-    fakeInterval: null
+    pusherClient: null,
+    isConnected: false
   };
 
   const fakeNames = [
     'sniperelite','kickfan99','xqcow','ninja','pokimane','shroud',
     'timthetatman','drdisrespect','summit1g','loltyler1','hasanabi',
-    'moistcr1tikal','forsen','asmongold','xchocobars','adept','fanfan',
-    'willneff','cyr','erobb221','kaceytron','quqco','jakefuture',
-    'yassuo','disguisedtoast','ludwig','mizkif','emiru','sodapoppin'
+    'moistcr1tikal','forsen','asmongold','xchocobars','adept','fanfan'
   ];
-
   const colors = [
     '#53fc18','#ff3366','#00d4ff','#ffd700','#ff6b35',
-    '#c084fc','#22d3ee','#f472b6','#a3e635','#fb923c',
-    '#e879f9','#34d399','#fbbf24','#60a5fa','#f87171'
+    '#c084fc','#22d3ee','#f472b6','#a3e635','#fb923c'
   ];
 
   // ==================== SETUP ====================
   function createGiveaway() {
     state.title = document.getElementById('title').value || 'Giveaway';
     state.keyword = document.getElementById('keyword').value || '!join';
+    const kickChannel = document.getElementById('kick-channel').value.trim();
     
     document.getElementById('setup-screen').classList.add('hidden');
     document.getElementById('dashboard-screen').classList.remove('hidden');
@@ -221,9 +246,9 @@
     document.getElementById('dash-title').textContent = state.title;
     document.getElementById('stat-keyword').textContent = state.keyword;
     document.getElementById('waiting-keyword').textContent = state.keyword;
+    document.getElementById('dash-kick-channel').value = kickChannel;
     
     updateOverlayUrl();
-    startFakeChat();
   }
 
   function updateOverlayUrl() {
@@ -234,44 +259,22 @@
     return url;
   }
 
-  // ==================== AUTO ENTRIES (FAKE CHAT) ====================
-  function startFakeChat() {
-    // Clear any existing interval first
-    if (state.fakeInterval) clearInterval(state.fakeInterval);
-    
-    state.fakeInterval = setInterval(() => {
-      if (state.gameActive) {
-        clearInterval(state.fakeInterval);
-        state.fakeInterval = null;
-        return;
-      }
-      
-      const base = fakeNames[Math.floor(Math.random() * fakeNames.length)];
-      const name = base + Math.floor(Math.random() * 9999);
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      
-      addEntrant(name, color);
-    }, 800); // Faster: new entry every 0.8 seconds
-  }
-
+  // ==================== TEST ENTRIES (MANUAL ONLY) ====================
   function addFakeBatch() {
-    // Instantly add 10 entries for demo purposes
     for (let i = 0; i < 10; i++) {
       setTimeout(() => {
         if (state.gameActive) return;
         const base = fakeNames[Math.floor(Math.random() * fakeNames.length)];
         const name = base + Math.floor(Math.random() * 9999);
         const color = colors[Math.floor(Math.random() * colors.length)];
-        addEntrant(name, color);
-      }, i * 100);
+        addEntrant(name, color, true);
+      }, i * 80);
     }
   }
 
-  function addEntrant(name, color) {
-    // Prevent duplicates
+  function addEntrant(name, color, isTest = false) {
     if (state.entrants.find(e => e.name === name)) return;
-    
-    state.entrants.push({ name, color });
+    state.entrants.push({ name, color, isTest });
     updateDashboard();
     updateOverlayUrl();
   }
@@ -281,36 +284,121 @@
     document.getElementById('entrant-badge').textContent = state.entrants.length + ' active';
     
     const grid = document.getElementById('entrants-grid');
-    
     if (state.entrants.length === 0) {
-      grid.innerHTML = `
-        <div class="col-span-full text-center py-12 text-gray-600">
-          <div class="text-4xl mb-3">💬</div>
-          <p>Waiting for chatters to type <span class="text-[#53fc18] font-bold">${state.keyword}</span>...</p>
-        </div>`;
+      grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-600"><div class="text-4xl mb-3">💬</div><p>Waiting for chatters to type <span class="text-[#53fc18] font-bold">${state.keyword}</span>...</p></div>`;
       return;
     }
     
-    // Show last 50 entrants, newest first
     const displayEntrants = state.entrants.slice(-50).reverse();
-    
     grid.innerHTML = displayEntrants.map((e, i) => `
       <div class="entrant-pill flex items-center gap-2.5 px-4 py-3 rounded-xl" style="animation-delay: ${i * 0.03}s">
         <div class="w-3 h-3 rounded-full shrink-0" style="background: ${e.color}; box-shadow: 0 0 10px ${e.color}60"></div>
         <span class="font-semibold text-sm truncate">${e.name}</span>
+        ${e.isTest ? '<span class="text-[10px] text-gray-500 bg-white/5 px-1.5 py-0.5 rounded">TEST</span>' : ''}
       </div>
     `).join('');
-    
-    // Auto-scroll to top (newest)
     grid.scrollTop = 0;
+  }
+
+  // ==================== KICK CHAT CONNECTION ====================
+  async function connectKickChat() {
+    const channelName = document.getElementById('dash-kick-channel').value.trim().toLowerCase();
+    if (!channelName) return alert('Enter your Kick channel name');
+    
+    const btn = document.getElementById('connect-btn');
+    const status = document.getElementById('connection-status');
+    const badge = document.getElementById('conn-status-badge');
+    
+    btn.textContent = 'Looking up...';
+    btn.disabled = true;
+    status.innerHTML = '<span class="text-yellow-500">Fetching chatroom ID from Kick...</span>';
+    
+    try {
+      const res = await fetch(`/api/chatroom?name=${encodeURIComponent(channelName)}`);
+      const data = await res.json();
+      
+      if (data.error) throw new Error(data.error);
+      
+      setupPusher(data.chatroomId, channelName);
+      
+    } catch (err) {
+      status.innerHTML = `<span class="text-red-500">Auto lookup failed: ${err.message}</span><br><span class="text-gray-500 text-xs">Use Manual Connect with Chatroom ID below</span>`;
+      btn.textContent = 'Auto Connect';
+      btn.disabled = false;
+      badge.textContent = 'FAILED';
+      badge.className = 'px-3 py-1 rounded-full bg-red-900/30 text-red-400 text-xs font-bold';
+    }
+  }
+
+  function connectManual() {
+    const chatroomId = document.getElementById('manual-chatroom-id').value.trim();
+    const channelName = document.getElementById('dash-kick-channel').value.trim() || 'manual';
+    
+    if (!chatroomId || isNaN(chatroomId)) return alert('Enter a valid numeric Chatroom ID');
+    
+    const status = document.getElementById('connection-status');
+    setupPusher(chatroomId, channelName);
+  }
+
+  function setupPusher(chatroomId, channelName) {
+    const status = document.getElementById('connection-status');
+    const badge = document.getElementById('conn-status-badge');
+    const btn = document.getElementById('connect-btn');
+    
+    try {
+      // Disconnect existing if any
+      if (state.pusherClient) {
+        state.pusherClient.disconnect();
+      }
+      
+      const pusher = new Pusher('eb1d5f283081a78b932c', { 
+        cluster: 'us2',
+        enabledTransports: ['ws', 'wss']
+      });
+      
+      pusher.connection.bind('connected', () => {
+        status.innerHTML = `<span class="text-[#53fc18]">✅ Connected to Kick</span> <span class="text-gray-500">• Reading ${channelName}'s chat • Room: ${chatroomId}</span>`;
+        badge.textContent = 'LIVE';
+        badge.className = 'px-3 py-1 rounded-full bg-[#53fc18]/10 text-[#53fc18] text-xs font-bold';
+        btn.textContent = '✅ Connected';
+        btn.style.background = '#1a1a24';
+        btn.style.color = '#53fc18';
+        btn.style.border = '1px solid #53fc18';
+        state.isConnected = true;
+      });
+      
+      pusher.connection.bind('error', (err) => {
+        status.innerHTML = `<span class="text-red-500">Connection error: ${err.message || 'Unknown'}</span>`;
+        badge.textContent = 'ERROR';
+        badge.className = 'px-3 py-1 rounded-full bg-red-900/30 text-red-400 text-xs font-bold';
+      });
+      
+      const channel = pusher.subscribe(`chatrooms.${chatroomId}.v2`);
+      
+      channel.bind('App\\Events\\ChatMessageEvent', (msg) => {
+        if (!msg.content) return;
+        const text = msg.content.trim();
+        
+        // Check keyword match (case insensitive)
+        if (text.toLowerCase() === state.keyword.toLowerCase()) {
+          const username = msg.sender?.username || 'unknown';
+          const color = msg.sender?.identity?.color || '#53fc18';
+          addEntrant(username, color, false);
+        }
+      });
+      
+      state.pusherClient = pusher;
+      
+    } catch (err) {
+      status.innerHTML = `<span class="text-red-500">Failed: ${err.message}</span>`;
+      badge.textContent = 'ERROR';
+      badge.className = 'px-3 py-1 rounded-full bg-red-900/30 text-red-400 text-xs font-bold';
+    }
   }
 
   // ==================== COPY & LAUNCH ====================
   function copyOverlayUrl() {
-    if (state.entrants.length === 0) {
-      alert('Wait for some entrants first!');
-      return;
-    }
+    if (state.entrants.length === 0) return alert('Wait for entrants first!');
     const url = updateOverlayUrl();
     navigator.clipboard.writeText(url).then(() => {
       const btn = event.target.closest('button');
@@ -321,18 +409,9 @@
   }
 
   function launchGame() {
-    if (state.entrants.length < 2) {
-      alert('Need at least 2 entrants!');
-      return;
-    }
+    if (state.entrants.length < 2) return alert('Need at least 2 entrants!');
     state.gameActive = true;
-    
-    // Stop fake chat
-    if (state.fakeInterval) {
-      clearInterval(state.fakeInterval);
-      state.fakeInterval = null;
-    }
-    
+    if (state.pusherClient) state.pusherClient.disconnect();
     const url = updateOverlayUrl();
     window.open(url, '_blank', 'width=1920,height=1080');
   }
