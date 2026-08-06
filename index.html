@@ -78,6 +78,7 @@
     .confetti { position: absolute; width: 10px; height: 10px; animation: confetti-fall 3s ease-out forwards; }
     @keyframes confetti-fall { 0% { transform: translateY(-100px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
   </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -183,7 +184,34 @@
       </div>
     </div>
 
-    <!-- ===== RACE SETUP ===== -->
+    
+    <!-- ===== MINI GAMES ARENA ===== -->
+    <div class="glass rounded-3xl p-6 md:p-8 border-[#ffd700]/20 border mb-8">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="text-3xl">🎮</div>
+        <div>
+          <h3 class="text-xl font-bold text-white">Mini Games Arena</h3>
+          <p class="text-gray-500 text-sm">Launch interactive chat elimination games</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <button onclick="launchDiceGame()" class="btn-primary py-4 rounded-xl text-lg">
+          🎲 Dice Arena
+        </button>
+        <button onclick="launchTriviaGame()" class="btn-primary py-4 rounded-xl text-lg" style="background: linear-gradient(135deg, #00d4ff, #0891b2);">
+          ❓ Trivia Blitz
+        </button>
+        <button onclick="launchRouletteGame()" class="btn-primary py-4 rounded-xl text-lg" style="background: linear-gradient(135deg, #ff3366, #e11d48);">
+          🎯 Color Roulette
+        </button>
+      </div>
+      <div class="glass rounded-xl p-4 bg-white/[0.02]">
+        <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Active Game URL</div>
+        <div id="minigame-url" class="font-mono text-sm text-[#53fc18] truncate">No game active</div>
+      </div>
+    </div>
+
+<!-- ===== RACE SETUP ===== -->
     <div class="glass rounded-3xl p-6 md:p-8 border-[#53fc18]/20 border">
       <div class="flex items-center gap-3 mb-6">
         <div class="text-3xl">🏁</div>
@@ -240,6 +268,144 @@
   </div>
 </div>
 
+
+<!-- ==================== DICE ARENA OVERLAY ==================== -->
+<div id="dice-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center">
+    <div class="text-center mb-6">
+      <div class="text-[#53fc18] text-sm font-bold uppercase tracking-widest mb-2">🎲 Dice Arena</div>
+      <h1 id="dice-title" class="text-4xl md:text-6xl font-black text-white">Roll the Dice</h1>
+    </div>
+    <div id="dice-phase-waiting" class="text-center">
+      <div class="text-2xl text-gray-400 mb-4">Connecting to chat...</div>
+    </div>
+    <div id="dice-phase-collect" class="hidden text-center w-full max-w-4xl px-6">
+      <div class="text-6xl font-black text-[#ffd700] mb-2" id="dice-timer">15</div>
+      <div class="text-xl text-gray-300 mb-6">Type <span class="text-[#53fc18] font-bold">!num1</span> to <span class="text-[#53fc18] font-bold">!num6</span> in chat!</div>
+      <div id="dice-round-badge" class="inline-block px-4 py-2 rounded-full bg-white/5 text-white text-sm font-bold mb-6">Round 1</div>
+      <div id="dice-players-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 max-h-64 overflow-y-auto"></div>
+    </div>
+    <div id="dice-phase-roll" class="hidden text-center">
+      <div class="text-3xl font-bold text-white mb-8">Rolling...</div>
+      <div class="flex gap-8 justify-center items-center">
+        <canvas id="die-1" width="120" height="120" class="rounded-2xl"></canvas>
+        <canvas id="die-2" width="120" height="120" class="rounded-2xl"></canvas>
+      </div>
+    </div>
+    <div id="dice-phase-resolve" class="hidden text-center w-full max-w-4xl px-6">
+      <div class="text-5xl font-black text-[#53fc18] mb-4" id="dice-result-text">7</div>
+      <div class="text-xl text-gray-300 mb-6" id="dice-result-sub">Survivors advance!</div>
+      <div id="dice-survivors-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 max-h-48 overflow-y-auto"></div>
+    </div>
+    <div id="dice-phase-winner" class="hidden text-center">
+      <div class="text-6xl mb-4">👑</div>
+      <div class="text-2xl text-[#ffd700] font-bold mb-2">WINNER</div>
+      <div id="dice-winner-name" class="text-7xl font-black text-white mb-4"></div>
+      <div id="dice-winner-prize" class="text-2xl text-gray-400"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TRIVIA BLITZ OVERLAY ==================== -->
+<div id="trivia-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-8">
+      <div class="text-[#00d4ff] text-sm font-bold uppercase tracking-widest mb-2">❓ Trivia Blitz</div>
+      <h1 class="text-4xl md:text-5xl font-black text-white">Brain Battle</h1>
+    </div>
+    <div id="trivia-phase-waiting" class="text-center">
+      <div class="text-2xl text-gray-400">Loading questions...</div>
+    </div>
+    <div id="trivia-phase-question" class="hidden w-full max-w-3xl">
+      <div class="glass rounded-3xl p-8 md:p-10 mb-8 text-center">
+        <div id="trivia-q-num" class="text-[#00d4ff] text-sm font-bold uppercase tracking-widest mb-4">Question 1</div>
+        <div id="trivia-question-text" class="text-2xl md:text-3xl font-bold text-white mb-6">What is the capital of France?</div>
+        <div class="text-5xl font-black text-[#ffd700] mb-2" id="trivia-timer">15</div>
+        <div class="text-sm text-gray-500">Type !a, !b, !c, or !d in chat</div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="glass rounded-2xl p-5 relative overflow-hidden">
+          <div class="absolute inset-0 bg-[#53fc18]/10 transition-all" id="bar-a" style="width: 0%"></div>
+          <div class="relative z-10 flex items-center justify-between">
+            <span class="font-bold text-lg">A. <span id="opt-a">Paris</span></span>
+            <span class="text-sm text-gray-400" id="count-a">0</span>
+          </div>
+        </div>
+        <div class="glass rounded-2xl p-5 relative overflow-hidden">
+          <div class="absolute inset-0 bg-[#53fc18]/10 transition-all" id="bar-b" style="width: 0%"></div>
+          <div class="relative z-10 flex items-center justify-between">
+            <span class="font-bold text-lg">B. <span id="opt-b">London</span></span>
+            <span class="text-sm text-gray-400" id="count-b">0</span>
+          </div>
+        </div>
+        <div class="glass rounded-2xl p-5 relative overflow-hidden">
+          <div class="absolute inset-0 bg-[#53fc18]/10 transition-all" id="bar-c" style="width: 0%"></div>
+          <div class="relative z-10 flex items-center justify-between">
+            <span class="font-bold text-lg">C. <span id="opt-c">Berlin</span></span>
+            <span class="text-sm text-gray-400" id="count-c">0</span>
+          </div>
+        </div>
+        <div class="glass rounded-2xl p-5 relative overflow-hidden">
+          <div class="absolute inset-0 bg-[#53fc18]/10 transition-all" id="bar-d" style="width: 0%"></div>
+          <div class="relative z-10 flex items-center justify-between">
+            <span class="font-bold text-lg">D. <span id="opt-d">Madrid</span></span>
+            <span class="text-sm text-gray-400" id="count-d">0</span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-6 text-center">
+        <span class="text-gray-500 text-sm">Players alive: </span>
+        <span id="trivia-alive-count" class="text-white font-bold">0</span>
+      </div>
+    </div>
+    <div id="trivia-phase-reveal" class="hidden text-center w-full max-w-2xl">
+      <div class="glass rounded-3xl p-10 text-center">
+        <div class="text-3xl font-bold text-white mb-4">Correct Answer:</div>
+        <div id="trivia-correct-answer" class="text-5xl font-black text-[#53fc18] mb-6">A. Paris</div>
+        <div id="trivia-eliminated" class="text-xl text-[#ff3366] mb-4"></div>
+        <div id="trivia-survivors" class="text-lg text-gray-300"></div>
+      </div>
+    </div>
+    <div id="trivia-phase-winner" class="hidden text-center">
+      <div class="text-6xl mb-4">🧠</div>
+      <div class="text-2xl text-[#00d4ff] font-bold mb-2">TRIVIA CHAMPION</div>
+      <div id="trivia-winner-name" class="text-7xl font-black text-white mb-4"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== COLOR ROULETTE OVERLAY ==================== -->
+<div id="roulette-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-6">
+      <div class="text-[#ff3366] text-sm font-bold uppercase tracking-widest mb-2">🎯 Color Roulette</div>
+      <h1 class="text-4xl md:text-5xl font-black text-white">Wheel of Fate</h1>
+    </div>
+    <div id="roulette-phase-waiting" class="text-center">
+      <div class="text-2xl text-gray-400">Waiting for players...</div>
+    </div>
+    <div id="roulette-phase-collect" class="hidden text-center w-full max-w-4xl">
+      <div class="text-6xl font-black text-[#ffd700] mb-2" id="roulette-timer">15</div>
+      <div class="text-xl text-gray-300 mb-6">Type <span class="text-[#ff3366] font-bold">!red</span>, <span class="text-gray-400 font-bold">!black</span>, or <span class="text-[#53fc18] font-bold">!green</span>!</div>
+      <div id="roulette-round-badge" class="inline-block px-4 py-2 rounded-full bg-white/5 text-white text-sm font-bold mb-6">Round 1</div>
+      <div id="roulette-players-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 max-h-56 overflow-y-auto"></div>
+    </div>
+    <div id="roulette-phase-spin" class="hidden flex flex-col items-center">
+      <canvas id="roulette-canvas" width="500" height="500" class="mb-6"></canvas>
+      <div class="text-3xl font-bold text-white" id="roulette-spin-text">Spinning...</div>
+    </div>
+    <div id="roulette-phase-resolve" class="hidden text-center w-full max-w-4xl">
+      <div class="text-5xl font-black mb-4" id="roulette-result-color">RED</div>
+      <div class="text-xl text-gray-300 mb-6" id="roulette-result-sub">Survivors advance!</div>
+      <div id="roulette-survivors-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 max-h-48 overflow-y-auto"></div>
+    </div>
+    <div id="roulette-phase-winner" class="hidden text-center">
+      <div class="text-6xl mb-4">🎰</div>
+      <div class="text-2xl text-[#ffd700] font-bold mb-2">SURVIVOR</div>
+      <div id="roulette-winner-name" class="text-7xl font-black text-white mb-4"></div>
+    </div>
+  </div>
+</div>
 <!-- ==================== RACE SPECTATOR ==================== -->
 <div id="race-spectator" class="hidden fixed inset-0 bg-[#050508] z-50 overflow-auto">
   <div class="min-h-screen p-6 md:p-10 flex flex-col items-center justify-center">
@@ -779,11 +945,630 @@
     }
   }
 
+
+
+  // ==================== MINI GAME LAUNCHERS ====================
+  function launchDiceGame() {
+    if (state.entrants.length < 2) return alert('Need at least 2 entrants!');
+    const room = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const base = window.location.origin + window.location.pathname;
+    const chatroomId = document.getElementById('dash-chatroom-id').value.trim() || '107612';
+    const url = `${base}?mode=dice&room=${room}&title=${encodeURIComponent(state.title)}&chatroom=${chatroomId}`;
+    document.getElementById('minigame-url').textContent = url;
+    window.open(url, '_blank', 'width=1920,height=1080');
+  }
+
+  function launchTriviaGame() {
+    if (state.entrants.length < 2) return alert('Need at least 2 entrants!');
+    const room = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const base = window.location.origin + window.location.pathname;
+    const chatroomId = document.getElementById('dash-chatroom-id').value.trim() || '107612';
+    const url = `${base}?mode=trivia&room=${room}&title=${encodeURIComponent(state.title)}&chatroom=${chatroomId}`;
+    document.getElementById('minigame-url').textContent = url;
+    window.open(url, '_blank', 'width=1920,height=1080');
+  }
+
+  function launchRouletteGame() {
+    if (state.entrants.length < 2) return alert('Need at least 2 entrants!');
+    const room = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const base = window.location.origin + window.location.pathname;
+    const chatroomId = document.getElementById('dash-chatroom-id').value.trim() || '107612';
+    const url = `${base}?mode=roulette&room=${room}&title=${encodeURIComponent(state.title)}&chatroom=${chatroomId}`;
+    document.getElementById('minigame-url').textContent = url;
+    window.open(url, '_blank', 'width=1920,height=1080');
+  }
+
+  // ==================== DICE ARENA ====================
+  function initDiceGame() {
+    const params = new URLSearchParams(window.location.search);
+    const room = params.get('room');
+    const title = params.get('title') || 'Giveaway';
+    const chatroomId = params.get('chatroom') || '107612';
+
+    document.getElementById('setup-screen').classList.add('hidden');
+    document.getElementById('dashboard-screen').classList.add('hidden');
+    document.getElementById('dice-overlay').classList.remove('hidden');
+    document.getElementById('dice-title').textContent = title;
+
+    let gameState = {
+      phase: 'collect',
+      round: 1,
+      players: [],
+      survivors: [],
+      timeLeft: 15,
+      diceResult: [1, 1],
+      guesses: new Map()
+    };
+
+    const wsUrl = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0-rc2&flash=false';
+    const ws = new WebSocket(wsUrl);
+    let chatConnected = false;
+
+    ws.onopen = () => {
+      ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg.event === 'pusher:connection_established') {
+          ws.send(JSON.stringify({ event: 'pusher:subscribe', data: { auth: '', channel: `chatrooms.${chatroomId}.v2` } }));
+          chatConnected = true;
+          startDiceRound();
+        }
+        if (msg.event === 'App\Events\ChatMessageEvent') {
+          const data = JSON.parse(msg.data);
+          const text = (data.content || '').trim().toLowerCase();
+          const match = text.match(/^!num([1-6])$/);
+          if (match && gameState.phase === 'collect') {
+            const num = parseInt(match[1]);
+            const username = data.sender?.username || 'unknown';
+            const color = data.sender?.identity?.color || '#53fc18';
+            if (!gameState.guesses.has(username)) {
+              gameState.guesses.set(username, { num, color });
+              updateDiceGrid();
+            }
+          }
+        }
+      };
+    };
+
+    function updateDiceGrid() {
+      const grid = document.getElementById('dice-players-grid');
+      const items = Array.from(gameState.guesses.entries());
+      grid.innerHTML = items.map(([name, data]) => `
+        <div class="entrant-pill flex items-center gap-2 px-3 py-2 rounded-xl">
+          <div class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${data.color}"></div>
+          <span class="font-semibold text-xs truncate">${name}</span>
+          <span class="text-[10px] font-bold bg-white/10 px-1.5 rounded">${data.num}</span>
+        </div>
+      `).join('');
+    }
+
+    function startDiceRound() {
+      gameState.phase = 'collect';
+      gameState.guesses.clear();
+      gameState.timeLeft = gameState.round === 1 ? 15 : 10;
+
+      document.getElementById('dice-phase-waiting').classList.add('hidden');
+      document.getElementById('dice-phase-collect').classList.remove('hidden');
+      document.getElementById('dice-phase-roll').classList.add('hidden');
+      document.getElementById('dice-phase-resolve').classList.add('hidden');
+      document.getElementById('dice-phase-winner').classList.add('hidden');
+      document.getElementById('dice-round-badge').textContent = `Round ${gameState.round}`;
+
+      updateDiceGrid();
+
+      const timerInterval = setInterval(() => {
+        gameState.timeLeft--;
+        document.getElementById('dice-timer').textContent = gameState.timeLeft;
+        if (gameState.timeLeft <= 0) {
+          clearInterval(timerInterval);
+          rollDice();
+        }
+      }, 1000);
+    }
+
+    function rollDice() {
+      gameState.phase = 'roll';
+      document.getElementById('dice-phase-collect').classList.add('hidden');
+      document.getElementById('dice-phase-roll').classList.remove('hidden');
+
+      const die1 = document.getElementById('die-1');
+      const die2 = document.getElementById('die-2');
+      const ctx1 = die1.getContext('2d');
+      const ctx2 = die2.getContext('2d');
+
+      let frames = 0;
+      const final1 = Math.floor(Math.random() * 6) + 1;
+      const final2 = Math.floor(Math.random() * 6) + 1;
+      gameState.diceResult = [final1, final2];
+
+      const rollInterval = setInterval(() => {
+        frames++;
+        drawDie(ctx1, Math.floor(Math.random() * 6) + 1, '#ff3366');
+        drawDie(ctx2, Math.floor(Math.random() * 6) + 1, '#00d4ff');
+        if (frames > 30) {
+          clearInterval(rollInterval);
+          drawDie(ctx1, final1, '#ff3366');
+          drawDie(ctx2, final2, '#00d4ff');
+          setTimeout(resolveDice, 800);
+        }
+      }, 80);
+    }
+
+    function drawDie(ctx, value, color) {
+      const s = 120;
+      ctx.clearRect(0, 0, s, s);
+      ctx.fillStyle = '#1a1a2e';
+      ctx.beginPath(); 
+      if (ctx.roundRect) ctx.roundRect(8, 8, s-16, s-16, 16); 
+      else { ctx.rect(8, 8, s-16, s-16); }
+      ctx.fill();
+      ctx.strokeStyle = color; ctx.lineWidth = 3;
+      ctx.beginPath(); 
+      if (ctx.roundRect) ctx.roundRect(8, 8, s-16, s-16, 16); 
+      else { ctx.rect(8, 8, s-16, s-16); }
+      ctx.stroke();
+      ctx.fillStyle = 'white';
+      const positions = {
+        1: [[0.5, 0.5]],
+        2: [[0.25, 0.25], [0.75, 0.75]],
+        3: [[0.25, 0.25], [0.5, 0.5], [0.75, 0.75]],
+        4: [[0.25, 0.25], [0.75, 0.25], [0.25, 0.75], [0.75, 0.75]],
+        5: [[0.25, 0.25], [0.75, 0.25], [0.5, 0.5], [0.25, 0.75], [0.75, 0.75]],
+        6: [[0.25, 0.25], [0.75, 0.25], [0.25, 0.5], [0.75, 0.5], [0.25, 0.75], [0.75, 0.75]]
+      };
+      positions[value].forEach(([x, y]) => {
+        ctx.beginPath();
+        ctx.arc(x * s, y * s, 6, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    function resolveDice() {
+      gameState.phase = 'resolve';
+      const [d1, d2] = gameState.diceResult;
+      const winningNums = [d1, d2];
+      document.getElementById('dice-phase-roll').classList.add('hidden');
+      document.getElementById('dice-phase-resolve').classList.remove('hidden');
+      document.getElementById('dice-result-text').textContent = `${d1} & ${d2}`;
+
+      const survivors = [];
+      gameState.guesses.forEach((data, name) => {
+        if (winningNums.includes(data.num)) survivors.push({ name, color: data.color });
+      });
+
+      if (survivors.length === 0) {
+        document.getElementById('dice-result-sub').textContent = 'No survivors! Everyone revives for Sudden Death!';
+        gameState.survivors = Array.from(gameState.guesses.entries()).map(([name, data]) => ({ name, color: data.color }));
+      } else {
+        document.getElementById('dice-result-sub').textContent = `${survivors.length} survivor${survivors.length > 1 ? 's' : ''} advance!`;
+        gameState.survivors = survivors;
+      }
+
+      const grid = document.getElementById('dice-survivors-grid');
+      grid.innerHTML = gameState.survivors.map(s => `
+        <div class="entrant-pill flex items-center gap-2 px-3 py-2 rounded-xl border border-[#53fc18]/30">
+          <div class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${s.color}"></div>
+          <span class="font-semibold text-xs truncate text-[#53fc18]">${s.name}</span>
+        </div>
+      `).join('');
+
+      setTimeout(() => {
+        if (gameState.survivors.length === 1) {
+          showDiceWinner(gameState.survivors[0].name, title);
+        } else {
+          gameState.round++;
+          gameState.guesses = new Map(gameState.survivors.map(s => [s.name, { num: null, color: s.color }]));
+          startDiceRound();
+        }
+      }, 4000);
+    }
+
+    function showDiceWinner(name, prize) {
+      document.getElementById('dice-phase-resolve').classList.add('hidden');
+      document.getElementById('dice-phase-winner').classList.remove('hidden');
+      document.getElementById('dice-winner-name').textContent = name;
+      document.getElementById('dice-winner-prize').textContent = prize;
+    }
+  }
+
+  // ==================== TRIVIA BLITZ ====================
+  function initTriviaGame() {
+    const params = new URLSearchParams(window.location.search);
+    const room = params.get('room');
+    const title = params.get('title') || 'Giveaway';
+    const chatroomId = params.get('chatroom') || '107612';
+
+    document.getElementById('setup-screen').classList.add('hidden');
+    document.getElementById('dashboard-screen').classList.add('hidden');
+    document.getElementById('trivia-overlay').classList.remove('hidden');
+
+    const questions = [
+      { q: "What is the capital of France?", a: "Paris", b: "London", c: "Berlin", d: "Madrid", correct: "a" },
+      { q: "Which planet is known as the Red Planet?", a: "Venus", b: "Mars", c: "Jupiter", d: "Saturn", correct: "b" },
+      { q: "What is 2 + 2 × 2?", a: "8", b: "6", c: "4", d: "2", correct: "b" },
+      { q: "Who painted the Mona Lisa?", a: "Van Gogh", b: "Picasso", c: "Da Vinci", d: "Rembrandt", correct: "c" },
+      { q: "What is the largest ocean?", a: "Atlantic", b: "Indian", c: "Arctic", d: "Pacific", correct: "d" },
+      { q: "In what year did the Titanic sink?", a: "1910", b: "1912", c: "1914", d: "1916", correct: "b" },
+      { q: "What is the chemical symbol for gold?", a: "Go", b: "Gd", c: "Au", d: "Ag", correct: "c" },
+      { q: "Which animal is known as the King of the Jungle?", a: "Tiger", b: "Elephant", c: "Lion", d: "Gorilla", correct: "c" }
+    ];
+
+    let gameState = {
+      phase: 'waiting',
+      round: 0,
+      players: new Map(),
+      answers: new Map(),
+      timeLeft: 15
+    };
+
+    const wsUrl = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0-rc2&flash=false';
+    const ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg.event === 'pusher:connection_established') {
+          ws.send(JSON.stringify({ event: 'pusher:subscribe', data: { auth: '', channel: `chatrooms.${chatroomId}.v2` } }));
+          startTriviaRound();
+        }
+        if (msg.event === 'App\Events\ChatMessageEvent') {
+          const data = JSON.parse(msg.data);
+          const text = (data.content || '').trim().toLowerCase();
+          const username = data.sender?.username || 'unknown';
+          const color = data.sender?.identity?.color || '#53fc18';
+
+          if (!gameState.players.has(username)) {
+            gameState.players.set(username, { color, alive: true });
+          }
+
+          if (['!a','!b','!c','!d'].includes(text) && gameState.phase === 'collecting') {
+            if (gameState.players.get(username)?.alive && !gameState.answers.has(username)) {
+              gameState.answers.set(username, text.replace('!',''));
+              updateTriviaBars();
+            }
+          }
+        }
+      };
+    };
+
+    function startTriviaRound() {
+      if (gameState.round >= questions.length) {
+        const alive = Array.from(gameState.players.entries()).filter(([_, p]) => p.alive);
+        if (alive.length === 0) showTriviaWinner('Nobody');
+        else showTriviaWinner(alive[Math.floor(Math.random() * alive.length)][0]);
+        return;
+      }
+
+      const q = questions[gameState.round];
+      gameState.phase = 'collecting';
+      gameState.answers.clear();
+      gameState.timeLeft = 15;
+
+      document.getElementById('trivia-phase-waiting').classList.add('hidden');
+      document.getElementById('trivia-phase-reveal').classList.add('hidden');
+      document.getElementById('trivia-phase-winner').classList.add('hidden');
+      document.getElementById('trivia-phase-question').classList.remove('hidden');
+
+      document.getElementById('trivia-q-num').textContent = `Question ${gameState.round + 1} / ${questions.length}`;
+      document.getElementById('trivia-question-text').textContent = q.q;
+      document.getElementById('opt-a').textContent = q.a;
+      document.getElementById('opt-b').textContent = q.b;
+      document.getElementById('opt-c').textContent = q.c;
+      document.getElementById('opt-d').textContent = q.d;
+      document.getElementById('trivia-timer').textContent = '15';
+      updateTriviaBars();
+      updateAliveCount();
+
+      const timerInterval = setInterval(() => {
+        gameState.timeLeft--;
+        document.getElementById('trivia-timer').textContent = gameState.timeLeft;
+        if (gameState.timeLeft <= 0) {
+          clearInterval(timerInterval);
+          revealTriviaAnswer(q);
+        }
+      }, 1000);
+    }
+
+    function updateTriviaBars() {
+      const counts = { a: 0, b: 0, c: 0, d: 0 };
+      gameState.answers.forEach(ans => counts[ans]++);
+      const total = Math.max(gameState.answers.size, 1);
+      ['a','b','c','d'].forEach(letter => {
+        document.getElementById(`bar-${letter}`).style.width = (counts[letter] / total * 100) + '%';
+        document.getElementById(`count-${letter}`).textContent = counts[letter];
+      });
+    }
+
+    function updateAliveCount() {
+      const alive = Array.from(gameState.players.values()).filter(p => p.alive).length;
+      document.getElementById('trivia-alive-count').textContent = alive;
+    }
+
+    function revealTriviaAnswer(q) {
+      gameState.phase = 'revealing';
+      document.getElementById('trivia-phase-question').classList.add('hidden');
+      document.getElementById('trivia-phase-reveal').classList.remove('hidden');
+
+      document.getElementById('trivia-correct-answer').textContent = `${q.correct.toUpperCase()}. ${q[q.correct]}`;
+
+      let eliminated = 0;
+      gameState.players.forEach((p, name) => {
+        if (!p.alive) return;
+        const ans = gameState.answers.get(name);
+        if (ans !== q.correct) {
+          p.alive = false;
+          eliminated++;
+        }
+      });
+
+      const alive = Array.from(gameState.players.entries()).filter(([_, p]) => p.alive);
+      document.getElementById('trivia-eliminated').textContent = eliminated > 0 ? `${eliminated} player${eliminated > 1 ? 's' : ''} eliminated!` : 'Everyone survived! Random half eliminated...';
+
+      if (eliminated === 0 && alive.length > 1) {
+        const shuffled = alive.sort(() => Math.random() - 0.5);
+        const toEliminate = Math.floor(shuffled.length / 2);
+        for (let i = 0; i < toEliminate; i++) shuffled[i][1].alive = false;
+        document.getElementById('trivia-eliminated').textContent = `${toEliminate} randomly eliminated!`;
+      }
+
+      const survivors = Array.from(gameState.players.entries()).filter(([_, p]) => p.alive);
+      document.getElementById('trivia-survivors').textContent = survivors.length > 0
+        ? `${survivors.length} survivor${survivors.length > 1 ? 's' : ''} advance`
+        : 'No survivors! Reviving all for next round...';
+
+      if (survivors.length === 0) {
+        gameState.players.forEach(p => p.alive = true);
+      }
+
+      setTimeout(() => {
+        const finalAlive = Array.from(gameState.players.entries()).filter(([_, p]) => p.alive);
+        if (finalAlive.length === 1) {
+          showTriviaWinner(finalAlive[0][0]);
+        } else {
+          gameState.round++;
+          startTriviaRound();
+        }
+      }, 5000);
+    }
+
+    function showTriviaWinner(name) {
+      document.getElementById('trivia-phase-reveal').classList.add('hidden');
+      document.getElementById('trivia-phase-winner').classList.remove('hidden');
+      document.getElementById('trivia-winner-name').textContent = name;
+    }
+  }
+
+  // ==================== COLOR ROULETTE ====================
+  function initRouletteGame() {
+    const params = new URLSearchParams(window.location.search);
+    const room = params.get('room');
+    const title = params.get('title') || 'Giveaway';
+    const chatroomId = params.get('chatroom') || '107612';
+
+    document.getElementById('setup-screen').classList.add('hidden');
+    document.getElementById('dashboard-screen').classList.add('hidden');
+    document.getElementById('roulette-overlay').classList.remove('hidden');
+
+    let gameState = {
+      phase: 'collect',
+      round: 1,
+      players: new Map(),
+      survivors: [],
+      timeLeft: 15,
+      result: 'red'
+    };
+
+    const colorHex = { red: '#ff3366', black: '#6b7280', green: '#53fc18' };
+
+    const wsUrl = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0-rc2&flash=false';
+    const ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg.event === 'pusher:connection_established') {
+          ws.send(JSON.stringify({ event: 'pusher:subscribe', data: { auth: '', channel: `chatrooms.${chatroomId}.v2` } }));
+          startRouletteRound();
+        }
+        if (msg.event === 'App\Events\ChatMessageEvent') {
+          const data = JSON.parse(msg.data);
+          const text = (data.content || '').trim().toLowerCase();
+          const username = data.sender?.username || 'unknown';
+          const color = data.sender?.identity?.color || '#53fc18';
+
+          if (!gameState.players.has(username)) {
+            gameState.players.set(username, { color, guess: null });
+          }
+
+          const guessMatch = text.match(/^!(red|black|green)$/);
+          if (guessMatch && gameState.phase === 'collect') {
+            const p = gameState.players.get(username);
+            if (!p.guess) {
+              p.guess = guessMatch[1];
+              updateRouletteGrid();
+            }
+          }
+        }
+      };
+    };
+
+    function updateRouletteGrid() {
+      const grid = document.getElementById('roulette-players-grid');
+      const items = Array.from(gameState.players.entries()).filter(([_, p]) => p.guess);
+      grid.innerHTML = items.map(([name, p]) => `
+        <div class="entrant-pill flex items-center gap-2 px-3 py-2 rounded-xl" style="border-color: ${colorHex[p.guess]}40">
+          <div class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${p.color}"></div>
+          <span class="font-semibold text-xs truncate">${name}</span>
+          <span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="background: ${colorHex[p.guess]}20; color: ${colorHex[p.guess]}">${p.guess}</span>
+        </div>
+      `).join('');
+    }
+
+    function startRouletteRound() {
+      gameState.phase = 'collect';
+      gameState.players.forEach(p => p.guess = null);
+      gameState.timeLeft = gameState.round === 1 ? 15 : 10;
+
+      document.getElementById('roulette-phase-waiting').classList.add('hidden');
+      document.getElementById('roulette-phase-collect').classList.remove('hidden');
+      document.getElementById('roulette-phase-spin').classList.add('hidden');
+      document.getElementById('roulette-phase-resolve').classList.add('hidden');
+      document.getElementById('roulette-phase-winner').classList.add('hidden');
+      document.getElementById('roulette-round-badge').textContent = `Round ${gameState.round}`;
+      updateRouletteGrid();
+
+      const timerInterval = setInterval(() => {
+        gameState.timeLeft--;
+        document.getElementById('roulette-timer').textContent = gameState.timeLeft;
+        if (gameState.timeLeft <= 0) {
+          clearInterval(timerInterval);
+          spinRoulette();
+        }
+      }, 1000);
+    }
+
+    function spinRoulette() {
+      gameState.phase = 'spin';
+      document.getElementById('roulette-phase-collect').classList.add('hidden');
+      document.getElementById('roulette-phase-spin').classList.remove('hidden');
+
+      const canvas = document.getElementById('roulette-canvas');
+      const ctx = canvas.getContext('2d');
+      const centerX = 250, centerY = 250, radius = 200;
+      const segments = [
+        { color: '#ff3366', label: 'RED', weight: 18 },
+        { color: '#374151', label: 'BLACK', weight: 18 },
+        { color: '#53fc18', label: 'GREEN', weight: 4 }
+      ];
+
+      let angle = 0;
+      let speed = 0.3;
+      let frames = 0;
+      const result = weightedRandom(segments);
+      gameState.result = result.label.toLowerCase();
+
+      const spinInterval = setInterval(() => {
+        frames++;
+        angle += speed;
+        speed *= 0.985;
+        if (speed < 0.002) speed = 0.002;
+        drawRouletteWheel(ctx, centerX, centerY, radius, segments, angle);
+        if (frames > 120 && speed < 0.01) {
+          clearInterval(spinInterval);
+          setTimeout(resolveRoulette, 600);
+        }
+      }, 16);
+    }
+
+    function weightedRandom(segments) {
+      const total = segments.reduce((s, seg) => s + seg.weight, 0);
+      let r = Math.random() * total;
+      for (const seg of segments) {
+        r -= seg.weight;
+        if (r <= 0) return seg;
+      }
+      return segments[0];
+    }
+
+    function drawRouletteWheel(ctx, cx, cy, r, segments, rotation) {
+      ctx.clearRect(0, 0, 500, 500);
+      let startAngle = rotation;
+      const totalWeight = segments.reduce((s, seg) => s + seg.weight, 0);
+      segments.forEach(seg => {
+        const arc = (seg.weight / totalWeight) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, r, startAngle, startAngle + arc);
+        ctx.fillStyle = seg.color;
+        ctx.fill();
+        ctx.strokeStyle = '#050508';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(startAngle + arc / 2);
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 16px Inter, sans-serif';
+        ctx.fillText(seg.label, r * 0.55, 6);
+        ctx.restore();
+        startAngle += arc;
+      });
+      ctx.beginPath();
+      ctx.arc(cx, cy, 30, 0, Math.PI * 2);
+      ctx.fillStyle = '#050508';
+      ctx.fill();
+      ctx.strokeStyle = '#ffd700';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.fillStyle = '#ffd700';
+      ctx.font = 'bold 12px Inter';
+      ctx.textAlign = 'center';
+      ctx.fillText('WIN', cx, cy + 4);
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - r - 10);
+      ctx.lineTo(cx - 12, cy - r + 10);
+      ctx.lineTo(cx + 12, cy - r + 10);
+      ctx.closePath();
+      ctx.fillStyle = '#ffd700';
+      ctx.fill();
+    }
+
+    function resolveRoulette() {
+      gameState.phase = 'resolve';
+      document.getElementById('roulette-phase-spin').classList.add('hidden');
+      document.getElementById('roulette-phase-resolve').classList.remove('hidden');
+
+      const resultColor = gameState.result;
+      document.getElementById('roulette-result-color').textContent = resultColor.toUpperCase();
+      document.getElementById('roulette-result-color').style.color = colorHex[resultColor];
+
+      const survivors = [];
+      gameState.players.forEach((p, name) => {
+        if (p.guess === resultColor) survivors.push({ name, color: p.color });
+      });
+
+      if (survivors.length === 0) {
+        document.getElementById('roulette-result-sub').textContent = 'No survivors! Everyone revives!';
+        gameState.survivors = Array.from(gameState.players.entries()).map(([name, p]) => ({ name, color: p.color }));
+      } else {
+        document.getElementById('roulette-result-sub').textContent = `${survivors.length} survivor${survivors.length > 1 ? 's' : ''} advance!`;
+        gameState.survivors = survivors;
+      }
+
+      const grid = document.getElementById('roulette-survivors-grid');
+      grid.innerHTML = gameState.survivors.map(s => `
+        <div class="entrant-pill flex items-center gap-2 px-3 py-2 rounded-xl border" style="border-color: ${colorHex[resultColor]}40">
+          <div class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${s.color}"></div>
+          <span class="font-semibold text-xs truncate" style="color: ${colorHex[resultColor]}">${s.name}</span>
+        </div>
+      `).join('');
+
+      setTimeout(() => {
+        if (gameState.survivors.length === 1) {
+          showRouletteWinner(gameState.survivors[0].name);
+        } else {
+          gameState.round++;
+          gameState.players = new Map(gameState.survivors.map(s => [s.name, { color: s.color, guess: null }]));
+          startRouletteRound();
+        }
+      }, 4000);
+    }
+
+    function showRouletteWinner(name) {
+      document.getElementById('roulette-phase-resolve').classList.add('hidden');
+      document.getElementById('roulette-phase-winner').classList.remove('hidden');
+      document.getElementById('roulette-winner-name').textContent = name;
+    }
+  }
+
   // ==================== ROUTING ====================
   const params = new URLSearchParams(window.location.search);
   const mode = params.get('mode');
   if (mode === 'race-spec') initRaceSpectator();
   else if (mode === 'race-p') initRacePlayer();
+  else if (mode === 'dice') initDiceGame();
+  else if (mode === 'trivia') initTriviaGame();
+  else if (mode === 'roulette') initRouletteGame();
   else initOverlay();
 </script>
 
