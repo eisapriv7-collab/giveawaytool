@@ -194,7 +194,7 @@
           <p class="text-gray-500 text-sm">Launch interactive chat elimination games</p>
         </div>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <button onclick="launchDiceGame()" class="btn-primary py-4 rounded-xl text-lg">
           🎲 Dice Arena
         </button>
@@ -203,6 +203,15 @@
         </button>
         <button onclick="launchRouletteGame()" class="btn-primary py-4 rounded-xl text-lg" style="background: linear-gradient(135deg, #ff3366, #e11d48);">
           🎯 Color Roulette
+        </button>
+        <button onclick="launchCoinGame()" class="btn-primary py-4 rounded-xl text-lg" style="background: linear-gradient(135deg, #ffd700, #b8860b); color: #050508;">
+          🪙 Coin Flip
+        </button>
+        <button onclick="launchEmojiGame()" class="btn-primary py-4 rounded-xl text-lg" style="background: linear-gradient(135deg, #ff6b35, #e11d48);">
+          ⚡ Emoji Flash
+        </button>
+        <button onclick="launchMathGame()" class="btn-primary py-4 rounded-xl text-lg" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">
+          🔢 Math Blitz
         </button>
       </div>
       <div class="glass rounded-xl p-4 bg-white/[0.02]">
@@ -403,6 +412,122 @@
       <div class="text-6xl mb-4">🎰</div>
       <div class="text-2xl text-[#ffd700] font-bold mb-2">SURVIVOR</div>
       <div id="roulette-winner-name" class="text-7xl font-black text-white mb-4"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== COIN FLIP ARENA OVERLAY ==================== -->
+<div id="coin-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center">
+    <div class="text-center mb-6">
+      <div class="text-[#ffd700] text-sm font-bold uppercase tracking-widest mb-2">🪙 Coin Flip Arena</div>
+      <h1 class="text-4xl md:text-6xl font-black text-white">Heads or Tails</h1>
+    </div>
+    <div id="coin-phase-waiting" class="text-center">
+      <div class="text-2xl text-gray-400">Connecting to chat...</div>
+    </div>
+    <div id="coin-phase-collect" class="hidden text-center w-full max-w-4xl px-6">
+      <div class="text-6xl font-black text-[#ffd700] mb-2" id="coin-timer">15</div>
+      <div class="text-xl text-gray-300 mb-6">Type <span class="text-[#ffd700] font-bold">!heads</span> or <span class="text-gray-400 font-bold">!tails</span> in chat!</div>
+      <div id="coin-round-badge" class="inline-block px-4 py-2 rounded-full bg-white/5 text-white text-sm font-bold mb-6">Round 1</div>
+      <div id="coin-players-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 max-h-64 overflow-y-auto"></div>
+    </div>
+    <div id="coin-phase-flip" class="hidden text-center">
+      <div class="text-3xl font-bold text-white mb-8">Flipping...</div>
+      <canvas id="coin-canvas" width="300" height="300" class="mx-auto"></canvas>
+    </div>
+    <div id="coin-phase-resolve" class="hidden text-center w-full max-w-4xl px-6">
+      <div class="text-6xl mb-4" id="coin-result-emoji">🪙</div>
+      <div class="text-5xl font-black text-[#ffd700] mb-4" id="coin-result-text">HEADS</div>
+      <div class="text-xl text-gray-300 mb-6" id="coin-result-sub">Survivors advance!</div>
+      <div id="coin-survivors-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 max-h-48 overflow-y-auto"></div>
+    </div>
+    <div id="coin-phase-winner" class="hidden text-center">
+      <div class="text-6xl mb-4">👑</div>
+      <div class="text-2xl text-[#ffd700] font-bold mb-2">FLIP MASTER</div>
+      <div id="coin-winner-name" class="text-7xl font-black text-white mb-4"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== EMOJI FLASH OVERLAY ==================== -->
+<div id="emoji-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center">
+    <div class="text-center mb-6">
+      <div class="text-[#ff3366] text-sm font-bold uppercase tracking-widest mb-2">⚡ Emoji Flash</div>
+      <h1 class="text-4xl md:text-6xl font-black text-white">React Fast</h1>
+    </div>
+    <div id="emoji-phase-waiting" class="text-center">
+      <div class="text-2xl text-gray-400">Connecting to chat...</div>
+    </div>
+    <div id="emoji-phase-show" class="hidden text-center w-full max-w-4xl px-6">
+      <div class="text-8xl md:text-9xl mb-6 animate-bounce" id="emoji-display">🔥</div>
+      <div class="text-3xl font-bold text-white mb-2">Type the command!</div>
+      <div class="text-5xl font-black text-[#ffd700] mb-6" id="emoji-timer">5</div>
+      <div id="emoji-command-hint" class="text-xl text-gray-400 mb-6">!fire</div>
+      <div id="emoji-players-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 max-h-48 overflow-y-auto"></div>
+    </div>
+    <div id="emoji-phase-resolve" class="hidden text-center w-full max-w-4xl px-6">
+      <div class="text-5xl font-black text-[#53fc18] mb-4" id="emoji-resolve-text">SURVIVORS</div>
+      <div class="text-xl text-gray-300 mb-6" id="emoji-result-sub"></div>
+      <div id="emoji-survivors-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 max-h-48 overflow-y-auto"></div>
+    </div>
+    <div id="emoji-phase-winner" class="hidden text-center">
+      <div class="text-6xl mb-4">⚡</div>
+      <div class="text-2xl text-[#ff3366] font-bold mb-2">REACTION KING</div>
+      <div id="emoji-winner-name" class="text-7xl font-black text-white mb-4"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MATH BLITZ OVERLAY ==================== -->
+<div id="math-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-8">
+      <div class="text-[#00d4ff] text-sm font-bold uppercase tracking-widest mb-2">🔢 Math Blitz</div>
+      <h1 class="text-4xl md:text-5xl font-black text-white">Brain Crunch</h1>
+    </div>
+    <div id="math-phase-waiting" class="text-center">
+      <div class="text-2xl text-gray-400">Loading problems...</div>
+    </div>
+    <div id="math-phase-question" class="hidden w-full max-w-3xl">
+      <div class="glass rounded-3xl p-8 md:p-10 mb-8 text-center">
+        <div id="math-q-num" class="text-[#00d4ff] text-sm font-bold uppercase tracking-widest mb-4">Problem 1</div>
+        <div id="math-problem" class="text-5xl md:text-6xl font-black text-white mb-6">12 × 8 = ?</div>
+        <div class="text-5xl font-black text-[#ffd700] mb-2" id="math-timer">15</div>
+        <div class="text-sm text-gray-500">Type !answer (e.g., !96)</div>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="text-xs text-gray-500 mb-1">Answered</div>
+          <div id="math-answered-count" class="text-2xl font-bold text-white">0</div>
+        </div>
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="text-xs text-gray-500 mb-1">Correct</div>
+          <div id="math-correct-count" class="text-2xl font-bold text-[#53fc18]">0</div>
+        </div>
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="text-xs text-gray-500 mb-1">Wrong</div>
+          <div id="math-wrong-count" class="text-2xl font-bold text-[#ff3366]">0</div>
+        </div>
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="text-xs text-gray-500 mb-1">Alive</div>
+          <div id="math-alive-count" class="text-2xl font-bold text-[#00d4ff]">0</div>
+        </div>
+      </div>
+    </div>
+    <div id="math-phase-reveal" class="hidden text-center w-full max-w-2xl">
+      <div class="glass rounded-3xl p-10 text-center">
+        <div class="text-3xl font-bold text-white mb-4">Answer:</div>
+        <div id="math-correct-answer" class="text-6xl font-black text-[#53fc18] mb-6">96</div>
+        <div id="math-eliminated" class="text-xl text-[#ff3366] mb-4"></div>
+        <div id="math-survivors-text" class="text-lg text-gray-300"></div>
+      </div>
+    </div>
+    <div id="math-phase-winner" class="hidden text-center">
+      <div class="text-6xl mb-4">🧮</div>
+      <div class="text-2xl text-[#00d4ff] font-bold mb-2">MATH WIZARD</div>
+      <div id="math-winner-name" class="text-7xl font-black text-white mb-4"></div>
     </div>
   </div>
 </div>
@@ -1561,6 +1686,549 @@
     }
   }
 
+
+
+  // ==================== MINI GAME LAUNCHERS (NEW) ====================
+  function launchCoinGame() {
+    if (state.entrants.length < 2) return alert('Need at least 2 entrants!');
+    const room = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const base = window.location.origin + window.location.pathname;
+    const chatroomId = document.getElementById('dash-chatroom-id').value.trim() || '107612';
+    const url = `${base}?mode=coin&room=${room}&title=${encodeURIComponent(state.title)}&chatroom=${chatroomId}`;
+    document.getElementById('minigame-url').textContent = url;
+    window.open(url, '_blank', 'width=1920,height=1080');
+  }
+
+  function launchEmojiGame() {
+    if (state.entrants.length < 2) return alert('Need at least 2 entrants!');
+    const room = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const base = window.location.origin + window.location.pathname;
+    const chatroomId = document.getElementById('dash-chatroom-id').value.trim() || '107612';
+    const url = `${base}?mode=emoji&room=${room}&title=${encodeURIComponent(state.title)}&chatroom=${chatroomId}`;
+    document.getElementById('minigame-url').textContent = url;
+    window.open(url, '_blank', 'width=1920,height=1080');
+  }
+
+  function launchMathGame() {
+    if (state.entrants.length < 2) return alert('Need at least 2 entrants!');
+    const room = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const base = window.location.origin + window.location.pathname;
+    const chatroomId = document.getElementById('dash-chatroom-id').value.trim() || '107612';
+    const url = `${base}?mode=math&room=${room}&title=${encodeURIComponent(state.title)}&chatroom=${chatroomId}`;
+    document.getElementById('minigame-url').textContent = url;
+    window.open(url, '_blank', 'width=1920,height=1080');
+  }
+
+  // ==================== COIN FLIP ARENA ====================
+  function initCoinGame() {
+    const params = new URLSearchParams(window.location.search);
+    const room = params.get('room');
+    const title = params.get('title') || 'Giveaway';
+    const chatroomId = params.get('chatroom') || '107612';
+
+    document.getElementById('setup-screen').classList.add('hidden');
+    document.getElementById('dashboard-screen').classList.add('hidden');
+    document.getElementById('coin-overlay').classList.remove('hidden');
+
+    let gameState = {
+      phase: 'collect',
+      round: 1,
+      players: new Map(),
+      survivors: [],
+      timeLeft: 15,
+      result: 'heads'
+    };
+
+    const wsUrl = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0-rc2&flash=false';
+    const ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg.event === 'pusher:connection_established') {
+          ws.send(JSON.stringify({ event: 'pusher:subscribe', data: { auth: '', channel: `chatrooms.${chatroomId}.v2` } }));
+          startCoinRound();
+        }
+        if (msg.event === 'App\Events\ChatMessageEvent') {
+          const data = JSON.parse(msg.data);
+          const text = (data.content || '').trim().toLowerCase();
+          const username = data.sender?.username || 'unknown';
+          const color = data.sender?.identity?.color || '#53fc18';
+
+          if (!gameState.players.has(username)) {
+            gameState.players.set(username, { color, guess: null });
+          }
+
+          const guessMatch = text.match(/^!(heads|tails)$/);
+          if (guessMatch && gameState.phase === 'collect') {
+            const p = gameState.players.get(username);
+            if (!p.guess) {
+              p.guess = guessMatch[1];
+              updateCoinGrid();
+            }
+          }
+        }
+      };
+    };
+
+    function updateCoinGrid() {
+      const grid = document.getElementById('coin-players-grid');
+      const items = Array.from(gameState.players.entries()).filter(([_, p]) => p.guess);
+      grid.innerHTML = items.map(([name, p]) => `
+        <div class="entrant-pill flex items-center gap-2 px-3 py-2 rounded-xl">
+          <div class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${p.color}"></div>
+          <span class="font-semibold text-xs truncate">${name}</span>
+          <span class="text-[10px] font-bold bg-white/10 px-1.5 rounded uppercase">${p.guess}</span>
+        </div>
+      `).join('');
+    }
+
+    function startCoinRound() {
+      gameState.phase = 'collect';
+      gameState.players.forEach(p => p.guess = null);
+      gameState.timeLeft = gameState.round === 1 ? 15 : 10;
+
+      document.getElementById('coin-phase-waiting').classList.add('hidden');
+      document.getElementById('coin-phase-collect').classList.remove('hidden');
+      document.getElementById('coin-phase-flip').classList.add('hidden');
+      document.getElementById('coin-phase-resolve').classList.add('hidden');
+      document.getElementById('coin-phase-winner').classList.add('hidden');
+      document.getElementById('coin-round-badge').textContent = `Round ${gameState.round}`;
+      updateCoinGrid();
+
+      const timerInterval = setInterval(() => {
+        gameState.timeLeft--;
+        document.getElementById('coin-timer').textContent = gameState.timeLeft;
+        if (gameState.timeLeft <= 0) {
+          clearInterval(timerInterval);
+          flipCoin();
+        }
+      }, 1000);
+    }
+
+    function flipCoin() {
+      gameState.phase = 'flip';
+      document.getElementById('coin-phase-collect').classList.add('hidden');
+      document.getElementById('coin-phase-flip').classList.remove('hidden');
+
+      const canvas = document.getElementById('coin-canvas');
+      const ctx = canvas.getContext('2d');
+      gameState.result = Math.random() < 0.5 ? 'heads' : 'tails';
+
+      let frame = 0;
+      const flipInterval = setInterval(() => {
+        frame++;
+        const scale = Math.abs(Math.sin(frame * 0.3));
+        const isHeads = Math.sin(frame * 0.3) > 0;
+        drawCoin(ctx, scale, isHeads);
+        if (frame > 25) {
+          clearInterval(flipInterval);
+          drawCoin(ctx, 1, gameState.result === 'heads');
+          setTimeout(resolveCoin, 600);
+        }
+      }, 80);
+    }
+
+    function drawCoin(ctx, scale, isHeads) {
+      const w = 300, h = 300, cx = 150, cy = 150, r = 100;
+      ctx.clearRect(0, 0, w, h);
+      const rw = r * scale;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rw, r, 0, 0, Math.PI * 2);
+      ctx.fillStyle = isHeads ? '#ffd700' : '#c0c0c0';
+      ctx.fill();
+      ctx.strokeStyle = isHeads ? '#b8860b' : '#808080';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rw * 0.85, r * 0.85, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fillStyle = '#050508';
+      ctx.font = `bold ${Math.max(20, 60 * scale)}px Inter, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(isHeads ? 'H' : 'T', cx, cy);
+    }
+
+    function resolveCoin() {
+      gameState.phase = 'resolve';
+      document.getElementById('coin-phase-flip').classList.add('hidden');
+      document.getElementById('coin-phase-resolve').classList.remove('hidden');
+
+      const result = gameState.result;
+      document.getElementById('coin-result-emoji').textContent = result === 'heads' ? '👤' : '🦅';
+      document.getElementById('coin-result-text').textContent = result.toUpperCase();
+
+      const survivors = [];
+      gameState.players.forEach((p, name) => {
+        if (p.guess === result) survivors.push({ name, color: p.color });
+      });
+
+      if (survivors.length === 0) {
+        document.getElementById('coin-result-sub').textContent = 'No survivors! Everyone revives!';
+        gameState.survivors = Array.from(gameState.players.entries()).map(([name, p]) => ({ name, color: p.color }));
+      } else {
+        document.getElementById('coin-result-sub').textContent = `${survivors.length} survivor${survivors.length > 1 ? 's' : ''} advance!`;
+        gameState.survivors = survivors;
+      }
+
+      const grid = document.getElementById('coin-survivors-grid');
+      grid.innerHTML = gameState.survivors.map(s => `
+        <div class="entrant-pill flex items-center gap-2 px-3 py-2 rounded-xl border border-[#ffd700]/30">
+          <div class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${s.color}"></div>
+          <span class="font-semibold text-xs truncate text-[#ffd700]">${s.name}</span>
+        </div>
+      `).join('');
+
+      setTimeout(() => {
+        if (gameState.survivors.length === 1) {
+          showCoinWinner(gameState.survivors[0].name);
+        } else {
+          gameState.round++;
+          gameState.players = new Map(gameState.survivors.map(s => [s.name, { color: s.color, guess: null }]));
+          startCoinRound();
+        }
+      }, 4000);
+    }
+
+    function showCoinWinner(name) {
+      document.getElementById('coin-phase-resolve').classList.add('hidden');
+      document.getElementById('coin-phase-winner').classList.remove('hidden');
+      document.getElementById('coin-winner-name').textContent = name;
+    }
+  }
+
+  // ==================== EMOJI FLASH ====================
+  function initEmojiGame() {
+    const params = new URLSearchParams(window.location.search);
+    const room = params.get('room');
+    const title = params.get('title') || 'Giveaway';
+    const chatroomId = params.get('chatroom') || '107612';
+
+    document.getElementById('setup-screen').classList.add('hidden');
+    document.getElementById('dashboard-screen').classList.add('hidden');
+    document.getElementById('emoji-overlay').classList.remove('hidden');
+
+    const emojis = [
+      { emoji: '🔥', command: 'fire' },
+      { emoji: '💀', command: 'skull' },
+      { emoji: '⭐', command: 'star' },
+      { emoji: '💎', command: 'diamond' },
+      { emoji: '⚡', command: 'bolt' },
+      { emoji: '🌙', command: 'moon' },
+      { emoji: '🎲', command: 'dice' },
+      { emoji: '🎯', command: 'target' }
+    ];
+
+    let gameState = {
+      phase: 'waiting',
+      round: 0,
+      players: new Map(),
+      currentEmoji: null,
+      answers: new Map(),
+      timeLeft: 5
+    };
+
+    const wsUrl = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0-rc2&flash=false';
+    const ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg.event === 'pusher:connection_established') {
+          ws.send(JSON.stringify({ event: 'pusher:subscribe', data: { auth: '', channel: `chatrooms.${chatroomId}.v2` } }));
+          startEmojiRound();
+        }
+        if (msg.event === 'App\Events\ChatMessageEvent') {
+          const data = JSON.parse(msg.data);
+          const text = (data.content || '').trim().toLowerCase();
+          const username = data.sender?.username || 'unknown';
+          const color = data.sender?.identity?.color || '#53fc18';
+
+          if (!gameState.players.has(username)) {
+            gameState.players.set(username, { color, alive: true });
+          }
+
+          const cmdMatch = text.match(/^!(fire|skull|star|diamond|bolt|moon|dice|target)$/);
+          if (cmdMatch && gameState.phase === 'collecting') {
+            const p = gameState.players.get(username);
+            if (p.alive && !gameState.answers.has(username)) {
+              gameState.answers.set(username, cmdMatch[1]);
+              updateEmojiGrid();
+            }
+          }
+        }
+      };
+    };
+
+    function startEmojiRound() {
+      if (gameState.round >= 6) {
+        const alive = Array.from(gameState.players.entries()).filter(([_, p]) => p.alive);
+        if (alive.length === 0) showEmojiWinner('Nobody');
+        else showEmojiWinner(alive[Math.floor(Math.random() * alive.length)][0]);
+        return;
+      }
+
+      gameState.phase = 'collecting';
+      gameState.answers.clear();
+      gameState.timeLeft = 5;
+      gameState.currentEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+      gameState.round++;
+
+      document.getElementById('emoji-phase-waiting').classList.add('hidden');
+      document.getElementById('emoji-phase-resolve').classList.add('hidden');
+      document.getElementById('emoji-phase-winner').classList.add('hidden');
+      document.getElementById('emoji-phase-show').classList.remove('hidden');
+
+      document.getElementById('emoji-display').textContent = gameState.currentEmoji.emoji;
+      document.getElementById('emoji-command-hint').textContent = `!${gameState.currentEmoji.command}`;
+      document.getElementById('emoji-timer').textContent = '5';
+      updateEmojiGrid();
+
+      const timerInterval = setInterval(() => {
+        gameState.timeLeft--;
+        document.getElementById('emoji-timer').textContent = gameState.timeLeft;
+        if (gameState.timeLeft <= 0) {
+          clearInterval(timerInterval);
+          resolveEmoji();
+        }
+      }, 1000);
+    }
+
+    function updateEmojiGrid() {
+      const grid = document.getElementById('emoji-players-grid');
+      const alive = Array.from(gameState.players.entries()).filter(([_, p]) => p.alive);
+      grid.innerHTML = alive.map(([name, p]) => {
+        const answered = gameState.answers.has(name);
+        const correct = answered && gameState.answers.get(name) === gameState.currentEmoji.command;
+        return `
+        <div class="entrant-pill flex items-center gap-2 px-3 py-2 rounded-xl ${answered ? (correct ? 'border border-[#53fc18]/50' : 'border border-[#ff3366]/50') : ''}">
+          <div class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${p.color}"></div>
+          <span class="font-semibold text-xs truncate">${name}</span>
+          ${answered ? `<span class="text-[10px] font-bold px-1.5 rounded ${correct ? 'bg-[#53fc18]/20 text-[#53fc18]' : 'bg-[#ff3366]/20 text-[#ff3366]'}">${correct ? '✓' : '✗'}</span>` : ''}
+        </div>
+      `}).join('');
+    }
+
+    function resolveEmoji() {
+      gameState.phase = 'resolving';
+      document.getElementById('emoji-phase-show').classList.add('hidden');
+      document.getElementById('emoji-phase-resolve').classList.remove('hidden');
+
+      const correctCmd = gameState.currentEmoji.command;
+      let eliminated = 0;
+      gameState.players.forEach((p, name) => {
+        if (!p.alive) return;
+        const ans = gameState.answers.get(name);
+        if (ans !== correctCmd) {
+          p.alive = false;
+          eliminated++;
+        }
+      });
+
+      const survivors = Array.from(gameState.players.entries()).filter(([_, p]) => p.alive);
+      document.getElementById('emoji-resolve-text').textContent = eliminated > 0 ? `${eliminated} ELIMINATED` : 'SURVIVORS';
+      document.getElementById('emoji-resolve-text').className = eliminated > 0 ? 'text-5xl font-black text-[#ff3366] mb-4' : 'text-5xl font-black text-[#53fc18] mb-4';
+      document.getElementById('emoji-result-sub').textContent = survivors.length > 0
+        ? `${survivors.length} survivor${survivors.length > 1 ? 's' : ''} advance to next flash`
+        : 'No survivors! Reviving all...';
+
+      if (survivors.length === 0) {
+        gameState.players.forEach(p => p.alive = true);
+      }
+
+      const grid = document.getElementById('emoji-survivors-grid');
+      const finalAlive = Array.from(gameState.players.entries()).filter(([_, p]) => p.alive);
+      grid.innerHTML = finalAlive.map(([name, p]) => `
+        <div class="entrant-pill flex items-center gap-2 px-3 py-2 rounded-xl border border-[#53fc18]/30">
+          <div class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${p.color}"></div>
+          <span class="font-semibold text-xs truncate text-[#53fc18]">${name}</span>
+        </div>
+      `).join('');
+
+      setTimeout(() => {
+        const aliveNow = Array.from(gameState.players.entries()).filter(([_, p]) => p.alive);
+        if (aliveNow.length === 1) {
+          showEmojiWinner(aliveNow[0][0]);
+        } else {
+          startEmojiRound();
+        }
+      }, 4000);
+    }
+
+    function showEmojiWinner(name) {
+      document.getElementById('emoji-phase-resolve').classList.add('hidden');
+      document.getElementById('emoji-phase-winner').classList.remove('hidden');
+      document.getElementById('emoji-winner-name').textContent = name;
+    }
+  }
+
+  // ==================== MATH BLITZ ====================
+  function initMathGame() {
+    const params = new URLSearchParams(window.location.search);
+    const room = params.get('room');
+    const title = params.get('title') || 'Giveaway';
+    const chatroomId = params.get('chatroom') || '107612';
+
+    document.getElementById('setup-screen').classList.add('hidden');
+    document.getElementById('dashboard-screen').classList.add('hidden');
+    document.getElementById('math-overlay').classList.remove('hidden');
+
+    const problems = [
+      { q: "7 × 8", a: 56 },
+      { q: "12 + 35", a: 47 },
+      { q: "100 ÷ 4", a: 25 },
+      { q: "9 × 9", a: 81 },
+      { q: "45 + 67", a: 112 },
+      { q: "144 ÷ 12", a: 12 },
+      { q: "15 × 6", a: 90 },
+      { q: "83 - 29", a: 54 }
+    ];
+
+    let gameState = {
+      phase: 'waiting',
+      round: 0,
+      players: new Map(),
+      answers: new Map(),
+      timeLeft: 15
+    };
+
+    const wsUrl = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0-rc2&flash=false';
+    const ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg.event === 'pusher:connection_established') {
+          ws.send(JSON.stringify({ event: 'pusher:subscribe', data: { auth: '', channel: `chatrooms.${chatroomId}.v2` } }));
+          startMathRound();
+        }
+        if (msg.event === 'App\Events\ChatMessageEvent') {
+          const data = JSON.parse(msg.data);
+          const text = (data.content || '').trim().toLowerCase();
+          const username = data.sender?.username || 'unknown';
+          const color = data.sender?.identity?.color || '#53fc18';
+
+          if (!gameState.players.has(username)) {
+            gameState.players.set(username, { color, alive: true });
+          }
+
+          const ansMatch = text.match(/^!(\d+)$/);
+          if (ansMatch && gameState.phase === 'collecting') {
+            const p = gameState.players.get(username);
+            if (p.alive && !gameState.answers.has(username)) {
+              gameState.answers.set(username, parseInt(ansMatch[1]));
+              updateMathStats();
+            }
+          }
+        }
+      };
+    };
+
+    function startMathRound() {
+      if (gameState.round >= problems.length) {
+        const alive = Array.from(gameState.players.entries()).filter(([_, p]) => p.alive);
+        if (alive.length === 0) showMathWinner('Nobody');
+        else showMathWinner(alive[Math.floor(Math.random() * alive.length)][0]);
+        return;
+      }
+
+      const prob = problems[gameState.round];
+      gameState.phase = 'collecting';
+      gameState.answers.clear();
+      gameState.timeLeft = 15;
+
+      document.getElementById('math-phase-waiting').classList.add('hidden');
+      document.getElementById('math-phase-reveal').classList.add('hidden');
+      document.getElementById('math-phase-winner').classList.add('hidden');
+      document.getElementById('math-phase-question').classList.remove('hidden');
+
+      document.getElementById('math-q-num').textContent = `Problem ${gameState.round + 1} / ${problems.length}`;
+      document.getElementById('math-problem').textContent = `${prob.q} = ?`;
+      document.getElementById('math-timer').textContent = '15';
+      updateMathStats();
+
+      const timerInterval = setInterval(() => {
+        gameState.timeLeft--;
+        document.getElementById('math-timer').textContent = gameState.timeLeft;
+        if (gameState.timeLeft <= 0) {
+          clearInterval(timerInterval);
+          revealMathAnswer(prob);
+        }
+      }, 1000);
+    }
+
+    function updateMathStats() {
+      const prob = problems[gameState.round];
+      const correct = problems[gameState.round] ? problems[gameState.round].a : 0;
+      let correctCount = 0, wrongCount = 0;
+      gameState.answers.forEach(ans => {
+        if (ans === correct) correctCount++;
+        else wrongCount++;
+      });
+      const alive = Array.from(gameState.players.values()).filter(p => p.alive).length;
+      document.getElementById('math-answered-count').textContent = gameState.answers.size;
+      document.getElementById('math-correct-count').textContent = correctCount;
+      document.getElementById('math-wrong-count').textContent = wrongCount;
+      document.getElementById('math-alive-count').textContent = alive;
+    }
+
+    function revealMathAnswer(prob) {
+      gameState.phase = 'revealing';
+      document.getElementById('math-phase-question').classList.add('hidden');
+      document.getElementById('math-phase-reveal').classList.remove('hidden');
+
+      document.getElementById('math-correct-answer').textContent = prob.a;
+
+      let eliminated = 0;
+      gameState.players.forEach((p, name) => {
+        if (!p.alive) return;
+        const ans = gameState.answers.get(name);
+        if (ans !== prob.a) {
+          p.alive = false;
+          eliminated++;
+        }
+      });
+
+      const alive = Array.from(gameState.players.entries()).filter(([_, p]) => p.alive);
+      document.getElementById('math-eliminated').textContent = eliminated > 0 ? `${eliminated} player${eliminated > 1 ? 's' : ''} eliminated!` : 'Everyone got it! Random half eliminated...';
+
+      if (eliminated === 0 && alive.length > 1) {
+        const shuffled = alive.sort(() => Math.random() - 0.5);
+        const toEliminate = Math.floor(shuffled.length / 2);
+        for (let i = 0; i < toEliminate; i++) shuffled[i][1].alive = false;
+        document.getElementById('math-eliminated').textContent = `${toEliminate} randomly eliminated!`;
+      }
+
+      const survivors = Array.from(gameState.players.entries()).filter(([_, p]) => p.alive);
+      document.getElementById('math-survivors-text').textContent = survivors.length > 0
+        ? `${survivors.length} survivor${survivors.length > 1 ? 's' : ''} advance`
+        : 'No survivors! Reviving all...';
+
+      if (survivors.length === 0) {
+        gameState.players.forEach(p => p.alive = true);
+      }
+
+      setTimeout(() => {
+        const finalAlive = Array.from(gameState.players.entries()).filter(([_, p]) => p.alive);
+        if (finalAlive.length === 1) {
+          showMathWinner(finalAlive[0][0]);
+        } else {
+          gameState.round++;
+          startMathRound();
+        }
+      }, 5000);
+    }
+
+    function showMathWinner(name) {
+      document.getElementById('math-phase-reveal').classList.add('hidden');
+      document.getElementById('math-phase-winner').classList.remove('hidden');
+      document.getElementById('math-winner-name').textContent = name;
+    }
+  }
+
   // ==================== ROUTING ====================
   const params = new URLSearchParams(window.location.search);
   const mode = params.get('mode');
@@ -1569,6 +2237,9 @@
   else if (mode === 'dice') initDiceGame();
   else if (mode === 'trivia') initTriviaGame();
   else if (mode === 'roulette') initRouletteGame();
+  else if (mode === 'coin') initCoinGame();
+  else if (mode === 'emoji') initEmojiGame();
+  else if (mode === 'math') initMathGame();
   else initOverlay();
 </script>
 
