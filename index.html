@@ -83,6 +83,7 @@
     .hidden { display:none !important; }
   </style>
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 <div class="bg-mesh"></div>
@@ -1976,7 +1977,7 @@ function startBoxing(p1Name, p2Name) {
       } else if (p.type === 'impact') {
         ctx.fillStyle = `rgba(255,215,0,${alpha})`;
       } else {
-        ctx.fillStyle = p.color.replace(/[\\d.]+\\)$/, alpha + ')');
+        ctx.fillStyle = p.color.replace(/[\d.]+\)$/, alpha + ')');
       }
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.size * alpha, 0, Math.PI * 2);
