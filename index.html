@@ -1350,7 +1350,7 @@ function startBumperArena(names) {
   }
   function drawParticles() {
     particles = particles.filter(p => { p.life--; if (p.life<=0) return false; const a=p.life/p.maxLife;
-      if (p.burst) { ctx.fillStyle=(p.color||'#fff').replace(')',`,${a})`).replace('rgb','rgba'); for (let k=0;k<1;k++){} ctx.beginPath(); ctx.arc(p.x,p.y,18*(1-a)+4,0,Math.PI*2); ctx.strokeStyle=`rgba(255,255,255,${a})`; ctx.lineWidth=3; ctx.stroke(); }
+      if (p.burst) { ctx.beginPath(); ctx.arc(p.x,p.y,18*(1-a)+4,0,Math.PI*2); ctx.strokeStyle=`rgba(255,255,255,${a})`; ctx.lineWidth=3; ctx.stroke(); }
       else { ctx.fillStyle=`rgba(255,255,255,${a*0.6})`; ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2); ctx.fill(); }
       return true; });
   }
@@ -1679,7 +1679,7 @@ function startBoxing(p1Name, p2Name) {
   function aiThink(ai, player) {
     if (gameOver || knockdown || ai.stun>0) return;
     const dist = Math.abs(ai.x-player.x);
-    if (dist>80) { ai.vx=(ai.vx||0)*0+ (ai.facing*(1.5+Math.random())); ai.x += ai.vx; ai.state='idle'; }
+    if (dist>80) { ai.x += ai.facing*(1.5+Math.random()); ai.state='idle'; }
     else if (dist<50) { ai.x -= ai.facing*(1+Math.random()); }
     const r = Math.random();
     if (ai.special >= 100 && r < 0.02) { doAttack(ai, player, 'special'); return; }
