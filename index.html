@@ -161,6 +161,11 @@
         <button onclick="launchDerby()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#ef4444,#7f1d1d);">🚗 Demolition Derby</button>
         <button onclick="launchHillKing()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#eab308,#854d0e);">⛰️ King of the Hill</button>
         <button onclick="launchDownhill()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#38bdf8,#1e3a8a);">🏂 Downhill Chaos</button>
+        <button onclick="launchRocket()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f97316,#7c2d12);">🚀 Rocket Launch</button>
+        <button onclick="launchFishing()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#0ea5e9,#075985);">🎣 Fishing Derby</button>
+        <button onclick="launchTower()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#a3e635,#3f6212);">🧗 Tower Climb</button>
+        <button onclick="launchLaser()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#22d3ee,#0e7490);">⚡ Laser Arena</button>
+        <button onclick="launchSnail()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#84cc16,#3f6212);">🐌 Snail Derby</button>
       </div>
       <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">1-on-1 Combat (pick 2 entrants)</div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -413,6 +418,72 @@
       <div id="downhill-legend" class="legend-scroll mt-3"></div>
     </div>
     <div id="downhill-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🏁</div><div class="text-2xl text-[#38bdf8] font-bold mb-2">OUTRAN THE AVALANCHE</div><div id="downhill-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== ROCKET LAUNCH (all entrants) ==================== -->
+<div id="rocket-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#f97316] text-sm font-bold uppercase tracking-widest mb-2">🚀 Rocket Launch</div><h1 class="text-4xl md:text-5xl font-black text-white">Asteroid Run</h1></div>
+    <div id="rocket-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Rockets fueling up...</div><div class="text-sm text-gray-600" id="rocket-intro-count">Manage your fuel — everyone launches</div></div>
+    <div id="rocket-phase-play" class="hidden w-full max-w-6xl">
+      <canvas id="rocket-canvas" width="1100" height="560" class="w-full rounded-2xl border border-white/10"></canvas>
+      <div id="rocket-legend" class="legend-scroll mt-3"></div>
+    </div>
+    <div id="rocket-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🏆</div><div class="text-2xl text-[#f97316] font-bold mb-2">FIRST TO ORBIT</div><div id="rocket-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== FISHING DERBY (all entrants) ==================== -->
+<div id="fishing-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#0ea5e9] text-sm font-bold uppercase tracking-widest mb-2">🎣 Fishing Derby</div><h1 class="text-4xl md:text-5xl font-black text-white">Reel It In</h1></div>
+    <div id="fishing-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Casting lines...</div><div class="text-sm text-gray-600" id="fishing-intro-count">Everyone fishes for the biggest haul</div></div>
+    <div id="fishing-phase-play" class="hidden w-full max-w-5xl">
+      <div id="fishing-feed" class="text-center text-[#ffd700] font-bold text-lg mb-2 h-6">Lines are in the water...</div>
+      <canvas id="fishing-canvas" width="900" height="560" class="mx-auto rounded-2xl border border-white/10"></canvas>
+    </div>
+    <div id="fishing-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🐟</div><div class="text-2xl text-[#0ea5e9] font-bold mb-2">BIGGEST HAUL</div><div id="fishing-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== TOWER CLIMB (all entrants) ==================== -->
+<div id="tower-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#a3e635] text-sm font-bold uppercase tracking-widest mb-2">🧗 Tower Climb</div><h1 class="text-4xl md:text-5xl font-black text-white">Race to the Top</h1></div>
+    <div id="tower-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Chalking up...</div><div class="text-sm text-gray-600" id="tower-intro-count">Everyone climbs — falls just cost you height</div></div>
+    <div id="tower-phase-play" class="hidden w-full max-w-6xl">
+      <canvas id="tower-canvas" width="1100" height="560" class="w-full rounded-2xl border border-white/10"></canvas>
+      <div id="tower-legend" class="legend-scroll mt-3"></div>
+    </div>
+    <div id="tower-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🏔️</div><div class="text-2xl text-[#a3e635] font-bold mb-2">SUMMIT REACHED</div><div id="tower-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== LASER ARENA (all entrants) ==================== -->
+<div id="laser-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#22d3ee] text-sm font-bold uppercase tracking-widest mb-2">⚡ Laser Arena</div><h1 class="text-4xl md:text-5xl font-black text-white">Last One Standing</h1></div>
+    <div id="laser-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Powering up blasters...</div><div class="text-sm text-gray-600" id="laser-intro-count">Everyone fights</div></div>
+    <div id="laser-phase-play" class="hidden w-full max-w-5xl">
+      <div class="flex items-center justify-center gap-3 mb-1"><span id="laser-alive-badge" class="p-count-badge">0 alive</span></div>
+      <div id="laser-commentary" class="text-center text-[#ffd700] font-bold text-lg mb-2 h-6">Blasters armed!</div>
+      <canvas id="laser-canvas" width="900" height="600" class="mx-auto rounded-2xl border border-white/10 bg-[#050810]"></canvas>
+    </div>
+    <div id="laser-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">⚡</div><div class="text-2xl text-[#22d3ee] font-bold mb-2">LAST ONE STANDING</div><div id="laser-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== SNAIL DERBY (all entrants) ==================== -->
+<div id="snail-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#84cc16] text-sm font-bold uppercase tracking-widest mb-2">🐌 Snail Derby</div><h1 class="text-4xl md:text-5xl font-black text-white">Slow and Chaotic</h1></div>
+    <div id="snail-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Snails taking their positions...</div><div class="text-sm text-gray-600" id="snail-intro-count">Every entrant gets a snail</div></div>
+    <div id="snail-phase-play" class="hidden w-full max-w-6xl">
+      <canvas id="snail-canvas" width="1100" height="500" class="w-full rounded-2xl border border-white/10"></canvas>
+      <div id="snail-legend" class="legend-scroll mt-3"></div>
+    </div>
+    <div id="snail-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🐌</div><div class="text-2xl text-[#84cc16] font-bold mb-2">SLOWEST TO WIN — FASTEST ACROSS</div><div id="snail-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
   </div>
 </div>
 
@@ -688,6 +759,11 @@ function launchObstacleSprint() { openGamePopup('obstacle'); }
 function launchDerby() { openGamePopup('derby'); }
 function launchHillKing() { openGamePopup('hill'); }
 function launchDownhill() { openGamePopup('downhill'); }
+function launchRocket() { openGamePopup('rocket'); }
+function launchFishing() { openGamePopup('fishing'); }
+function launchTower() { openGamePopup('tower'); }
+function launchLaser() { openGamePopup('laser'); }
+function launchSnail() { openGamePopup('snail'); }
 function launchBoxingMatch() { openGamePopup('boxing'); }
 function launchSwordDuel() { openGamePopup('sword'); }
 
@@ -2004,6 +2080,509 @@ function startDownhill(names) {
   loop();
 }
 
+/* ==================== ROCKET LAUNCH (every entrant — fuel management + asteroid dodging) ==================== */
+function runRocket() {
+  showOverlay('rocket-overlay'); showPhase('rocket', 'intro');
+  const names = Array.from(entrants);
+  if (names.length === 0) { alert('No entrants yet!'); return; }
+  document.getElementById('rocket-intro-count').textContent = names.length + ' rocket' + (names.length===1?'':'s') + ' fueling up';
+  setTimeout(() => startRocket(names), 1600);
+}
+function startRocket(names) {
+  showPhase('rocket', 'play');
+  document.getElementById('rocket-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('rocket-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const n = names.length, laneH = (H-60)/n;
+  const trackLength = 8600 + n*80, finishX = trackLength;
+  const rockets = names.map((nm,i) => ({ name:nm, x:60, y:30+i*laneH+laneH/2, color:colorFor(nm), speed:1.6+Math.random()*0.6, cruiseSpeed:1.6+Math.random()*0.6, boosting:false, fuel:100, stunned:0, finished:false, finishTime:0 }));
+  const asteroids = [];
+  for (let d=700; d<trackLength-500; d+=380+Math.random()*300) asteroids.push({ x:d, lane: Math.floor(Math.random()*n) });
+  const canisters = [];
+  for (let d=1200; d<trackLength-600; d+=900+Math.random()*700) canisters.push({ x:d, lane: Math.floor(Math.random()*n), used:false });
+  let startTime = Date.now(), frame=0, cameraX=0, places=1;
+  function drawSpace() {
+    ctx.fillStyle='#04040c'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='rgba(255,255,255,0.5)';
+    for (let i=0;i<80;i++) { const sx=(i*97 - cameraX*0.2)%(W+100), sy=(i*53)%H; ctx.globalAlpha = 0.2+((i*31)%10)/15; ctx.beginPath(); ctx.arc(((sx%(W+100))+W+100)%(W+100)-50, sy, 1.3, 0, Math.PI*2); ctx.fill(); }
+    ctx.globalAlpha = 1;
+    const fx = finishX-cameraX;
+    if (fx>-100&&fx<W+100) { ctx.strokeStyle='rgba(255,255,255,0.5)'; ctx.setLineDash([10,8]); ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(fx,20); ctx.lineTo(fx,H-30); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle='#fff'; ctx.font='bold 14px Inter'; ctx.textAlign='center'; ctx.fillText('ORBIT', fx, 14); }
+  }
+  function drawAsteroid(a) {
+    const x = a.x-cameraX; if (x<-30||x>W+30) return;
+    const y = 30 + a.lane*laneH + laneH/2;
+    ctx.save(); ctx.translate(x,y); ctx.rotate(frame*0.02+a.x*0.01);
+    ctx.fillStyle='#57534e'; ctx.beginPath();
+    for (let k=0;k<7;k++) { const ang=(k/7)*Math.PI*2, rad=10+((k*13)%5); ctx.lineTo(Math.cos(ang)*rad, Math.sin(ang)*rad); }
+    ctx.closePath(); ctx.fill(); ctx.strokeStyle='#78716c'; ctx.lineWidth=1; ctx.stroke();
+    ctx.restore();
+  }
+  function drawCanister(c) {
+    if (c.used) return;
+    const x = c.x-cameraX; if (x<-30||x>W+30) return;
+    const y = 30 + c.lane*laneH + laneH/2;
+    ctx.save(); ctx.translate(x,y); ctx.globalAlpha = 0.8+Math.sin(frame*0.2)*0.15;
+    ctx.fillStyle='#4ade80'; ctx.beginPath(); ctx.roundRect(-7,-10,14,20,4); ctx.fill();
+    ctx.fillStyle='#166534'; ctx.fillRect(-7,-2,14,4);
+    ctx.restore(); ctx.globalAlpha=1;
+  }
+  function drawRocket(r) {
+    const sx = r.x-cameraX, sy = r.y; if (sx<-40||sx>W+40) return;
+    ctx.save(); ctx.translate(sx,sy);
+    if (r.boosting || r.speed>0.5) { ctx.fillStyle=`hsl(${20+Math.random()*30},100%,${55+Math.random()*15}%)`; ctx.beginPath(); ctx.moveTo(-14,-5); ctx.lineTo(-14-8-Math.random()*10,0); ctx.lineTo(-14,5); ctx.closePath(); ctx.fill(); }
+    ctx.fillStyle=r.color; ctx.beginPath(); ctx.moveTo(16,0); ctx.lineTo(-4,-8); ctx.lineTo(-14,-5); ctx.lineTo(-14,5); ctx.lineTo(-4,8); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.beginPath(); ctx.arc(4,-2,3,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.fillText(r.name.substring(0,10), 0, -16);
+    ctx.restore();
+    ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(sx-14,sy+12,28,3);
+    ctx.fillStyle = r.fuel>40?'#4ade80':r.fuel>15?'#facc15':'#ef4444'; ctx.fillRect(sx-14,sy+12,28*Math.max(0,r.fuel)/100,3);
+  }
+  function drawHUD() {
+    const sorted = [...rockets].sort((a,b) => b.x-a.x);
+    const boxH = Math.min(200, 30 + Math.min(sorted.length,8)*16);
+    ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10,10,190,boxH,10); ctx.fill();
+    ctx.fillStyle='#f97316'; ctx.font='bold 12px Inter'; ctx.textAlign='left'; ctx.fillText('🚀 LEADERBOARD',20,28);
+    sorted.slice(0,8).forEach((r,i) => { ctx.fillStyle=r.color; ctx.fillRect(20,35+i*16,8,8); ctx.fillStyle='#fff'; ctx.font='11px Inter'; ctx.fillText((i+1)+'. '+r.name.substring(0,14),32,43+i*16); });
+    const leader = sorted[0], progress = Math.min(leader.x/trackLength,1);
+    ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(W-310,10,300,20,10); ctx.fill();
+    ctx.fillStyle=leader.color; ctx.beginPath(); ctx.roundRect(W-308,12,296*progress,16,8); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='10px Inter'; ctx.textAlign='center'; ctx.fillText(Math.round(progress*100)+'%', W-160,24);
+  }
+  let animId;
+  function loop() {
+    frame++;
+    let allFinished = true;
+    rockets.forEach((r,ri) => {
+      if (r.finished) return;
+      allFinished = false;
+      if (r.stunned > 0) { r.stunned--; }
+      else {
+        r.boosting = r.fuel > 3 && Math.random() < 0.55;
+        if (r.boosting) { r.speed = Math.min(r.cruiseSpeed*2.1, r.speed+0.06); r.fuel -= 0.4; }
+        else { r.speed = Math.max(r.cruiseSpeed*0.55, r.speed-0.03); r.fuel = Math.min(100, r.fuel+0.08); }
+        r.x += r.speed;
+        const lane = Math.round((r.y-30-laneH/2)/laneH);
+        const hitAsteroid = asteroids.find(a => a.lane===lane && Math.abs(a.x-r.x) < 16);
+        if (hitAsteroid && Math.random() < 0.05) { r.speed *= 0.3; r.fuel = Math.max(0, r.fuel-15); r.stunned = 20; }
+      }
+      const lane = Math.round((r.y-30-laneH/2)/laneH);
+      const c = canisters.find(cc => !cc.used && cc.lane===lane && Math.abs(cc.x-r.x) < 14);
+      if (c) { c.used = true; r.fuel = Math.min(100, r.fuel+40); }
+      if (r.x >= finishX) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; }
+    });
+    const leader = rockets.reduce((a,b) => a.x > b.x ? a : b);
+    cameraX = Math.max(0, Math.min(leader.x - W*0.32, trackLength - W + 150));
+    ctx.clearRect(0,0,W,H); drawSpace();
+    asteroids.forEach(drawAsteroid); canisters.forEach(drawCanister);
+    rockets.forEach(drawRocket); drawHUD();
+    if (!allFinished) animId = requestAnimationFrame(loop);
+    else {
+      cancelAnimationFrame(animId);
+      rockets.sort((a,b) => a.finishTime - b.finishTime);
+      setTimeout(() => { showPhase('rocket','winner'); document.getElementById('rocket-winner-name').textContent = rockets[0].name; }, 1000);
+    }
+  }
+  loop();
+}
+
+/* ==================== FISHING DERBY (every entrant — turn-based luck/timing, first to target weight) ==================== */
+function runFishing() {
+  showOverlay('fishing-overlay'); showPhase('fishing', 'intro');
+  const names = Array.from(entrants);
+  if (names.length === 0) { alert('No entrants yet!'); return; }
+  document.getElementById('fishing-intro-count').textContent = names.length + ' angler' + (names.length===1?'':'s') + ' casting lines';
+  setTimeout(() => startFishing(names), 1600);
+}
+function startFishing(names) {
+  showPhase('fishing', 'play');
+  const canvas = document.getElementById('fishing-canvas'); const ctx = canvas.getContext('2d');
+  const feed = document.getElementById('fishing-feed');
+  const W = canvas.width, H = canvas.height;
+  const n = names.length, dockY = 90, colW = W / n;
+  const goalWeight = 26 + n * 2.4;
+  const anglers = names.map((nm,i) => ({ name:nm, x: colW*i+colW/2, color: colorFor(nm), weight:0, biting:false, biteTimer:0, nextBite: 90+Math.random()*220, bobY:0, finished:false, popups:[] }));
+  let frame=0, places=1, fishArcs=[];
+  function setFeed(t) { feed.textContent = t; }
+  function drawScene() {
+    const sky = ctx.createLinearGradient(0,0,0,dockY); sky.addColorStop(0,'#1e3a5f'); sky.addColorStop(1,'#2d5a8a'); ctx.fillStyle=sky; ctx.fillRect(0,0,W,dockY);
+    ctx.fillStyle='#6b4a2f'; ctx.fillRect(0,dockY-14,W,14);
+    for (let x=0;x<W;x+=40) { ctx.strokeStyle='rgba(0,0,0,0.15)'; ctx.beginPath(); ctx.moveTo(x,dockY-14); ctx.lineTo(x,dockY); ctx.stroke(); }
+    const water = ctx.createLinearGradient(0,dockY,0,H); water.addColorStop(0,'#0c4a6e'); water.addColorStop(1,'#082f49'); ctx.fillStyle=water; ctx.fillRect(0,dockY,W,H-dockY);
+    ctx.strokeStyle='rgba(255,255,255,0.08)'; for (let i=0;i<6;i++) { const wy = dockY+30+i*70; ctx.beginPath(); for (let x=0;x<W;x+=20) ctx.lineTo(x, wy+Math.sin(x*0.05+frame*0.05+i)*4); ctx.stroke(); }
+  }
+  function drawAngler(a) {
+    ctx.save(); ctx.translate(a.x, dockY-14);
+    ctx.fillStyle=a.color; ctx.beginPath(); ctx.ellipse(0,-14,7,9,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#e8c8a0'; ctx.beginPath(); ctx.arc(0,-26,6,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.fillText(a.name.substring(0,10), 0, -36);
+    // rod
+    const rodBend = a.biting ? Math.sin(frame*0.6)*0.25 : 0;
+    ctx.strokeStyle='#a16207'; ctx.lineWidth=2.5; ctx.save(); ctx.rotate(-0.5+rodBend); ctx.beginPath(); ctx.moveTo(0,-14); ctx.lineTo(38,-4); ctx.stroke(); ctx.restore();
+    // line + bobber
+    a.bobY = a.biting ? Math.sin(frame*0.7)*5 : Math.sin(frame*0.04+a.x)*2;
+    const bx = 30, by = 60+a.bobY;
+    ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(30,-8); ctx.lineTo(bx,by); ctx.stroke();
+    ctx.fillStyle = a.biting ? '#ef4444' : '#f97316'; ctx.beginPath(); ctx.arc(bx,by,4,0,Math.PI*2); ctx.fill();
+    if (a.biting) { ctx.fillStyle='#fef08a'; ctx.font='bold 11px Inter'; ctx.textAlign='center'; ctx.fillText('!', bx, by-12); }
+    // weight bar
+    ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(-16,-50,32,5);
+    ctx.fillStyle='#38bdf8'; ctx.fillRect(-16,-50,32*Math.min(1,a.weight/goalWeight),5);
+    ctx.fillStyle='#fff'; ctx.font='9px Inter'; ctx.fillText(a.weight.toFixed(1)+'lb', 0, -54);
+    ctx.restore();
+    a.popups = a.popups.filter(p => { p.life--; if (p.life<=0) return false; const al=p.life/p.maxLife; p.y-=0.5; ctx.fillStyle=p.color; ctx.globalAlpha=al; ctx.font='bold 12px Inter'; ctx.textAlign='center'; ctx.fillText(p.text, a.x, p.y); ctx.globalAlpha=1; return true; });
+  }
+  function drawFishArcs() {
+    fishArcs = fishArcs.filter(f => { f.t += 0.06; if (f.t>=1) return false; const x = f.x0+(f.x1-f.x0)*f.t, y = f.y0+(f.y1-f.y0)*f.t - Math.sin(f.t*Math.PI)*40; ctx.save(); ctx.translate(x,y); ctx.rotate(f.t*4); ctx.fillStyle='#7dd3fc'; ctx.beginPath(); ctx.ellipse(0,0,7,3,0,0,Math.PI*2); ctx.fill(); ctx.restore(); return true; });
+  }
+  function drawHUD() {
+    const sorted = [...anglers].sort((a,b) => b.weight-a.weight);
+    const boxH = Math.min(190, 30 + Math.min(sorted.length,8)*16);
+    ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10,10,190,boxH,10); ctx.fill();
+    ctx.fillStyle='#0ea5e9'; ctx.font='bold 12px Inter'; ctx.textAlign='left'; ctx.fillText('🎣 STANDINGS',20,28);
+    sorted.slice(0,8).forEach((a,i) => { ctx.fillStyle=a.color; ctx.fillRect(20,35+i*16,8,8); ctx.fillStyle='#fff'; ctx.font='11px Inter'; ctx.fillText((i+1)+'. '+a.name.substring(0,12)+' — '+a.weight.toFixed(1)+'lb',32,43+i*16); });
+  }
+  let animId;
+  const maxDuration = 5200 + n*20;
+  function loop() {
+    frame++;
+    anglers.forEach(a => {
+      if (a.finished) return;
+      if (!a.biting && frame >= a.nextBite) { a.biting = true; a.biteTimer = 26+Math.random()*14; }
+      else if (a.biting) {
+        a.biteTimer--;
+        if (a.biteTimer <= 0) {
+          a.biting = false;
+          const success = Math.random() < 0.6;
+          if (success) {
+            const big = Math.random() < 0.1;
+            const w = big ? 14+Math.random()*10 : 1.5+Math.random()*6;
+            a.weight += w;
+            a.popups.push({ text: (big?'🐋 BIG ONE! +':'+')+w.toFixed(1)+'lb', color: big?'#ffd700':'#4ade80', life:50, maxLife:50, y: dockY-64 });
+            fishArcs.push({ x0:a.x+30, y0:dockY+40, x1:a.x, y1:dockY-20, t:0 });
+            setFeed(a.name+' reeled in a '+w.toFixed(1)+'lb catch!'+(big?' 🐋':''));
+          } else { setFeed(a.name+"'s fish got away!"); a.popups.push({ text:'got away...', color:'#94a3b8', life:40, maxLife:40, y: dockY-64 }); }
+          a.nextBite = frame + 150 + Math.random()*240;
+          if (a.weight >= goalWeight) a.finished = true;
+        }
+      }
+    });
+    ctx.clearRect(0,0,W,H); drawScene(); anglers.forEach(drawAngler); drawFishArcs(); drawHUD();
+    const winner = anglers.find(a => a.finished);
+    const timeUp = frame > maxDuration;
+    if (!winner && !timeUp) { animId = requestAnimationFrame(loop); }
+    else {
+      const champ = winner || anglers.reduce((a,b) => a.weight>b.weight?a:b);
+      setFeed(champ.name+' wins the derby with '+champ.weight.toFixed(1)+'lb!');
+      setTimeout(() => { showPhase('fishing','winner'); document.getElementById('fishing-winner-name').textContent = champ.name; }, 1300);
+    }
+  }
+  loop();
+}
+
+/* ==================== TOWER CLIMB (every entrant — vertical climb, falls set you back but never eliminate) ==================== */
+function runTower() {
+  showOverlay('tower-overlay'); showPhase('tower', 'intro');
+  const names = Array.from(entrants);
+  if (names.length === 0) { alert('No entrants yet!'); return; }
+  document.getElementById('tower-intro-count').textContent = names.length + ' climber' + (names.length===1?'':'s') + ' chalking up';
+  setTimeout(() => startTower(names), 1600);
+}
+function startTower(names) {
+  showPhase('tower', 'play');
+  document.getElementById('tower-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('tower-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const n = names.length, colW = W / n;
+  const finishAlt = 2850 + n*32;
+  const climbers = names.map((nm,i) => ({ name:nm, alt:0, vAlt: 0.7+Math.random()*0.5, baseX: colW*i+colW/2, sway: Math.random()*Math.PI*2, color: colorFor(nm), r: Math.max(9, Math.min(17, colW*0.28)), finished:false, finishTime:0, stunTimer:0, boostTimer:0 }));
+  const rockBands = [];
+  for (let a=450; a<finishAlt-300; a+=340+Math.random()*260) rockBands.push({ alt:a, x: 40+Math.random()*(W-80) });
+  const gripBands = [];
+  for (let a=700; a<finishAlt-300; a+=600+Math.random()*500) gripBands.push({ alt:a, x: 40+Math.random()*(W-80), w: 90+Math.random()*70 });
+  let startTime = Date.now(), frame=0, camera=0, places=1;
+  function drawCliff() {
+    const g = ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#3f3129'); g.addColorStop(1,'#22190f'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle='rgba(0,0,0,0.25)'; ctx.lineWidth=2;
+    for (let i=0;i<14;i++) { const bx=(i*97-camera*0.3)%(W+120)-60; ctx.beginPath(); ctx.moveTo(bx,0); ctx.lineTo(bx+30,H); ctx.stroke(); }
+    const fy = H - 70 - (finishAlt-camera);
+    if (fy>-40 && fy<H+40) { ctx.strokeStyle='rgba(163,230,53,0.6)'; ctx.setLineDash([10,8]); ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(0,fy); ctx.lineTo(W,fy); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle='#a3e635'; ctx.font='bold 14px Inter'; ctx.textAlign='left'; ctx.fillText('🏔️ SUMMIT', 10, fy-8); }
+  }
+  function drawRock(band) {
+    const y = H-70-(band.alt-camera); if (y<-40||y>H+40) return;
+    ctx.save(); ctx.translate(band.x,y); ctx.rotate(frame*0.05);
+    ctx.fillStyle='#78716c'; ctx.beginPath();
+    for (let k=0;k<6;k++) { const ang=(k/6)*Math.PI*2, rad=8+((k*7)%4); ctx.lineTo(Math.cos(ang)*rad, Math.sin(ang)*rad); }
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+  function drawGrip(band) {
+    const y = H-70-(band.alt-camera); if (y<-40||y>H+40) return;
+    ctx.save(); ctx.strokeStyle='rgba(163,230,53,0.5)'; ctx.lineWidth=2;
+    for (let k=0;k<3;k++) { ctx.beginPath(); ctx.moveTo(band.x-band.w/2,y-4+k*5); ctx.lineTo(band.x+band.w/2,y-4+k*5); ctx.stroke(); }
+    ctx.fillStyle='rgba(163,230,53,0.7)'; ctx.font='9px Inter'; ctx.textAlign='center'; ctx.fillText('GOOD GRIP', band.x, y+16);
+    ctx.restore();
+  }
+  function drawClimber(c) {
+    const sx = c.baseX+Math.sin(c.sway)*10, sy = H-70-(c.alt-camera);
+    if (sy<-40||sy>H+60) return;
+    ctx.save(); ctx.translate(sx,sy);
+    const reach = Math.sin(frame*0.2+c.baseX)*4;
+    ctx.strokeStyle=c.color; ctx.lineWidth=4; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-8,-6+reach); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(8,-6-reach); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,4); ctx.lineTo(-6,12); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,4); ctx.lineTo(6,12); ctx.stroke();
+    ctx.fillStyle=c.color; ctx.beginPath(); ctx.ellipse(0,-2,6,7,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#e8c8a0'; ctx.beginPath(); ctx.arc(0,-13,5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.fillText(c.name.substring(0,10), 0, -22);
+    if (c.stunTimer>0) { ctx.fillStyle='#facc15'; ctx.font='11px Inter'; ctx.fillText('slipping!', 0, 26); }
+    ctx.restore();
+  }
+  function drawHUD() {
+    const sorted = [...climbers].sort((a,b) => b.alt-a.alt);
+    const boxH = Math.min(200, 30 + Math.min(sorted.length,8)*16);
+    ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10,10,190,boxH,10); ctx.fill();
+    ctx.fillStyle='#a3e635'; ctx.font='bold 12px Inter'; ctx.textAlign='left'; ctx.fillText('🧗 HEIGHT LEAD',20,28);
+    sorted.slice(0,8).forEach((c,i) => { ctx.fillStyle=c.color; ctx.fillRect(20,35+i*16,8,8); ctx.fillStyle='#fff'; ctx.font='11px Inter'; ctx.fillText((i+1)+'. '+c.name.substring(0,14),32,43+i*16); });
+    const leader = sorted[0]; if (!leader) return;
+    const progress = Math.min(leader.alt/finishAlt,1);
+    ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(W-310,10,300,20,10); ctx.fill();
+    ctx.fillStyle=leader.color; ctx.beginPath(); ctx.roundRect(W-308,12,296*progress,16,8); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='10px Inter'; ctx.textAlign='center'; ctx.fillText(Math.round(progress*100)+'%', W-160,24);
+  }
+  let animId;
+  const maxDuration = 5400 + n*20;
+  function loop() {
+    frame++;
+    let allDone = true;
+    climbers.forEach(c => {
+      if (c.finished) return;
+      allDone = false;
+      c.sway += 0.02;
+      if (c.stunTimer > 0) { c.stunTimer--; }
+      else {
+        const climb = c.vAlt * (c.boostTimer>0 ? 1.7 : 1);
+        c.alt += climb;
+        if (c.boostTimer>0) c.boostTimer--;
+        const cx = c.baseX + Math.sin(c.sway)*10;
+        rockBands.forEach(band => { if (Math.abs(band.alt-c.alt) < 14 && Math.abs(band.x-cx) < 18 && band._hit!==c && Math.random()<0.4) { band._hit=c; c.alt = Math.max(0, c.alt-220); c.stunTimer=45; } });
+        gripBands.forEach(band => { if (Math.abs(band.alt-c.alt) < 14 && Math.abs(band.x-cx) < band.w/2 && band._hit!==c) { band._hit=c; c.boostTimer=80; } });
+      }
+      if (c.alt >= finishAlt) { c.alt = finishAlt; c.finished = true; c.finishTime = Date.now()-startTime; c.place = places++; }
+    });
+    const leaderAlt = Math.max(...climbers.map(c=>c.alt));
+    camera = Math.max(0, Math.min(leaderAlt - (H-70)*0.55, Math.max(0, finishAlt - (H-70) + 160)));
+    ctx.clearRect(0,0,W,H); drawCliff();
+    rockBands.forEach(drawRock); gripBands.forEach(drawGrip);
+    climbers.forEach(drawClimber); drawHUD();
+    const timeUp = frame > maxDuration;
+    if (!allDone && !timeUp) { animId = requestAnimationFrame(loop); }
+    else {
+      const finishers = [...climbers].sort((a,b) => (b.finished?1:0)-(a.finished?1:0) || b.alt-a.alt || a.finishTime-b.finishTime);
+      setTimeout(() => { showPhase('tower','winner'); document.getElementById('tower-winner-name').textContent = finishers[0].name; }, 1000);
+    }
+  }
+  loop();
+}
+
+/* ==================== LASER ARENA (every entrant — ranged combat, last one standing) ==================== */
+function runLaser() {
+  showOverlay('laser-overlay'); showPhase('laser', 'intro');
+  const names = Array.from(entrants);
+  if (names.length < 2) { alert('Need at least 2 entrants!'); return; }
+  document.getElementById('laser-intro-count').textContent = names.length + ' fighters powering up';
+  setTimeout(() => startLaser(names), 1600);
+}
+function startLaser(names) {
+  showPhase('laser', 'play');
+  const canvas = document.getElementById('laser-canvas'); const ctx = canvas.getContext('2d');
+  const commentary = document.getElementById('laser-commentary');
+  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2+10, arenaR = Math.min(W,H)/2 - 30;
+  const n = names.length;
+  const size = Math.max(9, Math.min(16, 190/Math.sqrt(n)));
+  const fighters = names.map((nm,i) => { const ang=(i/n)*Math.PI*2; return { name:nm, x:cx+Math.cos(ang)*arenaR*0.7, y:cy+Math.sin(ang)*arenaR*0.7, vx:0, vy:0, r:size, color:colorFor(nm), hp:100, alive:true, cooldown:30+Math.random()*40, dodgeTimer:0, hitFlash:0 }; });
+  let beams = [], particles = [], pack = null, nextPackFrame = 260+Math.random()*200, frame=0;
+  function setCommentary(t) { commentary.textContent = t; }
+  function drawArena() {
+    ctx.fillStyle='#050810'; ctx.fillRect(0,0,W,H);
+    const grad = ctx.createRadialGradient(cx,cy,arenaR*0.3,cx,cy,arenaR); grad.addColorStop(0,'#0e1a2e'); grad.addColorStop(1,'#050a14');
+    ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(cx,cy,arenaR,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#22d3ee'; ctx.lineWidth=4; ctx.shadowColor='#22d3ee'; ctx.shadowBlur=14; ctx.beginPath(); ctx.arc(cx,cy,arenaR,0,Math.PI*2); ctx.stroke(); ctx.shadowBlur=0;
+    ctx.strokeStyle='rgba(34,211,238,0.08)'; ctx.lineWidth=1;
+    for (let i=0;i<8;i++) { ctx.beginPath(); ctx.arc(cx,cy,arenaR*(i+1)/8,0,Math.PI*2); ctx.stroke(); }
+  }
+  function drawPack() {
+    if (!pack) return;
+    ctx.save(); ctx.translate(pack.x,pack.y); const pulse=1+Math.sin(frame*0.2)*0.15;
+    ctx.shadowColor='#4ade80'; ctx.shadowBlur=16; ctx.fillStyle='#4ade80'; ctx.beginPath(); ctx.roundRect(-8*pulse,-8*pulse,16*pulse,16*pulse,4); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.shadowBlur=0; ctx.fillText('+', 0, 4);
+    ctx.restore();
+  }
+  function drawFighter(f) {
+    if (!f.alive) return;
+    ctx.save(); ctx.translate(f.x,f.y);
+    if (f.dodgeTimer>0) ctx.globalAlpha = 0.55;
+    ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(2,f.r*0.7,f.r*0.9,f.r*0.3,0,0,Math.PI*2); ctx.fill();
+    const gr = ctx.createRadialGradient(-f.r*0.3,-f.r*0.3,1,0,0,f.r); gr.addColorStop(0, f.hitFlash>0?'#fff':'#fff'); gr.addColorStop(0.3, f.color); gr.addColorStop(1,f.color);
+    ctx.fillStyle=gr; ctx.beginPath(); ctx.arc(0,0,f.r,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.5)'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.fillStyle='#fff'; ctx.font='bold '+Math.max(8,Math.min(11,f.r*0.6))+'px Inter'; ctx.textAlign='center'; ctx.fillText(f.name.substring(0,10), 0, -f.r-8);
+    ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(-14,f.r+6,28,4);
+    ctx.fillStyle = f.hp>50?'#4ade80':f.hp>25?'#facc15':'#ef4444'; ctx.fillRect(-14,f.r+6,28*Math.max(0,f.hp)/100,4);
+    ctx.restore();
+    if (f.hitFlash>0) f.hitFlash--;
+  }
+  function drawBeams() {
+    beams = beams.filter(b => { b.life--; if (b.life<=0) return false; const a=b.life/b.maxLife;
+      ctx.strokeStyle = `rgba(${b.r},${b.g},${b.b},${a})`; ctx.lineWidth=2.5; ctx.shadowColor=`rgb(${b.r},${b.g},${b.b})`; ctx.shadowBlur=8;
+      ctx.beginPath(); ctx.moveTo(b.x0,b.y0); ctx.lineTo(b.x1,b.y1); ctx.stroke(); ctx.shadowBlur=0; return true; });
+  }
+  function drawFx() {
+    particles = particles.filter(p => { p.life--; if (p.life<=0) return false; const a=p.life/p.maxLife; ctx.fillStyle=`rgba(255,255,255,${a})`; ctx.beginPath(); ctx.arc(p.x,p.y,3*a+1,0,Math.PI*2); ctx.fill(); return true; });
+  }
+  function hexToRgb(hex) { const c=parseInt(hex.slice(1),16); return [(c>>16)&255,(c>>8)&255,c&255]; }
+  let animId, warned=false;
+  const maxDuration = 3200 + n*24;
+  function loop() {
+    frame++;
+    const alive = fighters.filter(f=>f.alive);
+    // gentle wander so the arena stays alive visually, biased to stay spread
+    alive.forEach(f => {
+      f.vx += (Math.random()-0.5)*0.12; f.vy += (Math.random()-0.5)*0.12;
+      const spd = Math.hypot(f.vx,f.vy), cap=1.4; if (spd>cap) { f.vx=f.vx/spd*cap; f.vy=f.vy/spd*cap; }
+      f.x += f.vx; f.y += f.vy;
+      const d = Math.hypot(f.x-cx,f.y-cy);
+      if (d+f.r > arenaR) { const nx=(f.x-cx)/d, ny=(f.y-cy)/d; f.x=cx+nx*(arenaR-f.r); f.y=cy+ny*(arenaR-f.r); f.vx*=-0.5; f.vy*=-0.5; }
+      if (f.dodgeTimer>0) f.dodgeTimer--;
+      if (f.cooldown>0) f.cooldown--;
+    });
+    // firing
+    alive.forEach(f => {
+      if (f.cooldown > 0) return;
+      const targets = alive.filter(o => o!==f);
+      if (targets.length===0) return;
+      let nearest = targets[0], bestD = Infinity;
+      targets.forEach(o => { const d=Math.hypot(o.x-f.x,o.y-f.y); if (d<bestD) { bestD=d; nearest=o; } });
+      f.cooldown = 45+Math.random()*45;
+      if (Math.random() < 0.08) { f.dodgeTimer = 18; } // occasionally juke instead of firing this beat
+      const [r,g,b] = hexToRgb(f.color);
+      beams.push({ x0:f.x, y0:f.y, x1:nearest.x, y1:nearest.y, life:10, maxLife:10, r,g,b });
+      const hitChance = nearest.dodgeTimer>0 ? 0.35 : 0.72;
+      if (Math.random() < hitChance) {
+        const dmg = 7+Math.random()*8;
+        nearest.hp -= dmg; nearest.hitFlash=8;
+        particles.push({x:nearest.x,y:nearest.y,life:14,maxLife:14});
+        if (nearest.hp<=0 && nearest.alive) { nearest.alive=false; setCommentary(f.name+' eliminated '+nearest.name+'!'); }
+      } else { setCommentary(nearest.name+' dodges '+f.name+"'s shot!"); }
+    });
+    // health pack
+    if (!pack && frame>nextPackFrame) { const a=Math.random()*Math.PI*2, d=Math.random()*arenaR*0.5; pack={x:cx+Math.cos(a)*d,y:cy+Math.sin(a)*d}; nextPackFrame=frame+320+Math.random()*240; }
+    if (pack) {
+      const currentAlive = fighters.filter(f=>f.alive);
+      for (let i=0;i<currentAlive.length;i++) {
+        if (!pack) break;
+        const f = currentAlive[i];
+        if (Math.hypot(f.x-pack.x,f.y-pack.y) < f.r+10) { f.hp = Math.min(100, f.hp+30); setCommentary(f.name+' grabbed a shield pack!'); pack=null; }
+      }
+    }
+    const aliveCount = fighters.filter(f=>f.alive).length;
+    if (!warned && frame > maxDuration*0.7) { warned=true; setCommentary('⏱️ Sudden death — damage is ramping up!'); }
+    drawArena(); drawPack(); fighters.forEach(drawFighter); drawBeams(); drawFx();
+    document.getElementById('laser-alive-badge').textContent = aliveCount + ' alive';
+    const timeUp = frame > maxDuration;
+    if (aliveCount > 1 && !timeUp) { animId = requestAnimationFrame(loop); }
+    else {
+      const winner = aliveCount===1 ? fighters.find(f=>f.alive) : fighters.reduce((a,b)=>a.hp>b.hp?a:b);
+      setCommentary(winner.name+' wins the arena!');
+      setTimeout(() => { showPhase('laser','winner'); document.getElementById('laser-winner-name').textContent = winner.name; }, 1200);
+    }
+  }
+  loop();
+}
+
+/* ==================== SNAIL DERBY (every entrant — comedic race, naps & bursts, built for photo finishes) ==================== */
+function runSnail() {
+  showOverlay('snail-overlay'); showPhase('snail', 'intro');
+  const names = Array.from(entrants);
+  if (names.length === 0) { alert('No entrants yet!'); return; }
+  document.getElementById('snail-intro-count').textContent = names.length + ' snail' + (names.length===1?'':'s') + ' taking their marks';
+  setTimeout(() => startSnail(names), 1600);
+}
+function startSnail(names) {
+  showPhase('snail', 'play');
+  document.getElementById('snail-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('snail-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const trackTop = 30, trackBottom = H-30, n = names.length, laneH = (trackBottom-trackTop)/n;
+  const trackLength = 3200 + n*24, finishX = trackLength;
+  const snails = names.map((nm,i) => ({ name:nm, x:40, y:trackTop+i*laneH+laneH/2, color:colorFor(nm), speed:0.25+Math.random()*0.2, napTimer:0, burstTimer:0, trail:[], finished:false, finishTime:0, bob:Math.random()*Math.PI*2 }));
+  let startTime = Date.now(), frame=0, cameraX=0, places=1;
+  function drawTrack() {
+    const g = ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#dcfce7'); g.addColorStop(1,'#bbf7d0'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    for (let i=0;i<n;i++) { const ly=trackTop+i*laneH; ctx.strokeStyle='rgba(0,0,0,0.08)'; ctx.setLineDash([10,10]); ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(0,ly); ctx.lineTo(W,ly); ctx.stroke(); ctx.setLineDash([]); }
+    const fx = finishX-cameraX;
+    if (fx>-100 && fx<W+100) { for (let y=trackTop;y<trackBottom;y+=10) for (let x=0;x<24;x+=8) { ctx.fillStyle=((Math.floor(y/10)+Math.floor(x/8))%2===0)?'#166534':'#fff'; ctx.fillRect(fx+x,y,8,10); } ctx.fillStyle='#166534'; ctx.font='bold 13px Inter'; ctx.textAlign='center'; ctx.fillText('FINISH', fx+12, trackTop-8); }
+  }
+  function drawSnail(s) {
+    const sx = s.x-cameraX, sy = s.y+Math.sin(s.bob)*1.5, sc = Math.max(0.55,Math.min(1,laneH/40));
+    if (sx<-40||sx>W+40) return;
+    s.trail.push({x:sx,y:sy,life:40}); s.trail = s.trail.filter(t => { t.life--; if (t.life<=0) return false; const a=t.life/40*0.25; ctx.fillStyle=`rgba(200,255,220,${a})`; ctx.beginPath(); ctx.arc(t.x,t.y,3,0,Math.PI*2); ctx.fill(); return true; });
+    ctx.save(); ctx.translate(sx,sy); ctx.scale(sc,sc);
+    ctx.fillStyle='rgba(0,0,0,0.15)'; ctx.beginPath(); ctx.ellipse(0,7,16,4,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = s.color; ctx.beginPath(); ctx.ellipse(2,2,13,7,0,0,Math.PI*2); ctx.fill();
+    // shell
+    const shellGrad = ctx.createRadialGradient(-4,-6,2,-4,-6,12); shellGrad.addColorStop(0, '#fff'); shellGrad.addColorStop(0.3, s.color); shellGrad.addColorStop(1, s.color);
+    ctx.fillStyle=shellGrad; ctx.beginPath(); ctx.arc(-4,-4,10,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,0.2)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(-4,-4,6,0,Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.arc(-4,-4,3,0,Math.PI*2); ctx.stroke();
+    // eyestalks
+    const nod = s.napTimer>0 ? 0 : Math.sin(frame*0.1)*1;
+    ctx.strokeStyle='#166534'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(13,0); ctx.lineTo(17,-6+nod); ctx.stroke(); ctx.beginPath(); ctx.arc(17,-6+nod,1.6,0,Math.PI*2); ctx.fillStyle='#166534'; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(13,2); ctx.lineTo(18,-2+nod); ctx.stroke(); ctx.beginPath(); ctx.arc(18,-2+nod,1.6,0,Math.PI*2); ctx.fill();
+    if (s.napTimer>0) { ctx.fillStyle='#0f172a'; ctx.font='bold 11px Inter'; ctx.textAlign='center'; ctx.fillText('💤', 0, -20); }
+    else if (s.burstTimer>0) { ctx.fillStyle='#f97316'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.fillText('💨', -14, 0); }
+    ctx.fillStyle='#14532d'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.fillText(s.name.substring(0,10), 0, -24);
+    ctx.restore();
+  }
+  function drawHUD() {
+    const sorted = [...snails].sort((a,b) => b.x-a.x);
+    const boxH = Math.min(200, 30 + Math.min(sorted.length,8)*16);
+    ctx.fillStyle='rgba(255,255,255,0.75)'; ctx.beginPath(); ctx.roundRect(10,10,190,boxH,10); ctx.fill();
+    ctx.fillStyle='#166534'; ctx.font='bold 12px Inter'; ctx.textAlign='left'; ctx.fillText('🐌 STANDINGS',20,28);
+    sorted.slice(0,8).forEach((s,i) => { ctx.fillStyle=s.color; ctx.fillRect(20,35+i*16,8,8); ctx.fillStyle='#14532d'; ctx.font='11px Inter'; ctx.fillText((i+1)+'. '+s.name.substring(0,14),32,43+i*16); });
+  }
+  let animId;
+  function loop() {
+    frame++;
+    let allFinished = true;
+    snails.forEach(s => {
+      if (s.finished) return;
+      allFinished = false;
+      s.bob += 0.05;
+      if (s.napTimer > 0) { s.napTimer--; }
+      else if (s.burstTimer > 0) { s.burstTimer--; s.x += s.speed*3.2; }
+      else {
+        s.x += s.speed;
+        if (Math.random() < 0.004) { s.napTimer = 60+Math.random()*140; }
+        else if (Math.random() < 0.01) { s.burstTimer = 30+Math.random()*30; }
+      }
+      if (s.x >= finishX) { s.x = finishX; s.finished = true; s.finishTime = Date.now()-startTime; s.place = places++; }
+    });
+    const leader = snails.reduce((a,b) => a.x>b.x?a:b);
+    cameraX = Math.max(0, Math.min(leader.x - W*0.3, trackLength - W + 150));
+    ctx.clearRect(0,0,W,H); drawTrack(); snails.forEach(drawSnail); drawHUD();
+    if (!allFinished) { animId = requestAnimationFrame(loop); }
+    else {
+      cancelAnimationFrame(animId);
+      const finishers = [...snails].sort((a,b) => a.finishTime-b.finishTime);
+      setTimeout(() => { showPhase('snail','winner'); document.getElementById('snail-winner-name').textContent = finishers[0].name; }, 1000);
+    }
+  }
+  loop();
+}
+
 /* ==================== BOXING MATCH (1v1, ENHANCED — dodges, backflips, special moves, 5 rounds) ==================== */
 function runBoxingMatch() {
   const names = Array.from(entrants);
@@ -2361,6 +2940,11 @@ function startSwordDuel(p1Name, p2Name) {
       else if (game === 'derby') runDerby();
       else if (game === 'hill') runHillKing();
       else if (game === 'downhill') runDownhill();
+      else if (game === 'rocket') runRocket();
+      else if (game === 'fishing') runFishing();
+      else if (game === 'tower') runTower();
+      else if (game === 'laser') runLaser();
+      else if (game === 'snail') runSnail();
       else if (game === 'boxing') runBoxingMatch();
       else if (game === 'sword') runSwordDuel();
     }, 200);
