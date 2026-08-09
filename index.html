@@ -1408,7 +1408,13 @@ function startBumperArena(names) {
       }
     }
     if (orb) { const d = Math.hypot(orb.x-cx, orb.y-cy); if (d > ringR-10) orb=null; }
-    if (orb) alive.forEach(b => { if (Math.hypot(b.x-orb.x,b.y-orb.y) < b.r+12) { const spd=Math.hypot(b.vx,b.vy)||1; b.vx = b.vx/spd*8; b.vy = b.vy/spd*8; setCommentary(b.name+' grabbed the boost!'); orb=null; } });
+    if (orb) {
+      for (let i=0;i<alive.length;i++) {
+        if (!orb) break;
+        const b = alive[i];
+        if (Math.hypot(b.x-orb.x,b.y-orb.y) < b.r+12) { const spd=Math.hypot(b.vx,b.vy)||1; b.vx = b.vx/spd*8; b.vy = b.vy/spd*8; setCommentary(b.name+' grabbed the boost!'); orb=null; }
+      }
+    }
     alive.forEach(b => {
       const d = Math.hypot(b.x-cx, b.y-cy);
       if (d + b.r > ringR) { b.alive = false; particles.push({x:b.x,y:b.y,life:26,maxLife:26,burst:true,color:b.color});
@@ -1786,7 +1792,14 @@ function startDerby(names) {
     const aliveCount = cars.filter(c=>c.alive).length;
     if (!nitro && frame>nextNitroFrame) { const a=Math.random()*Math.PI*2, d=Math.random()*arenaR*0.5; nitro={x:cx+Math.cos(a)*d,y:cy+Math.sin(a)*d}; nextNitroFrame=frame+280+Math.random()*220; }
     if (nitro) { const d=Math.hypot(nitro.x-cx,nitro.y-cy); if (d>arenaR-8) nitro=null; }
-    if (nitro) cars.filter(c=>c.alive).forEach(c => { if (Math.hypot(c.x-nitro.x,c.y-nitro.y) < c.r+10) { const spd=Math.hypot(c.vx,c.vy)||1; c.vx=c.vx/spd*7; c.vy=c.vy/spd*7; setCommentary(c.name+' hits the nitro!'); nitro=null; } });
+    if (nitro) {
+      const activeCars = cars.filter(c=>c.alive);
+      for (let i=0;i<activeCars.length;i++) {
+        if (!nitro) break;
+        const c = activeCars[i];
+        if (Math.hypot(c.x-nitro.x,c.y-nitro.y) < c.r+10) { const spd=Math.hypot(c.vx,c.vy)||1; c.vx=c.vx/spd*7; c.vy=c.vy/spd*7; setCommentary(c.name+' hits the nitro!'); nitro=null; }
+      }
+    }
     if (!warned && frame > maxDuration*0.75) { warned=true; setCommentary('⏱️ Sudden death — no more waiting around!'); }
     updatePhysics();
     drawArena(); drawNitro(); cars.forEach(drawCar); drawFx();
