@@ -166,6 +166,9 @@
         <button onclick="launchTower()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#a3e635,#3f6212);">🧗 Tower Climb</button>
         <button onclick="launchLaser()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#22d3ee,#0e7490);">⚡ Laser Arena</button>
         <button onclick="launchSnail()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#84cc16,#3f6212);">🐌 Snail Derby</button>
+        <button onclick="launchMusical()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#e879f9,#86198f);">🪑 Musical Chairs</button>
+        <button onclick="launchPie()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#fb923c,#9a3412);">🥧 Pie Eating Contest</button>
+        <button onclick="launchBanana()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#facc15,#854d0e);color:#1c1917;">🍌 Banana Slip Chaos</button>
       </div>
       <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">1-on-1 Combat (pick 2 entrants)</div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -487,6 +490,46 @@
   </div>
 </div>
 
+<!-- ==================== MUSICAL CHAIRS (all entrants) ==================== -->
+<div id="musical-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#e879f9] text-sm font-bold uppercase tracking-widest mb-2">🪑 Musical Chairs</div><h1 class="text-4xl md:text-5xl font-black text-white">Find a Seat!</h1></div>
+    <div id="musical-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Setting up the chairs...</div><div class="text-sm text-gray-600" id="musical-intro-count">Everyone joins the circle</div></div>
+    <div id="musical-phase-play" class="hidden w-full max-w-5xl">
+      <div class="flex items-center justify-center gap-3 mb-1"><span id="musical-alive-badge" class="p-count-badge">0 left</span></div>
+      <div id="musical-commentary" class="text-center text-[#ffd700] font-bold text-lg mb-2 h-6">🎵 The music is playing...</div>
+      <canvas id="musical-canvas" width="900" height="600" class="mx-auto rounded-2xl border border-white/10 bg-[#0a0a14]"></canvas>
+    </div>
+    <div id="musical-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🪑</div><div class="text-2xl text-[#e879f9] font-bold mb-2">LAST ONE SEATED</div><div id="musical-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== PIE EATING CONTEST (all entrants) ==================== -->
+<div id="pie-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#fb923c] text-sm font-bold uppercase tracking-widest mb-2">🥧 Pie Eating Contest</div><h1 class="text-4xl md:text-5xl font-black text-white">Eat Fast, Win Big</h1></div>
+    <div id="pie-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Bibs on, pies out...</div><div class="text-sm text-gray-600" id="pie-intro-count">Everyone gets a plate</div></div>
+    <div id="pie-phase-play" class="hidden w-full max-w-5xl">
+      <div id="pie-feed" class="text-center text-[#ffd700] font-bold text-lg mb-2 h-6">On your marks...</div>
+      <canvas id="pie-canvas" width="900" height="560" class="mx-auto rounded-2xl border border-white/10"></canvas>
+    </div>
+    <div id="pie-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🥧</div><div class="text-2xl text-[#fb923c] font-bold mb-2">CHAMPION EATER</div><div id="pie-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== BANANA SLIP CHAOS (all entrants) ==================== -->
+<div id="banana-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#facc15] text-sm font-bold uppercase tracking-widest mb-2">🍌 Banana Slip Chaos</div><h1 class="text-4xl md:text-5xl font-black text-white">Watch Your Step</h1></div>
+    <div id="banana-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Peels being scattered...</div><div class="text-sm text-gray-600" id="banana-intro-count">Everyone races — nobody's safe</div></div>
+    <div id="banana-phase-play" class="hidden w-full max-w-6xl">
+      <canvas id="banana-canvas" width="1100" height="500" class="w-full rounded-2xl border border-white/10"></canvas>
+      <div id="banana-legend" class="legend-scroll mt-3"></div>
+    </div>
+    <div id="banana-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🏁</div><div class="text-2xl text-[#facc15] font-bold mb-2">STAYED ON THEIR FEET</div><div id="banana-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
 <!-- ==================== BOXING MATCH (1v1, enhanced) ==================== -->
 <div id="boxing-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
   <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
@@ -588,6 +631,30 @@ function lightenHex(hex, amt) {
   const c = parseInt(hex.slice(1),16); let r=(c>>16)&255,g=(c>>8)&255,b=c&255;
   r=Math.min(255,r+amt); g=Math.min(255,g+amt); b=Math.min(255,b+amt);
   return `rgb(${r},${g},${b})`;
+}
+
+/* ==================== RUBBER-BAND CATCH-UP HELPER ====================
+   Used by every race/progress-based game (Racing, Swimming, Obstacle Sprint, Balloon,
+   Rocket, Downhill, Tower, Snail) so a fast start never just quietly cruises to the win.
+   Every ~1.5s, the current leader has a real chance to stumble/fade, and whoever's
+   trailing gets a chance at a comeback burst — scaled by how far behind they are.
+   Entities need rbMult (default 1) and rbTimer (default 0) fields; the caller applies
+   `entity.rbTimer>0 ? entity.rbMult : 1` as a multiplier on that frame's movement. */
+function applyRubberBand(frame, active, getPos) {
+  if (active.length < 2 || frame % 95 !== 0) return;
+  let maxPos = -Infinity;
+  active.forEach(e => { const p = getPos(e); if (p > maxPos) maxPos = p; });
+  if (maxPos <= 0) return;
+  active.forEach(e => {
+    const gap = maxPos - getPos(e);
+    if (gap <= 0.0001) {
+      if (Math.random() < 0.4) { e.rbMult = 0.5 + Math.random()*0.2; e.rbTimer = 45 + Math.random()*35; }
+    } else {
+      const gapFrac = gap / maxPos;
+      const boostChance = Math.min(0.7, 0.2 + gapFrac*2.2);
+      if (Math.random() < boostChance) { e.rbMult = 1.55 + Math.random()*0.55; e.rbTimer = 45 + Math.random()*35; }
+    }
+  });
 }
 
 /* ==================== SETUP & NAVIGATION ==================== */
@@ -806,6 +873,9 @@ function launchFishing() { openGamePopup('fishing'); }
 function launchTower() { openGamePopup('tower'); }
 function launchLaser() { openGamePopup('laser'); }
 function launchSnail() { openGamePopup('snail'); }
+function launchMusical() { openGamePopup('musical'); }
+function launchPie() { openGamePopup('pie'); }
+function launchBanana() { openGamePopup('banana'); }
 function launchBoxingMatch() { openGamePopup('boxing'); }
 function launchSwordDuel() { openGamePopup('sword'); }
 
@@ -1244,7 +1314,8 @@ function startRacing(names) {
   const cars = names.map((nm, i) => ({
     name: nm, x: 60, y: roadTop + laneH * i + laneH / 2, color: colorFor(nm),
     speed: 0, maxSpeed: 3.6 + Math.random() * 2.6, accel: 0.06 + Math.random() * 0.07,
-    nitro: Math.random() * 40, nitroActive: false, finished: false, finishTime: 0, place: 0, spin: 0
+    nitro: Math.random() * 40, nitroActive: false, finished: false, finishTime: 0, place: 0, spin: 0,
+    rbMult: 1, rbTimer: 0
   }));
   let startTime = Date.now(), frame = 0, cameraX = 0;
   const trackLength = 9000 + n * 120, finishX = trackLength;
@@ -1302,6 +1373,7 @@ function startRacing(names) {
   function loop() {
     frame++;
     let allFinished = true;
+    applyRubberBand(frame, cars.filter(c=>!c.finished), c=>c.x);
     cars.forEach(car => {
       if (!car.finished) {
         allFinished = false;
@@ -1311,7 +1383,8 @@ function startRacing(names) {
         if (car.nitroActive) { car.nitro -= 3; if (car.nitro <= 0) car.nitroActive = false; }
         if (Math.random() < 0.003) car.speed -= 1;
         if (Math.random() < 0.002) car.speed += 0.5;
-        car.x += car.speed;
+        if (car.rbTimer > 0) car.rbTimer--;
+        car.x += car.speed * (car.rbTimer > 0 ? car.rbMult : 1);
         if (car.x >= finishX) { car.x = finishX; car.finished = true; car.finishTime = Date.now() - startTime; car.place = places++; }
       }
     });
@@ -1360,7 +1433,7 @@ function startSwimming(names) {
   const poolTop = 30, poolBottom = H - 40;
   const n = names.length, laneH = (poolBottom - poolTop) / n;
   const trackLength = 8000 + n * 90, finishX = trackLength;
-  const swimmers = names.map((nm, i) => ({ name: nm, x: 70, y: poolTop + i*laneH + laneH/2, color: colorFor(nm), lane: i, speed: 0, maxSpeed: 2.2 + Math.random()*1.6, accel: 0.02+Math.random()*0.02, strokePhase: Math.random()*Math.PI*2, strokeRate: 0.08+Math.random()*0.04, finished: false, finishTime: 0, place: 0, wake: [] }));
+  const swimmers = names.map((nm, i) => ({ name: nm, x: 70, y: poolTop + i*laneH + laneH/2, color: colorFor(nm), lane: i, speed: 0, maxSpeed: 2.2 + Math.random()*1.6, accel: 0.02+Math.random()*0.02, strokePhase: Math.random()*Math.PI*2, strokeRate: 0.08+Math.random()*0.04, finished: false, finishTime: 0, place: 0, wake: [], rbMult: 1, rbTimer: 0 }));
   let startTime = Date.now(), frame = 0, cameraX = 0, places = 1, particles = [], bubbles = [];
 
   function drawPool() {
@@ -1417,13 +1490,15 @@ function startSwimming(names) {
   let animId;
   function loop() {
     frame++; let allFinished = true;
+    applyRubberBand(frame, swimmers.filter(s=>!s.finished), s=>s.x);
     swimmers.forEach(s => {
       if (!s.finished) {
         allFinished = false; s.strokePhase += s.strokeRate;
         if (s.speed < s.maxSpeed) s.speed += s.accel;
         if (Math.random() < 0.01) s.speed -= 0.1;
         if (Math.random() < 0.005) s.speed += 0.15;
-        s.x += s.speed;
+        if (s.rbTimer > 0) s.rbTimer--;
+        s.x += s.speed * (s.rbTimer > 0 ? s.rbMult : 1);
         if (s.x >= finishX) { s.x = finishX; s.finished = true; s.finishTime = Date.now()-startTime; s.place = places++; }
       }
     });
@@ -1582,7 +1657,7 @@ function startBalloonRace(names) {
   const n = names.length;
   const colW = W / n;
   const finishAlt = 2700 + n * 34; // total climb distance — paced for a real race, not a 3-second sprint
-  const balloons = names.map((nm,i) => ({ name: nm, alt: 0, vAlt: 0.85+Math.random()*0.55, baseX: colW*i+colW/2, sway: Math.random()*Math.PI*2, swaySpd: 0.018+Math.random()*0.02, swayAmt: Math.min(colW*0.35, 34), color: colorFor(nm), r: Math.max(10, Math.min(20, colW*0.3)), finished:false, finishTime:0, popped:false, hits:0, stunTimer:0, boostTimer:0 }));
+  const balloons = names.map((nm,i) => ({ name: nm, alt: 0, vAlt: 0.85+Math.random()*0.55, baseX: colW*i+colW/2, sway: Math.random()*Math.PI*2, swaySpd: 0.018+Math.random()*0.02, swayAmt: Math.min(colW*0.35, 34), color: colorFor(nm), r: Math.max(10, Math.min(20, colW*0.3)), finished:false, finishTime:0, popped:false, hits:0, stunTimer:0, boostTimer:0, rbMult:1, rbTimer:0 }));
   // pre-lay obstacle & thermal bands up the whole track so the climb has real structure, not random chaos
   const bands = [];
   for (let a = 500; a < finishAlt - 350; a += 380 + Math.random()*260) {
@@ -1641,18 +1716,20 @@ function startBalloonRace(names) {
   function loop() {
     frame++;
     let allDone = true;
+    applyRubberBand(frame, balloons.filter(b=>!b.finished && !b.popped), b=>b.alt);
     balloons.forEach(b => {
       if (b.finished || b.popped) return;
       allDone = false;
       b.sway += b.swaySpd;
       if (b.stunTimer > 0) { b.stunTimer--; }
       else {
-        let climb = b.vAlt * (b.boostTimer>0 ? 1.9 : 1);
+        let climb = b.vAlt * (b.boostTimer>0 ? 1.9 : 1) * (b.rbTimer>0 ? b.rbMult : 1);
         if (Math.random() < 0.01) b.vAlt = Math.min(1.7, b.vAlt+0.08);
         if (Math.random() < 0.008) b.vAlt = Math.max(0.5, b.vAlt-0.08);
         b.alt += climb;
       }
       if (b.boostTimer>0) b.boostTimer--;
+      if (b.rbTimer>0) b.rbTimer--;
       const bx = b.baseX + Math.sin(b.sway)*b.swayAmt;
       bands.forEach(band => {
         if (Math.abs(band.alt - b.alt) > 14) return;
@@ -1697,7 +1774,7 @@ function startObstacleSprint(names) {
   const trackTop = 30, trackBottom = H - 30, n = names.length, laneH = (trackBottom-trackTop)/n;
   const groundOffset = laneH*0.72;
   const trackLength = 9000 + n*85, finishX = trackLength;
-  const runners = names.map((nm,i) => ({ name: nm, x: 40, y: trackTop+i*laneH+groundOffset, lane:i, color: colorFor(nm), speed: 0, maxSpeed: 2.6+Math.random()*1.5, accel:0.04+Math.random()*0.04, vy:0, jumping:false, ducking:false, groundY: trackTop+i*laneH+groundOffset, stride:Math.random()*Math.PI*2, stunned:0, boostTimer:0, finished:false, finishTime:0, place:0 }));
+  const runners = names.map((nm,i) => ({ name: nm, x: 40, y: trackTop+i*laneH+groundOffset, lane:i, color: colorFor(nm), speed: 0, maxSpeed: 2.6+Math.random()*1.5, accel:0.04+Math.random()*0.04, vy:0, jumping:false, ducking:false, groundY: trackTop+i*laneH+groundOffset, stride:Math.random()*Math.PI*2, stunned:0, boostTimer:0, finished:false, finishTime:0, place:0, rbMult:1, rbTimer:0 }));
   const obstacles = [];
   for (let d=900; d<trackLength-500; d+=560+Math.random()*420) {
     const r = Math.random();
@@ -1759,14 +1836,16 @@ function startObstacleSprint(names) {
   function loop() {
     frame++;
     let allFinished = true;
+    applyRubberBand(frame, runners.filter(r=>!r.finished), r=>r.x);
     runners.forEach(r => {
       if (r.finished) return;
       allFinished = false;
       r.ducking = false;
       if (r.stunned > 0) { r.stunned--; }
       else {
-        const spd = r.speed + (r.boostTimer>0 ? 1.4 : 0);
+        const spd = (r.speed + (r.boostTimer>0 ? 1.4 : 0)) * (r.rbTimer>0 ? r.rbMult : 1);
         if (r.speed < r.maxSpeed) r.speed += r.accel;
+        if (r.rbTimer > 0) r.rbTimer--;
         r.x += spd; r.stride += 0.25*spd;
         const nextObs = obstacles.find(o => Math.abs(o.x - r.x) < 26);
         if (nextObs && !r.jumping) {
@@ -1977,12 +2056,17 @@ function startHillKing(names) {
   function updatePhysics() {
     const alive = players.filter(p => p.alive);
     alive.forEach(p => {
-      const dx = cx-p.x, dy = cy-p.y, d = Math.hypot(dx,dy)||1;
-      // everyone is drawn toward the hill, with some noise so it's not a straight beeline
-      p.vx += (dx/d)*0.06 + (Math.random()-0.5)*0.1;
-      p.vy += (dy/d)*0.06 + (Math.random()-0.5)*0.1;
-      const spd = Math.hypot(p.vx,p.vy), cap=2.6;
-      if (spd>cap) { p.vx=p.vx/spd*cap; p.vy=p.vy/spd*cap; }
+      if (p.knockTimer > 0) {
+        // mid-throw — let momentum carry them, just bleed off speed gradually (no steering, no speed cap)
+        p.knockTimer--; p.vx *= 0.97; p.vy *= 0.97;
+      } else {
+        const dx = cx-p.x, dy = cy-p.y, d = Math.hypot(dx,dy)||1;
+        // everyone is drawn toward the hill, with some noise so it's not a straight beeline
+        p.vx += (dx/d)*0.06 + (Math.random()-0.5)*0.1;
+        p.vy += (dy/d)*0.06 + (Math.random()-0.5)*0.1;
+        const spd = Math.hypot(p.vx,p.vy), cap=2.6;
+        if (spd>cap) { p.vx=p.vx/spd*cap; p.vy=p.vy/spd*cap; }
+      }
       p.x += p.vx; p.y += p.vy;
       if (p.shoveCooldown>0) p.shoveCooldown--;
     });
@@ -1990,7 +2074,8 @@ function startHillKing(names) {
     for (let i=0;i<alive.length;i++) for (let j=i+1;j<alive.length;j++) {
       const a=alive[i], b=alive[j], dx=b.x-a.x, dy=b.y-a.y, dist=Math.hypot(dx,dy), minDist=a.r+b.r;
       if (dist<minDist && dist>0) { const nx=dx/dist, ny=dy/dist, overlap=(minDist-dist)/2; a.x-=nx*overlap; a.y-=ny*overlap; b.x+=nx*overlap; b.y+=ny*overlap;
-        const relVx=b.vx-a.vx, relVy=b.vy-a.vy, velAlong=relVx*nx+relVy*ny; if (velAlong<0) { const imp=-velAlong*1.5; a.vx-=imp*nx*0.5; a.vy-=imp*ny*0.5; b.vx+=imp*nx*0.5; b.vy+=imp*ny*0.5; } }
+        const relVx=b.vx-a.vx, relVy=b.vy-a.vy, velAlong=relVx*nx+relVy*ny; if (velAlong<0) { const imp=-velAlong*1.5; a.vx-=imp*nx*0.5; a.vy-=imp*ny*0.5; b.vx+=imp*nx*0.5; b.vy+=imp*ny*0.5;
+          if (imp>1.8) { a.knockTimer=Math.max(a.knockTimer,18); b.knockTimer=Math.max(b.knockTimer,18); } } }
     }
     // active shoves — players deliberately try to throw whoever's nearest toward the wall
     alive.forEach(p => {
@@ -2001,6 +2086,7 @@ function startHillKing(names) {
         const dx=target.x-p.x, dy=target.y-p.y, d=Math.hypot(dx,dy)||1;
         const force = 3.5+Math.random()*2.5;
         target.vx += (dx/d)*force; target.vy += (dy/d)*force;
+        target.knockTimer = 32;
         target.tossFlash = 8;
         p.shoveCooldown = 100+Math.random()*90;
         if (Math.random()<0.5) setCommentary(p.name+' shoves '+target.name+' toward the edge!');
@@ -2056,7 +2142,7 @@ function startDownhill(names) {
   const trackTop = 30, trackBottom = H - 30, n = names.length, laneH = (trackBottom-trackTop)/n;
   const groundOffset = laneH*0.72;
   const trackLength = 8200 + n*80, finishX = trackLength;
-  const riders = names.map((nm,i) => ({ name:nm, x:40, y:trackTop+i*laneH+groundOffset, lane:i, color:colorFor(nm), speed:0, maxSpeed:2.8+Math.random()*1.5, accel:0.045+Math.random()*0.045, stunned:0, buried:false, finished:false, finishTime:0, lean:0 }));
+  const riders = names.map((nm,i) => ({ name:nm, x:40, y:trackTop+i*laneH+groundOffset, lane:i, color:colorFor(nm), speed:0, maxSpeed:2.8+Math.random()*1.5, accel:0.045+Math.random()*0.045, stunned:0, buried:false, finished:false, finishTime:0, lean:0, rbMult:1, rbTimer:0 }));
   const trees = [];
   for (let d=800; d<trackLength-500; d+=380+Math.random()*280) trees.push({ x:d, lane: Math.floor(Math.random()*n) });
   // the avalanche trails the pack — usually harmless, but punishes anyone who keeps eating tree stumbles
@@ -2111,13 +2197,15 @@ function startDownhill(names) {
     frame++;
     avalancheX += avalancheSpeed;
     let allDone = true;
+    applyRubberBand(frame, riders.filter(r=>!r.finished && !r.buried), r=>r.x);
     riders.forEach(r => {
       if (r.finished || r.buried) return;
       allDone = false;
       if (r.stunned > 0) { r.stunned--; r.lean *= 0.9; }
       else {
         if (r.speed < r.maxSpeed) r.speed += r.accel;
-        r.x += r.speed; r.lean = (Math.random()-0.5)*0.6;
+        if (r.rbTimer > 0) r.rbTimer--;
+        r.x += r.speed * (r.rbTimer > 0 ? r.rbMult : 1); r.lean = (Math.random()-0.5)*0.6;
         const nextTree = trees.find(t => t.lane===r.lane && Math.abs(t.x-r.x) < 16);
         if (nextTree && Math.random() < 0.035) { r.speed *= 0.4; r.stunned = 22; r.lean = 1.4; }
       }
@@ -2155,7 +2243,7 @@ function startRocket(names) {
   const W = canvas.width, H = canvas.height;
   const n = names.length, laneH = (H-60)/n;
   const trackLength = 8600 + n*80, finishX = trackLength;
-  const rockets = names.map((nm,i) => ({ name:nm, x:60, y:30+i*laneH+laneH/2, color:colorFor(nm), speed:1.6+Math.random()*0.6, cruiseSpeed:1.6+Math.random()*0.6, boosting:false, fuel:100, stunned:0, finished:false, finishTime:0 }));
+  const rockets = names.map((nm,i) => ({ name:nm, x:60, y:30+i*laneH+laneH/2, color:colorFor(nm), speed:1.6+Math.random()*0.6, cruiseSpeed:1.6+Math.random()*0.6, boosting:false, fuel:100, stunned:0, finished:false, finishTime:0, rbMult:1, rbTimer:0 }));
   const asteroids = [];
   for (let d=700; d<trackLength-500; d+=380+Math.random()*300) asteroids.push({ x:d, lane: Math.floor(Math.random()*n) });
   const canisters = [];
@@ -2213,6 +2301,7 @@ function startRocket(names) {
   function loop() {
     frame++;
     let allFinished = true;
+    applyRubberBand(frame, rockets.filter(r=>!r.finished), r=>r.x);
     rockets.forEach((r,ri) => {
       if (r.finished) return;
       allFinished = false;
@@ -2221,7 +2310,8 @@ function startRocket(names) {
         r.boosting = r.fuel > 3 && Math.random() < 0.55;
         if (r.boosting) { r.speed = Math.min(r.cruiseSpeed*2.1, r.speed+0.06); r.fuel -= 0.4; }
         else { r.speed = Math.max(r.cruiseSpeed*0.55, r.speed-0.03); r.fuel = Math.min(100, r.fuel+0.08); }
-        r.x += r.speed;
+        if (r.rbTimer > 0) r.rbTimer--;
+        r.x += r.speed * (r.rbTimer > 0 ? r.rbMult : 1);
         const lane = Math.round((r.y-30-laneH/2)/laneH);
         const hitAsteroid = asteroids.find(a => a.lane===lane && Math.abs(a.x-r.x) < 16);
         if (hitAsteroid && Math.random() < 0.05) { r.speed *= 0.3; r.fuel = Math.max(0, r.fuel-15); r.stunned = 20; }
@@ -2355,7 +2445,7 @@ function startTower(names) {
   const W = canvas.width, H = canvas.height;
   const n = names.length, colW = W / n;
   const finishAlt = 2850 + n*32;
-  const climbers = names.map((nm,i) => ({ name:nm, alt:0, vAlt: 0.7+Math.random()*0.5, baseX: colW*i+colW/2, sway: Math.random()*Math.PI*2, color: colorFor(nm), r: Math.max(9, Math.min(17, colW*0.28)), finished:false, finishTime:0, stunTimer:0, boostTimer:0 }));
+  const climbers = names.map((nm,i) => ({ name:nm, alt:0, vAlt: 0.7+Math.random()*0.5, baseX: colW*i+colW/2, sway: Math.random()*Math.PI*2, color: colorFor(nm), r: Math.max(9, Math.min(17, colW*0.28)), finished:false, finishTime:0, stunTimer:0, boostTimer:0, rbMult:1, rbTimer:0 }));
   const rockBands = [];
   for (let a=450; a<finishAlt-300; a+=340+Math.random()*260) rockBands.push({ alt:a, x: 40+Math.random()*(W-80) });
   const gripBands = [];
@@ -2416,15 +2506,17 @@ function startTower(names) {
   function loop() {
     frame++;
     let allDone = true;
+    applyRubberBand(frame, climbers.filter(c=>!c.finished), c=>c.alt);
     climbers.forEach(c => {
       if (c.finished) return;
       allDone = false;
       c.sway += 0.02;
       if (c.stunTimer > 0) { c.stunTimer--; }
       else {
-        const climb = c.vAlt * (c.boostTimer>0 ? 1.7 : 1);
+        const climb = c.vAlt * (c.boostTimer>0 ? 1.7 : 1) * (c.rbTimer>0 ? c.rbMult : 1);
         c.alt += climb;
         if (c.boostTimer>0) c.boostTimer--;
+        if (c.rbTimer>0) c.rbTimer--;
         const cx = c.baseX + Math.sin(c.sway)*10;
         rockBands.forEach(band => { if (Math.abs(band.alt-c.alt) < 14 && Math.abs(band.x-cx) < 18 && band._hit!==c && Math.random()<0.4) { band._hit=c; c.alt = Math.max(0, c.alt-220); c.stunTimer=45; } });
         gripBands.forEach(band => { if (Math.abs(band.alt-c.alt) < 14 && Math.abs(band.x-cx) < band.w/2 && band._hit!==c) { band._hit=c; c.boostTimer=80; } });
@@ -2610,6 +2702,8 @@ function startSnail(names) {
   function loop() {
     frame++;
     let allFinished = true;
+    const active = snails.filter(s=>!s.finished);
+    let maxX = -Infinity; active.forEach(s => { if (s.x>maxX) maxX = s.x; });
     snails.forEach(s => {
       if (s.finished) return;
       allFinished = false;
@@ -2618,8 +2712,13 @@ function startSnail(names) {
       else if (s.burstTimer > 0) { s.burstTimer--; s.x += s.speed*3.2; }
       else {
         s.x += s.speed;
-        if (Math.random() < 0.004) { s.napTimer = 60+Math.random()*140; }
-        else if (Math.random() < 0.01) { s.burstTimer = 30+Math.random()*30; }
+        const gapFrac = maxX>0 ? (maxX - s.x) / maxX : 0;
+        const isLeader = gapFrac <= 0.0001;
+        // the leader dozes off more often; whoever's furthest behind gets the better odds of a burst
+        const napChance = isLeader ? 0.009 : 0.004;
+        const burstChance = 0.008 + gapFrac*0.05;
+        if (Math.random() < napChance) { s.napTimer = 60+Math.random()*140; }
+        else if (Math.random() < burstChance) { s.burstTimer = 30+Math.random()*30; }
       }
       if (s.x >= finishX) { s.x = finishX; s.finished = true; s.finishTime = Date.now()-startTime; s.place = places++; }
     });
@@ -2631,6 +2730,278 @@ function startSnail(names) {
       cancelAnimationFrame(animId);
       const finishers = [...snails].sort((a,b) => a.finishTime-b.finishTime);
       setTimeout(() => { showPhase('snail','winner'); document.getElementById('snail-winner-name').textContent = finishers[0].name; }, 1000);
+    }
+  }
+  loop();
+}
+
+/* ==================== MUSICAL CHAIRS (every entrant — round-based elimination, pure suspense) ==================== */
+function runMusical() {
+  showOverlay('musical-overlay'); showPhase('musical', 'intro');
+  const names = Array.from(entrants);
+  if (names.length < 2) { alert('Need at least 2 entrants!'); return; }
+  document.getElementById('musical-intro-count').textContent = names.length + ' players joining the circle';
+  setTimeout(() => startMusical(names), 1600);
+}
+function startMusical(names) {
+  showPhase('musical', 'play');
+  const canvas = document.getElementById('musical-canvas'); const ctx = canvas.getContext('2d');
+  const commentary = document.getElementById('musical-commentary');
+  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2+10;
+  const n = names.length;
+  const size = Math.max(9, Math.min(16, 190/Math.sqrt(n)));
+  const players = names.map((nm,i) => ({ name:nm, color:colorFor(nm), r:size, reflex: 0.6+Math.random()*0.8, alive:true, angle:(i/n)*Math.PI*2, seatIdx:-1, panicFlash:0 }));
+  let chairCount = n-1;
+  let orbitR = Math.min(W,H)/2 - 60;
+  let frame=0, particles=[];
+  let phase = 'walk', phaseTimer = 150+Math.random()*90;
+  function setCommentary(t) { commentary.textContent = t; }
+  function chairPositions(count) {
+    const pos = [];
+    const ringR = Math.max(60, orbitR*0.5);
+    for (let i=0;i<count;i++) { const a=(i/count)*Math.PI*2; pos.push({ x: cx+Math.cos(a)*ringR, y: cy+Math.sin(a)*ringR }); }
+    return pos;
+  }
+  function drawChair(x,y) {
+    ctx.save(); ctx.translate(x,y);
+    ctx.fillStyle='#a16207'; ctx.beginPath(); ctx.roundRect(-11,-11,22,10,3); ctx.fill();
+    ctx.fillRect(-11,-2,4,16); ctx.fillRect(7,-2,4,16);
+    ctx.fillStyle='#78350f'; ctx.beginPath(); ctx.roundRect(-11,-24,22,13,3); ctx.fill();
+    ctx.restore();
+  }
+  function drawArena() {
+    ctx.fillStyle='#0f0a16'; ctx.fillRect(0,0,W,H);
+    const grad = ctx.createRadialGradient(cx,cy,40,cx,cy,orbitR+80); grad.addColorStop(0,'#241a30'); grad.addColorStop(1,'#120c1a');
+    ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+    chairPositions(chairCount).forEach(p => drawChair(p.x,p.y));
+  }
+  function drawPlayer(p) {
+    if (!p.alive) return;
+    let x,y;
+    if (phase==='seated') { const seats = chairPositions(chairCount); const s = seats[p.seatIdx]; x=s.x; y=s.y-14; }
+    else { x = cx+Math.cos(p.angle)*orbitR; y = cy+Math.sin(p.angle)*orbitR; }
+    drawMiniCharacter(ctx, x, y, p.r*1.15, p.color, { flash: p.panicFlash>0, phase: frame*0.25+p.angle*3, armSwing: Math.sin(frame*0.2+p.angle)*p.r*0.14 });
+    ctx.fillStyle='#fff'; ctx.font='bold '+Math.max(8,Math.min(11,p.r*0.6))+'px Inter'; ctx.textAlign='center'; ctx.fillText(p.name.substring(0,10), x, y-p.r*1.9);
+    if (p.panicFlash>0) p.panicFlash--;
+  }
+  function drawFx() {
+    particles = particles.filter(pt => { pt.life--; if (pt.life<=0) return false; const a=pt.life/pt.maxLife; ctx.strokeStyle=`rgba(232,121,249,${a})`; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(pt.x,pt.y,20*(1-a)+4,0,Math.PI*2); ctx.stroke(); return true; });
+  }
+  function startWalkPhase() {
+    phase = 'walk'; phaseTimer = 130+Math.random()*110;
+    setCommentary('🎵 The music is playing...');
+  }
+  function resolveRound() {
+    const alive = players.filter(p=>p.alive);
+    // seat assignment: everyone scrambles, chairCount seats up for grabs — the lowest-reflex player among
+    // those who fail to grab one gets eliminated (weighted lottery so it's not 100% predictable)
+    const seats = chairPositions(chairCount);
+    const shuffled = [...alive].sort((a,b) => (b.reflex+Math.random()*0.6) - (a.reflex+Math.random()*0.6));
+    const seated = shuffled.slice(0, chairCount);
+    const standing = shuffled.slice(chairCount);
+    seated.forEach((p,i) => { p.seatIdx = i; });
+    phase = 'seated'; phaseTimer = 70;
+    standing.forEach(p => { p.alive = false; p.panicFlash = 12; particles.push({x:cx+Math.cos(p.angle)*orbitR, y:cy+Math.sin(p.angle)*orbitR, life:22, maxLife:22}); });
+    if (standing.length) setCommentary(standing.map(p=>p.name).join(', ') + (standing.length>1?' didn\'t find a seat!':' didn\'t find a seat!'));
+    chairCount = Math.max(0, chairCount-1);
+  }
+  let animId;
+  function loop() {
+    frame++;
+    phaseTimer--;
+    if (phase==='walk') {
+      players.filter(p=>p.alive).forEach(p => { p.angle += 0.025 + p.reflex*0.006; });
+      if (phaseTimer <= 0) { setCommentary('🛑 MUSIC STOPS!'); phase='stopping'; phaseTimer=45; }
+    } else if (phase==='stopping') {
+      if (phaseTimer <= 0) resolveRound();
+    } else if (phase==='seated') {
+      if (phaseTimer <= 0) {
+        const alive = players.filter(p=>p.alive);
+        if (alive.length > 1) startWalkPhase(); // next round begins
+      }
+    }
+    drawArena(); players.forEach(drawPlayer); drawFx();
+    const aliveCount = players.filter(p=>p.alive).length;
+    document.getElementById('musical-alive-badge').textContent = aliveCount + ' left · ' + chairCount + ' chair' + (chairCount===1?'':'s');
+    if (aliveCount > 1) { animId = requestAnimationFrame(loop); }
+    else {
+      const winner = players.find(p=>p.alive);
+      setCommentary(winner.name+' grabs the last chair and wins!');
+      setTimeout(() => { showPhase('musical','winner'); document.getElementById('musical-winner-name').textContent = winner.name; }, 1200);
+    }
+  }
+  startWalkPhase();
+  loop();
+}
+
+/* ==================== PIE EATING CONTEST (every entrant — turn-based luck/timing, first to target pies) ==================== */
+function runPie() {
+  showOverlay('pie-overlay'); showPhase('pie', 'intro');
+  const names = Array.from(entrants);
+  if (names.length === 0) { alert('No entrants yet!'); return; }
+  document.getElementById('pie-intro-count').textContent = names.length + ' eater' + (names.length===1?'':'s') + ' at the table';
+  setTimeout(() => startPie(names), 1600);
+}
+function startPie(names) {
+  showPhase('pie', 'play');
+  const canvas = document.getElementById('pie-canvas'); const ctx = canvas.getContext('2d');
+  const feed = document.getElementById('pie-feed');
+  const W = canvas.width, H = canvas.height;
+  const n = names.length, colW = W/n, tableY = H-90;
+  const goalPies = 6 + Math.floor(n*0.35);
+  const eaters = names.map((nm,i) => ({ name:nm, x: colW*i+colW/2, color:colorFor(nm), pies:0, mess:0, chewing:false, chewTimer:0, nextBite: 60+Math.random()*160, sick:0, finished:false, popups:[] }));
+  let frame=0, places=1, crumbs=[];
+  function setFeed(t) { feed.textContent = t; }
+  function drawScene() {
+    const g = ctx.createLinearGradient(0,0,0,tableY); g.addColorStop(0,'#3b2417'); g.addColorStop(1,'#523420'); ctx.fillStyle=g; ctx.fillRect(0,0,W,tableY);
+    ctx.fillStyle='#7c4a24'; ctx.fillRect(0,tableY,W,H-tableY);
+    ctx.fillStyle='rgba(0,0,0,0.15)'; for (let x=0;x<W;x+=50) ctx.fillRect(x,tableY,2,H-tableY);
+  }
+  function drawEater(e) {
+    ctx.save(); ctx.translate(e.x, tableY-14);
+    // pie plate
+    ctx.fillStyle='#e5e7eb'; ctx.beginPath(); ctx.ellipse(0,18,26,8,0,0,Math.PI*2); ctx.fill();
+    const pieLeft = Math.max(0, 1-(e.chewTimer>0?0.4:0));
+    if (!e.finished || e.chewTimer>0) { ctx.fillStyle='#d97706'; ctx.beginPath(); ctx.ellipse(0,15,16*pieLeft,5*pieLeft,0,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#92400e'; ctx.beginPath(); ctx.ellipse(0,12,16*pieLeft,4*pieLeft,0,0,Math.PI); ctx.fill(); }
+    // character
+    drawMiniCharacter(ctx, 0, 0, 15, e.color, { phase: frame*0.15+e.x*0.02, armSwing: e.chewing?Math.sin(frame*0.6)*6:2 });
+    // mess on face
+    if (e.mess>0) { ctx.fillStyle='rgba(217,119,6,0.7)'; for (let k=0;k<Math.min(6,e.mess);k++) { ctx.beginPath(); ctx.arc((k%3-1)*6, -18+Math.floor(k/3)*5, 2, 0, Math.PI*2); ctx.fill(); } }
+    if (e.chewing) { ctx.fillStyle='#fef08a'; ctx.font='bold 12px Inter'; ctx.textAlign='center'; ctx.fillText('om nom', 0, -34); }
+    if (e.sick>0) { ctx.fillStyle='#4ade80'; ctx.font='bold 14px Inter'; ctx.textAlign='center'; ctx.fillText('🤢', 0, -34); }
+    ctx.fillStyle='#fff'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.fillText(e.name.substring(0,10), 0, -46);
+    ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(-16,-58,32,5);
+    ctx.fillStyle='#fb923c'; ctx.fillRect(-16,-58,32*Math.min(1,e.pies/goalPies),5);
+    ctx.fillStyle='#fff'; ctx.font='9px Inter'; ctx.fillText(e.pies+'/'+goalPies+' pies', 0, -62);
+    ctx.restore();
+    e.popups = e.popups.filter(p => { p.life--; if (p.life<=0) return false; const al=p.life/p.maxLife; p.y-=0.5; ctx.fillStyle=p.color; ctx.globalAlpha=al; ctx.font='bold 12px Inter'; ctx.textAlign='center'; ctx.fillText(p.text, e.x, p.y); ctx.globalAlpha=1; return true; });
+  }
+  function drawHUD() {
+    const sorted = [...eaters].sort((a,b) => b.pies-a.pies);
+    const boxH = Math.min(190, 30+Math.min(sorted.length,8)*16);
+    ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10,10,190,boxH,10); ctx.fill();
+    ctx.fillStyle='#fb923c'; ctx.font='bold 12px Inter'; ctx.textAlign='left'; ctx.fillText('🥧 STANDINGS',20,28);
+    sorted.slice(0,8).forEach((e,i) => { ctx.fillStyle=e.color; ctx.fillRect(20,35+i*16,8,8); ctx.fillStyle='#fff'; ctx.font='11px Inter'; ctx.fillText((i+1)+'. '+e.name.substring(0,12)+' — '+e.pies,32,43+i*16); });
+  }
+  let animId;
+  const maxDuration = 5200+n*18;
+  function loop() {
+    frame++;
+    eaters.forEach(e => {
+      if (e.finished) return;
+      if (e.sick > 0) { e.sick--; return; }
+      if (!e.chewing && frame >= e.nextBite) { e.chewing = true; e.chewTimer = 22+Math.random()*16; }
+      else if (e.chewing) {
+        e.chewTimer--;
+        if (e.chewTimer <= 0) {
+          e.chewing = false;
+          const success = Math.random() < 0.72;
+          if (success) {
+            e.pies++; e.mess = Math.min(9, e.mess+1);
+            const big = Math.random() < 0.12;
+            if (big) { e.pies++; e.popups.push({text:'DOUBLE BITE! 🥧🥧', color:'#ffd700', life:50, maxLife:50, y: tableY-90}); setFeed(e.name+' takes a huge double bite!'); }
+            else { e.popups.push({text:'+1 pie!', color:'#4ade80', life:40, maxLife:40, y: tableY-90}); setFeed(e.name+' polishes off another pie!'); }
+          } else if (Math.random() < 0.25) {
+            e.sick = 70+Math.random()*60; e.popups.push({text:'too full...', color:'#4ade80', life:40, maxLife:40, y: tableY-90}); setFeed(e.name+' needs a breather!');
+          } else { e.popups.push({text:'messy miss!', color:'#94a3b8', life:36, maxLife:36, y: tableY-90}); setFeed(e.name+' gets pie all over their face!'); }
+          e.nextBite = frame + 90+Math.random()*160;
+          if (e.pies >= goalPies) e.finished = true;
+        }
+      }
+    });
+    ctx.clearRect(0,0,W,H); drawScene(); eaters.forEach(drawEater); drawHUD();
+    const winner = eaters.find(e=>e.finished);
+    const timeUp = frame > maxDuration;
+    if (!winner && !timeUp) { animId = requestAnimationFrame(loop); }
+    else {
+      const champ = winner || eaters.reduce((a,b) => a.pies>b.pies?a:b);
+      setFeed(champ.name+' wins with '+champ.pies+' pies!');
+      setTimeout(() => { showPhase('pie','winner'); document.getElementById('pie-winner-name').textContent = champ.name; }, 1300);
+    }
+  }
+  loop();
+}
+
+/* ==================== BANANA SLIP CHAOS (every entrant — race with banana peels, played for laughs) ==================== */
+function runBanana() {
+  showOverlay('banana-overlay'); showPhase('banana', 'intro');
+  const names = Array.from(entrants);
+  if (names.length === 0) { alert('No entrants yet!'); return; }
+  document.getElementById('banana-intro-count').textContent = names.length + ' runner' + (names.length===1?'':'s') + ' lining up';
+  setTimeout(() => startBanana(names), 1600);
+}
+function startBanana(names) {
+  showPhase('banana', 'play');
+  document.getElementById('banana-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('banana-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const trackTop = 30, trackBottom = H-30, n = names.length, laneH = (trackBottom-trackTop)/n;
+  const groundOffset = laneH*0.72;
+  const trackLength = 6600 + n*70, finishX = trackLength;
+  const runners = names.map((nm,i) => ({ name:nm, x:40, y:trackTop+i*laneH+groundOffset, lane:i, color:colorFor(nm), speed:0, maxSpeed:2.6+Math.random()*1.4, accel:0.045+Math.random()*0.045, stunned:0, spin:0, stride:Math.random()*Math.PI*2, finished:false, finishTime:0, rbMult:1, rbTimer:0 }));
+  const peels = [];
+  for (let d=650; d<trackLength-500; d+=320+Math.random()*260) peels.push({ x:d, lane: Math.floor(Math.random()*n), used:false });
+  let startTime = Date.now(), frame=0, cameraX=0, places=1;
+  function drawTrack() {
+    const g = ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#fef9c3'); g.addColorStop(1,'#fde68a'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    for (let i=0;i<n;i++) { const ly=trackTop+i*laneH; ctx.strokeStyle='rgba(0,0,0,0.1)'; ctx.setLineDash([12,12]); ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(0,ly); ctx.lineTo(W,ly); ctx.stroke(); ctx.setLineDash([]); }
+    const fx = finishX-cameraX;
+    if (fx>-100&&fx<W+100) { for (let y=trackTop;y<trackBottom;y+=10) for (let x=0;x<28;x+=9) { ctx.fillStyle=((Math.floor(y/10)+Math.floor(x/9))%2===0)?'#78350f':'#fff'; ctx.fillRect(fx+x,y,9,10); } ctx.fillStyle='#78350f'; ctx.font='bold 13px Inter'; ctx.textAlign='center'; ctx.fillText('FINISH', fx+14, trackTop-8); }
+  }
+  function drawPeel(pl) {
+    if (pl.used) return;
+    const x = pl.x-cameraX; if (x<-30||x>W+30) return;
+    const gy = trackTop+pl.lane*laneH+groundOffset;
+    ctx.save(); ctx.translate(x,gy+8); ctx.rotate(0.3);
+    ctx.fillStyle='#facc15'; ctx.beginPath(); ctx.ellipse(-4,0,7,3,0.4,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(4,-1,7,3,-0.5,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+  function drawRunner(r) {
+    const sx = r.x-cameraX, sy = r.y, sc = Math.max(0.5,Math.min(1,laneH/46));
+    if (sx<-60||sx>W+60) return;
+    ctx.save(); ctx.translate(sx,sy); ctx.scale(sc,sc);
+    if (r.stunned > 0) { ctx.rotate(r.spin); ctx.translate(0,-6); }
+    ctx.fillStyle='rgba(0,0,0,0.25)'; ctx.beginPath(); ctx.ellipse(0,15,12,4,0,0,Math.PI*2); ctx.fill();
+    drawMiniCharacter(ctx, 0, 0, 15, r.color, { phase: r.stunned>0?0:r.stride, armSwing: r.stunned>0 ? 10 : Math.sin(r.stride*2)*6 });
+    if (r.stunned > 0) { ctx.fillStyle='#facc15'; ctx.font='bold 11px Inter'; ctx.textAlign='center'; ctx.fillText('WHOA!', 0, -34); }
+    ctx.fillStyle='#78350f'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.fillText(r.name.substring(0,10), 0, -46);
+    ctx.restore();
+  }
+  function drawHUD() {
+    const sorted = [...runners].sort((a,b) => b.x-a.x);
+    const boxH = Math.min(200, 30+Math.min(sorted.length,8)*16);
+    ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.beginPath(); ctx.roundRect(10,10,190,boxH,10); ctx.fill();
+    ctx.fillStyle='#854d0e'; ctx.font='bold 12px Inter'; ctx.textAlign='left'; ctx.fillText('🍌 LEADERBOARD',20,28);
+    sorted.slice(0,8).forEach((r,i) => { ctx.fillStyle=r.color; ctx.fillRect(20,35+i*16,8,8); ctx.fillStyle='#3f2609'; ctx.font='11px Inter'; ctx.fillText((i+1)+'. '+r.name.substring(0,14),32,43+i*16); });
+  }
+  let animId;
+  function loop() {
+    frame++;
+    let allFinished = true;
+    applyRubberBand(frame, runners.filter(r=>!r.finished), r=>r.x);
+    runners.forEach(r => {
+      if (r.finished) return;
+      allFinished = false;
+      if (r.stunned > 0) { r.stunned--; r.spin += 0.6; }
+      else {
+        if (r.speed < r.maxSpeed) r.speed += r.accel;
+        if (r.rbTimer > 0) r.rbTimer--;
+        const mv = r.speed * (r.rbTimer>0 ? r.rbMult : 1);
+        r.x += mv; r.stride += 0.25*mv;
+        const peel = peels.find(pl => !pl.used && pl.lane===r.lane && Math.abs(pl.x-r.x) < 14);
+        if (peel) { peel.used = true; r.speed *= 0.3; r.stunned = 26; r.spin = 0; }
+      }
+      if (r.x >= finishX) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; }
+    });
+    const leader = runners.reduce((a,b) => a.x>b.x?a:b);
+    cameraX = Math.max(0, Math.min(leader.x - W*0.3, trackLength - W + 150));
+    ctx.clearRect(0,0,W,H); drawTrack(); peels.forEach(drawPeel); runners.forEach(drawRunner); drawHUD();
+    if (!allFinished) { animId = requestAnimationFrame(loop); }
+    else {
+      cancelAnimationFrame(animId);
+      const finishers = [...runners].sort((a,b) => a.finishTime-b.finishTime);
+      setTimeout(() => { showPhase('banana','winner'); document.getElementById('banana-winner-name').textContent = finishers[0].name; }, 1000);
     }
   }
   loop();
@@ -2998,6 +3369,9 @@ function startSwordDuel(p1Name, p2Name) {
       else if (game === 'tower') runTower();
       else if (game === 'laser') runLaser();
       else if (game === 'snail') runSnail();
+      else if (game === 'musical') runMusical();
+      else if (game === 'pie') runPie();
+      else if (game === 'banana') runBanana();
       else if (game === 'boxing') runBoxingMatch();
       else if (game === 'sword') runSwordDuel();
     }, 200);
