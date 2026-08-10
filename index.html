@@ -1082,7 +1082,7 @@ function triviaNextQuestion() {
   ['a','b','c','d'].forEach(l => { document.getElementById('count-' + l).textContent = '0'; document.getElementById('bar-' + l).style.width = '0%'; });
   document.getElementById('trivia-count-badge').textContent = Object.keys(gameState.players).length + ' alive';
   renderPlayerGrid('trivia-live-grid', gameState.players, {});
-  startTimer('trivia-timer', 12, null, () => triviaReveal());
+  startTimer('trivia-timer', 8, null, () => triviaReveal());
 }
 function updateTriviaBars() {
   const total = Object.keys(gameState.answered).length || 1;
