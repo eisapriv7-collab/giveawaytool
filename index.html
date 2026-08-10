@@ -551,20 +551,13 @@
   </div>
 </div>
 
-<!-- ==================== TILE DROP PANIC (all entrants — tile survival, dramatic falls) ==================== -->
+<!-- ==================== TILE DROP PANIC (all entrants — visible grid, chaotic scramble, sudden drops) ==================== -->
 <div id="tile-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
   <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
     <div class="text-center mb-3"><div class="text-[#f472b6] text-sm font-bold uppercase tracking-widest mb-2">🟩 Tile Drop Panic</div><h1 class="text-4xl md:text-5xl font-black text-white">Don't Fall</h1></div>
-    <div id="tile-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Step carefully...</div><div class="text-sm text-gray-600" id="tile-intro-count">Everyone enters the grid</div></div>
-    <div id="tile-phase-waiting" class="hidden text-center w-full max-w-5xl px-6">
-      <div class="text-6xl font-black text-[#ffd700] mb-2" id="tile-countdown">5</div>
-      <div class="text-xl text-gray-300 mb-4">Tiles will flash — find safety!</div>
-      <div class="flex items-center justify-center gap-3 mb-6"><span id="tile-round-badge" class="inline-block px-4 py-2 rounded-full bg-white/5 text-white text-sm font-bold">Round 1</span><span id="tile-alive-badge" class="p-count-badge">0 alive</span></div>
-      <div id="tile-players-grid" class="p-grid max-h-40 overflow-y-auto"></div>
-    </div>
+    <div id="tile-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Entering the arena...</div><div class="text-sm text-gray-600" id="tile-intro-count">Everyone steps onto the grid</div></div>
     <div id="tile-phase-play" class="hidden w-full max-w-5xl">
-      <div class="flex items-center justify-center gap-3 mb-1"><span id="tile-alive-badge2" class="p-count-badge">0 alive</span></div>
-      <div id="tile-commentary" class="text-center text-[#ffd700] font-bold text-xl mb-3 h-8">The floor is stable... for now</div>
+      <div class="flex items-center justify-center gap-3 mb-1"><span id="tile-alive-badge" class="p-count-badge">0 alive</span><span id="tile-round-badge" class="inline-block px-3 py-1 rounded-full bg-white/5 text-white text-xs font-bold">Round 1</span></div>
       <canvas id="tile-canvas" width="900" height="620" class="mx-auto rounded-2xl border border-white/10 bg-[#0a0a14]"></canvas>
     </div>
     <div id="tile-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🟩</div><div class="text-2xl text-[#f472b6] font-bold mb-2">LAST ONE STANDING</div><div id="tile-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
@@ -3361,7 +3354,7 @@ function startSwordDuel(p1Name, p2Name) {
 }
 
 
-/* ==================== TILE DROP PANIC (all entrants — tile survival with dramatic falls) ==================== */
+/* ==================== TILE DROP PANIC (all entrants — grid visible whole time, chaotic scramble, sudden drops) ==================== */
 function runTilePanic() {
   showOverlay('tile-overlay'); showPhase('tile', 'intro');
   const names = Array.from(entrants);
@@ -3370,229 +3363,295 @@ function runTilePanic() {
   setTimeout(() => startTilePanic(names), 1600);
 }
 function startTilePanic(names) {
-  showPhase('tile', 'waiting');
+  showPhase('tile', 'play');
   const canvas = document.getElementById('tile-canvas'); const ctx = canvas.getContext('2d');
-  const commentary = document.getElementById('tile-commentary');
   const W = canvas.width, H = canvas.height;
   const cols = 8, rows = 6;
-  const tileW = Math.min(90, (W-120)/cols), tileH = Math.min(80, (H-160)/rows);
+  const tileW = Math.min(95, (W-100)/cols), tileH = Math.min(85, (H-140)/rows);
   const gridW = cols*tileW, gridH = rows*tileH;
-  const offX = (W - gridW)/2, offY = (H - gridH)/2 + 10;
+  const offX = (W - gridW)/2, offY = (H - gridH)/2;
   const n = names.length;
 
   // Players
   const players = names.map((nm,i) => ({
-    name: nm, color: colorFor(nm), r: 13, alive: true, falling: false,
+    name: nm, color: colorFor(nm), r: 12, alive: true, falling: false,
     tx: Math.floor(Math.random()*cols), ty: Math.floor(Math.random()*rows),
-    x: 0, y: 0, // pixel pos
+    x: 0, y: 0,
     fallY: 0, fallRot: 0, fallVelY: 0, fallVelX: 0, screamTimer: 0,
-    targetTx: -1, targetTy: -1, moveTimer: 0, panic: false
+    panic: false, armPhase: Math.random()*Math.PI*2,
+    targetX: 0, targetY: 0, moveSpeed: 1.8+Math.random()*1.2
   }));
-  players.forEach(p => { p.x = offX + p.tx*tileW + tileW/2; p.y = offY + p.ty*tileH + tileH/2; });
+  players.forEach(p => {
+    p.x = offX + p.tx*tileW + tileW/2;
+    p.y = offY + p.ty*tileH + tileH/2;
+    p.targetX = p.x; p.targetY = p.y;
+  });
 
   let tiles = [];
-  for (let y=0; y<rows; y++) for (let x=0; x<cols; x++) tiles.push({x, y, alive: true, warning: 0, dropAnim: 0, shake: 0});
+  for (let y=0; y<rows; y++) for (let x=0; x<cols; x++) tiles.push({x, y, alive: true, warning: 0, dropAnim: 0, shake: 0, flash: 0});
 
-  let round = 1, frame = 0, phase = 'countdown', phaseTimer = 0, countdown = 5;
-  let particles = [], cameraShake = 0, slowMo = 0;
+  let round = 1, frame = 0, phase = 'scramble', phaseTimer = 0;
+  let countdown = 5, countdownDisplay = 5;
+  let particles = [], cameraShake = 0, slowMo = 0, dropsPending = [];
 
-  function tileCenter(tx,ty) { return { x: offX + tx*tileW + tileW/2, y: offY + ty*tileH + tileH/2 }; }
-  function setCommentary(t) { commentary.textContent = t; }
+  function tileCenter(tx,ty) {
+    return { x: offX + tx*tileW + tileW/2, y: offY + ty*tileH + tileH/2 };
+  }
 
   function drawGrid() {
     ctx.fillStyle='#0a0a14'; ctx.fillRect(0,0,W,H);
     // Abyss below
-    const abyss = ctx.createLinearGradient(0,offY+gridH,0,H); abyss.addColorStop(0,'#1a0a1a'); abyss.addColorStop(1,'#050205'); ctx.fillStyle=abyss; ctx.fillRect(0,offY+gridH,W,H-offY-gridH);
-    // Grid background glow
-    ctx.shadowColor='rgba(244,114,182,0.15)'; ctx.shadowBlur=30;
-    ctx.fillStyle='rgba(255,255,255,0.02)'; ctx.fillRect(offX-10,offY-10,gridW+20,gridH+20); ctx.shadowBlur=0;
+    const abyss = ctx.createLinearGradient(0,offY+gridH,0,H);
+    abyss.addColorStop(0,'#1a0a1a'); abyss.addColorStop(1,'#050205');
+    ctx.fillStyle=abyss; ctx.fillRect(0,offY+gridH,W,H-offY-gridH);
+    // Grid glow
+    ctx.shadowColor='rgba(244,114,182,0.12)'; ctx.shadowBlur=40;
+    ctx.fillStyle='rgba(255,255,255,0.015)'; ctx.fillRect(offX-8,offY-8,gridW+16,gridH+16);
+    ctx.shadowBlur=0;
 
     tiles.forEach(t => {
       const tx = offX + t.x*tileW, ty = offY + t.y*tileH;
       if (!t.alive) {
         if (t.dropAnim > 0) {
-          const dropY = t.dropAnim * 200;
-          const alpha = Math.max(0, 1 - t.dropAnim);
-          ctx.fillStyle = `rgba(60,20,30,${alpha})`;
+          const dropY = t.dropAnim * 180;
+          const alpha = Math.max(0, 1 - t.dropAnim*1.5);
+          ctx.fillStyle = `rgba(80,30,40,${alpha})`;
           ctx.fillRect(tx+2, ty+2+dropY, tileW-4, tileH-4);
-          t.dropAnim += 0.03;
+          t.dropAnim += 0.025;
         }
-        // Hole
         ctx.fillStyle='#050205'; ctx.fillRect(tx+2,ty+2,tileW-4,tileH-4);
-        ctx.strokeStyle='rgba(244,114,182,0.15)'; ctx.lineWidth=1; ctx.strokeRect(tx+2,ty+2,tileW-4,tileH-4);
+        ctx.strokeStyle='rgba(244,114,182,0.12)'; ctx.lineWidth=1; ctx.strokeRect(tx+2,ty+2,tileW-4,tileH-4);
         return;
       }
       let shakeX = 0, shakeY = 0;
-      if (t.shake > 0) { shakeX = (Math.random()-0.5)*t.shake; shakeY = (Math.random()-0.5)*t.shake; t.shake *= 0.9; if (t.shake<0.3) t.shake=0; }
-      // Warning color
-      let baseColor = 'rgba(255,255,255,0.06)';
-      let borderColor = 'rgba(255,255,255,0.12)';
-      if (t.warning === 1) { baseColor = 'rgba(250,204,21,0.25)'; borderColor = '#facc15'; }
-      if (t.warning === 2) { baseColor = 'rgba(239,68,68,0.35)'; borderColor = '#ef4444'; }
+      if (t.shake > 0) { shakeX = (Math.random()-0.5)*t.shake; shakeY = (Math.random()-0.5)*t.shake; t.shake *= 0.88; if (t.shake<0.3) t.shake=0; }
+      let baseColor = 'rgba(255,255,255,0.05)';
+      let borderColor = 'rgba(255,255,255,0.1)';
+      if (t.warning === 1) { baseColor = `rgba(250,204,21,${0.15+Math.sin(frame*0.4)*0.1})`; borderColor = '#facc15'; }
+      if (t.warning === 2) { baseColor = `rgba(239,68,68,${0.2+Math.sin(frame*0.8)*0.15})`; borderColor = '#ef4444'; }
+      if (t.flash > 0) { baseColor = `rgba(255,255,255,${t.flash})`; t.flash *= 0.85; if (t.flash<0.02) t.flash=0; }
       ctx.fillStyle = baseColor; ctx.fillRect(tx+2+shakeX, ty+2+shakeY, tileW-4, tileH-4);
-      ctx.strokeStyle = borderColor; ctx.lineWidth = t.warning>0?2:1; ctx.strokeRect(tx+2+shakeX, ty+2+shakeY, tileW-4, tileH-4);
-      // Grid coords for clarity
-      if (tileW > 50) { ctx.fillStyle='rgba(255,255,255,0.08)'; ctx.font='9px Inter'; ctx.textAlign='center'; ctx.fillText(String.fromCharCode(65+t.x)+(t.y+1), tx+tileW/2+shakeX, ty+tileH-6+shakeY); }
+      ctx.strokeStyle = borderColor; ctx.lineWidth = t.warning>0?2.5:1; ctx.strokeRect(tx+2+shakeX, ty+2+shakeY, tileW-4, tileH-4);
+      if (tileW > 55) { ctx.fillStyle='rgba(255,255,255,0.06)'; ctx.font='9px Inter'; ctx.textAlign='center'; ctx.fillText(String.fromCharCode(65+t.x)+(t.y+1), tx+tileW/2+shakeX, ty+tileH-5+shakeY); }
     });
   }
+
   function drawPlayer(p) {
     if (!p.alive && !p.falling) return;
     const cx = p.x + (cameraShake?(Math.random()-0.5)*cameraShake:0);
     const cy = p.falling ? p.fallY : p.y;
     ctx.save(); ctx.translate(cx, cy); ctx.rotate(p.fallRot);
-    if (p.falling) ctx.globalAlpha = Math.max(0, 1 - (p.fallY - offY - gridH)/200);
+    if (p.falling) ctx.globalAlpha = Math.max(0, 1 - (p.fallY - offY - gridH)/180);
     // Shadow
-    if (!p.falling) { ctx.fillStyle='rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(0, p.r+3, p.r*0.8, 3, 0, 0, Math.PI*2); ctx.fill(); }
-    // Mini character
-    drawMiniCharacter(ctx, 0, 0, p.r, p.color, { phase: p.falling?p.fallRot*3:frame*0.2, armSwing: p.panic?Math.sin(frame*0.8)*p.r*0.3:Math.sin(frame*0.15)*p.r*0.1, rotate: p.falling?0:Math.sin(frame*0.1)*0.1 });
-    // Scream
-    if (p.screamTimer > 0) { ctx.fillStyle='#ef4444'; ctx.font='bold 13px Inter'; ctx.textAlign='center'; ctx.fillText('😱', 0, -p.r-14); p.screamTimer--; }
-    else if (p.panic && p.alive && !p.falling) { ctx.fillStyle='#facc15'; ctx.font='bold 11px Inter'; ctx.textAlign='center'; ctx.fillText('😰', 0, -p.r-12); }
-    ctx.fillStyle='#fff'; ctx.font='bold 9px Inter'; ctx.textAlign='center'; ctx.fillText(p.name.substring(0,8), 0, p.r+12);
+    if (!p.falling) { ctx.fillStyle='rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(0, p.r+3, p.r*0.75, 3, 0, 0, Math.PI*2); ctx.fill(); }
+    // Body
+    const bg = ctx.createRadialGradient(-3,-5,1,0,0,p.r); bg.addColorStop(0, lightenHex(p.color,35)); bg.addColorStop(1, p.color);
+    ctx.fillStyle=bg; ctx.beginPath(); ctx.ellipse(0,-2, p.r*0.55, p.r*0.65, 0, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.25)'; ctx.lineWidth=1; ctx.stroke();
+    // Head
+    ctx.fillStyle='#e8c8a0'; ctx.beginPath(); ctx.arc(0,-p.r-3, p.r*0.42, 0, Math.PI*2); ctx.fill();
+    // Eyes — wide panic when on warning tile
+    const myTile = tiles.find(t=>t.x===p.tx && t.y===p.ty);
+    const isDoomed = myTile && myTile.warning > 0 && phase === 'scramble';
+    ctx.fillStyle = isDoomed ? '#ef4444' : '#1f2937';
+    ctx.beginPath(); ctx.arc(-3, -p.r-4, isDoomed?3:2.2, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(3, -p.r-4, isDoomed?3:2.2, 0, Math.PI*2); ctx.fill();
+    // Mouth
+    ctx.strokeStyle='#000'; ctx.lineWidth=1.2; ctx.beginPath();
+    if (isDoomed) { ctx.arc(0, -p.r+1, 3, 0, Math.PI); }
+    else { ctx.moveTo(-2,-p.r+2); ctx.lineTo(2,-p.r+2); }
+    ctx.stroke();
+    // Arms flailing
+    const flail = isDoomed ? Math.sin(frame*0.9+p.armPhase)*p.r*0.45 : Math.sin(frame*0.25+p.armPhase)*p.r*0.12;
+    ctx.strokeStyle='#e8c8a0'; ctx.lineWidth=2.5; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(-p.r*0.45,-4); ctx.lineTo(-p.r*0.45-10, -10+flail); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.r*0.45,-4); ctx.lineTo(p.r*0.45+10, -10-flail); ctx.stroke();
+    // Scream / panic emoji
+    if (p.screamTimer > 0) { ctx.fillStyle='#ef4444'; ctx.font='bold 14px Inter'; ctx.textAlign='center'; ctx.fillText('😱', 0, -p.r-18); p.screamTimer--; }
+    else if (isDoomed) { ctx.fillStyle='#facc15'; ctx.font='bold 12px Inter'; ctx.textAlign='center'; ctx.fillText('😰', 0, -p.r-16); }
+    else if (phase==='scramble' && p.panic) { ctx.fillStyle='#facc15'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.fillText('🏃', 0, -p.r-14); }
+    // Name
+    ctx.fillStyle='#fff'; ctx.font='bold 9px Inter'; ctx.textAlign='center'; ctx.fillText(p.name.substring(0,8), 0, p.r+11);
     ctx.restore(); ctx.globalAlpha = 1;
   }
+
   function drawFx() {
     particles = particles.filter(pt => {
-      pt.x += pt.vx; pt.y += pt.vy; pt.vy += 0.12; pt.life--;
+      pt.x += pt.vx; pt.y += pt.vy; pt.vy += 0.1; pt.life--;
       if (pt.life <= 0) return false;
       const a = pt.life/pt.maxLife;
-      ctx.fillStyle = pt.type==='dust'?`rgba(200,200,200,${a*0.4})`:`rgba(239,68,68,${a})`;
+      ctx.fillStyle = pt.type==='dust'?`rgba(180,180,180,${a*0.5})`:pt.type==='spark'?`rgba(255,215,0,${a})`:`rgba(239,68,68,${a})`;
       ctx.beginPath(); ctx.arc(pt.x, pt.y, pt.size*a, 0, Math.PI*2); ctx.fill();
       return true;
     });
   }
-  function spawnDust(tx,ty) {
-    const c = tileCenter(tx,ty);
-    for (let i=0;i<10;i++) particles.push({x:c.x,y:c.y,vx:(Math.random()-0.5)*4,vy:-2-Math.random()*3,life:30,maxLife:30,size:3+Math.random()*3,type:'dust'});
-  }
-  function spawnBlood(x,y) {
-    for (let i=0;i<6;i++) particles.push({x,y,vx:(Math.random()-0.5)*3,vy:-1-Math.random()*2,life:25,maxLife:25,size:2+Math.random()*2,type:'blood'});
+
+  function drawHUD() {
+    // Big countdown on canvas
+    if (phase === 'scramble') {
+      const cd = Math.ceil(countdown);
+      ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(W/2-55, 8, 110, 44, 10); ctx.fill();
+      ctx.fillStyle = cd<=2 ? '#ef4444' : cd<=3 ? '#facc15' : '#fff';
+      ctx.font='bold 28px "Space Grotesk", Inter'; ctx.textAlign='center'; ctx.fillText(cd, W/2, 40);
+      ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='bold 10px Inter'; ctx.fillText('SECONDS', W/2, 52);
+    }
+    // Alive counter
+    const alive = players.filter(p=>p.alive && !p.falling).length;
+    ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10,10,140,30,8); ctx.fill();
+    ctx.fillStyle='#f472b6'; ctx.font='bold 12px Inter'; ctx.textAlign='left'; ctx.fillText('🟩 '+alive+' alive', 20, 30);
+    // Round
+    ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(W-90,10,80,30,8); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='bold 12px Inter'; ctx.textAlign='center'; ctx.fillText('Round '+round, W-50, 30);
   }
 
-  function startRound() {
-    phase = 'countdown'; countdown = 5; phaseTimer = 0;
-    document.getElementById('tile-round-badge').textContent = 'Round ' + round;
-    const alive = players.filter(p=>p.alive && !p.falling);
-    document.getElementById('tile-alive-badge').textContent = alive.length + ' alive';
-    document.getElementById('tile-alive-badge2').textContent = alive.length + ' alive';
-    // Pick tiles to drop (more each round)
-    const dropCount = Math.min(tiles.filter(t=>t.alive).length-1, 2 + round + Math.floor(alive.length/3));
+  function spawnDust(tx,ty) {
+    const c = tileCenter(tx,ty);
+    for (let i=0;i<14;i++) particles.push({x:c.x,y:c.y,vx:(Math.random()-0.5)*5,vy:-2-Math.random()*4,life:35,maxLife:35,size:3+Math.random()*4,type:'dust'});
+    for (let i=0;i<6;i++) particles.push({x:c.x,y:c.y,vx:(Math.random()-0.5)*6,vy:-3-Math.random()*3,life:20,maxLife:20,size:2+Math.random()*2,type:'spark'});
+  }
+  function spawnBlood(x,y) {
+    for (let i=0;i<8;i++) particles.push({x,y,vx:(Math.random()-0.5)*4,vy:-1-Math.random()*3,life:28,maxLife:28,size:2+Math.random()*3,type:'blood'});
+  }
+
+  function pickDrops() {
     const aliveTiles = tiles.filter(t=>t.alive);
-    // Shuffle and pick, but try not to strand everyone
+    const aliveCount = players.filter(p=>p.alive && !p.falling).length;
+    const dropCount = Math.min(aliveTiles.length-1, Math.max(2, 1 + round + Math.floor(aliveCount/3)));
     const shuffled = aliveTiles.sort(()=>Math.random()-0.5);
     shuffled.forEach((t,i) => { t.warning = i < dropCount ? 1 : 0; });
-    showPhase('tile', 'waiting');
-    setCommentary('Round ' + round + ' — ' + dropCount + ' tiles will drop!');
   }
 
   function doDrop() {
     phase = 'drop'; phaseTimer = 0;
-    showPhase('tile', 'play');
-    // Tiles flash red then drop
-    tiles.forEach(t => { if (t.warning>0) { t.warning=2; t.shake=6; } });
+    // Flash all warning tiles red
+    tiles.forEach(t => { if (t.warning>0) { t.warning=2; t.shake=8; t.flash=0.6; } });
+    // Players on doomed tiles start screaming
+    players.forEach(p => {
+      if (p.alive && !p.falling) {
+        const myTile = tiles.find(t=>t.x===p.tx && t.y===p.ty);
+        if (myTile && myTile.warning===2) { p.screamTimer = 25; p.panic = true; }
+      }
+    });
     setTimeout(() => {
       tiles.forEach(t => {
         if (t.warning === 2) {
           t.alive = false; t.dropAnim = 0.01; t.warning = 0;
-          spawnDust(t.x, t.y); cameraShake = 5;
+          spawnDust(t.x, t.y); cameraShake = 7;
         }
       });
-      // Check players on dropped tiles
+      // Kill players on dropped tiles
       players.forEach(p => {
         if (p.alive && !p.falling) {
           const onTile = tiles.find(t => t.x===p.tx && t.y===p.ty);
           if (!onTile || !onTile.alive) {
-            p.falling = true; p.fallY = p.y; p.fallRot = (Math.random()-0.5)*0.5;
-            p.fallVelY = -3; p.fallVelX = (Math.random()-0.5)*2;
-            p.screamTimer = 40; p.panic = false;
-            spawnBlood(p.x, p.y);
-            setCommentary('💥 ' + p.name + ' fell into the abyss!');
+            p.falling = true; p.fallY = p.y; p.fallRot = (Math.random()-0.5)*0.8;
+            p.fallVelY = -2.5; p.fallVelX = (Math.random()-0.5)*3;
+            p.screamTimer = 50; spawnBlood(p.x, p.y);
           }
         }
       });
       setTimeout(() => {
         const stillAlive = players.filter(p=>p.alive && !p.falling);
         if (stillAlive.length <= 1) {
-          const winner = stillAlive[0] || players.find(p=>p.alive);
+          const winner = stillAlive[0] || players.find(p=>p.alive && !p.falling);
           setTimeout(() => { showPhase('tile','winner'); document.getElementById('tile-winner-name').textContent = winner ? winner.name : 'No one'; }, 1500);
         } else {
           round++;
-          // Move survivors to random safe tiles
+          // Respawn survivors on random safe tiles
           const safeTiles = tiles.filter(t=>t.alive);
           stillAlive.forEach((p,i) => {
             const t = safeTiles[i % safeTiles.length];
-            p.tx = t.x; p.ty = t.y; p.targetTx = t.x; p.targetTy = t.y;
-            p.moveTimer = 20 + Math.random()*15;
+            p.tx = t.x; p.ty = t.y;
+            const c = tileCenter(t.x, t.y);
+            p.x = c.x; p.y = c.y; p.targetX = c.x; p.targetY = c.y;
+            p.falling = false; p.fallRot = 0; p.panic = false;
           });
-          startRound();
+          countdown = Math.max(3, 6 - Math.floor(round/2)); // gets faster
+          countdownDisplay = countdown; phase = 'scramble'; phaseTimer = 0;
+          pickDrops();
         }
-      }, 1800);
-    }, 800);
+      }, 1400);
+    }, 600);
   }
+
+  // Initial setup
+  pickDrops();
 
   let animId;
   function loop() {
     frame++;
-    if (cameraShake > 0) { cameraShake *= 0.9; if (cameraShake<0.3) cameraShake=0; }
+    if (cameraShake > 0) { cameraShake *= 0.88; if (cameraShake<0.3) cameraShake=0; }
 
-    if (phase === 'countdown') {
+    if (phase === 'scramble') {
       phaseTimer++;
+      // Countdown tick every 60 frames (~1s)
       if (phaseTimer % 60 === 0) {
-        countdown--;
-        document.getElementById('tile-countdown').textContent = countdown;
-        if (countdown <= 2) {
-          document.getElementById('tile-countdown').classList.add('timer-urgent');
-          tiles.forEach(t => { if (t.warning===1) t.shake = 3 + (3-countdown)*2; });
+        countdownDisplay--;
+        if (countdownDisplay <= 2) {
+          // Intensify warning tile shakes
+          tiles.forEach(t => { if (t.warning>0) t.shake = 4 + (2-countdownDisplay)*3; });
         }
-        if (countdown <= 0) { document.getElementById('tile-countdown').classList.remove('timer-urgent'); doDrop(); }
+        if (countdownDisplay <= 0) { doDrop(); }
       }
-      // Players scramble to random safe tiles during countdown
+
+      // Players run around like maniacs
       players.forEach(p => {
         if (!p.alive || p.falling) return;
-        if (p.moveTimer > 0) { p.moveTimer--; }
-        else {
-          const safe = tiles.filter(t=>t.alive && (t.warning===0));
-          if (safe.length > 0) {
-            const dest = safe[Math.floor(Math.random()*safe.length)];
-            p.targetTx = dest.x; p.targetTy = dest.y; p.moveTimer = 15+Math.random()*20;
-            // Check if currently on a warning tile
-            const myTile = tiles.find(t=>t.x===p.tx && t.y===p.ty);
-            if (myTile && myTile.warning>0) { p.panic = true; p.moveTimer = 6+Math.random()*8; }
-            else p.panic = false;
+        p.armPhase += 0.2 + Math.random()*0.1;
+        const myTile = tiles.find(t=>t.x===p.tx && t.y===p.ty);
+        const onDoomed = myTile && myTile.warning > 0;
+        p.panic = onDoomed;
+
+        // Pick target tile
+        const dist = Math.hypot(p.targetX-p.x, p.targetY-p.y);
+        if (dist < 4 || onDoomed) {
+          const safe = tiles.filter(t=>t.alive && t.warning===0);
+          const near = tiles.filter(t=>t.alive && t.warning===0 && Math.abs(t.x-p.tx)<=2 && Math.abs(t.y-p.ty)<=2);
+          const candidates = near.length > 0 ? near : safe;
+          if (candidates.length > 0) {
+            const dest = candidates[Math.floor(Math.random()*candidates.length)];
+            p.tx = dest.x; p.ty = dest.y;
+            const c = tileCenter(dest.x, dest.y);
+            p.targetX = c.x + (Math.random()-0.5)*tileW*0.5;
+            p.targetY = c.y + (Math.random()-0.5)*tileH*0.5;
           }
         }
-        // Smooth move
-        const target = tileCenter(p.targetTx>=0?p.targetTx:p.tx, p.targetTy>=0?p.targetTy:p.ty);
-        p.x += (target.x - p.x)*0.18; p.y += (target.y - p.y)*0.18;
-        if (Math.abs(p.x-target.x)<2) p.tx = p.targetTx>=0?p.targetTx:p.tx;
-        if (Math.abs(p.y-target.y)<2) p.ty = p.targetTy>=0?p.targetTy:p.ty;
+        // Chaotic movement — overshoot, wobble
+        const spd = onDoomed ? p.moveSpeed*1.8 : p.moveSpeed;
+        p.x += (p.targetX - p.x) * 0.14 * spd;
+        p.y += (p.targetY - p.y) * 0.14 * spd;
+        // Add jitter for chaos
+        p.x += (Math.random()-0.5)*1.5; p.y += (Math.random()-0.5)*1.5;
+        // Keep in bounds
+        p.x = Math.max(offX+10, Math.min(offX+gridW-10, p.x));
+        p.y = Math.max(offY+10, Math.min(offY+gridH-10, p.y));
       });
     }
 
-    if (phase === 'drop' || phase === 'falling') {
+    if (phase === 'drop') {
       players.forEach(p => {
         if (p.falling) {
-          p.fallVelY += 0.4; p.fallY += p.fallVelY; p.fallRot += p.fallVelX*0.05;
+          p.fallVelY += 0.45; p.fallY += p.fallVelY; p.fallRot += p.fallVelX*0.06;
           p.x += p.fallVelX;
-          if (p.fallY > H + 50) { p.alive = false; p.falling = false; }
+          if (p.fallY > H + 60) { p.alive = false; p.falling = false; }
         }
       });
     }
 
     ctx.save();
     if (cameraShake>0) ctx.translate((Math.random()-0.5)*cameraShake, (Math.random()-0.5)*cameraShake);
-    drawGrid(); players.forEach(drawPlayer); drawFx();
+    drawGrid(); players.forEach(drawPlayer); drawFx(); drawHUD();
     ctx.restore();
 
     const stillAlive = players.filter(p=>p.alive && !p.falling);
-    document.getElementById('tile-alive-badge2').textContent = stillAlive.length + ' alive';
+    document.getElementById('tile-alive-badge').textContent = stillAlive.length + ' alive';
+    document.getElementById('tile-round-badge').textContent = 'Round ' + round;
 
-    if (stillAlive.length > 1 || phase==='countdown' || phase==='drop') {
+    if (stillAlive.length > 1 || phase==='scramble' || phase==='drop') {
       animId = requestAnimationFrame(loop);
     }
   }
-
-  startRound(); loop();
+  loop();
 }
 
 /* ==================== URL PARAM HANDLING ==================== */
