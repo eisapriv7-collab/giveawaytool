@@ -89,6 +89,7 @@
     .special-fill { height:100%; border-radius:4px; transition:width .2s; background:linear-gradient(90deg,#ffd700,#ff9d00); }
   </style>
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 <div class="bg-mesh"></div>
@@ -170,6 +171,8 @@
         <button onclick="launchPie()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#fb923c,#9a3412);">🥧 Pie Eating Contest (im gay)</button>
         <button onclick="launchBanana()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#facc15,#854d0e);color:#1c1917;">🍌 Banana Slip Chaos (im gay)</button>
       </div>
+              <button onclick="launchHamster()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#c084fc,#7c3aed);">🐹 Hamster Ball Havoc</button>
+        <button onclick="launchTightrope()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f472b6,#db2777);">🎪 Tightrope Tumble</button>
       <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">1-on-1 Combat (pick 2 entrants)</div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <button onclick="launchBoxingMatch()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#dc2626,#991b1b);">🥊 Boxing Match</button>
@@ -549,6 +552,34 @@
   </div>
 </div>
 
+
+<!-- ==================== HAMSTER BALL HAVOC (all entrants) ==================== -->
+<div id="hamster-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#c084fc] text-sm font-bold uppercase tracking-widest mb-2">🐹 Hamster Ball Havoc</div><h1 class="text-4xl md:text-5xl font-black text-white">Roll & Bounce</h1></div>
+    <div id="hamster-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Sealing the hatches...</div><div class="text-sm text-gray-600" id="hamster-intro-count">Every entrant gets a sphere</div></div>
+    <div id="hamster-phase-play" class="hidden w-full max-w-6xl">
+      <canvas id="hamster-canvas" width="1100" height="560" class="w-full rounded-2xl border border-white/10"></canvas>
+      <div id="hamster-legend" class="legend-scroll mt-3"></div>
+    </div>
+    <div id="hamster-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🐹</div><div class="text-2xl text-[#c084fc] font-bold mb-2">ROLLED TO VICTORY</div><div id="hamster-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== TIGHTROPE TUMBLE (all entrants) ==================== -->
+<div id="tightrope-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#f472b6] text-sm font-bold uppercase tracking-widest mb-2">🎪 Tightrope Tumble</div><h1 class="text-4xl md:text-5xl font-black text-white">Don't Look Down</h1></div>
+    <div id="tightrope-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Steadying their nerves...</div><div class="text-sm text-gray-600" id="tightrope-intro-count">Everyone takes a rope</div></div>
+    <div id="tightrope-phase-play" class="hidden w-full max-w-5xl">
+      <div class="flex items-center justify-center gap-3 mb-1"><span id="tightrope-alive-badge" class="p-count-badge">0 still standing</span></div>
+      <div id="tightrope-commentary" class="text-center text-[#ffd700] font-bold text-lg mb-2 h-6">The wind is calm...</div>
+      <canvas id="tightrope-canvas" width="900" height="600" class="mx-auto rounded-2xl border border-white/10 bg-[#0a0a14]"></canvas>
+    </div>
+    <div id="tightrope-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🎪</div><div class="text-2xl text-[#f472b6] font-bold mb-2">KEPT THEIR BALANCE</div><div id="tightrope-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
 <!-- ==================== SWORD DUEL (1v1) ==================== -->
 <div id="sword-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
   <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
@@ -876,6 +907,9 @@ function launchSnail() { openGamePopup('snail'); }
 function launchMusical() { openGamePopup('musical'); }
 function launchPie() { openGamePopup('pie'); }
 function launchBanana() { openGamePopup('banana'); }
+function launchHamster() { openGamePopup('hamster'); }
+function launchTightrope() { openGamePopup('tightrope'); }
+
 function launchBoxingMatch() { openGamePopup('boxing'); }
 function launchSwordDuel() { openGamePopup('sword'); }
 
@@ -3336,6 +3370,266 @@ function startSwordDuel(p1Name, p2Name) {
   loop();
 }
 
+
+/* ==================== HAMSTER BALL HAVOC (all entrants — realistic rolling sphere physics) ==================== */
+function runHamster() {
+  showOverlay('hamster-overlay'); showPhase('hamster', 'intro');
+  const names = Array.from(entrants);
+  if (names.length === 0) { alert('No entrants yet!'); return; }
+  document.getElementById('hamster-intro-count').textContent = names.length + ' sphere' + (names.length===1?'':'s') + ' sealing shut';
+  setTimeout(() => startHamster(names), 1600);
+}
+function startHamster(names) {
+  showPhase('hamster', 'play');
+  document.getElementById('hamster-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('hamster-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const trackTop = 30, trackBottom = H - 30, n = names.length, laneH = (trackBottom - trackTop) / n;
+  const trackLength = 9200 + n * 100, finishX = trackLength;
+  const balls = names.map((nm, i) => ({
+    name: nm, x: 60, y: trackTop + i*laneH + laneH/2, color: colorFor(nm),
+    vx: 0, vy: 0, angle: 0, angVel: 0, r: Math.max(11, Math.min(20, laneH*0.38)),
+    maxSpeed: 3.2 + Math.random()*2.2, torque: 0.06 + Math.random()*0.06,
+    finished: false, finishTime: 0, place: 0, airTimer: 0, rbMult: 1, rbTimer: 0
+  }));
+  // Obstacles: bumpers (high bounce circles), ramps (accelerate), mud (slow)
+  const bumpers = []; const ramps = []; const mudPatches = [];
+  for (let d = 900; d < trackLength - 500; d += 500 + Math.random()*400) {
+    const type = Math.random();
+    if (type < 0.35) bumpers.push({ x: d, y: trackTop + Math.floor(Math.random()*n)*laneH + laneH/2, r: 22 });
+    else if (type < 0.65) ramps.push({ x: d, w: 90, slope: 0.4 + Math.random()*0.3 });
+    else mudPatches.push({ x: d, w: 110 });
+  }
+  let startTime = Date.now(), frame = 0, cameraX = 0, places = 1;
+
+  function drawTrack() {
+    const g = ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#1a1a2e'); g.addColorStop(1,'#0f0f1a'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    for (let i=0;i<n;i++) { const ly=trackTop+i*laneH; ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.setLineDash([20,20]); ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(0,ly); ctx.lineTo(W,ly); ctx.stroke(); ctx.setLineDash([]); }
+    ctx.strokeStyle='rgba(192,132,252,0.35)'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(0,trackTop); ctx.lineTo(W,trackTop); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0,trackBottom); ctx.lineTo(W,trackBottom); ctx.stroke();
+    // Ramps
+    ramps.forEach(r => { const rx=r.x-cameraX; if (rx<-100||rx>W+100) return; ctx.fillStyle='rgba(255,255,255,0.06)'; ctx.beginPath(); ctx.moveTo(rx,trackBottom); ctx.lineTo(rx+r.w,trackBottom-r.slope*60); ctx.lineTo(rx+r.w,trackBottom); ctx.closePath(); ctx.fill(); ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.stroke(); });
+    // Mud
+    mudPatches.forEach(m => { const mx=m.x-cameraX; if (mx<-100||mx>W+100) return; ctx.fillStyle='rgba(101,67,33,0.35)'; ctx.beginPath(); ctx.ellipse(mx+m.w/2, trackBottom-8, m.w/2, 10, 0, 0, Math.PI*2); ctx.fill(); });
+    // Bumpers
+    bumpers.forEach(b => { const bx=b.x-cameraX; if (bx<-50||bx>W+50) return; ctx.save(); ctx.translate(bx,b.y); ctx.strokeStyle='rgba(255,215,0,0.6)'; ctx.lineWidth=3; ctx.shadowColor='#ffd700'; ctx.shadowBlur=12; ctx.beginPath(); ctx.arc(0,0,b.r,0,Math.PI*2); ctx.stroke(); ctx.shadowBlur=0; ctx.fillStyle='rgba(255,215,0,0.12)'; ctx.fill(); ctx.fillStyle='#ffd700'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.fillText('BUMP',0,4); ctx.restore(); });
+    // Finish
+    const fx = finishX - cameraX;
+    if (fx>-100 && fx<W+100) { for (let y=trackTop;y<trackBottom;y+=10) for (let x=0;x<36;x+=9) { ctx.fillStyle=((Math.floor(y/10)+Math.floor(x/9))%2===0)?'#fff':'#000'; ctx.fillRect(fx+x,y,9,10); } ctx.fillStyle='#ffd700'; ctx.font='bold 14px Inter'; ctx.textAlign='center'; ctx.fillText('FINISH', fx+18, trackTop-8); }
+    for (let d=1000; d<trackLength; d+=1000) { const dx=d-cameraX; if (dx>-50&&dx<W+50) { ctx.fillStyle='rgba(255,255,255,0.2)'; ctx.fillRect(dx,trackTop,2,trackBottom-trackTop); ctx.font='10px Inter'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.textAlign='center'; ctx.fillText((d/1000)+'km', dx, trackBottom+14); } }
+  }
+  function drawBall(b) {
+    const sx = b.x - cameraX, sy = b.y, sc = Math.max(0.5, Math.min(1, laneH/50));
+    if (sx<-80||sx>W+80) return;
+    ctx.save(); ctx.translate(sx, sy); ctx.scale(sc, sc); ctx.rotate(b.angle);
+    // Shadow
+    ctx.fillStyle='rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(0, b.r+6, b.r*0.9, b.r*0.25, 0, 0, Math.PI*2); ctx.fill();
+    // Transparent ball shell
+    ctx.strokeStyle='rgba(255,255,255,0.45)'; ctx.lineWidth=3; ctx.shadowColor=b.color; ctx.shadowBlur=14;
+    ctx.beginPath(); ctx.arc(0,0,b.r,0,Math.PI*2); ctx.stroke(); ctx.shadowBlur=0;
+    ctx.fillStyle='rgba(255,255,255,0.04)'; ctx.fill();
+    // Grid lines on ball to show rotation
+    ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0,-b.r); ctx.lineTo(0,b.r); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-b.r,0); ctx.lineTo(b.r,0); ctx.stroke();
+    // Character tumbling inside (drawMiniCharacter scaled down)
+    const tumble = b.angle * 2;
+    drawMiniCharacter(ctx, 0, 0, b.r*0.55, b.color, { phase: frame*0.3+b.x*0.01, armSwing: Math.sin(frame*0.25)*b.r*0.1, rotate: tumble });
+    // Speed lines when fast
+    if (Math.hypot(b.vx,b.vy) > 3) { ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; for (let k=0;k<3;k++) { ctx.beginPath(); ctx.moveTo(-b.r-10-Math.random()*12, (k-1)*6); ctx.lineTo(-b.r-4, (k-1)*6); ctx.stroke(); } }
+    ctx.restore();
+    ctx.fillStyle='#fff'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.fillText(b.name.substring(0,10), sx, sy-b.r*sc-8);
+  }
+  function drawHUD() {
+    const sorted = [...balls].sort((a,b) => b.x - a.x);
+    const boxH = Math.min(200, 30 + Math.min(sorted.length,8)*16);
+    ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10,10,190,boxH,10); ctx.fill();
+    ctx.fillStyle='#c084fc'; ctx.font='bold 12px Inter'; ctx.textAlign='left'; ctx.fillText('🐹 LEADERBOARD',20,28);
+    sorted.slice(0,8).forEach((b,i) => { ctx.fillStyle=b.color; ctx.fillRect(20,35+i*16,8,8); ctx.fillStyle='#fff'; ctx.font='11px Inter'; ctx.fillText((i+1)+'. '+b.name.substring(0,14),32,43+i*16); });
+    const leader = sorted[0], progress = Math.min(leader.x/trackLength,1);
+    ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(W-310,10,300,20,10); ctx.fill();
+    ctx.fillStyle=leader.color; ctx.beginPath(); ctx.roundRect(W-308,12,296*progress,16,8); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='10px Inter'; ctx.textAlign='center'; ctx.fillText(Math.round(progress*100)+'%', W-160,24);
+  }
+  let animId;
+  function loop() {
+    frame++;
+    let allFinished = true;
+    applyRubberBand(frame, balls.filter(b=>!b.finished), b=>b.x);
+    balls.forEach(b => {
+      if (b.finished) return;
+      allFinished = false;
+      // Rolling physics: angular acceleration -> linear velocity
+      b.angVel += (Math.random()-0.5)*0.04 + b.torque*0.02;
+      b.angVel *= 0.985; // rolling friction
+      // Ramp boost
+      const onRamp = ramps.find(r => b.x > r.x && b.x < r.x+r.w);
+      if (onRamp) b.angVel += onRamp.slope * 0.06;
+      // Mud slow
+      const inMud = mudPatches.find(m => b.x > m.x && b.x < m.x+m.w);
+      if (inMud) b.angVel *= 0.92;
+      // Bumper collision
+      const hitBumper = bumpers.find(bum => Math.hypot(b.x-bum.x, b.y-bum.y) < b.r+bum.r);
+      if (hitBumper && !hitBumper._cd) { hitBumper._cd=20; b.angVel += (Math.random()<0.5?1:-1)*(3+Math.random()*3); b.vy = (b.y-hitBumper.y)*0.15; }
+      if (hitBumper && hitBumper._cd>0) hitBumper._cd--;
+      // Cap angular velocity
+      b.angVel = Math.max(-6, Math.min(6, b.angVel));
+      b.angle += b.angVel;
+      // Convert spin to forward motion (rolling without slipping approximation)
+      let forward = b.angVel * b.r * 0.12;
+      if (b.rbTimer > 0) { forward *= b.rbMult; b.rbTimer--; }
+      b.x += forward;
+      // Gentle lane correction + vertical wobble from bumps
+      b.y += b.vy; b.vy *= 0.9;
+      const targetY = trackTop + Math.round((b.y-trackTop)/laneH)*laneH + laneH/2;
+      b.y += (targetY - b.y) * 0.04;
+      if (b.x >= finishX) { b.x = finishX; b.finished = true; b.finishTime = Date.now()-startTime; b.place = places++; }
+    });
+    const leader = balls.reduce((a,b) => a.x > b.x ? a : b);
+    cameraX = Math.max(0, Math.min(leader.x - W*0.32, trackLength - W + 150));
+    ctx.clearRect(0,0,W,H); drawTrack(); balls.forEach(drawBall); drawHUD();
+    if (!allFinished) animId = requestAnimationFrame(loop);
+    else {
+      cancelAnimationFrame(animId);
+      balls.sort((a,b) => a.finishTime - b.finishTime);
+      setTimeout(() => { showPhase('hamster','winner'); document.getElementById('hamster-winner-name').textContent = balls[0].name; }, 1000);
+    }
+  }
+  loop();
+}
+
+/* ==================== TIGHTROPE TUMBLE (all entrants — realistic balance physics, wind gusts, hilarious falls) ==================== */
+function runTightrope() {
+  showOverlay('tightrope-overlay'); showPhase('tightrope', 'intro');
+  const names = Array.from(entrants);
+  if (names.length < 2) { alert('Need at least 2 entrants!'); return; }
+  document.getElementById('tightrope-intro-count').textContent = names.length + ' brave souls stepping up';
+  setTimeout(() => startTightrope(names), 1600);
+}
+function startTightrope(names) {
+  showPhase('tightrope', 'play');
+  const canvas = document.getElementById('tightrope-canvas'); const ctx = canvas.getContext('2d');
+  const commentary = document.getElementById('tightrope-commentary');
+  const W = canvas.width, H = canvas.height;
+  const n = names.length;
+  const ropeY = 140; // height of tightropes from top
+  const ropeSpacing = Math.min(80, (W-100)/n);
+  const startX = (W - (n-1)*ropeSpacing)/2;
+  const goalX = W - 80; // walk from left to right
+  const slimeY = H - 40;
+  const walkers = names.map((nm,i) => ({
+    name: nm, x: startX + i*ropeSpacing, ropeX: startX + i*ropeSpacing, progress: 0,
+    balance: 0, balanceVel: 0, color: colorFor(nm), r: 14,
+    alive: true, falling: false, fallY: ropeY, fallRot: 0, fallVelY: 0, splashTimer: 0,
+    armPhase: Math.random()*Math.PI*2, recoverSkill: 0.4+Math.random()*0.5
+  }));
+  let frame = 0, wind = 0, nextWindFrame = 120+Math.random()*100, particles = [], splashes = [];
+  function setCommentary(t) { commentary.textContent = t; }
+  function drawScene() {
+    // Sky
+    const g = ctx.createLinearGradient(0,0,0,slimeY); g.addColorStop(0,'#0f172a'); g.addColorStop(1,'#1e1b4b'); ctx.fillStyle=g; ctx.fillRect(0,0,W,slimeY);
+    // Slime pool
+    const sg = ctx.createLinearGradient(0,slimeY,0,H); sg.addColorStop(0,'rgba(74,222,128,0.6)'); sg.addColorStop(1,'rgba(22,101,52,0.8)'); ctx.fillStyle=sg; ctx.fillRect(0,slimeY,W,H-slimeY);
+    ctx.strokeStyle='rgba(74,222,128,0.4)'; for (let x=0;x<W;x+=40) { ctx.beginPath(); ctx.moveTo(x,slimeY); ctx.lineTo(x+10,slimeY+8); ctx.stroke(); }
+    // Ropes (catenary curves)
+    walkers.forEach((w,i) => {
+      const rx = w.ropeX;
+      ctx.strokeStyle = w.alive ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.1)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let px=40; px<=W-40; px+=5) { const sag = 8*Math.sin((px-40)/(W-80)*Math.PI); ctx.lineTo(px, ropeY+sag); }
+      ctx.stroke();
+      // Posts
+      ctx.fillStyle='#475569'; ctx.fillRect(rx-2,ropeY+8,4,slimeY-ropeY-8);
+      ctx.fillStyle='#64748b'; ctx.fillRect(rx-4,slimeY-12,8,12);
+    });
+    // Wind indicator
+    if (Math.abs(wind) > 0.01) { ctx.fillStyle='rgba(255,255,255,0.15)'; ctx.font='bold 14px Inter'; ctx.textAlign='center'; ctx.fillText((wind>0?'💨 >>':'💨 <<')+' WIND GUST', W/2, 30); }
+  }
+  function drawWalker(w) {
+    if (w.splashTimer > 0) return; // hidden while splashing
+    const sx = w.ropeX + w.progress, sy = w.falling ? w.fallY : ropeY + 8*Math.sin((sx-40)/(W-80)*Math.PI);
+    ctx.save(); ctx.translate(sx, sy); ctx.rotate(w.balance + (w.falling ? w.fallRot : 0));
+    // Shadow on rope
+    ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(0, w.r+2, w.r*0.7, 3, 0, 0, Math.PI*2); ctx.fill();
+    // Legs (one in front of other based on progress)
+    const step = Math.sin(w.progress*0.15)*8;
+    ctx.strokeStyle=w.color; ctx.lineWidth=3; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(-4, w.r*0.3); ctx.lineTo(-4-step, w.r*1.4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(4, w.r*0.3); ctx.lineTo(4+step, w.r*1.4); ctx.stroke();
+    // Body
+    const bg = ctx.createRadialGradient(-3,-6,1,0,0,w.r); bg.addColorStop(0, lightenHex(w.color,40)); bg.addColorStop(1, w.color);
+    ctx.fillStyle=bg; ctx.beginPath(); ctx.ellipse(0, -2, w.r*0.6, w.r*0.7, 0, 0, Math.PI*2); ctx.fill();
+    // Head
+    ctx.fillStyle='#e8c8a0'; ctx.beginPath(); ctx.arc(0, -w.r-4, w.r*0.45, 0, Math.PI*2); ctx.fill();
+    // Panic eyes when off-balance
+    const panic = Math.abs(w.balance) > 0.3;
+    ctx.fillStyle=panic?'#ef4444':'#1f2937';
+    ctx.beginPath(); ctx.arc(-3, -w.r-6, 2.5, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(3, -w.r-6, 2.5, 0, Math.PI*2); ctx.fill();
+    if (panic) { ctx.fillStyle='#fff'; ctx.font='bold 9px Inter'; ctx.textAlign='center'; ctx.fillText('😰', 0, -w.r-18); }
+    // Arms flailing for balance
+    const armFlail = w.alive ? w.balance * 2.5 + Math.sin(w.armPhase)*0.3 : w.fallRot*2;
+    ctx.strokeStyle='#e8c8a0'; ctx.lineWidth=2.5; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(-w.r*0.5, -4); ctx.lineTo(-w.r*0.5-12, -10+armFlail*14); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(w.r*0.5, -4); ctx.lineTo(w.r*0.5+12, -10-armFlail*14); ctx.stroke();
+    // Balance meter above head
+    if (w.alive && !w.falling) {
+      ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(-14, -w.r-28, 28, 4);
+      const balNorm = Math.max(0, 1 - Math.abs(w.balance)/0.9);
+      ctx.fillStyle = balNorm>0.5?'#4ade80':balNorm>0.25?'#facc15':'#ef4444';
+      ctx.fillRect(-14, -w.r-28, 28*balNorm, 4);
+    }
+    ctx.fillStyle='#fff'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.fillText(w.name.substring(0,10), 0, w.r+18);
+    ctx.restore();
+  }
+  function drawFx() {
+    particles = particles.filter(p => { p.x+=p.vx; p.y+=p.vy; p.life--; if (p.life<=0) return false; const a=p.life/p.maxLife; ctx.fillStyle=`rgba(255,255,255,${a*0.5})`; ctx.beginPath(); ctx.arc(p.x,p.y,p.size*a,0,Math.PI*2); ctx.fill(); return true; });
+    splashes = splashes.filter(s => { s.life--; if (s.life<=0) return false; const a=s.life/s.maxLife;
+      ctx.fillStyle=`rgba(74,222,128,${a*0.6})`; ctx.beginPath(); ctx.arc(s.x,s.y,s.r*(1-a)+4,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle=`rgba(255,255,255,${a})`; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(s.x,s.y,s.r*(1-a)+8,0,Math.PI*2); ctx.stroke(); return true; });
+  }
+  function spawnSplash(x,y) { for (let i=0;i<12;i++) splashes.push({x,y,life:30+Math.random()*20,maxLife:50,r:4+Math.random()*8,vx:(Math.random()-0.5)*3,vy:-1-Math.random()*2}); }
+  let animId;
+  function loop() {
+    frame++;
+    // Wind physics
+    if (frame >= nextWindFrame) { wind = (Math.random()-0.5)*0.018; nextWindFrame = frame + 100+Math.random()*120; setCommentary(Math.abs(wind)>0.008?'💨 WIND GUST! Hold on!':'The wind calms...'); }
+    wind *= 0.98; // wind dies down
+    walkers.forEach(w => {
+      if (!w.alive) return;
+      w.armPhase += 0.15 + Math.abs(w.balance)*0.3;
+      if (w.falling) {
+        w.fallVelY += 0.35; w.fallY += w.fallVelY; w.fallRot += w.balanceVel*0.15; w.balanceVel *= 0.98;
+        if (w.fallY >= slimeY-5) { w.alive = false; w.splashTimer = 40; spawnSplash(w.ropeX+w.progress, slimeY); setCommentary('💦 '+w.name+' took a dive!'); }
+        return;
+      }
+      // Walking forward slowly
+      w.progress += 0.35 + Math.random()*0.15;
+      // Balance physics: pendulum with random torque + wind force
+      const noise = (Math.random()-0.5)*0.008;
+      const corrective = -w.balance * w.recoverSkill * 0.012; // self-correcting reflex
+      w.balanceVel += noise + corrective + wind + (Math.sin(frame*0.05+w.ropeX)*0.003);
+      w.balanceVel *= 0.985; // damping
+      w.balance += w.balanceVel;
+      // Check fall
+      if (Math.abs(w.balance) > 0.82) { w.falling = true; w.fallVelY = -2; w.balanceVel *= 2.5; setCommentary(w.name+' lost their balance!'); }
+      // Finish line
+      if (w.progress >= goalX - w.ropeX) { w.progress = goalX - w.ropeX; w.alive = false; w.finished = true; setCommentary(w.name+' made it across!'); }
+    });
+    ctx.clearRect(0,0,W,H); drawScene(); walkers.forEach(drawWalker); drawFx();
+    const aliveCount = walkers.filter(w => w.alive && !w.falling && !w.finished).length;
+    const finishers = walkers.filter(w => w.finished);
+    document.getElementById('tightrope-alive-badge').textContent = aliveCount + ' still standing · ' + finishers.length + ' across';
+    const remaining = walkers.filter(w => w.alive || w.falling);
+    if (remaining.length > 1 || (remaining.length===1 && remaining[0].falling)) { animId = requestAnimationFrame(loop); }
+    else {
+      const winner = finishers.length ? finishers[0].name : (walkers.find(w=>w.alive && !w.falling)?.name || walkers.find(w=>!w.finished && !w.falling)?.name || walkers[0].name);
+      setTimeout(() => { showPhase('tightrope','winner'); document.getElementById('tightrope-winner-name').textContent = winner; }, 1200);
+    }
+  }
+  loop();
+}
+
 /* ==================== URL PARAM HANDLING ==================== */
 (function init() {
   const params = new URLSearchParams(window.location.search);
@@ -3372,6 +3666,8 @@ function startSwordDuel(p1Name, p2Name) {
       else if (game === 'musical') runMusical();
       else if (game === 'pie') runPie();
       else if (game === 'banana') runBanana();
+      else if (game === 'hamster') runHamster();
+      else if (game === 'tightrope') runTightrope();
       else if (game === 'boxing') runBoxingMatch();
       else if (game === 'sword') runSwordDuel();
     }, 200);
