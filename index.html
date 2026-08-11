@@ -178,6 +178,11 @@
         <button onclick="launchPenguinWaddle()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#67e8f9,#0e7490);">🐧 Penguin Ice Waddle</button>
         <button onclick="launchDodgeball()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#fb7185,#be123c);">🏐 Dodgeball Panic</button>
         <button onclick="launchMopSprint()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#c4b5fd,#6d28d9);">🧹 Slippery Mop Sprint</button>
+        <button onclick="launchPinball()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f472b6,#9333ea);">🎱 Pinball Pandemonium</button>
+        <button onclick="launchTrampoline()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#34d399,#047857);">🤸 Trampoline Terror</button>
+        <button onclick="launchZeroG()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#818cf8,#312e81);">🍕 Zero-G Food Fight</button>
+        <button onclick="launchRubberRodeo()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#fbbf24,#b45309);">🐔 Rubber Chicken Rodeo</button>
+        <button onclick="launchParachute()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#38bdf8,#0369a1);">🪂 Parachute Panic</button>
       </div>
       <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">1-on-1 Combat (pick 2 entrants)</div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -644,6 +649,71 @@
   </div>
 </div>
 
+<!-- ==================== PINBALL PANDEMONIUM ==================== -->
+<div id="pinball-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#f472b6] text-sm font-bold uppercase tracking-widest mb-2">🎱 Pinball Pandemonium</div><h1 class="text-4xl md:text-5xl font-black text-white">Drain or Glory</h1></div>
+    <div id="pinball-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Loading pinballs...</div><div class="text-sm text-gray-600" id="pinball-intro-count">Don't fall in the drain!</div></div>
+    <div id="pinball-phase-play" class="hidden w-full max-w-6xl">
+      <canvas id="pinball-canvas" width="1100" height="560" class="w-full rounded-2xl border border-white/10"></canvas>
+      <div id="pinball-legend" class="legend-scroll mt-3"></div>
+    </div>
+    <div id="pinball-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🎱</div><div class="text-2xl text-[#f472b6] font-bold mb-2">PINBALL SURVIVOR</div><div id="pinball-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== TRAMPOLINE TERROR ==================== -->
+<div id="tramp-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#34d399] text-sm font-bold uppercase tracking-widest mb-2">🤸 Trampoline Terror</div><h1 class="text-4xl md:text-5xl font-black text-white">Bounce Into Orbit</h1></div>
+    <div id="tramp-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Inflating trampolines...</div><div class="text-sm text-gray-600" id="tramp-intro-count">One wrong bounce and you're OUT</div></div>
+    <div id="tramp-phase-play" class="hidden w-full max-w-6xl">
+      <canvas id="tramp-canvas" width="1100" height="520" class="w-full rounded-2xl border border-white/10"></canvas>
+      <div id="tramp-legend" class="legend-scroll mt-3"></div>
+    </div>
+    <div id="tramp-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🤸</div><div class="text-2xl text-[#34d399] font-bold mb-2">BOUNCE MASTER</div><div id="tramp-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== ZERO-G FOOD FIGHT ==================== -->
+<div id="zerog-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#818cf8] text-sm font-bold uppercase tracking-widest mb-2">🍕 Zero-G Food Fight</div><h1 class="text-4xl md:text-5xl font-black text-white">Cosmic Cafeteria Chaos</h1></div>
+    <div id="zerog-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Floating into orbit kitchen...</div><div class="text-sm text-gray-600" id="zerog-intro-count">Throw food, absorb recoil, survive</div></div>
+    <div id="zerog-phase-play" class="hidden w-full max-w-6xl">
+      <canvas id="zerog-canvas" width="1100" height="520" class="w-full rounded-2xl border border-white/10"></canvas>
+      <div id="zerog-legend" class="legend-scroll mt-3"></div>
+    </div>
+    <div id="zerog-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🍕</div><div class="text-2xl text-[#818cf8] font-bold mb-2">FOOD FIGHT CHAMPION</div><div id="zerog-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== RUBBER CHICKEN RODEO ==================== -->
+<div id="rodeo-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#fbbf24] text-sm font-bold uppercase tracking-widest mb-2">🐔 Rubber Chicken Rodeo</div><h1 class="text-4xl md:text-5xl font-black text-white">Hold On To Your Nuggets</h1></div>
+    <div id="rodeo-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Saddling rubber chickens...</div><div class="text-sm text-gray-600" id="rodeo-intro-count">Last rider wins the belt</div></div>
+    <div id="rodeo-phase-play" class="hidden w-full max-w-6xl">
+      <canvas id="rodeo-canvas" width="1100" height="520" class="w-full rounded-2xl border border-white/10"></canvas>
+      <div id="rodeo-legend" class="legend-scroll mt-3"></div>
+    </div>
+    <div id="rodeo-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🐔</div><div class="text-2xl text-[#fbbf24] font-bold mb-2">RODEO LEGEND</div><div id="rodeo-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== PARACHUTE PANIC ==================== -->
+<div id="chute-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#38bdf8] text-sm font-bold uppercase tracking-widest mb-2">🪂 Parachute Panic</div><h1 class="text-4xl md:text-5xl font-black text-white">Skydive or Die Laughing</h1></div>
+    <div id="chute-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Strapping on questionable chutes...</div><div class="text-sm text-gray-600" id="chute-intro-count">First safe landing wins</div></div>
+    <div id="chute-phase-play" class="hidden w-full max-w-6xl">
+      <canvas id="chute-canvas" width="1100" height="560" class="w-full rounded-2xl border border-white/10"></canvas>
+      <div id="chute-legend" class="legend-scroll mt-3"></div>
+    </div>
+    <div id="chute-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🪂</div><div class="text-2xl text-[#38bdf8] font-bold mb-2">SKY SURVIVOR</div><div id="chute-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
 <!-- ==================== BOXING MATCH (1v1, enhanced) ==================== -->
 <div id="boxing-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
   <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
@@ -1054,6 +1124,11 @@ function launchCartChaos() { openGamePopup('cart'); }
 function launchPenguinWaddle() { openGamePopup('penguin'); }
 function launchDodgeball() { openGamePopup('dodgeball'); }
 function launchMopSprint() { openGamePopup('mop'); }
+function launchPinball() { openGamePopup('pinball'); }
+function launchTrampoline() { openGamePopup('tramp'); }
+function launchZeroG() { openGamePopup('zerog'); }
+function launchRubberRodeo() { openGamePopup('rodeo'); }
+function launchParachute() { openGamePopup('chute'); }
 
 /* ==================== GIVEAWAY LAUNCHER ==================== */
 function runGiveaway() {
@@ -4398,6 +4473,611 @@ function startMopSprint(names) {
 }
 
 
+/* ==================== PINBALL PANDEMONIUM ==================== */
+function runPinball() {
+  showOverlay('pinball-overlay'); showPhase('pinball', 'intro');
+  const names = Array.from(entrants);
+  if (names.length === 0) { alert('No entrants yet!'); return; }
+  document.getElementById('pinball-intro-count').textContent = names.length + ' pinball' + (names.length===1?'':'s') + ' vs the drain';
+  setTimeout(() => startPinball(names), 1600);
+}
+function startPinball(names) {
+  showPhase('pinball', 'play');
+  document.getElementById('pinball-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('pinball-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const tableL = 80, tableR = W - 80, tableT = 50, tableB = H - 90, drainW = 120;
+  const drainX = (tableL + tableR) / 2 - drainW / 2;
+  const bumpers = [
+    { x: W*0.28, y: H*0.32, r: 28 }, { x: W*0.72, y: H*0.32, r: 28 },
+    { x: W*0.5, y: H*0.22, r: 22 }, { x: W*0.35, y: H*0.48, r: 20 }, { x: W*0.65, y: H*0.48, r: 20 }
+  ];
+  const size = Math.max(11, Math.min(16, 280 / names.length));
+  const balls = names.map((nm, i) => ({
+    name: nm, color: colorFor(nm), r: size, alive: true,
+    x: tableL + 60 + (i % 5) * 45, y: tableT + 40 + Math.floor(i / 5) * 35,
+    vx: (Math.random() - 0.5) * 3, vy: 1 + Math.random() * 2,
+    spin: Math.random() * Math.PI * 2, gag: '', gagTimer: 0, score: 0
+  }));
+  let frame = 0, feed = '🎱 BUMPERS ACTIVE — survive the drain!', particles = [], flipL = 0, flipR = 0;
+
+  function drawTable() {
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#1e1b4b'); g.addColorStop(1, '#312e81');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#4c1d95'; ctx.beginPath();
+    ctx.moveTo(tableL, tableT); ctx.lineTo(tableR, tableT); ctx.lineTo(tableR - 30, tableB);
+    ctx.lineTo(tableL + 30, tableB); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#a78bfa'; ctx.lineWidth = 4; ctx.stroke();
+    ctx.fillStyle = '#0f172a'; ctx.fillRect(drainX, tableB - 8, drainW, 18);
+    ctx.fillStyle = '#ef4444'; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center';
+    ctx.fillText('DRAIN OF DOOM', drainX + drainW / 2, tableB + 28);
+    bumpers.forEach(b => {
+      ctx.fillStyle = '#f472b6'; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.beginPath(); ctx.arc(b.x - b.r * 0.25, b.y - b.r * 0.25, b.r * 0.25, 0, Math.PI * 2); ctx.fill();
+    });
+    const flipY = tableB - 35;
+    ctx.fillStyle = flipL > 0 ? '#fbbf24' : '#64748b';
+    ctx.save(); ctx.translate(tableL + 55, flipY); ctx.rotate(flipL > 0 ? -0.55 : -0.15);
+    ctx.fillRect(-40, -6, 80, 12); ctx.restore();
+    ctx.fillStyle = flipR > 0 ? '#fbbf24' : '#64748b';
+    ctx.save(); ctx.translate(tableR - 55, flipY); ctx.rotate(flipR > 0 ? 0.55 : 0.15);
+    ctx.fillRect(-40, -6, 80, 12); ctx.restore();
+  }
+
+  function resolveBallWall(b) {
+    if (b.x - b.r < tableL + 15) { b.x = tableL + 15 + b.r; b.vx = Math.abs(b.vx) * 0.92; }
+    if (b.x + b.r > tableR - 15) { b.x = tableR - 15 - b.r; b.vx = -Math.abs(b.vx) * 0.92; }
+    const leftWall = tableL + (tableB - b.y) * 0.12;
+    const rightWall = tableR - (tableB - b.y) * 0.12;
+    if (b.x - b.r < leftWall) { b.x = leftWall + b.r; b.vx = Math.abs(b.vx) * 0.9; }
+    if (b.x + b.r > rightWall) { b.x = rightWall - b.r; b.vx = -Math.abs(b.vx) * 0.9; }
+    if (b.y - b.r < tableT + 10) { b.y = tableT + 10 + b.r; b.vy = Math.abs(b.vy) * 0.88; }
+    if (b.y + b.r > tableB - 10) {
+      if (b.x > drainX && b.x < drainX + drainW) return 'drain';
+      b.y = tableB - 10 - b.r; b.vy = -Math.abs(b.vy) * 0.85;
+      if (b.x < tableL + 100 && flipL > 0) b.vy = -Math.abs(b.vy) - 9;
+      if (b.x > tableR - 100 && flipR > 0) b.vy = -Math.abs(b.vy) - 9;
+    }
+    return null;
+  }
+
+  function ballBall(a, b) {
+    const dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy) || 0.01;
+    if (dist >= a.r + b.r) return;
+    const nx = dx / dist, ny = dy / dist, overlap = a.r + b.r - dist;
+    a.x -= nx * overlap * 0.5; a.y -= ny * overlap * 0.5;
+    b.x += nx * overlap * 0.5; b.y += ny * overlap * 0.5;
+    const dvx = a.vx - b.vx, dvy = a.vy - b.vy, dvn = dvx * nx + dvy * ny;
+    if (dvn > 0) {
+      a.vx -= dvn * nx * 0.9; a.vy -= dvn * ny * 0.9;
+      b.vx += dvn * nx * 0.9; b.vy += dvn * ny * 0.9;
+    }
+  }
+
+  let animId;
+  function loop() {
+    frame++;
+    if (frame % 90 === 0) { flipL = 18 + Math.floor(Math.random() * 12); flipR = 18 + Math.floor(Math.random() * 12); feed = flipL > 10 ? 'FLIPPERS ENGAGED!' : '🎱 Keep bouncing!'; }
+    if (flipL > 0) flipL--; if (flipR > 0) flipR--;
+
+    balls.forEach(b => {
+      if (!b.alive) return;
+      b.vy += 0.14; b.vx *= 0.999; b.vy *= 0.999;
+      b.x += b.vx; b.y += b.vy; b.spin += b.vx * 0.04;
+      bumpers.forEach(bm => {
+        const dx = b.x - bm.x, dy = b.y - bm.y, dist = Math.hypot(dx, dy) || 0.01;
+        if (dist < bm.r + b.r) {
+          const nx = dx / dist, ny = dy / dist, power = 7 + Math.random() * 4;
+          b.vx = nx * power; b.vy = ny * power - 2;
+          b.x = bm.x + nx * (bm.r + b.r + 2); b.y = bm.y + ny * (bm.r + b.r + 2);
+          b.score++; b.gag = 'DING!'; b.gagTimer = 22;
+          for (let i = 0; i < 6; i++) particles.push({ x: bm.x, y: bm.y, vx: (Math.random()-0.5)*5, vy: (Math.random()-0.5)*5, life: 20, maxLife: 20, hue: '#f472b6' });
+        }
+      });
+      const hit = resolveBallWall(b);
+      if (hit === 'drain') {
+        b.alive = false; b.gag = 'GLUG GLUG!'; feed = b.name + ' fell in the drain!';
+        for (let i = 0; i < 12; i++) particles.push({ x: b.x, y: tableB, vx: (Math.random()-0.5)*4, vy: -Math.random()*3, life: 30, maxLife: 30, hue: b.color });
+      }
+      if (b.gagTimer > 0) b.gagTimer--;
+    });
+    for (let i = 0; i < balls.length; i++) for (let j = i + 1; j < balls.length; j++) {
+      if (balls[i].alive && balls[j].alive) ballBall(balls[i], balls[j]);
+    }
+
+    ctx.clearRect(0, 0, W, H); drawTable();
+    balls.forEach(b => {
+      if (!b.alive) return;
+      ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.spin);
+      const grad = ctx.createRadialGradient(-b.r*0.3, -b.r*0.3, 1, 0, 0, b.r);
+      grad.addColorStop(0, '#fff'); grad.addColorStop(0.4, b.color); grad.addColorStop(1, '#1e1b4b');
+      ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(0, 0, b.r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 9px Inter'; ctx.textAlign = 'center'; ctx.fillText(b.name.substring(0, 6), 0, 3);
+      ctx.restore();
+      if (b.gagTimer > 0) drawGagText(ctx, b.x, b.y - b.r - 12, b.gag, '#fbbf24', 12);
+    });
+    particles = particles.filter(p => { p.x += p.vx; p.y += p.vy; p.life--; if (p.life <= 0) return false;
+      ctx.globalAlpha = p.life / p.maxLife; ctx.fillStyle = p.hue; ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; return true; });
+    const alive = balls.filter(b => b.alive);
+    ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.beginPath(); ctx.roundRect(10, 10, 210, 36, 8); ctx.fill();
+    ctx.fillStyle = '#f472b6'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'left'; ctx.fillText('🎱 ALIVE: ' + alive.length, 20, 32);
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 42, W - 20, 32, 8); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, H - 20);
+
+    if (alive.length > 1) animId = requestAnimationFrame(loop);
+    else {
+      cancelAnimationFrame(animId);
+      const winner = alive[0] ? alive[0].name : 'No one';
+      setTimeout(() => { showPhase('pinball', 'winner'); document.getElementById('pinball-winner-name').textContent = winner; }, 1200);
+    }
+  }
+  loop();
+}
+
+
+/* ==================== TRAMPOLINE TERROR ==================== */
+function runTrampoline() {
+  showOverlay('tramp-overlay'); showPhase('tramp', 'intro');
+  const names = Array.from(entrants);
+  if (names.length === 0) { alert('No entrants yet!'); return; }
+  document.getElementById('tramp-intro-count').textContent = names.length + ' bouncer' + (names.length===1?'':'s') + ' on one cursed mat';
+  setTimeout(() => startTrampoline(names), 1600);
+}
+function startTrampoline(names) {
+  showPhase('tramp', 'play');
+  document.getElementById('tramp-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('tramp-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, cx = W / 2, matY = H - 120, matW = W - 160;
+  const matL = cx - matW / 2, matR = cx + matW / 2;
+  const size = Math.max(12, Math.min(18, 320 / names.length));
+  const gags = ['TO THE MOON!', 'YEET!', 'NOPE!', 'BONK!', 'GRAVITY?'];
+  const bouncers = names.map((nm, i) => {
+    const ang = (i / names.length) * Math.PI * 2;
+    return {
+      name: nm, color: colorFor(nm), r: size, alive: true,
+      x: cx + Math.cos(ang) * 80, y: matY - 40 - Math.random() * 30,
+      vx: (Math.random() - 0.5) * 2, vy: -4 - Math.random() * 3,
+      phase: Math.random() * Math.PI * 2, gag: '', gagTimer: 0, airTime: 0
+    };
+  });
+  let frame = 0, feed = '🤸 Double bounces launch you into the void!', shockwave = null;
+
+  function springForce(b) {
+    if (b.y + b.r < matY - 8) return;
+    const penetration = (b.y + b.r) - matY;
+    const stiff = 0.42 + Math.min(0.25, b.airTime * 0.002);
+    b.vy -= penetration * stiff + 11 + Math.abs(b.vy) * 0.15;
+    b.y = matY - b.r;
+    b.airTime = 0;
+    if (Math.abs(b.vy) > 14) { b.gag = gags[Math.floor(Math.random() * gags.length)]; b.gagTimer = 28; shockwave = { x: b.x, life: 18, maxLife: 18 }; }
+  }
+
+  let animId;
+  function loop() {
+    frame++;
+    bouncers.forEach(b => {
+      if (!b.alive) return;
+      b.vy += 0.38; b.vx *= 0.998;
+      b.x += b.vx; b.y += b.vy;
+      if (b.y + b.r < matY) b.airTime++;
+      springForce(b);
+      if (shockwave && Math.hypot(b.x - shockwave.x, b.y - matY) < 90 && b.y + b.r >= matY - 5) {
+        b.vy -= 6 + Math.random() * 5; b.vx += (Math.random() - 0.5) * 4;
+      }
+      if (b.x - b.r < matL) { b.x = matL + b.r; b.vx = Math.abs(b.vx) * 0.7; }
+      if (b.x + b.r > matR) { b.x = matR - b.r; b.vx = -Math.abs(b.vx) * 0.7; }
+      if (b.y + b.r < -40 || b.y < -80 || b.x < -60 || b.x > W + 60) {
+        b.alive = false; b.gag = 'LOST TO SPACE!'; feed = b.name + ' bounced into orbit!';
+      }
+      if (b.gagTimer > 0) b.gagTimer--;
+      b.phase += 0.2;
+    });
+    for (let i = 0; i < bouncers.length; i++) for (let j = i + 1; j < bouncers.length; j++) {
+      const a = bouncers[i], b = bouncers[j];
+      if (!a.alive || !b.alive) continue;
+      const dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy) || 0.01;
+      if (dist < a.r + b.r) {
+        const nx = dx / dist, ny = dy / dist, overlap = a.r + b.r - dist;
+        a.x -= nx * overlap * 0.5; a.y -= ny * overlap * 0.5;
+        b.x += nx * overlap * 0.5; b.y += ny * overlap * 0.5;
+        const boost = 2.5;
+        a.vx -= nx * boost; a.vy -= ny * boost;
+        b.vx += nx * boost; b.vy += ny * boost;
+      }
+    }
+    if (shockwave) { shockwave.life--; if (shockwave.life <= 0) shockwave = null; }
+
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#0c4a6e'); g.addColorStop(0.55, '#0369a1'); g.addColorStop(1, '#134e4a');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(255,255,255,0.08)'; for (let i = 0; i < 40; i++) {
+      ctx.beginPath(); ctx.arc((i * 137 + frame) % W, (i * 89) % (matY - 40), 1.5, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = '#065f46'; ctx.fillRect(matL - 20, matY, matW + 40, 24);
+    ctx.fillStyle = '#34d399'; ctx.beginPath(); ctx.ellipse(cx, matY + 4, matW / 2, 18, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#a7f3d0'; ctx.lineWidth = 3; ctx.stroke();
+    if (shockwave) {
+      const a = shockwave.life / shockwave.maxLife;
+      ctx.strokeStyle = `rgba(52,211,153,${a})`; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.arc(shockwave.x, matY, (1 - a) * 100 + 20, 0, Math.PI * 2); ctx.stroke();
+    }
+    bouncers.forEach(b => {
+      if (!b.alive) return;
+      drawMiniCharacter(ctx, b.x, b.y, b.r, b.color, { phase: b.phase, armSwing: Math.sin(b.phase) * 10 });
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(b.name.substring(0, 10), b.x, b.y - b.r - 14);
+      if (b.gagTimer > 0) drawGagText(ctx, b.x, b.y - b.r - 28, b.gag, '#fbbf24', 13);
+    });
+    const alive = bouncers.filter(b => b.alive);
+    ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.beginPath(); ctx.roundRect(10, 10, 220, 36, 8); ctx.fill();
+    ctx.fillStyle = '#34d399'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'left'; ctx.fillText('🤸 ALIVE: ' + alive.length, 20, 32);
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 42, W - 20, 32, 8); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, H - 20);
+
+    if (alive.length > 1) animId = requestAnimationFrame(loop);
+    else {
+      cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('tramp', 'winner'); document.getElementById('tramp-winner-name').textContent = alive[0] ? alive[0].name : 'No one'; }, 1200);
+    }
+  }
+  loop();
+}
+
+
+/* ==================== ZERO-G FOOD FIGHT ==================== */
+function runZeroG() {
+  showOverlay('zerog-overlay'); showPhase('zerog', 'intro');
+  const names = Array.from(entrants);
+  if (names.length === 0) { alert('No entrants yet!'); return; }
+  document.getElementById('zerog-intro-count').textContent = names.length + ' astronaut' + (names.length===1?'':'s') + ' armed with lunch';
+  setTimeout(() => startZeroG(names), 1600);
+}
+function startZeroG(names) {
+  showPhase('zerog', 'play');
+  document.getElementById('zerog-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('zerog-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, cx = W / 2, cy = H / 2, arenaR = Math.min(W, H) * 0.42;
+  const foods = ['🍕', '🍔', '🌭', '🍌', '🥧', '🌮'];
+  const size = Math.max(14, Math.min(20, 300 / names.length));
+  const fighters = names.map((nm, i) => {
+    const ang = (i / names.length) * Math.PI * 2;
+    return {
+      name: nm, color: colorFor(nm), r: size, alive: true, hp: 100,
+      x: cx + Math.cos(ang) * arenaR * 0.55, y: cy + Math.sin(ang) * arenaR * 0.55,
+      vx: 0, vy: 0, throwCd: 30 + Math.random() * 40, gag: '', gagTimer: 0, spin: Math.random() * Math.PI * 2
+    };
+  });
+  let projectiles = [], vents = [{ x: cx - arenaR * 0.5, y: cy, power: 0.08, phase: 0 }, { x: cx + arenaR * 0.5, y: cy, power: -0.08, phase: Math.PI }],
+    frame = 0, feed = '🍕 Throw food — recoil propels you!';
+
+  function throwFood(f) {
+    const ang = Math.random() * Math.PI * 2;
+    const spd = 5 + Math.random() * 3;
+    projectiles.push({
+      x: f.x, y: f.y, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+      emoji: foods[Math.floor(Math.random() * foods.length)], life: 220, owner: f.name
+    });
+    f.vx -= Math.cos(ang) * 1.8; f.vy -= Math.sin(ang) * 1.8;
+    f.gag = 'SPLAT!'; f.gagTimer = 18;
+  }
+
+  let animId;
+  function loop() {
+    frame++;
+    vents.forEach(v => { v.phase += 0.06; });
+    fighters.forEach(f => {
+      if (!f.alive) return;
+      f.throwCd--;
+      if (f.throwCd <= 0) { throwFood(f); f.throwCd = 50 + Math.random() * 60; }
+      vents.forEach(v => {
+        const dx = f.x - v.x, dy = f.y - v.y, dist = Math.hypot(dx, dy) || 1;
+        if (dist < arenaR * 0.55) { f.vx += (dx / dist) * v.power * (1 + Math.sin(v.phase)); f.vy += (dy / dist) * v.power * 0.3; }
+      });
+      f.vx *= 0.985; f.vy *= 0.985;
+      f.x += f.vx; f.y += f.vy; f.spin += Math.hypot(f.vx, f.vy) * 0.02;
+      const dx = f.x - cx, dy = f.y - cy, dist = Math.hypot(dx, dy);
+      if (dist > arenaR - f.r) {
+        const nx = dx / dist, ny = dy / dist;
+        f.x = cx + nx * (arenaR - f.r); f.y = cy + ny * (arenaR - f.r);
+        f.vx = nx * Math.abs(f.vx) * 0.5; f.vy = ny * Math.abs(f.vy) * 0.5;
+      }
+      if (f.gagTimer > 0) f.gagTimer--;
+    });
+    projectiles = projectiles.filter(p => {
+      p.x += p.vx; p.y += p.vy; p.life--;
+      if (p.life <= 0) return false;
+      fighters.forEach(f => {
+        if (!f.alive || f.name === p.owner) return;
+        if (Math.hypot(p.x - f.x, p.y - f.y) < f.r + 12) {
+          f.hp -= 18 + Math.random() * 12;
+          f.vx += p.vx * 0.35; f.vy += p.vy * 0.35;
+          f.gag = 'FOOD HIT!'; f.gagTimer = 22;
+          if (f.hp <= 0) { f.alive = false; feed = f.name + ' got KO\'d by lunch!'; }
+          p.life = 0;
+        }
+      });
+      return p.life > 0;
+    });
+    for (let i = 0; i < fighters.length; i++) for (let j = i + 1; j < fighters.length; j++) {
+      const a = fighters[i], b = fighters[j];
+      if (!a.alive || !b.alive) continue;
+      const dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy) || 0.01;
+      if (dist < a.r + b.r) {
+        const nx = dx / dist, ny = dy / dist, overlap = a.r + b.r - dist;
+        a.x -= nx * overlap * 0.5; a.y -= ny * overlap * 0.5;
+        b.x += nx * overlap * 0.5; b.y += ny * overlap * 0.5;
+        const dvn = (a.vx - b.vx) * nx + (a.vy - b.vy) * ny;
+        if (dvn > 0) { a.vx -= dvn * nx * 0.8; a.vy -= dvn * ny * 0.8; b.vx += dvn * nx * 0.8; b.vy += dvn * ny * 0.8; }
+      }
+    }
+
+    ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, W, H);
+    const bg = ctx.createRadialGradient(cx, cy, 20, cx, cy, arenaR + 80);
+    bg.addColorStop(0, '#1e1b4b'); bg.addColorStop(1, '#020617');
+    ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(cx, cy, arenaR + 60, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(129,140,248,0.4)'; ctx.lineWidth = 3; ctx.setLineDash([12, 8]);
+    ctx.beginPath(); ctx.arc(cx, cy, arenaR, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+    vents.forEach(v => {
+      ctx.strokeStyle = `rgba(96,165,250,${0.3 + Math.sin(v.phase) * 0.2})`; ctx.lineWidth = 2;
+      for (let a = 0; a < 5; a++) {
+        ctx.beginPath(); ctx.moveTo(v.x, v.y);
+        ctx.lineTo(v.x + Math.cos(v.phase + a) * 40, v.y + Math.sin(v.phase + a) * 40); ctx.stroke();
+      }
+    });
+    projectiles.forEach(p => { ctx.font = '22px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.emoji, p.x, p.y); });
+    fighters.forEach(f => {
+      if (!f.alive) return;
+      ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.spin);
+      drawMiniCharacter(ctx, 0, 0, f.r, f.color, { phase: frame * 0.05 });
+      ctx.restore();
+      ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(f.x - 22, f.y - f.r - 18, 44, 6);
+      ctx.fillStyle = f.hp > 40 ? '#53fc18' : '#ef4444'; ctx.fillRect(f.x - 22, f.y - f.r - 18, 44 * (f.hp / 100), 6);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(f.name.substring(0, 10), f.x, f.y + f.r + 14);
+      if (f.gagTimer > 0) drawGagText(ctx, f.x, f.y - f.r - 28, f.gag, '#fbbf24', 12);
+    });
+    const alive = fighters.filter(f => f.alive);
+    ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.beginPath(); ctx.roundRect(10, 10, 220, 36, 8); ctx.fill();
+    ctx.fillStyle = '#818cf8'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'left'; ctx.fillText('🍕 ALIVE: ' + alive.length, 20, 32);
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 42, W - 20, 32, 8); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, H - 20);
+
+    if (alive.length > 1) animId = requestAnimationFrame(loop);
+    else {
+      cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('zerog', 'winner'); document.getElementById('zerog-winner-name').textContent = alive[0] ? alive[0].name : 'No one'; }, 1200);
+    }
+  }
+  loop();
+}
+
+
+/* ==================== RUBBER CHICKEN RODEO ==================== */
+function runRubberRodeo() {
+  showOverlay('rodeo-overlay'); showPhase('rodeo', 'intro');
+  const names = Array.from(entrants);
+  if (names.length === 0) { alert('No entrants yet!'); return; }
+  document.getElementById('rodeo-intro-count').textContent = names.length + ' cowboy' + (names.length===1?'':'s') + ' vs mechanical poultry';
+  setTimeout(() => startRubberRodeo(names), 1600);
+}
+function startRubberRodeo(names) {
+  showPhase('rodeo', 'play');
+  document.getElementById('rodeo-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('rodeo-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const n = names.length, cols = Math.ceil(Math.sqrt(n)), colW = W / cols, rowH = 130;
+  const gags = ['YEE-HAW!', 'BUCKED!', 'NOPE!', 'HOLD ON!', 'SQUAWK!'];
+  const riders = names.map((nm, i) => {
+    const col = i % cols, row = Math.floor(i / cols);
+    return {
+      name: nm, color: colorFor(nm), alive: true,
+      cx: colW * col + colW / 2, cy: 80 + row * rowH,
+      grip: 100, angle: 0, buck: Math.random() * Math.PI * 2, buckSpd: 0.06 + Math.random() * 0.04,
+      flyVx: 0, flyVy: 0, flying: false, gag: '', gagTimer: 0, holdTime: 0
+    };
+  });
+  let frame = 0, feed = '🐔 Hold your grip — the chicken bucks!', globalIntensity = 1;
+
+  function drawChicken(x, y, angle, intensity) {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(angle);
+    ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.ellipse(0, 8, 28, 16, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(-8, -6); ctx.lineTo(0, -22 - intensity * 8); ctx.lineTo(8, -6); ctx.fill();
+    ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(18, 0, 10, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#1f2937'; ctx.beginPath(); ctx.arc(22, -3, 2, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#92400e'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-20, 12); ctx.quadraticCurveTo(-35, 20 + intensity * 6, -25, 18); ctx.stroke();
+    ctx.restore();
+  }
+
+  let animId;
+  function loop() {
+    frame++;
+    if (frame % 180 === 0) globalIntensity = 1 + Math.random() * 1.5;
+    let aliveCount = 0;
+    riders.forEach(r => {
+      if (!r.alive) return;
+      aliveCount++;
+      if (r.flying) {
+        r.flyVy += 0.35; r.cx += r.flyVx; r.cy += r.flyVy; r.angle += 0.2;
+        if (r.cy > H + 40 || r.cx < -40 || r.cx > W + 40) { r.alive = false; feed = r.name + ' flew off the chicken!'; }
+        return;
+      }
+      r.holdTime++;
+      r.buck += r.buckSpd * globalIntensity;
+      r.angle = Math.sin(r.buck) * 0.5 + Math.sin(r.buck * 2.3) * 0.25;
+      const buckForce = Math.abs(Math.cos(r.buck * 1.7)) * globalIntensity;
+      r.grip -= buckForce * 0.55;
+      if (Math.random() < 0.008 * globalIntensity) r.grip -= 8;
+      if (buckForce > 0.85 && Math.random() < 0.02) { r.gag = gags[Math.floor(Math.random() * gags.length)]; r.gagTimer = 24; }
+      if (r.grip > 30 && Math.random() < 0.015) r.grip = Math.min(100, r.grip + 4);
+      if (r.grip <= 0) {
+        r.flying = true;
+        r.flyVx = Math.sin(r.angle) * 6 + (Math.random() - 0.5) * 4;
+        r.flyVy = -8 - Math.random() * 5;
+        r.gag = 'BUCKED OFF!'; r.gagTimer = 40;
+      }
+      if (r.gagTimer > 0) r.gagTimer--;
+    });
+
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#78350f'); g.addColorStop(1, '#451a03');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.fillRect(0, H - 50, W, 50);
+    riders.forEach(r => {
+      if (!r.alive && !r.flying) return;
+      if (!r.flying) drawChicken(r.cx, r.cy + 20, r.angle, globalIntensity);
+      if (r.flying || r.alive) {
+        ctx.save(); ctx.translate(r.cx, r.cy - 8); ctx.rotate(r.flying ? r.angle : r.angle * 0.6);
+        drawMiniCharacter(ctx, 0, 0, 14, r.color, { phase: frame * 0.1, armSwing: r.flying ? 20 : Math.sin(r.buck) * 15 });
+        ctx.restore();
+        if (!r.flying) {
+          ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(r.cx - 24, r.cy - 38, 48, 7);
+          ctx.fillStyle = r.grip > 35 ? '#53fc18' : '#ef4444'; ctx.fillRect(r.cx - 24, r.cy - 38, 48 * (r.grip / 100), 7);
+        }
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center';
+        ctx.fillText(r.name.substring(0, 10), r.cx, r.cy - 48);
+        if (r.gagTimer > 0) drawGagText(ctx, r.cx, r.cy - 62, r.gag, '#fbbf24', 12);
+      }
+    });
+    const alive = riders.filter(r => r.alive);
+    ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.beginPath(); ctx.roundRect(10, 10, 240, 36, 8); ctx.fill();
+    ctx.fillStyle = '#fbbf24'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'left';
+    ctx.fillText('🐔 RIDERS: ' + alive.length + '  INTENSITY: ' + globalIntensity.toFixed(1) + 'x', 20, 32);
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 42, W - 20, 32, 8); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, H - 20);
+
+    if (alive.length > 1) animId = requestAnimationFrame(loop);
+    else {
+      cancelAnimationFrame(animId);
+      const winner = alive[0] ? alive[0].name : riders.filter(r => r.holdTime).sort((a,b)=>b.holdTime-a.holdTime)[0]?.name || 'No one';
+      setTimeout(() => { showPhase('rodeo', 'winner'); document.getElementById('rodeo-winner-name').textContent = winner; }, 1200);
+    }
+  }
+  loop();
+}
+
+
+/* ==================== PARACHUTE PANIC ==================== */
+function runParachute() {
+  showOverlay('chute-overlay'); showPhase('chute', 'intro');
+  const names = Array.from(entrants);
+  if (names.length === 0) { alert('No entrants yet!'); return; }
+  document.getElementById('chute-intro-count').textContent = names.length + ' skydiver' + (names.length===1?'':'s') + ' — pray the chute opens';
+  setTimeout(() => startParachute(names), 1600);
+}
+function startParachute(names) {
+  showPhase('chute', 'play');
+  document.getElementById('chute-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('chute-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, n = names.length, laneW = W / n;
+  const fallDist = 4200 + n * 80, groundY = H - 70, finishAlt = fallDist - 200;
+  const clouds = Array.from({ length: 18 }, (_, i) => ({ x: i * 280 + Math.random() * 100, y: 80 + Math.random() * (H * 0.5), w: 60 + Math.random() * 50 }));
+  const gags = ['WOOSH!', 'TANGLED!', 'MY LUNCH!', 'AHHH!', 'BREEZY!'];
+  const jumpers = names.map((nm, i) => ({
+    name: nm, color: colorFor(nm), lane: i,
+    x: laneW * i + laneW / 2, alt: 0, vy: 1.2 + Math.random() * 0.8, vx: (Math.random() - 0.5) * 0.5,
+    chuteOpen: false, chuteTimer: 40 + Math.random() * 80, tangled: false, tumble: 0,
+    finished: false, finishTime: 0, gag: '', gagTimer: 0, rbMult: 1, rbTimer: 0
+  }));
+  let startTime = Date.now(), frame = 0, places = 1, wind = 0, windTarget = 0, cameraAlt = 0, feed = '🪂 Navigate wind — first safe landing wins!';
+
+  let animId;
+  function loop() {
+    frame++;
+    if (frame % 70 === 0) windTarget = (Math.random() - 0.5) * 2.2;
+    wind += (windTarget - wind) * 0.04;
+    applyRubberBand(frame, jumpers.filter(j => !j.finished), j => j.alt);
+
+    let allDone = true;
+    jumpers.forEach(j => {
+      if (j.finished) return;
+      allDone = false;
+      if (!j.chuteOpen) {
+        j.chuteTimer--;
+        j.vy = Math.min(j.vy + 0.04, 5.5);
+        j.tumble += 0.15;
+        if (j.chuteTimer <= 0) {
+          j.chuteOpen = true;
+          if (Math.random() < 0.12) { j.tangled = true; j.gag = 'TANGLED!'; j.gagTimer = 35; }
+          else j.gag = 'CHUTE OUT!'; j.gagTimer = 25;
+        }
+      } else if (j.tangled) {
+        j.vy = Math.min(j.vy + 0.02, 3.8);
+        j.tumble += 0.08;
+        if (Math.random() < 0.01) { j.tangled = false; j.gag = 'UNTANGLED!'; j.gagTimer = 22; }
+      } else {
+        j.vy += (1.6 - j.vy) * 0.04;
+        j.vx += wind * 0.025;
+        j.vx *= 0.98;
+      }
+      const mv = j.rbTimer > 0 ? j.rbMult : 1;
+      if (j.rbTimer > 0) j.rbTimer--;
+      j.alt += j.vy * mv;
+      j.x += j.vx * mv + wind * 0.15;
+      j.x = Math.max(laneW * j.lane + 20, Math.min(laneW * (j.lane + 1) - 20, j.x));
+      if (Math.random() < 0.004 && j.chuteOpen) { j.gag = gags[Math.floor(Math.random() * gags.length)]; j.gagTimer = 20; }
+      if (j.gagTimer > 0) j.gagTimer--;
+      if (j.alt >= finishAlt) {
+        j.finished = true; j.finishTime = Date.now() - startTime; j.place = places++;
+        j.gag = 'LANDED!'; feed = j.name + ' stuck the landing!';
+      }
+    });
+
+    const leader = jumpers.reduce((a, b) => a.alt > b.alt ? a : b);
+    cameraAlt = Math.max(0, Math.min(leader.alt - H * 0.35, fallDist - H));
+
+    const sky = ctx.createLinearGradient(0, 0, 0, H);
+    sky.addColorStop(0, '#0ea5e9'); sky.addColorStop(0.6, '#7dd3fc'); sky.addColorStop(1, '#86efac');
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+    clouds.forEach(c => {
+      const cy = c.y - (cameraAlt * 0.08) % (H + 100);
+      ctx.fillStyle = 'rgba(255,255,255,0.75)';
+      ctx.beginPath(); ctx.arc(c.x, cy, c.w * 0.35, 0, Math.PI * 2); ctx.arc(c.x + c.w * 0.3, cy - 8, c.w * 0.4, 0, Math.PI * 2); ctx.arc(c.x + c.w * 0.55, cy, c.w * 0.32, 0, Math.PI * 2); ctx.fill();
+    });
+    const padX = W / 2 - 80;
+    const padScreenY = groundY - (finishAlt - cameraAlt) * (H / 600);
+    if (padScreenY > -40 && padScreenY < H + 40) {
+      ctx.fillStyle = '#22c55e'; ctx.fillRect(padX, padScreenY, 160, 14);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center'; ctx.fillText('SAFE ZONE', padX + 80, padScreenY - 6);
+    }
+    ctx.fillStyle = '#15803d'; ctx.fillRect(0, H - 50, W, 50);
+
+    jumpers.forEach(j => {
+      const sy = groundY - (j.alt - cameraAlt) * (H / 600);
+      if (sy < -60 || sy > H + 60) return;
+      ctx.save(); ctx.translate(j.x, sy); ctx.rotate(j.tumble);
+      if (j.chuteOpen && !j.tangled) {
+        ctx.fillStyle = j.color; ctx.globalAlpha = 0.85;
+        ctx.beginPath(); ctx.arc(0, -38, 26, Math.PI, 0); ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-26, -38); ctx.lineTo(0, -8); ctx.lineTo(26, -38); ctx.stroke();
+        ctx.globalAlpha = 1;
+      } else if (j.tangled) {
+        ctx.strokeStyle = j.color; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-15, -20); ctx.lineTo(10, -35); ctx.lineTo(20, -15); ctx.stroke();
+      }
+      drawMiniCharacter(ctx, 0, 0, 13, j.color, { phase: frame * 0.08, armSwing: j.tumble * 10 });
+      ctx.restore();
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(j.name.substring(0, 10), j.x, sy + 24);
+      if (j.gagTimer > 0) drawGagText(ctx, j.x, sy - 52, j.gag, '#0369a1', 12);
+    });
+
+    const sorted = [...jumpers].filter(j => !j.finished).sort((a, b) => b.alt - a.alt);
+    ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.beginPath(); ctx.roundRect(10, 10, 200, 36, 8); ctx.fill();
+    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'left';
+    ctx.fillText('🪂 ALT: ' + Math.floor(leader.alt) + 'm', 20, 32);
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 42, W - 20, 32, 8); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed + '  WIND: ' + wind.toFixed(1), W / 2, H - 20);
+
+    if (!allDone) animId = requestAnimationFrame(loop);
+    else {
+      cancelAnimationFrame(animId);
+      const win = [...jumpers].sort((a, b) => a.finishTime - b.finishTime);
+      setTimeout(() => { showPhase('chute', 'winner'); document.getElementById('chute-winner-name').textContent = win[0].name; }, 1000);
+    }
+  }
+  loop();
+}
+
+
 /* ==================== SWORD DUEL (1v1 launcher) ==================== */
 function runSwordDuel() {
   const names = Array.from(entrants);
@@ -4460,6 +5140,11 @@ function launchSwordWith(p1Name, p2Name) {
       else if (game === 'penguin') runPenguinWaddle();
       else if (game === 'dodgeball') runDodgeball();
       else if (game === 'mop') runMopSprint();
+      else if (game === 'pinball') runPinball();
+      else if (game === 'tramp') runTrampoline();
+      else if (game === 'zerog') runZeroG();
+      else if (game === 'rodeo') runRubberRodeo();
+      else if (game === 'chute') runParachute();
       else if (game === 'boxing') runBoxingMatch();
       else if (game === 'sword') runSwordDuel();
     }, 200);
