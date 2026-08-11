@@ -91,6 +91,7 @@
 <base target="_blank">
 </head>
 <body>
+<div id="game-chat-pill" class="hidden fixed top-3 right-3 z-[60] px-3 py-1.5 rounded-full text-xs font-bold"></div>
 <div class="bg-mesh"></div>
 
 <!-- ==================== SETUP SCREEN ==================== -->
@@ -785,6 +786,7 @@ function createGiveaway() {
   giveawayTitle = document.getElementById('title').value.trim() || 'Giveaway';
   keyword = document.getElementById('keyword').value.trim() || '!join';
   chatroomId = document.getElementById('chatroom-id').value.trim() || '107612';
+  localStorage.setItem('giveaway_chatroom_id', chatroomId);
   document.getElementById('dash-title').textContent = giveawayTitle;
   document.getElementById('stat-keyword').textContent = keyword;
   document.getElementById('dash-chatroom-id').value = chatroomId;
@@ -870,87 +872,129 @@ function escapeHtml(t) {
 }
 
 /* ==================== KICK CHAT WEBSOCKET ==================== */
-function connectRawWS() {
-  const id = document.getElementById('dash-chatroom-id').value.trim() || chatroomId;
-  chatroomId = id;
-  const btn = document.getElementById('ws-connect-btn');
+const INTERACTIVE_GAMES = ['dice', 'trivia', 'roulette', 'coin', 'emoji', 'math'];
+
+function findPlayerKey(sender) {
+  if (!gameState.players) return null;
+  if (gameState.players[sender] !== undefined) return sender;
+  const lower = String(sender).toLowerCase();
+  return Object.keys(gameState.players).find(k => k.toLowerCase() === lower) || null;
+}
+
+function setChatStatus(text, ok) {
   const badge = document.getElementById('conn-badge');
   const status = document.getElementById('conn-status');
+  const pill = document.getElementById('game-chat-pill');
+  if (badge) {
+    badge.textContent = ok ? 'CONNECTED' : (ok === false ? 'ERROR' : 'CONNECTING...');
+    badge.className = ok ? 'px-3 py-1 rounded-full bg-[#53fc18]/20 text-[#53fc18] text-xs font-bold'
+      : (ok === false ? 'px-3 py-1 rounded-full bg-[#ff3366]/20 text-[#ff3366] text-xs font-bold'
+      : 'px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-400 text-xs font-bold');
+  }
+  if (status) status.textContent = text;
+  if (pill) {
+    pill.classList.remove('hidden');
+    pill.textContent = ok ? '🟢 Kick chat live' : (ok === false ? '🔴 Chat disconnected' : '🟡 Connecting chat...');
+    pill.className = 'fixed top-3 right-3 z-[60] px-3 py-1.5 rounded-full text-xs font-bold ' +
+      (ok ? 'bg-[#53fc18]/20 text-[#53fc18] border border-[#53fc18]/30'
+        : (ok === false ? 'bg-[#ff3366]/20 text-[#ff3366] border border-[#ff3366]/30'
+        : 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'));
+  }
+}
+
+function connectKickChat(roomId) {
+  const id = (roomId || chatroomId || localStorage.getItem('giveaway_chatroom_id') || '107612').toString().trim();
+  chatroomId = id;
+  localStorage.setItem('giveaway_chatroom_id', id);
   if (ws) { ws.close(); ws = null; }
-  badge.textContent = 'CONNECTING...';
-  badge.className = 'px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-400 text-xs font-bold';
-  status.textContent = 'Connecting to Kick chat...';
+  setChatStatus('Connecting to Kick chatroom ' + id + '...', null);
   try {
     ws = new WebSocket('wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false');
     ws.onopen = () => {
-      badge.textContent = 'CONNECTED';
-      badge.className = 'px-3 py-1 rounded-full bg-[#53fc18]/20 text-[#53fc18] text-xs font-bold';
-      status.textContent = 'WebSocket open. Subscribing to chatroom ' + id + '...';
+      setChatStatus('WebSocket open. Subscribing to chatroom ' + id + '...', null);
       ws.send(JSON.stringify({ event: 'pusher:subscribe', data: { channel: 'chatrooms.' + id + '.v2' } }));
     };
     ws.onmessage = (ev) => {
       let msg;
-      try { msg = JSON.parse(ev.data); } catch(e) { return; }
+      try { msg = JSON.parse(ev.data); } catch (e) { return; }
       if (msg.event === 'pusher:connection_established') {
-        status.textContent = 'Connected! Listening for messages...';
+        setChatStatus('Connected! Listening for chat commands...', true);
         return;
       }
-      if (msg.event === 'App\\Events\\ChatMessageEvent' && msg.data) {
+      if (msg.event === 'pusher:subscription_succeeded') {
+        setChatStatus('Subscribed to chatroom ' + id + ' — commands active!', true);
+        return;
+      }
+      const chatEvent = msg.event === 'App\\Events\\ChatMessageEvent' || msg.event === 'App\\Events\\ChatMessageSentEvent';
+      if (chatEvent && msg.data) {
         let data;
-        try { data = JSON.parse(msg.data); } catch(e) { return; }
-        const sender = data.sender?.username || 'Unknown';
-        const text = (data.content || '').toLowerCase();
+        try { data = typeof msg.data === 'string' ? JSON.parse(msg.data) : msg.data; } catch (e) { return; }
+        const sender = data.sender?.username || data.username || 'Unknown';
+        const raw = (data.content || data.message || '').trim();
+        const text = raw.toLowerCase();
         chatLog.push({ sender, text, time: Date.now() });
         if (text.includes(keyword.toLowerCase())) addEntrant(sender);
-        routeChatMessage(sender, text);
+        routeChatMessage(sender, text, raw);
       }
     };
     ws.onerror = () => {
-      badge.textContent = 'ERROR';
-      badge.className = 'px-3 py-1 rounded-full bg-[#ff3366]/20 text-[#ff3366] text-xs font-bold';
-      status.textContent = 'Connection error. Kick may block browser WS. Use test button instead.';
+      setChatStatus('Connection error. Retry from dashboard or refresh.', false);
     };
     ws.onclose = () => {
-      badge.textContent = 'DISCONNECTED';
-      badge.className = 'px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-xs font-bold';
-      status.textContent = 'Disconnected.';
+      setChatStatus('Chat disconnected.', false);
     };
   } catch (e) {
-    status.textContent = 'Failed: ' + e.message;
+    setChatStatus('Failed: ' + e.message, false);
   }
 }
 
-function routeChatMessage(sender, text) {
+function connectRawWS() {
+  const el = document.getElementById('dash-chatroom-id');
+  connectKickChat(el ? el.value.trim() : chatroomId);
+}
+
+function routeChatMessage(sender, text, rawText) {
   if (!gameState.active) return;
   const t = text.trim().toLowerCase();
+  const key = findPlayerKey(sender);
+  if (!key) return;
+
   if (gameState.type === 'dice' && gameState.phase === 'collect') {
-    const m = t.match(/!num([1-6])/);
-    if (m && gameState.players[sender] !== undefined) { gameState.players[sender] = parseInt(m[1]); updateDiceGrid(); }
+    const m = t.match(/!num\s*([1-6])\b/) || t.match(/!([1-6])\b/);
+    if (m) { gameState.players[key] = parseInt(m[1]); updateDiceGrid(); }
   }
   if (gameState.type === 'roulette' && gameState.phase === 'collect') {
     let choice = null;
-    if (t === '!red') choice = 'red'; else if (t === '!black') choice = 'black'; else if (t === '!green') choice = 'green';
-    if (choice && gameState.players[sender] !== undefined) { gameState.players[sender] = choice; updateRouletteGrid(); }
+    if (/\b!red\b/.test(t)) choice = 'red';
+    else if (/\b!black\b/.test(t)) choice = 'black';
+    else if (/\b!green\b/.test(t)) choice = 'green';
+    if (choice) { gameState.players[key] = choice; updateRouletteGrid(); }
   }
   if (gameState.type === 'coin' && gameState.phase === 'collect') {
     let choice = null;
-    if (t === '!heads') choice = 'heads'; else if (t === '!tails') choice = 'tails';
-    if (choice && gameState.players[sender] !== undefined) { gameState.players[sender] = choice; updateCoinGrid(); }
+    if (/\b!heads\b/.test(t)) choice = 'heads';
+    else if (/\b!tails\b/.test(t)) choice = 'tails';
+    if (choice) { gameState.players[key] = choice; updateCoinGrid(); }
   }
   if (gameState.type === 'emoji' && gameState.phase === 'collect') {
-    if (t === gameState.currentCommand && gameState.players[sender] !== undefined) { gameState.players[sender] = true; updateEmojiGrid(); }
+    const cmd = (gameState.currentCommand || '').toLowerCase();
+    if (cmd && (t === cmd || t.includes(cmd))) { gameState.players[key] = true; updateEmojiGrid(); }
   }
   if (gameState.type === 'trivia' && gameState.phase === 'collect') {
-    const m = t.match(/!([abcd])/);
-    if (m && gameState.players[sender] !== undefined && !gameState.answered[sender]) {
-      gameState.answered[sender] = m[1]; gameState.votes[m[1]] = (gameState.votes[m[1]] || 0) + 1; updateTriviaBars();
+    const m = t.match(/!([abcd])\b/);
+    if (m && !gameState.answered[key]) {
+      gameState.answered[key] = m[1];
+      gameState.votes[m[1]] = (gameState.votes[m[1]] || 0) + 1;
+      updateTriviaBars();
     }
   }
   if (gameState.type === 'math' && gameState.phase === 'collect') {
-    const m = t.match(/!(\d+)/);
-    if (m && gameState.players[sender] !== undefined && !gameState.answered[sender]) {
-      const ans = parseInt(m[1]); gameState.answered[sender] = ans;
-      if (ans === gameState.answer) gameState.correct.add(sender); else gameState.wrong.add(sender);
+    const m = t.match(/!(\d+)\b/);
+    if (m && !gameState.answered[key]) {
+      const ans = parseInt(m[1], 10);
+      gameState.answered[key] = ans;
+      if (ans === gameState.answer) gameState.correct.add(key);
+      else gameState.wrong.add(key);
       updateMathStats();
     }
   }
@@ -968,6 +1012,7 @@ function openGamePopup(gameType) {
   localStorage.setItem('giveaway_entrants', JSON.stringify(Array.from(entrants)));
   localStorage.setItem('giveaway_title', giveawayTitle);
   localStorage.setItem('giveaway_keyword', keyword);
+  localStorage.setItem('giveaway_chatroom_id', chatroomId);
   const url = window.location.origin + window.location.pathname + '?game=' + encodeURIComponent(gameType);
   const w = 1280, h = 780;
   const left = Math.round((screen.width - w) / 2);
@@ -4106,8 +4151,8 @@ function startDodgeball(names) {
     return {
       name: nm, color: colorFor(nm), alive: true,
       x: cx + Math.cos(ang) * dist, y: cy + Math.sin(ang) * dist,
-      vx: (Math.random() - 0.5) * 2.2, vy: (Math.random() - 0.5) * 2.2,
-      dodge: 30 + i * 4, invuln: 50 + i * 3, gag: '', gagTimer: 0,
+      vx: (Math.random() - 0.5) * 1.4, vy: (Math.random() - 0.5) * 1.4,
+      dodge: 40 + i * 5, invuln: 120 + i * 8, gag: '', gagTimer: 0,
       panic: Math.random() * Math.PI * 2, elimX: 0, elimY: 0
     };
   });
@@ -4117,13 +4162,13 @@ function startDodgeball(names) {
   function spawnBall() {
     const side = Math.floor(Math.random() * 4);
     let x, y, vx, vy;
-    const spd = 3.2 + Math.random() * 2.8 + Math.min(2, frame / 900);
-    if (side === 0) { x = arenaL; y = arenaT + Math.random() * (arenaB - arenaT); vx = spd; vy = (Math.random() - 0.5) * spd; }
-    else if (side === 1) { x = arenaR; y = arenaT + Math.random() * (arenaB - arenaT); vx = -spd; vy = (Math.random() - 0.5) * spd; }
-    else if (side === 2) { x = arenaL + Math.random() * (arenaR - arenaL); y = arenaT; vx = (Math.random() - 0.5) * spd; vy = spd; }
-    else { x = arenaL + Math.random() * (arenaR - arenaL); y = arenaB; vx = (Math.random() - 0.5) * spd; vy = -spd; }
+    const spd = 1.6 + Math.random() * 1.4 + Math.min(1.2, frame / 1400);
+    if (side === 0) { x = arenaL; y = arenaT + Math.random() * (arenaB - arenaT); vx = spd; vy = (Math.random() - 0.5) * spd * 0.7; }
+    else if (side === 1) { x = arenaR; y = arenaT + Math.random() * (arenaB - arenaT); vx = -spd; vy = (Math.random() - 0.5) * spd * 0.7; }
+    else if (side === 2) { x = arenaL + Math.random() * (arenaR - arenaL); y = arenaT; vx = (Math.random() - 0.5) * spd * 0.7; vy = spd; }
+    else { x = arenaL + Math.random() * (arenaR - arenaL); y = arenaB; vx = (Math.random() - 0.5) * spd * 0.7; vy = -spd; }
     const hues = ['#ef4444', '#f97316', '#eab308', '#ec4899'];
-    balls.push({ x, y, vx, vy, r: 14, hue: hues[Math.floor(Math.random() * hues.length)], trail: [] });
+    balls.push({ x, y, vx, vy, r: 13, hue: hues[Math.floor(Math.random() * hues.length)], trail: [] });
   }
 
   function drawArena() {
@@ -4190,7 +4235,7 @@ function startDodgeball(names) {
   let animId;
   function loop() {
     frame++; spawnTimer++;
-    if (spawnTimer > 55 && balls.length < 6 + Math.min(4, Math.floor(frame / 400))) { spawnBall(); spawnTimer = 0; }
+    if (spawnTimer > 110 && balls.length < 3 + Math.min(3, Math.floor(frame / 700))) { spawnBall(); spawnTimer = 0; }
 
     ctx.clearRect(0, 0, W, H);
     drawArena();
@@ -4223,9 +4268,9 @@ function startDodgeball(names) {
         if (p.x > arenaR - 20) { p.x = arenaR - 20; p.vx = -Math.abs(p.vx); }
         if (p.y < arenaT + 20) { p.y = arenaT + 20; p.vy = Math.abs(p.vy); }
         if (p.y > arenaB - 20) { p.y = arenaB - 20; p.vy = -Math.abs(p.vy); }
-        if (Math.random() < 0.018) {
-          p.vx = (Math.random() - 0.5) * 5; p.vy = (Math.random() - 0.5) * 5;
-          p.dodge = 14; p.gag = 'NICE DODGE!'; p.gagTimer = 40;
+        if (Math.random() < 0.01) {
+          p.vx = (Math.random() - 0.5) * 3.2; p.vy = (Math.random() - 0.5) * 3.2;
+          p.dodge = 18; p.gag = 'NICE DODGE!'; p.gagTimer = 40;
           feed = p.name + ' matrix-dodges a ball!';
         }
       }
@@ -4265,7 +4310,7 @@ function startDodgeball(names) {
       setTimeout(() => { showPhase('dodgeball', 'winner'); document.getElementById('dodgeball-winner-name').textContent = winner.name; }, 1800);
     }
   }
-  for (let i = 0; i < 2; i++) spawnBall();
+  for (let i = 0; i < 1; i++) spawnBall();
   loop();
 }
 
@@ -4362,8 +4407,12 @@ function launchSwordWith(p1Name, p2Name) {
     if (saved) { try { JSON.parse(saved).forEach(n => entrants.add(n)); } catch(e){} }
     giveawayTitle = localStorage.getItem('giveaway_title') || 'Giveaway';
     keyword = localStorage.getItem('giveaway_keyword') || '!join';
+    chatroomId = localStorage.getItem('giveaway_chatroom_id') || chatroomId;
     document.getElementById('setup-screen').classList.add('hidden');
     document.getElementById('dashboard-screen').classList.add('hidden');
+    if (INTERACTIVE_GAMES.includes(game)) {
+      connectKickChat(chatroomId);
+    }
     setTimeout(() => {
       if (game === 'giveaway') runGiveaway();
       else if (game === 'dice') runDiceGame();
