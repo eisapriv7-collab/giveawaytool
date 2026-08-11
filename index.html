@@ -921,60 +921,216 @@ function firstToFinish(participants) {
 
 /* ==================== RACE SECRET: !masturbo (once per player per race) ==================== */
 const RACE_GAME_IDS = ['racing','swimming','balloon','obstacle','downhill','rocket','tower','snail','banana','wipeout','hobbyhorse','sack','cart','penguin','mop','chair','pogo','hamster','burrito','chute'];
-const MASTURBO_FRAMES = 240;
-const MASTURBO_MULT = 2.35;
+const MASTURBO_FRAMES = 280;
+const MASTURBO_MULT = 2.6;
 const RACE_MAP_SCALE = 1.85;
-let raceTurboState = { active: false, racers: [] };
+let raceTurboState = { active: false, racers: [], names: [] };
+let turboByName = new Map();
+let turboTickInterval = null;
+
+function normalizeRaceName(n) {
+  return String(n || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+}
 
 function scaledRaceLen(base, per, n) {
   return Math.round((base + n * per) * RACE_MAP_SCALE);
 }
 
+function syncTurboVisuals() {
+  (raceTurboState.racers || []).forEach(r => {
+    if (!r || !r.name) return;
+    const entry = turboByName.get(normalizeRaceName(r.name));
+    if (!entry) return;
+    r.masturboUsed = entry.used;
+    r.masturboTimer = entry.timer;
+    if (entry.timer > 0) {
+      r.gag = 'MA TURBO!!';
+      if (r.gagTimer !== undefined) r.gagTimer = Math.max(r.gagTimer || 0, 55);
+      if (r.nitroActive !== undefined) r.nitroActive = true;
+    } else if (r.gag === 'MA TURBO!!') {
+      r.gag = '';
+    }
+  });
+}
+
+function startTurboTick() {
+  if (turboTickInterval) clearInterval(turboTickInterval);
+  turboTickInterval = setInterval(() => {
+    if (!raceTurboState.active) {
+      clearInterval(turboTickInterval);
+      turboTickInterval = null;
+      return;
+    }
+    turboByName.forEach(entry => {
+      if (entry.timer > 0) entry.timer--;
+    });
+    syncTurboVisuals();
+  }, 16);
+}
+
 function beginRaceTurbo(racers) {
-  (racers || []).forEach(r => { if (r) { r.masturboUsed = false; r.masturboTimer = 0; } });
   raceTurboState.active = true;
   raceTurboState.racers = racers || [];
+  (racers || []).forEach(r => {
+    if (!r || !r.name) return;
+    const key = normalizeRaceName(r.name);
+    if (!turboByName.has(key)) turboByName.set(key, { used: false, timer: 0, displayName: r.name });
+    const entry = turboByName.get(key);
+    r.masturboUsed = entry.used;
+    r.masturboTimer = entry.timer;
+    if (entry.timer > 0) r.gag = 'MA TURBO!!';
+  });
+  startTurboTick();
+}
+
+function armRaceTurbo(names) {
+  raceTurboState.active = true;
+  raceTurboState.names = names || [];
+  raceTurboState.racers = (names || []).map(n => ({ name: n, finished: false, masturboUsed: false, masturboTimer: 0 }));
+  turboByName = new Map((names || []).map(n => [normalizeRaceName(n), { used: false, timer: 0, displayName: n }]));
+  startTurboTick();
 }
 
 function endRaceTurbo() {
   raceTurboState.active = false;
   raceTurboState.racers = [];
+  raceTurboState.names = [];
+  turboByName = new Map();
+  if (turboTickInterval) { clearInterval(turboTickInterval); turboTickInterval = null; }
+}
+
+function findTurboEntry(sender) {
+  if (!raceTurboState.active || !turboByName.size) return null;
+  const raw = String(sender || '').trim();
+  const ns = normalizeRaceName(raw);
+  if (!ns) return null;
+  if (turboByName.has(ns)) return turboByName.get(ns);
+  for (const [key, entry] of turboByName) {
+    if (key === ns) return entry;
+    const dn = normalizeRaceName(entry.displayName);
+    if (dn === ns) return entry;
+    if (entry.displayName.trim().toLowerCase() === raw.toLowerCase()) return entry;
+  }
+  for (const [key, entry] of turboByName) {
+    if (key.length >= 3 && ns.length >= 3 && (key.startsWith(ns) || ns.startsWith(key))) return entry;
+  }
+  return null;
 }
 
 function findRaceRacer(sender) {
-  if (!raceTurboState.active) return null;
-  const s = String(sender || '').trim();
-  const lower = s.toLowerCase();
-  return raceTurboState.racers.find(r => r && (r.name === s || r.name.toLowerCase() === lower)) || null;
+  if (!raceTurboState.active || !raceTurboState.racers.length) return null;
+  const entry = findTurboEntry(sender);
+  if (!entry) return null;
+  const key = normalizeRaceName(entry.displayName);
+  for (const r of raceTurboState.racers) {
+    if (r && r.name && normalizeRaceName(r.name) === key) return r;
+  }
+  return null;
 }
 
 function raceSpeedMult(r) {
-  if (!r) return 1;
-  if (r.masturboTimer > 0) {
-    r.masturboTimer--;
-    if (r.masturboTimer <= 0 && r.gag === 'MA TURBO!!') r.gag = '';
-  }
-  return r.masturboTimer > 0 ? MASTURBO_MULT : 1;
+  if (!r || !r.name) return 1;
+  const entry = turboByName.get(normalizeRaceName(r.name));
+  return (entry && entry.timer > 0) ? MASTURBO_MULT : 1;
 }
 
-function triggerMasTurbo(racer) {
-  if (!racer || racer.finished || racer.masturboUsed || racer.popped) return false;
-  racer.masturboUsed = true;
-  racer.masturboTimer = MASTURBO_FRAMES;
+function showTurboFlash(name, warn) {
+  const pill = document.getElementById('game-chat-pill');
+  if (!pill) return;
+  pill.classList.remove('hidden');
+  if (warn) {
+    pill.textContent = '⚠️ ' + name;
+    pill.className = 'fixed top-3 right-3 z-[60] px-3 py-1.5 rounded-full text-xs font-bold bg-yellow-500/25 text-yellow-200 border border-yellow-400/40';
+    setTimeout(() => {
+      if (pill.textContent.startsWith('⚠️')) {
+        pill.textContent = '🟢 Kick chat live';
+        pill.className = 'fixed top-3 right-3 z-[60] px-3 py-1.5 rounded-full text-xs font-bold bg-[#53fc18]/20 text-[#53fc18] border border-[#53fc18]/30';
+      }
+    }, 4000);
+    return;
+  }
+  pill.textContent = '🚀 ' + name + ' activated MA TURBO!';
+  pill.className = 'fixed top-3 right-3 z-[60] px-3 py-1.5 rounded-full text-xs font-bold bg-orange-500/25 text-orange-300 border border-orange-400/40';
+  setTimeout(() => {
+    if (pill.textContent.includes('MA TURBO')) {
+      pill.textContent = '🟢 Kick chat live';
+      pill.className = 'fixed top-3 right-3 z-[60] px-3 py-1.5 rounded-full text-xs font-bold bg-[#53fc18]/20 text-[#53fc18] border border-[#53fc18]/30';
+    }
+  }, 3200);
+}
+
+function applyTurboBoost(racer) {
+  if (!racer || racer.finished || racer.popped) return;
   racer.gag = 'MA TURBO!!';
-  if (racer.gagTimer !== undefined) racer.gagTimer = 50;
-  if (racer.maxSpeed !== undefined && racer.speed !== undefined) racer.speed = Math.max(racer.speed, racer.maxSpeed * 0.92);
-  if (racer.cruiseSpeed !== undefined) racer.speed = Math.min(racer.cruiseSpeed * 2.6, (racer.speed || 0) + 3.5);
-  if (racer.vAlt !== undefined) racer.vAlt = Math.max(racer.vAlt, racer.vAlt * 1.35 + 0.35);
-  if (racer.vy !== undefined && racer.chuteOpen) racer.vy = Math.min(racer.vy + 0.45, 3.2);
+  if (racer.gagTimer !== undefined) racer.gagTimer = 55;
+  if (racer.maxSpeed !== undefined && racer.speed !== undefined) {
+    racer.speed = Math.max(racer.speed, racer.maxSpeed * 1.05);
+    racer.maxSpeed *= 1.35;
+  }
+  if (racer.cruiseSpeed !== undefined) {
+    racer.cruiseSpeed *= 1.4;
+    racer.speed = Math.min(racer.cruiseSpeed * 2.8, (racer.speed || 0) + 4);
+  }
+  if (racer.vAlt !== undefined) racer.vAlt = Math.max(racer.vAlt * 1.5, racer.vAlt + 0.5);
+  if (racer.v !== undefined) racer.v = Math.max(racer.v * 1.4, racer.v + 1.2);
+  if (racer.vy !== undefined) racer.vy = Math.min(Math.max(racer.vy, 1.2) * 1.35, 3.8);
   if (racer.boostTimer !== undefined) racer.boostTimer = Math.max(racer.boostTimer || 0, MASTURBO_FRAMES);
-  if (racer.burstTimer !== undefined && racer.burstTimer <= 0) racer.burstTimer = 35;
+  if (racer.burstTimer !== undefined) racer.burstTimer = Math.max(racer.burstTimer || 0, 40);
+  if (racer.nitroActive !== undefined) racer.nitroActive = true;
+}
+
+function triggerMasTurbo(sender) {
+  const entry = findTurboEntry(sender);
+  if (!entry || entry.used) return false;
+  entry.used = true;
+  entry.timer = MASTURBO_FRAMES;
+  const racer = findRaceRacer(sender);
+  if (racer) {
+    racer.masturboUsed = true;
+    racer.masturboTimer = MASTURBO_FRAMES;
+    applyTurboBoost(racer);
+  }
+  showTurboFlash(entry.displayName || sender);
   return true;
 }
 
-function handleRaceChatCommand(sender, text) {
-  if (!/\b!masturbo\b/.test(String(text || '').trim().toLowerCase())) return false;
-  return triggerMasTurbo(findRaceRacer(sender));
+function handleRaceChatCommand(sender, text, rawText) {
+  const raw = String(rawText != null ? rawText : text || '').trim();
+  if (!/!?\s*masturbo/i.test(raw)) return false;
+  if (!raceTurboState.active) {
+    showTurboFlash('Turbo only works during a race!', true);
+    return true;
+  }
+  const entry = findTurboEntry(sender);
+  if (!entry) {
+    showTurboFlash(sender + ' — use your exact !join name', true);
+    return true;
+  }
+  if (entry.used) {
+    showTurboFlash(entry.displayName + ' already used turbo this race', true);
+    return true;
+  }
+  return triggerMasTurbo(sender);
+}
+
+function kickSenderFromData(data) {
+  if (!data) return 'Unknown';
+  const s = data.sender || data.user || data.author || data.identity || data.profile || {};
+  if (typeof s === 'string') return s;
+  if (s.username) return s.username;
+  if (s.slug) return s.slug;
+  if (s.name) return s.name;
+  if (s.display_name) return s.display_name;
+  if (s.displayName) return s.displayName;
+  if (data.username) return data.username;
+  if (data.user_name) return data.user_name;
+  if (data.display_name) return data.display_name;
+  if (data.name) return data.name;
+  return 'Unknown';
+}
+
+function kickContentFromData(data) {
+  return String(data.content || data.message || data.body || data.text || '').trim();
 }
 
 /* ==================== SETUP & NAVIGATION ==================== */
@@ -1163,8 +1319,8 @@ function connectKickChat(roomId) {
       if (chatEvent && msg.data) {
         let data;
         try { data = typeof msg.data === 'string' ? JSON.parse(msg.data) : msg.data; } catch (e) { return; }
-        const sender = (data.sender && data.sender.username) || data.username || 'Unknown';
-        const raw = (data.content || data.message || '').trim();
+        const sender = kickSenderFromData(data);
+        const raw = kickContentFromData(data);
         const text = raw.toLowerCase();
         chatLog.push({ sender, text, time: Date.now() });
         if (text.includes(keyword.toLowerCase())) addEntrant(sender);
@@ -1188,7 +1344,7 @@ function connectRawWS() {
 }
 
 function routeChatMessage(sender, text, rawText) {
-  if (handleRaceChatCommand(sender, text)) return;
+  if (handleRaceChatCommand(sender, text, rawText)) return;
   if (!gameState.active) return;
   const t = text.trim().toLowerCase();
   const key = findPlayerKey(sender);
@@ -1744,6 +1900,7 @@ function runRandomRacing() {
   showPhase('racing', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('racing-intro-count').textContent = names.length + ' racer' + (names.length === 1 ? '' : 's') + ' on the grid';
   setTimeout(() => racingCountdown(names), 1800);
 }
@@ -1804,9 +1961,10 @@ function startRacing(names) {
     ctx.fillStyle = car.color; ctx.beginPath(); ctx.moveTo(0, 5); ctx.lineTo(8, -8); ctx.lineTo(50, -10); ctx.lineTo(68, -5); ctx.lineTo(72, 5); ctx.lineTo(70, 13); ctx.lineTo(5, 13); ctx.closePath(); ctx.fill();
     ctx.fillStyle = '#0a0a1a'; ctx.beginPath(); ctx.moveTo(18, -6); ctx.lineTo(42, -7); ctx.lineTo(48, -2); ctx.lineTo(16, -1); ctx.closePath(); ctx.fill();
     ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(12, 13, 6, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.arc(58, 13, 6, 0, Math.PI * 2); ctx.fill();
-    if (car.nitroActive) { ctx.fillStyle = `hsl(${20 + Math.random()*40},100%,60%)`; ctx.shadowColor='#ff6600'; ctx.shadowBlur=12; ctx.beginPath(); ctx.moveTo(-2,5); ctx.lineTo(-14-Math.random()*8,8); ctx.lineTo(-2,11); ctx.closePath(); ctx.fill(); ctx.shadowBlur=0; }
+    if (car.nitroActive || car.masturboTimer > 0) { ctx.fillStyle = car.masturboTimer > 0 ? `hsl(${35 + Math.random()*30},100%,65%)` : `hsl(${20 + Math.random()*40},100%,60%)`; ctx.shadowColor='#ff6600'; ctx.shadowBlur=car.masturboTimer > 0 ? 20 : 12; ctx.beginPath(); ctx.moveTo(-2,5); ctx.lineTo(-18-Math.random()*10,8); ctx.lineTo(-2,11); ctx.closePath(); ctx.fill(); ctx.shadowBlur=0; }
     ctx.fillStyle = '#fff'; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center'; ctx.fillText(car.name.substring(0,14), 35, -16);
     ctx.restore();
+    if (car.gag) drawGagText(ctx, cx, cy - 28, car.gag, car.masturboTimer > 0 ? '#ff6600' : '#fbbf24', 13);
     if (frame % 4 === 0 && car.speed > 1) particles.push({ x: car.x - 5, y: car.y + 8, vx: -1 - Math.random(), vy: -0.4 + Math.random(), life: 25, maxLife: 25, size: 2 + Math.random() * 2 });
   }
   function updateParticles() {
@@ -1867,6 +2025,7 @@ function runSwimmingRace() {
   showPhase('swim', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('swim-intro-count').textContent = names.length + ' swimmer' + (names.length === 1 ? '' : 's') + ' on the blocks';
   setTimeout(() => swimCountdown(names), 1800);
 }
@@ -1921,6 +2080,7 @@ function startSwimming(names) {
     ctx.beginPath(); ctx.moveTo(-18,-3); ctx.lineTo(-34,-5+rlA*7); ctx.stroke();
     ctx.fillStyle='#fff'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.fillText(s.name.substring(0,12), 0, -22);
     ctx.restore();
+    if (s.gag) drawGagText(ctx, sx, sy - 28 * sc, s.gag, raceSpeedMult(s) > 1 ? '#ff6600' : '#fbbf24', 13);
     if (Math.sin(phase) > 0.7) for (let j=0;j<2;j++) particles.push({ x: sx+18+Math.random()*8, y: sy-8+Math.random()*16, vx:1+Math.random()*2, vy:-1-Math.random()*2, life:14+Math.random()*8, maxLife:22, size:1+Math.random()*2 });
     if (frame % 12 === 0) bubbles.push({ x: sx-8, y: sy+Math.random()*8, vx:-0.4, vy:-0.3-Math.random()*0.4, life:26+Math.random()*16, maxLife:42, size:1+Math.random()*1.5 });
   }
@@ -2102,6 +2262,7 @@ function runBalloonRace() {
   showOverlay('balloon-overlay'); showPhase('balloon', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('balloon-intro-count').textContent = names.length + ' balloon' + (names.length===1?'':'s') + ' inflating';
   setTimeout(() => startBalloonRace(names), 1600);
 }
@@ -2223,6 +2384,7 @@ function runObstacleSprint() {
   showOverlay('obstacle-overlay'); showPhase('obstacle', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('obstacle-intro-count').textContent = names.length + ' runner' + (names.length===1?'':'s') + ' lining up';
   setTimeout(() => startObstacleSprint(names), 1600);
 }
@@ -2585,6 +2747,7 @@ function runDownhill() {
   showOverlay('downhill-overlay'); showPhase('downhill', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('downhill-intro-count').textContent = names.length + ' rider' + (names.length===1?'':'s') + ' at the gate';
   setTimeout(() => startDownhill(names), 1600);
 }
@@ -2692,6 +2855,7 @@ function runRocket() {
   showOverlay('rocket-overlay'); showPhase('rocket', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('rocket-intro-count').textContent = names.length + ' rocket' + (names.length===1?'':'s') + ' fueling up';
   setTimeout(() => startRocket(names), 1600);
 }
@@ -2891,6 +3055,7 @@ function runTower() {
   showOverlay('tower-overlay'); showPhase('tower', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('tower-intro-count').textContent = names.length + ' climber' + (names.length===1?'':'s') + ' chalking up';
   setTimeout(() => startTower(names), 1600);
 }
@@ -3107,6 +3272,7 @@ function runSnail() {
   showOverlay('snail-overlay'); showPhase('snail', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('snail-intro-count').textContent = names.length + ' snail' + (names.length===1?'':'s') + ' taking their marks';
   setTimeout(() => startSnail(names), 1600);
 }
@@ -3380,6 +3546,7 @@ function runBanana() {
   showOverlay('banana-overlay'); showPhase('banana', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('banana-intro-count').textContent = names.length + ' runner' + (names.length===1?'':'s') + ' lining up';
   setTimeout(() => startBanana(names), 1600);
 }
@@ -3573,6 +3740,7 @@ function runWipeout() {
   showOverlay('wipeout-overlay'); showPhase('wipeout', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('wipeout-intro-count').textContent = names.length + ' runner' + (names.length===1?'':'s') + ' facing the gauntlet';
   setTimeout(() => startWipeout(names), 1600);
 }
@@ -3677,6 +3845,7 @@ function runHobbyHorse() {
   showOverlay('hobbyhorse-overlay'); showPhase('hobbyhorse', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('hobbyhorse-intro-count').textContent = names.length + ' rider' + (names.length===1?'':'s') + ' saddling up';
   setTimeout(() => startHobbyHorse(names), 1600);
 }
@@ -4199,6 +4368,7 @@ function runSackHop() {
   showOverlay('sack-overlay'); showPhase('sack', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('sack-intro-count').textContent = names.length + ' hopper' + (names.length===1?'':'s') + ' in potato sacks';
   setTimeout(() => startSackHop(names), 1600);
 }
@@ -4277,6 +4447,7 @@ function runCartChaos() {
   showOverlay('cart-overlay'); showPhase('cart', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('cart-intro-count').textContent = names.length + ' shopper' + (names.length===1?'':'s') + ' racing carts';
   setTimeout(() => startCartChaos(names), 1600);
 }
@@ -4349,6 +4520,7 @@ function runPenguinWaddle() {
   showOverlay('penguin-overlay'); showPhase('penguin', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('penguin-intro-count').textContent = names.length + ' penguin' + (names.length===1?'':'s') + ' on the ice';
   setTimeout(() => startPenguinWaddle(names), 1600);
 }
@@ -4607,6 +4779,7 @@ function runMopSprint() {
   showOverlay('mop-overlay'); showPhase('mop', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('mop-intro-count').textContent = names.length + ' janitor' + (names.length===1?'':'s') + ' on wet floors';
   setTimeout(() => startMopSprint(names), 1600);
 }
@@ -5169,6 +5342,7 @@ function runParachute() {
   showOverlay('chute-overlay'); showPhase('chute', 'intro');
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('chute-intro-count').textContent = names.length + ' skydiver' + (names.length===1?'':'s') + ' — pray the chute opens';
   setTimeout(() => startParachute(names), 1600);
 }
@@ -5473,6 +5647,7 @@ function runOfficeChair() {
   showOverlay('chair-overlay'); showPhase('chair', 'intro');
   const names = Array.from(entrants);
   if (!names.length) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('chair-intro-count').textContent = names.length + ' remote worker' + (names.length===1?'':'s') + ' spinning to victory';
   setTimeout(() => startOfficeChair(names), 1600);
 }
@@ -5530,6 +5705,7 @@ function runPogo() {
   showOverlay('pogo-overlay'); showPhase('pogo', 'intro');
   const names = Array.from(entrants);
   if (!names.length) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('pogo-intro-count').textContent = names.length + ' boinger' + (names.length===1?'':'s') + ' ready';
   setTimeout(() => startPogo(names), 1600);
 }
@@ -5591,6 +5767,7 @@ function runHamster() {
   showOverlay('hamster-overlay'); showPhase('hamster', 'intro');
   const names = Array.from(entrants);
   if (!names.length) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('hamster-intro-count').textContent = names.length + ' hamster' + (names.length===1?'':'s') + ' in plastic doom balls';
   setTimeout(() => startHamster(names), 1600);
 }
@@ -5651,6 +5828,7 @@ function runBurrito() {
   showOverlay('burrito-overlay'); showPhase('burrito', 'intro');
   const names = Array.from(entrants);
   if (!names.length) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
   document.getElementById('burrito-intro-count').textContent = names.length + ' burrito' + (names.length===1?'':'s') + ' rolling to destiny';
   setTimeout(() => startBurrito(names), 1600);
 }
