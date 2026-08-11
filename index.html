@@ -906,10 +906,18 @@ function applyRubberBand(frame, active, getPos) {
   });
 }
 
-/* Minimum spectator game duration — games won't declare a winner until this elapses */
-const MIN_GAME_MS = 45000;
-function gameTimeOk(startTime) { return Date.now() - startTime >= MIN_GAME_MS; }
-function gameTimeLeft(startTime) { return Math.max(0, Math.ceil((MIN_GAME_MS - (Date.now() - startTime)) / 1000)); }
+/* Ensure every mini-game crowns exactly one survivor (tie-break random pick if needed) */
+function pickSingleWinner(candidates, fallbackPool) {
+  const names = (candidates || []).map(c => (typeof c === 'string' ? c : c && c.name)).filter(Boolean);
+  if (names.length === 1) return names[0];
+  if (names.length > 1) return names[Math.floor(Math.random() * names.length)];
+  const fb = (fallbackPool || []).map(c => (typeof c === 'string' ? c : c && c.name)).filter(Boolean);
+  if (fb.length) return fb[Math.floor(Math.random() * fb.length)];
+  return 'No one';
+}
+function firstToFinish(participants) {
+  return (participants || []).filter(p => p.finished).sort((a, b) => (a.finishTime || 0) - (b.finishTime || 0))[0] || null;
+}
 
 /* ==================== SETUP & NAVIGATION ==================== */
 function createGiveaway() {
@@ -1352,7 +1360,8 @@ function diceResolve(d1, d2, sum) {
   document.getElementById('dice-result-text').textContent = '🎲 ' + d1 + ' & ' + d2;
   document.getElementById('dice-result-sub').textContent = 'Survivors picked ' + numsLabel + ' — ' + Object.keys(survivors).length + ' advance!';
   renderPlayerGrid('dice-survivors-grid', combined, { highlight: hl, showValue: true });
-  if (Object.keys(survivors).length <= 1) setTimeout(() => diceEndGame(Object.keys(survivors)[0] || 'No one'), 3000);
+  if (Object.keys(survivors).length === 1) setTimeout(() => diceEndGame(Object.keys(survivors)[0]), 3000);
+  else if (Object.keys(survivors).length === 0) setTimeout(() => diceEndGame(pickSingleWinner([], Object.keys(eliminated))), 3000);
   else { gameState.round++; setTimeout(() => diceStartRound(), 4000); }
 }
 function diceEndGame(winner) { showPhase('dice', 'winner'); document.getElementById('dice-winner-name').textContent = winner; document.getElementById('dice-winner-prize').textContent = giveawayTitle; gameState.active = false; }
@@ -1379,7 +1388,7 @@ function runTriviaGame() {
   setTimeout(() => triviaNextQuestion(), 1500);
 }
 function triviaNextQuestion() {
-  if (Object.keys(gameState.players).length <= 1) { triviaEndGame(Object.keys(gameState.players)[0] || 'No one'); return; }
+  if (Object.keys(gameState.players).length <= 1) { triviaEndGame(pickSingleWinner(Object.keys(gameState.players), Array.from(entrants))); return; }
   gameState.round++; gameState.answered = {}; gameState.votes = { a: 0, b: 0, c: 0, d: 0 };
   const q = triviaQuestions[(gameState.round - 1) % triviaQuestions.length];
   gameState.currentQ = q; gameState.phase = 'collect';
@@ -1413,6 +1422,13 @@ function triviaReveal() {
   });
   renderPlayerGrid('trivia-survivors-grid', gameState.players, { highlight: hl });
   gameState.players = survivors;
+  if (Object.keys(survivors).length === 1) { setTimeout(() => triviaEndGame(Object.keys(survivors)[0]), 3500); return; }
+  if (Object.keys(survivors).length > 1 && gameState.round >= 8) {
+    const keys = Object.keys(survivors);
+    delete survivors[keys[Math.floor(Math.random() * keys.length)]];
+    gameState.players = survivors;
+    if (Object.keys(survivors).length === 1) { setTimeout(() => triviaEndGame(Object.keys(survivors)[0]), 3500); return; }
+  }
   setTimeout(() => triviaNextQuestion(), 5000);
 }
 function triviaEndGame(winner) { showPhase('trivia', 'winner'); document.getElementById('trivia-winner-name').textContent = winner; gameState.active = false; }
@@ -1475,7 +1491,8 @@ function rouletteResolve() {
   colorEl.style.color = result === 'red' ? '#ff3366' : result === 'black' ? '#888' : '#53fc18';
   document.getElementById('roulette-result-sub').textContent = Object.keys(survivors).length + ' survivors advance!';
   renderPlayerGrid('roulette-survivors-grid', combined, { highlight: hl, showValue: true });
-  if (Object.keys(survivors).length <= 1) setTimeout(() => rouletteEndGame(Object.keys(survivors)[0] || 'No one'), 3000);
+  if (Object.keys(survivors).length === 1) setTimeout(() => rouletteEndGame(Object.keys(survivors)[0]), 3000);
+  else if (Object.keys(survivors).length === 0) setTimeout(() => rouletteEndGame(pickSingleWinner([], Object.keys(eliminated))), 3000);
   else { gameState.round++; setTimeout(() => rouletteStartRound(), 4000); }
 }
 function rouletteEndGame(winner) { showPhase('roulette', 'winner'); document.getElementById('roulette-winner-name').textContent = winner; gameState.active = false; }
@@ -1532,7 +1549,8 @@ function coinResolve() {
   document.getElementById('coin-result-text').textContent = result.toUpperCase();
   document.getElementById('coin-result-sub').textContent = Object.keys(survivors).length + ' survivors advance!';
   renderPlayerGrid('coin-survivors-grid', combined, { highlight: hl, showValue: true });
-  if (Object.keys(survivors).length <= 1) setTimeout(() => coinEndGame(Object.keys(survivors)[0] || 'No one'), 3000);
+  if (Object.keys(survivors).length === 1) setTimeout(() => coinEndGame(Object.keys(survivors)[0]), 3000);
+  else if (Object.keys(survivors).length === 0) setTimeout(() => coinEndGame(pickSingleWinner([], Object.keys(eliminated))), 3000);
   else { gameState.round++; setTimeout(() => coinStartRound(), 4000); }
 }
 function coinEndGame(winner) { showPhase('coin', 'winner'); document.getElementById('coin-winner-name').textContent = winner; gameState.active = false; }
@@ -1547,7 +1565,7 @@ function runEmojiGame() {
   setTimeout(() => emojiNextRound(), 1500);
 }
 function emojiNextRound() {
-  if (Object.keys(gameState.players).length <= 1) { emojiEndGame(Object.keys(gameState.players)[0] || 'No one'); return; }
+  if (Object.keys(gameState.players).length <= 1) { emojiEndGame(pickSingleWinner(Object.keys(gameState.players), Array.from(entrants))); return; }
   gameState.round++; const round = emojiRounds[(gameState.round - 1) % emojiRounds.length];
   gameState.currentEmoji = round.emoji; gameState.currentCommand = round.cmd;
   Object.keys(gameState.players).forEach(n => gameState.players[n] = false);
@@ -1569,7 +1587,8 @@ function emojiResolve() {
   document.getElementById('emoji-resolve-text').textContent = Object.keys(survivors).length + ' SURVIVORS';
   document.getElementById('emoji-result-sub').textContent = 'Command was ' + gameState.currentCommand;
   renderPlayerGrid('emoji-survivors-grid', combined, { highlight: hl });
-  if (Object.keys(survivors).length <= 1) setTimeout(() => emojiEndGame(Object.keys(survivors)[0] || 'No one'), 3000);
+  if (Object.keys(survivors).length === 1) setTimeout(() => emojiEndGame(Object.keys(survivors)[0]), 3000);
+  else if (Object.keys(survivors).length === 0) setTimeout(() => emojiEndGame(pickSingleWinner([], Object.keys(eliminated))), 3000);
   else setTimeout(() => emojiNextRound(), 4000);
 }
 function emojiEndGame(winner) { showPhase('emoji', 'winner'); document.getElementById('emoji-winner-name').textContent = winner; gameState.active = false; }
@@ -1583,7 +1602,7 @@ function runMathGame() {
   setTimeout(() => mathNextProblem(), 1500);
 }
 function mathNextProblem() {
-  if (Object.keys(gameState.players).length <= 1) { mathEndGame(Object.keys(gameState.players)[0] || 'No one'); return; }
+  if (Object.keys(gameState.players).length <= 1) { mathEndGame(pickSingleWinner(Object.keys(gameState.players), Array.from(entrants))); return; }
   gameState.round++; gameState.answered = {}; gameState.correct = new Set(); gameState.wrong = new Set();
   const ops = ['+', '-', '*']; const op = ops[Math.floor(Math.random() * ops.length)];
   let a = Math.floor(Math.random() * 12) + 2, b = Math.floor(Math.random() * 12) + 2;
@@ -1611,6 +1630,13 @@ function mathReveal() {
   document.getElementById('math-correct-answer').textContent = gameState.answer;
   renderPlayerGrid('math-survivors-grid', gameState.players, { highlight: hl });
   gameState.players = survivors;
+  if (Object.keys(survivors).length === 1) { setTimeout(() => mathEndGame(Object.keys(survivors)[0]), 3500); return; }
+  if (Object.keys(survivors).length > 1 && gameState.round >= 8) {
+    const keys = Object.keys(survivors);
+    delete survivors[keys[Math.floor(Math.random() * keys.length)]];
+    gameState.players = survivors;
+    if (Object.keys(survivors).length === 1) { setTimeout(() => mathEndGame(Object.keys(survivors)[0]), 3500); return; }
+  }
   setTimeout(() => mathNextProblem(), 5000);
 }
 function mathEndGame(winner) { showPhase('math', 'winner'); document.getElementById('math-winner-name').textContent = winner; gameState.active = false; }
@@ -1716,24 +1742,23 @@ function startRacing(names) {
         if (Math.random() < 0.002) car.speed += 0.5;
         if (car.rbTimer > 0) car.rbTimer--;
         car.x += car.speed * (car.rbTimer > 0 ? car.rbMult : 1);
-        if (car.x >= finishX) { if (gameTimeOk(startTime)) { car.x = finishX; car.finished = true; car.finishTime = Date.now() - startTime; car.place = places++; } else { car.x = finishX - 10; } }
+        if (car.x >= finishX) { car.x = finishX; car.finished = true; car.finishTime = Date.now() - startTime; car.place = places++; }
       }
     });
     const leader = cars.reduce((a,b) => a.x > b.x ? a : b);
     cameraX = Math.max(0, Math.min(leader.x - W * 0.4, trackLength - W + 200));
     ctx.clearRect(0,0,W,H); drawTrack();
     cars.forEach(drawCar); updateParticles(); updateHUD();
-    if (!allFinished) animId = requestAnimationFrame(loop);
-    else {
+    const raceWinner = firstToFinish(cars);
+    if (raceWinner) {
       cancelAnimationFrame(animId);
-      cars.sort((a,b) => a.finishTime - b.finishTime);
       setTimeout(() => {
         showPhase('racing', 'winner');
-        document.getElementById('racing-winner-name').textContent = cars[0].name;
-        document.getElementById('racing-winner-time').textContent = (cars[0].finishTime/1000).toFixed(2)+'s';
-        document.getElementById('racing-podium').textContent = cars.slice(1,3).map((c,i) => (i+2)+'. '+c.name).join('   ');
+        document.getElementById('racing-winner-name').textContent = raceWinner.name;
+        document.getElementById('racing-winner-time').textContent = (raceWinner.finishTime/1000).toFixed(2)+'s';
+        document.getElementById('racing-podium').textContent = '';
       }, 1200);
-    }
+    } else if (!allFinished) animId = requestAnimationFrame(loop);
   }
   loop();
 }
@@ -1830,23 +1855,22 @@ function startSwimming(names) {
         if (Math.random() < 0.005) s.speed += 0.15;
         if (s.rbTimer > 0) s.rbTimer--;
         s.x += s.speed * (s.rbTimer > 0 ? s.rbMult : 1);
-        if (s.x >= finishX) { if (gameTimeOk(startTime)) { s.x = finishX; s.finished = true; s.finishTime = Date.now()-startTime; s.place = places++; } else { s.x = finishX - 10; } }
+        if (s.x >= finishX) { s.x = finishX; s.finished = true; s.finishTime = Date.now()-startTime; s.place = places++; }
       }
     });
     const leader = swimmers.reduce((a,b) => a.x > b.x ? a : b);
     cameraX = Math.max(0, Math.min(leader.x - W*0.35, trackLength - W + 200));
     ctx.clearRect(0,0,W,H); drawPool(); swimmers.forEach(drawSwimmer); updateParticles(); drawHUD();
-    if (!allFinished) animId = requestAnimationFrame(loop);
-    else {
+    const raceWinner = firstToFinish(swimmers);
+    if (raceWinner) {
       cancelAnimationFrame(animId);
-      swimmers.sort((a,b) => a.finishTime - b.finishTime);
       setTimeout(() => {
         showPhase('swim', 'winner');
-        document.getElementById('swim-winner-name').textContent = swimmers[0].name;
-        document.getElementById('swim-winner-time').textContent = (swimmers[0].finishTime/1000).toFixed(2)+'s';
-        document.getElementById('swim-podium').textContent = swimmers.slice(1,3).map((s,i) => (i+2)+'. '+s.name).join('   ');
+        document.getElementById('swim-winner-name').textContent = raceWinner.name;
+        document.getElementById('swim-winner-time').textContent = (raceWinner.finishTime/1000).toFixed(2)+'s';
+        document.getElementById('swim-podium').textContent = '';
       }, 1200);
-    }
+    } else if (!allFinished) animId = requestAnimationFrame(loop);
   }
   loop();
 }
@@ -1962,12 +1986,14 @@ function startBumperArena(names) {
     updatePhysics();
     drawRing(); drawOrb(); balls.forEach(drawBall); drawParticles();
     document.getElementById('bumper-alive-badge').textContent = aliveCountNow + ' alive';
-    if (aliveCountNow > 1) { animId = requestAnimationFrame(loop); }
-    else {
-      const winner = balls.find(b=>b.alive);
-      setCommentary(winner ? winner.name+' wins it!' : 'Ring out — no survivors!');
-      setTimeout(() => { showPhase('bumper','winner'); document.getElementById('bumper-winner-name').textContent = winner ? winner.name : 'No one'; }, 1200);
-    }
+    if (aliveCountNow === 1) {
+      const winner = balls.find(b => b.alive);
+      setCommentary(winner.name + ' wins it!');
+      setTimeout(() => { showPhase('bumper','winner'); document.getElementById('bumper-winner-name').textContent = winner.name; }, 1200);
+    } else if (aliveCountNow === 0) {
+      setCommentary('Ring out — sudden death pick!');
+      setTimeout(() => { showPhase('bumper','winner'); document.getElementById('bumper-winner-name').textContent = pickSingleWinner([], names); }, 1200);
+    } else { animId = requestAnimationFrame(loop); }
   }
   loop();
 }
@@ -2078,12 +2104,15 @@ function startBalloonRace(names) {
     balloons.forEach(drawBalloon);
     drawHUD();
     const remaining = balloons.filter(b => !b.finished && !b.popped);
-    if (remaining.length === 0) allDone = true;
-    if (!allDone && remaining.length > 0) animId = requestAnimationFrame(loop);
+    const raceWinner = firstToFinish(balloons);
+    if (raceWinner) {
+      cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('balloon','winner'); document.getElementById('balloon-winner-name').textContent = raceWinner.name; }, 900);
+    } else if (remaining.length > 0) animId = requestAnimationFrame(loop);
     else {
-      const finishers = balloons.filter(b => b.finished).sort((a,b) => a.finishTime - b.finishTime);
-      const winner = finishers[0] ? finishers[0].name : (balloons.find(b=>!b.popped)?.name || 'No one');
-      setTimeout(() => { showPhase('balloon','winner'); document.getElementById('balloon-winner-name').textContent = winner; }, 900);
+      cancelAnimationFrame(animId);
+      const w = pickSingleWinner(balloons.filter(b => !b.popped), names);
+      setTimeout(() => { showPhase('balloon','winner'); document.getElementById('balloon-winner-name').textContent = w; }, 900);
     }
   }
   loop();
@@ -2193,19 +2222,18 @@ function startObstacleSprint(names) {
         const collideHurdle = obstacles.find(o => o.type==='hurdle' && Math.abs(o.x-r.x) < 14);
         if (collideHurdle && r.vy > -6 && r.vy < 6 && r._jt < 8) { r.speed *= 0.5; r.stunned = 14; r.jumping=false; r.vy=0; }
       }
-      if (r.x >= finishX) { if (gameTimeOk(startTime)) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; } else { r.x = finishX - 10; } }
+      if (r.x >= finishX) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; }
     });
     const leader = runners.reduce((a,b) => a.x > b.x ? a : b);
     cameraX = Math.max(0, Math.min(leader.x - W*0.3, trackLength - W + 150));
     ctx.clearRect(0,0,W,H); drawTrack();
     obstacles.forEach(drawObstacle); boosts.forEach(b => { if (!b._used) drawBoost(b); });
     runners.forEach(drawRunner); drawHUD();
-    if (!allFinished) animId = requestAnimationFrame(loop);
-    else {
+    const raceWinner = firstToFinish(runners);
+    if (raceWinner) {
       cancelAnimationFrame(animId);
-      runners.sort((a,b) => a.finishTime - b.finishTime);
-      setTimeout(() => { showPhase('obstacle','winner'); document.getElementById('obstacle-winner-name').textContent = runners[0].name; }, 900);
-    }
+      setTimeout(() => { showPhase('obstacle','winner'); document.getElementById('obstacle-winner-name').textContent = raceWinner.name; }, 900);
+    } else if (!allFinished) animId = requestAnimationFrame(loop);
   }
   loop();
 }
@@ -2230,7 +2258,6 @@ function startDerby(names) {
     return { name:nm, x:cx+Math.cos(ang)*dist, y:cy+Math.sin(ang)*dist, vx:(Math.random()-0.5)*1.5, vy:(Math.random()-0.5)*1.5, r:carSize, color:colorFor(nm), hp:100, alive:true, hitFlash:0, angle: Math.random()*Math.PI*2 };
   });
   let frame=0, particles=[], smoke=[], nitro=null, nextNitroFrame=260+Math.random()*200;
-  const maxDuration = 3600 + n*30; // hard cap so it can never drag forever
   function setCommentary(t) { commentary.textContent = t; }
   function drawArena() {
     ctx.fillStyle='#161014'; ctx.fillRect(0,0,W,H);
@@ -2304,7 +2331,7 @@ function startDerby(names) {
       if (dist<minDist && dist>0) { const nx=dx/dist, ny=dy/dist, overlap=minDist-dist; c.x+=nx*overlap; c.y+=ny*overlap; c.vx+=nx*0.6; c.vy+=ny*0.6; c.hp -= 1.2; if (c.hp<=0 && c.alive) { c.alive=false; setCommentary(c.name+' crashed into a wreck!'); } }
     }); });
   }
-  let animId, warned=false;
+  let animId;
   function loop() {
     frame++;
     const aliveCount = cars.filter(c=>c.alive).length;
@@ -2318,18 +2345,15 @@ function startDerby(names) {
         if (Math.hypot(c.x-nitro.x,c.y-nitro.y) < c.r+10) { const spd=Math.hypot(c.vx,c.vy)||1; c.vx=c.vx/spd*7; c.vy=c.vy/spd*7; setCommentary(c.name+' hits the nitro!'); nitro=null; }
       }
     }
-    if (!warned && frame > maxDuration*0.75) { warned=true; setCommentary('⏱️ Sudden death — no more waiting around!'); }
     updatePhysics();
     drawArena(); drawNitro(); cars.forEach(drawCar); drawFx();
     document.getElementById('derby-alive-badge').textContent = aliveCount + ' running';
-    const timeUp = frame > maxDuration;
-    if (aliveCount > 1 && !timeUp) { animId = requestAnimationFrame(loop); }
+    if (aliveCount > 1) { animId = requestAnimationFrame(loop); }
     else {
-      let winner;
-      if (aliveCount === 1) winner = cars.find(c=>c.alive);
-      else winner = cars.reduce((a,b) => a.hp > b.hp ? a : b); // time-up tiebreak: most HP left
-      setCommentary(winner.name+' wins the derby!');
-      setTimeout(() => { showPhase('derby','winner'); document.getElementById('derby-winner-name').textContent = winner.name; }, 1200);
+      cancelAnimationFrame(animId);
+      const winnerName = aliveCount === 1 ? cars.find(c => c.alive).name : pickSingleWinner([], names);
+      setCommentary(winnerName + ' wins the derby!');
+      setTimeout(() => { showPhase('derby','winner'); document.getElementById('derby-winner-name').textContent = winnerName; }, 1200);
     }
   }
   loop();
@@ -2445,14 +2469,12 @@ function startHillKing(names) {
     if (leader && leader.name !== lastLeader && leader.score>2) { lastLeader = leader.name; setCommentary(leader.name+' takes the crown!'); }
     drawArena(); players.forEach(p => drawPlayer(p, leader?leader.name:null)); drawFx();
     document.getElementById('hill-leader-badge').textContent = (leader && leader.score>2 ? '👑 '+leader.name+' — '+Math.round(leader.score)+'/'+goalScore : 'Contested') + ' · ' + alive.length + ' in the ring';
-    const scoreWinner = alive.find(p => p.score >= goalScore);
-    const lastStanding = alive.length === 1 ? alive[0] : null;
-    const winner = scoreWinner || lastStanding;
-    if (!winner) { animId = requestAnimationFrame(loop); }
-    else {
-      setCommentary(scoreWinner ? scoreWinner.name+' holds the hill and wins!' : winner.name+' is the last one in the ring!');
-      setTimeout(() => { showPhase('hill','winner'); document.getElementById('hill-winner-name').textContent = winner.name; }, 1200);
-    }
+    if (alive.length === 1) {
+      setCommentary(alive[0].name + ' is the last one in the ring!');
+      setTimeout(() => { showPhase('hill','winner'); document.getElementById('hill-winner-name').textContent = alive[0].name; }, 1200);
+    } else if (alive.length === 0) {
+      setTimeout(() => { showPhase('hill','winner'); document.getElementById('hill-winner-name').textContent = pickSingleWinner([], names); }, 1200);
+    } else { animId = requestAnimationFrame(loop); }
   }
   loop();
 }
@@ -2541,19 +2563,23 @@ function startDownhill(names) {
         if (nextTree && Math.random() < 0.035) { r.speed *= 0.4; r.stunned = 22; r.lean = 1.4; }
       }
       if (r.x < avalancheX + 40) { r.buried = true; }
-      if (r.x >= finishX) { if (gameTimeOk(startTime)) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; } else { r.x = finishX - 10; } }
+      if (r.x >= finishX) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; }
     });
     const activeForCam = riders.filter(r=>!r.buried);
     const leader = activeForCam.length ? activeForCam.reduce((a,b)=>a.x>b.x?a:b) : riders[0];
     cameraX = Math.max(0, Math.min(leader.x - W*0.32, trackLength - W + 150));
     ctx.clearRect(0,0,W,H); drawSlope(); trees.forEach(drawTree); riders.forEach(drawRider); drawAvalanche(); drawHUD();
     const remaining = riders.filter(r => !r.finished && !r.buried);
-    if (remaining.length === 0) allDone = true;
-    if (!allDone && remaining.length > 0) { animId = requestAnimationFrame(loop); }
+    const raceWinner = firstToFinish(riders);
+    if (raceWinner) {
+      cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('downhill','winner'); document.getElementById('downhill-winner-name').textContent = raceWinner.name; }, 1000);
+    } else if (remaining.length > 0) { animId = requestAnimationFrame(loop); }
     else {
-      const finishers = riders.filter(r => r.finished).sort((a,b) => a.finishTime-b.finishTime);
-      const winner = finishers[0] ? finishers[0].name : (riders.filter(r=>!r.buried).sort((a,b)=>b.x-a.x)[0]?.name || riders.sort((a,b)=>b.x-a.x)[0].name);
-      setTimeout(() => { showPhase('downhill','winner'); document.getElementById('downhill-winner-name').textContent = winner; }, 1000);
+      cancelAnimationFrame(animId);
+      const best = riders.filter(r => !r.buried).sort((a,b) => b.x - a.x);
+      const w = pickSingleWinner(best.length ? best : riders, names);
+      setTimeout(() => { showPhase('downhill','winner'); document.getElementById('downhill-winner-name').textContent = w; }, 1000);
     }
   }
   loop();
@@ -2650,19 +2676,18 @@ function startRocket(names) {
       const lane = Math.round((r.y-30-laneH/2)/laneH);
       const c = canisters.find(cc => !cc.used && cc.lane===lane && Math.abs(cc.x-r.x) < 14);
       if (c) { c.used = true; r.fuel = Math.min(100, r.fuel+40); }
-      if (r.x >= finishX) { if (gameTimeOk(startTime)) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; } else { r.x = finishX - 10; } }
+      if (r.x >= finishX) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; }
     });
     const leader = rockets.reduce((a,b) => a.x > b.x ? a : b);
     cameraX = Math.max(0, Math.min(leader.x - W*0.32, trackLength - W + 150));
     ctx.clearRect(0,0,W,H); drawSpace();
     asteroids.forEach(drawAsteroid); canisters.forEach(drawCanister);
     rockets.forEach(drawRocket); drawHUD();
-    if (!allFinished) animId = requestAnimationFrame(loop);
-    else {
+    const raceWinner = firstToFinish(rockets);
+    if (raceWinner) {
       cancelAnimationFrame(animId);
-      rockets.sort((a,b) => a.finishTime - b.finishTime);
-      setTimeout(() => { showPhase('rocket','winner'); document.getElementById('rocket-winner-name').textContent = rockets[0].name; }, 1000);
-    }
+      setTimeout(() => { showPhase('rocket','winner'); document.getElementById('rocket-winner-name').textContent = raceWinner.name; }, 1000);
+    } else if (!allFinished) animId = requestAnimationFrame(loop);
   }
   loop();
 }
@@ -2723,8 +2748,7 @@ function startFishing(names) {
     ctx.fillStyle='#0ea5e9'; ctx.font='bold 12px Inter'; ctx.textAlign='left'; ctx.fillText('🎣 STANDINGS',20,28);
     sorted.slice(0,8).forEach((a,i) => { ctx.fillStyle=a.color; ctx.fillRect(20,35+i*16,8,8); ctx.fillStyle='#fff'; ctx.font='11px Inter'; ctx.fillText((i+1)+'. '+a.name.substring(0,12)+' — '+a.weight.toFixed(1)+'lb',32,43+i*16); });
   }
-  let animId;
-  const maxDuration = 5200 + n*20;
+  let animId, startTime = Date.now();
   function loop() {
     frame++;
     anglers.forEach(a => {
@@ -2744,19 +2768,17 @@ function startFishing(names) {
             setFeed(a.name+' reeled in a '+w.toFixed(1)+'lb catch!'+(big?' 🐋':''));
           } else { setFeed(a.name+"'s fish got away!"); a.popups.push({ text:'got away...', color:'#94a3b8', life:40, maxLife:40, y: dockY-64 }); }
           a.nextBite = frame + 150 + Math.random()*240;
-          if (a.weight >= goalWeight) a.finished = true;
+          if (a.weight >= goalWeight) { a.finished = true; a.finishTime = Date.now() - startTime; }
         }
       }
     });
     ctx.clearRect(0,0,W,H); drawScene(); anglers.forEach(drawAngler); drawFishArcs(); drawHUD();
-    const winner = anglers.find(a => a.finished);
-    const timeUp = frame > maxDuration;
-    if (!winner && !timeUp) { animId = requestAnimationFrame(loop); }
-    else {
-      const champ = winner || anglers.reduce((a,b) => a.weight>b.weight?a:b);
-      setFeed(champ.name+' wins the derby with '+champ.weight.toFixed(1)+'lb!');
-      setTimeout(() => { showPhase('fishing','winner'); document.getElementById('fishing-winner-name').textContent = champ.name; }, 1300);
-    }
+    const raceWinner = firstToFinish(anglers);
+    if (raceWinner) {
+      cancelAnimationFrame(animId);
+      setFeed(raceWinner.name+' wins the derby with '+raceWinner.weight.toFixed(1)+'lb!');
+      setTimeout(() => { showPhase('fishing','winner'); document.getElementById('fishing-winner-name').textContent = raceWinner.name; }, 1300);
+    } else animId = requestAnimationFrame(loop);
   }
   loop();
 }
@@ -2832,8 +2854,7 @@ function startTower(names) {
     ctx.fillStyle=leader.color; ctx.beginPath(); ctx.roundRect(W-308,12,296*progress,16,8); ctx.fill();
     ctx.fillStyle='#fff'; ctx.font='10px Inter'; ctx.textAlign='center'; ctx.fillText(Math.round(progress*100)+'%', W-160,24);
   }
-  let animId;
-  const maxDuration = 5400 + n*20;
+  let animId, startTime = Date.now();
   function loop() {
     frame++;
     let allDone = true;
@@ -2859,12 +2880,11 @@ function startTower(names) {
     ctx.clearRect(0,0,W,H); drawCliff();
     rockBands.forEach(drawRock); gripBands.forEach(drawGrip);
     climbers.forEach(drawClimber); drawHUD();
-    const timeUp = frame > maxDuration;
-    if (!allDone && !timeUp) { animId = requestAnimationFrame(loop); }
-    else {
-      const finishers = [...climbers].sort((a,b) => (b.finished?1:0)-(a.finished?1:0) || b.alt-a.alt || a.finishTime-b.finishTime);
-      setTimeout(() => { showPhase('tower','winner'); document.getElementById('tower-winner-name').textContent = finishers[0].name; }, 1000);
-    }
+    const raceWinner = firstToFinish(climbers);
+    if (raceWinner) {
+      cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('tower','winner'); document.getElementById('tower-winner-name').textContent = raceWinner.name; }, 1000);
+    } else if (!allDone) animId = requestAnimationFrame(loop);
   }
   loop();
 }
@@ -2919,11 +2939,11 @@ function startLaser(names) {
     particles = particles.filter(p => { p.life--; if (p.life<=0) return false; const a=p.life/p.maxLife; ctx.fillStyle=`rgba(255,255,255,${a})`; ctx.beginPath(); ctx.arc(p.x,p.y,3*a+1,0,Math.PI*2); ctx.fill(); return true; });
   }
   function hexToRgb(hex) { const c=parseInt(hex.slice(1),16); return [(c>>16)&255,(c>>8)&255,c&255]; }
-  let animId, warned=false;
-  const maxDuration = 3200 + n*24;
+  let animId;
   function loop() {
     frame++;
     const alive = fighters.filter(f=>f.alive);
+    const aliveCount = alive.length;
     // gentle wander so the arena stays alive visually, biased to stay spread
     alive.forEach(f => {
       f.vx += (Math.random()-0.5)*0.12; f.vy += (Math.random()-0.5)*0.12;
@@ -2963,17 +2983,17 @@ function startLaser(names) {
         if (Math.hypot(f.x-pack.x,f.y-pack.y) < f.r+10) { f.hp = Math.min(100, f.hp+30); setCommentary(f.name+' grabbed a shield pack!'); pack=null; }
       }
     }
-    const aliveCount = fighters.filter(f=>f.alive).length;
-    if (!warned && frame > maxDuration*0.7) { warned=true; setCommentary('⏱️ Sudden death — damage is ramping up!'); }
     drawArena(); drawPack(); fighters.forEach(drawFighter); drawBeams(); drawFx();
     document.getElementById('laser-alive-badge').textContent = aliveCount + ' alive';
-    const timeUp = frame > maxDuration;
-    if (aliveCount > 1 && !timeUp) { animId = requestAnimationFrame(loop); }
-    else {
-      const winner = aliveCount===1 ? fighters.find(f=>f.alive) : fighters.reduce((a,b)=>a.hp>b.hp?a:b);
-      setCommentary(winner.name+' wins the arena!');
+    if (aliveCount === 1) {
+      cancelAnimationFrame(animId);
+      const winner = fighters.find(f => f.alive);
+      setCommentary(winner.name + ' wins the arena!');
       setTimeout(() => { showPhase('laser','winner'); document.getElementById('laser-winner-name').textContent = winner.name; }, 1200);
-    }
+    } else if (aliveCount === 0) {
+      cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('laser','winner'); document.getElementById('laser-winner-name').textContent = pickSingleWinner([], names); }, 1200);
+    } else { animId = requestAnimationFrame(loop); }
   }
   loop();
 }
@@ -3051,17 +3071,16 @@ function startSnail(names) {
         if (Math.random() < napChance) { s.napTimer = 60+Math.random()*140; }
         else if (Math.random() < burstChance) { s.burstTimer = 30+Math.random()*30; }
       }
-      if (s.x >= finishX) { if (gameTimeOk(startTime)) { s.x = finishX; s.finished = true; s.finishTime = Date.now()-startTime; s.place = places++; } else { s.x = finishX - 10; } }
+      if (s.x >= finishX) { s.x = finishX; s.finished = true; s.finishTime = Date.now()-startTime; s.place = places++; }
     });
     const leader = snails.reduce((a,b) => a.x>b.x?a:b);
     cameraX = Math.max(0, Math.min(leader.x - W*0.3, trackLength - W + 150));
     ctx.clearRect(0,0,W,H); drawTrack(); snails.forEach(drawSnail); drawHUD();
-    if (!allFinished) { animId = requestAnimationFrame(loop); }
-    else {
+    const raceWinner = firstToFinish(snails);
+    if (raceWinner) {
       cancelAnimationFrame(animId);
-      const finishers = [...snails].sort((a,b) => a.finishTime-b.finishTime);
-      setTimeout(() => { showPhase('snail','winner'); document.getElementById('snail-winner-name').textContent = finishers[0].name; }, 1000);
-    }
+      setTimeout(() => { showPhase('snail','winner'); document.getElementById('snail-winner-name').textContent = raceWinner.name; }, 1000);
+    } else if (!allFinished) { animId = requestAnimationFrame(loop); }
   }
   loop();
 }
@@ -3154,12 +3173,13 @@ function startMusical(names) {
     drawArena(); players.forEach(drawPlayer); drawFx();
     const aliveCount = players.filter(p=>p.alive).length;
     document.getElementById('musical-alive-badge').textContent = aliveCount + ' left · ' + chairCount + ' chair' + (chairCount===1?'':'s');
-    if (aliveCount > 1) { animId = requestAnimationFrame(loop); }
-    else {
-      const winner = players.find(p=>p.alive);
-      setCommentary(winner.name+' grabs the last chair and wins!');
+    if (aliveCount === 1) {
+      const winner = players.find(p => p.alive);
+      setCommentary(winner.name + ' grabs the last chair and wins!');
       setTimeout(() => { showPhase('musical','winner'); document.getElementById('musical-winner-name').textContent = winner.name; }, 1200);
-    }
+    } else if (aliveCount === 0) {
+      setTimeout(() => { showPhase('musical','winner'); document.getElementById('musical-winner-name').textContent = pickSingleWinner([], names); }, 1200);
+    } else { animId = requestAnimationFrame(loop); }
   }
   startWalkPhase();
   loop();
@@ -3214,8 +3234,7 @@ function startPie(names) {
     ctx.fillStyle='#fb923c'; ctx.font='bold 12px Inter'; ctx.textAlign='left'; ctx.fillText('🥧 STANDINGS',20,28);
     sorted.slice(0,8).forEach((e,i) => { ctx.fillStyle=e.color; ctx.fillRect(20,35+i*16,8,8); ctx.fillStyle='#fff'; ctx.font='11px Inter'; ctx.fillText((i+1)+'. '+e.name.substring(0,12)+' — '+e.pies,32,43+i*16); });
   }
-  let animId;
-  const maxDuration = 5200+n*18;
+  let animId, startTime = Date.now();
   function loop() {
     frame++;
     eaters.forEach(e => {
@@ -3236,19 +3255,17 @@ function startPie(names) {
             e.sick = 70+Math.random()*60; e.popups.push({text:'too full...', color:'#4ade80', life:40, maxLife:40, y: tableY-90}); setFeed(e.name+' needs a breather!');
           } else { e.popups.push({text:'messy miss!', color:'#94a3b8', life:36, maxLife:36, y: tableY-90}); setFeed(e.name+' gets pie all over their face!'); }
           e.nextBite = frame + 90+Math.random()*160;
-          if (e.pies >= goalPies) e.finished = true;
+          if (e.pies >= goalPies) { e.finished = true; e.finishTime = Date.now() - startTime; }
         }
       }
     });
     ctx.clearRect(0,0,W,H); drawScene(); eaters.forEach(drawEater); drawHUD();
-    const winner = eaters.find(e=>e.finished);
-    const timeUp = frame > maxDuration;
-    if (!winner && !timeUp) { animId = requestAnimationFrame(loop); }
-    else {
-      const champ = winner || eaters.reduce((a,b) => a.pies>b.pies?a:b);
-      setFeed(champ.name+' wins with '+champ.pies+' pies!');
-      setTimeout(() => { showPhase('pie','winner'); document.getElementById('pie-winner-name').textContent = champ.name; }, 1300);
-    }
+    const raceWinner = firstToFinish(eaters);
+    if (raceWinner) {
+      cancelAnimationFrame(animId);
+      setFeed(raceWinner.name+' wins with '+raceWinner.pies+' pies!');
+      setTimeout(() => { showPhase('pie','winner'); document.getElementById('pie-winner-name').textContent = raceWinner.name; }, 1300);
+    } else animId = requestAnimationFrame(loop);
   }
   loop();
 }
@@ -3323,17 +3340,16 @@ function startBanana(names) {
         const peel = peels.find(pl => !pl.used && pl.lane===r.lane && Math.abs(pl.x-r.x) < 14);
         if (peel) { peel.used = true; r.speed *= 0.3; r.stunned = 26; r.spin = 0; }
       }
-      if (r.x >= finishX) { if (gameTimeOk(startTime)) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; } else { r.x = finishX - 10; } }
+      if (r.x >= finishX) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; }
     });
     const leader = runners.reduce((a,b) => a.x>b.x?a:b);
     cameraX = Math.max(0, Math.min(leader.x - W*0.3, trackLength - W + 150));
     ctx.clearRect(0,0,W,H); drawTrack(); peels.forEach(drawPeel); runners.forEach(drawRunner); drawHUD();
-    if (!allFinished) { animId = requestAnimationFrame(loop); }
-    else {
+    const raceWinner = firstToFinish(runners);
+    if (raceWinner) {
       cancelAnimationFrame(animId);
-      const finishers = [...runners].sort((a,b) => a.finishTime-b.finishTime);
-      setTimeout(() => { showPhase('banana','winner'); document.getElementById('banana-winner-name').textContent = finishers[0].name; }, 1000);
-    }
+      setTimeout(() => { showPhase('banana','winner'); document.getElementById('banana-winner-name').textContent = raceWinner.name; }, 1000);
+    } else if (!allFinished) { animId = requestAnimationFrame(loop); }
   }
   loop();
 }
@@ -3437,9 +3453,11 @@ function startCannon(names) {
     flightLoop();
   }
   function endContest() {
-    const winner = results.reduce((a,b) => a.distance>b.distance?a:b);
-    setFeed(winner.name + ' wins with a ' + Math.round(winner.distance) + 'm flight!');
-    setTimeout(() => { showPhase('cannon','winner'); document.getElementById('cannon-winner-name').textContent = winner.name; }, 1200);
+    const maxDist = Math.max(...results.map(r => r.distance));
+    const tied = results.filter(r => r.distance === maxDist);
+    const winnerName = pickSingleWinner(tied, results);
+    setFeed(winnerName + ' wins with a ' + Math.round(maxDist) + 'm flight!');
+    setTimeout(() => { showPhase('cannon','winner'); document.getElementById('cannon-winner-name').textContent = winnerName; }, 1200);
   }
   launchNext();
 }
@@ -3533,17 +3551,16 @@ function startWipeout(names) {
           });
         }
       }
-      if (r.x >= finishX) { if (gameTimeOk(startTime)) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; } else { r.x = finishX - 10; } }
+      if (r.x >= finishX) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; }
     });
     const leader = runners.reduce((a,b) => a.x>b.x?a:b);
     cameraX = Math.max(0, Math.min(leader.x - W*0.3, trackLength - W + 150));
     ctx.clearRect(0,0,W,H); drawTrack(); balls.forEach(drawBall); runners.forEach(drawRunner); drawDust(); drawHUD();
-    if (!allFinished) { animId = requestAnimationFrame(loop); }
-    else {
+    const raceWinner = firstToFinish(runners);
+    if (raceWinner) {
       cancelAnimationFrame(animId);
-      const finishers = [...runners].sort((a,b) => a.finishTime-b.finishTime);
-      setTimeout(() => { showPhase('wipeout','winner'); document.getElementById('wipeout-winner-name').textContent = finishers[0].name; }, 1000);
-    }
+      setTimeout(() => { showPhase('wipeout','winner'); document.getElementById('wipeout-winner-name').textContent = raceWinner.name; }, 1000);
+    } else if (!allFinished) { animId = requestAnimationFrame(loop); }
   }
   loop();
 }
@@ -3634,17 +3651,16 @@ function startHobbyHorse(names) {
           else { r.buckFlash = 24; r.gag = gagLines[Math.floor(Math.random()*gagLines.length)]; r.speed = Math.min(r.maxSpeed*1.3, r.speed+0.6); }
         }
       }
-      if (r.x >= finishX) { if (gameTimeOk(startTime)) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; } else { r.x = finishX - 10; } }
+      if (r.x >= finishX) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; }
     });
     const leader = riders.reduce((a,b) => a.x>b.x?a:b);
     cameraX = Math.max(0, Math.min(leader.x - W*0.3, trackLength - W + 150));
     ctx.clearRect(0,0,W,H); drawTrack(); riders.forEach(drawRider); drawDust(); drawHUD();
-    if (!allFinished) { animId = requestAnimationFrame(loop); }
-    else {
+    const raceWinner = firstToFinish(riders);
+    if (raceWinner) {
       cancelAnimationFrame(animId);
-      const finishers = [...riders].sort((a,b) => a.finishTime-b.finishTime);
-      setTimeout(() => { showPhase('hobbyhorse','winner'); document.getElementById('hobbyhorse-winner-name').textContent = finishers[0].name; }, 1000);
-    }
+      setTimeout(() => { showPhase('hobbyhorse','winner'); document.getElementById('hobbyhorse-winner-name').textContent = raceWinner.name; }, 1000);
+    } else if (!allFinished) { animId = requestAnimationFrame(loop); }
   }
   loop();
 }
@@ -4136,12 +4152,13 @@ function startSackHop(names) {
         r.x+=mv*(0.6+Math.abs(Math.sin(r.hopPhase))*0.5);
         if (Math.random()<0.007) { r.fallen=true; r.fallTimer=45+Math.random()*25; r.gag=gagLines[Math.floor(Math.random()*gagLines.length)]; r.speed*=0.35; dust.push({x:r.x-cameraX,y:r.y,r:4,life:16,maxLife:16}); }
       }
-      if (r.x>=finishX) { if (gameTimeOk(startTime)) { r.x=finishX; r.finished=true; r.finishTime=Date.now()-startTime; r.place=places++; } else { r.x=finishX-10; } }
+      if (r.x>=finishX) { r.x=finishX; r.finished=true; r.finishTime=Date.now()-startTime; r.place=places++; }
     });
     const leader=runners.reduce((a,b)=>a.x>b.x?a:b); cameraX=Math.max(0,Math.min(leader.x-W*0.3,trackLength-W+150));
     ctx.clearRect(0,0,W,H); drawTrack(); runners.forEach(drawSack); drawHUD();
-    if (!allDone) animId=requestAnimationFrame(loop);
-    else { cancelAnimationFrame(animId); const win=[...runners].sort((a,b)=>a.finishTime-b.finishTime); setTimeout(()=>{ showPhase('sack','winner'); document.getElementById('sack-winner-name').textContent=win[0].name; },1000); }
+    const raceWinner = firstToFinish(runners);
+    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(()=>{ showPhase('sack','winner'); document.getElementById('sack-winner-name').textContent=raceWinner.name; },1000); }
+    else if (!allDone) animId=requestAnimationFrame(loop);
   }
   loop();
 }
@@ -4206,12 +4223,13 @@ function startCartChaos(names) {
         displays.forEach(d => { if (!d.hit && d.lane===r.lane && Math.abs(r.x-d.x)<28) { d.hit=true; r.items=Math.max(0,r.items-2); r.spillTimer=50+Math.random()*30; r.gag=comments[Math.floor(Math.random()*comments.length)]; feed=r.name+' crashed a display!'; r.speed*=0.7; } });
         if (Math.random()<0.004 && r.items>0) { r.items--; r.spillTimer=35; r.gag='SPILLED!'; feed=r.name+' dropped groceries!'; }
       }
-      if (r.x>=finishX) { if (gameTimeOk(startTime)) { r.x=finishX; r.finished=true; r.finishTime=Date.now()-startTime; r.place=places++; } else { r.x=finishX-10; } }
+      if (r.x>=finishX) { r.x=finishX; r.finished=true; r.finishTime=Date.now()-startTime; r.place=places++; }
     });
     const leader=racers.reduce((a,b)=>a.x>b.x?a:b); cameraX=Math.max(0,Math.min(leader.x-W*0.28,trackLength-W+120));
     ctx.clearRect(0,0,W,H); drawAisle(); racers.forEach(drawCart); drawHUD();
-    if (!allDone) animId=requestAnimationFrame(loop);
-    else { cancelAnimationFrame(animId); const win=[...racers].sort((a,b)=>a.finishTime-b.finishTime); setTimeout(()=>{ showPhase('cart','winner'); document.getElementById('cart-winner-name').textContent=win[0].name; },1000); }
+    const raceWinner = firstToFinish(racers);
+    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(()=>{ showPhase('cart','winner'); document.getElementById('cart-winner-name').textContent=raceWinner.name; },1000); }
+    else if (!allDone) animId=requestAnimationFrame(loop);
   }
   loop();
 }
@@ -4274,12 +4292,13 @@ function startPenguinWaddle(names) {
         r.x+=spd*(0.7+Math.abs(Math.sin(r.waddle))*0.35);
         icePatches.forEach(p => { if (p.lane===r.lane && r.x>p.x && r.x<p.x+p.w && Math.random()<0.015) { r.sliding=true; r.slideTimer=40+Math.random()*25; r.gag='SLIP!'; r.spin=Math.random()*0.4; } });
       }
-      if (r.x>=finishX) { if (gameTimeOk(startTime)) { r.x=finishX; r.finished=true; r.finishTime=Date.now()-startTime; r.place=places++; } else { r.x=finishX-10; } }
+      if (r.x>=finishX) { r.x=finishX; r.finished=true; r.finishTime=Date.now()-startTime; r.place=places++; }
     });
     const leader=birds.reduce((a,b)=>a.x>b.x?a:b); cameraX=Math.max(0,Math.min(leader.x-W*0.3,trackLength-W+130));
     ctx.clearRect(0,0,W,H); drawRink(); birds.forEach(drawPenguin); drawHUD();
-    if (!allDone) animId=requestAnimationFrame(loop);
-    else { cancelAnimationFrame(animId); const win=[...birds].sort((a,b)=>a.finishTime-b.finishTime); setTimeout(()=>{ showPhase('penguin','winner'); document.getElementById('penguin-winner-name').textContent=win[0].name; },1000); }
+    const raceWinner = firstToFinish(birds);
+    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(()=>{ showPhase('penguin','winner'); document.getElementById('penguin-winner-name').textContent=raceWinner.name; },1000); }
+    else if (!allDone) animId=requestAnimationFrame(loop);
   }
   loop();
 }
@@ -4432,18 +4451,12 @@ function startDodgeball(names) {
       if (p.invuln <= 0) {
         balls.forEach(b => {
           if (Math.hypot(b.x - p.x, b.y - p.y) < b.r + 16) {
-            if (!gameTimeOk(startTime)) {
-              p.invuln = 55; p.dodge = 25; p.gag = 'NEAR MISS!'; p.gagTimer = 35;
-              feed = p.name + ' barely survives — ' + gameTimeLeft(startTime) + 's left!';
-              b.vx *= -1.1; b.vy *= -1.05;
-            } else {
-              p.alive = false; p.elimX = p.x; p.elimY = p.y;
-              p.gag = comments[Math.floor(Math.random() * comments.length)]; p.gagTimer = 60;
-              feed = '💥 ' + p.name + ' was ELIMINATED! ' + p.gag;
-              elimFlash.push({ x: p.x, y: p.y, life: 22, maxLife: 22 });
-              for (let i = 0; i < 10; i++) particles.push({ x: p.x, y: p.y, vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6, life: 20, maxLife: 20 });
-              b.vx *= -1.15; b.vy *= -1.1;
-            }
+            p.alive = false; p.elimX = p.x; p.elimY = p.y;
+            p.gag = comments[Math.floor(Math.random() * comments.length)]; p.gagTimer = 60;
+            feed = '💥 ' + p.name + ' was ELIMINATED! ' + p.gag;
+            elimFlash.push({ x: p.x, y: p.y, life: 22, maxLife: 22 });
+            for (let i = 0; i < 10; i++) particles.push({ x: p.x, y: p.y, vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6, life: 20, maxLife: 20 });
+            b.vx *= -1.15; b.vy *= -1.1;
           }
         });
       }
@@ -4459,17 +4472,20 @@ function startDodgeball(names) {
 
     drawParticles(); drawHUD();
     const alive = players.filter(p => p.alive);
-    if (alive.length > 1 || !gameTimeOk(startTime)) animId = requestAnimationFrame(loop);
-    else {
+    if (alive.length === 1) {
       cancelAnimationFrame(animId);
-      winner = alive[0] || players[0];
+      winner = alive[0];
       feed = '🏆 ' + winner.name + ' survives the dodgeball chaos!';
       ctx.clearRect(0, 0, W, H); drawArena();
       drawMiniCharacter(ctx, cx, cy, 22, winner.color, { crown: true, phase: frame * 0.1 });
       drawGagText(ctx, cx, cy - 50, 'WINNER!', '#ffd700', 18);
       drawHUD();
       setTimeout(() => { showPhase('dodgeball', 'winner'); document.getElementById('dodgeball-winner-name').textContent = winner.name; }, 1800);
-    }
+    } else if (alive.length === 0) {
+      cancelAnimationFrame(animId);
+      const w = pickSingleWinner([], names);
+      setTimeout(() => { showPhase('dodgeball', 'winner'); document.getElementById('dodgeball-winner-name').textContent = w; }, 1200);
+    } else animId = requestAnimationFrame(loop);
   }
   spawnBall();
   loop();
@@ -4533,12 +4549,13 @@ function startMopSprint(names) {
         wetZones.forEach(z => { if (z.lane===r.lane && r.x>z.x && r.x<z.x+z.w && Math.random()<0.012) { r.sliding=true; r.slideTimer=35+Math.random()*20; r.slideVx=2.5+Math.random()*2; r.gag=gagLines[Math.floor(Math.random()*gagLines.length)]; } });
         if (Math.random()<0.003) { r.sliding=true; r.slideTimer=30; r.slideVx=3; r.gag='WHOA!'; }
       }
-      if (r.x>=finishX) { if (gameTimeOk(startTime)) { r.x=finishX; r.finished=true; r.finishTime=Date.now()-startTime; r.place=places++; } else { r.x=finishX-10; } }
+      if (r.x>=finishX) { r.x=finishX; r.finished=true; r.finishTime=Date.now()-startTime; r.place=places++; }
     });
     const leader=runners.reduce((a,b)=>a.x>b.x?a:b); cameraX=Math.max(0,Math.min(leader.x-W*0.3,trackLength-W+120));
     ctx.clearRect(0,0,W,H); drawFloor(); runners.forEach(drawRunner); drawHUD();
-    if (!allDone) animId=requestAnimationFrame(loop);
-    else { cancelAnimationFrame(animId); const win=[...runners].sort((a,b)=>a.finishTime-b.finishTime); setTimeout(()=>{ showPhase('mop','winner'); document.getElementById('mop-winner-name').textContent=win[0].name; },1000); }
+    const raceWinner = firstToFinish(runners);
+    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(()=>{ showPhase('mop','winner'); document.getElementById('mop-winner-name').textContent=raceWinner.name; },1000); }
+    else if (!allDone) animId=requestAnimationFrame(loop);
   }
   loop();
 }
@@ -4649,13 +4666,8 @@ function startPinball(names) {
       });
       const hit = resolveBallWall(b);
       if (hit === 'drain') {
-        if (!gameTimeOk(startTime)) {
-          b.y = tableB - b.r - 25; b.vy = -10 - Math.random() * 4; b.vx = (Math.random() - 0.5) * 6;
-          b.gag = 'FLIPPER SAVE!'; b.gagTimer = 28; feed = 'Drain blocked — keep fighting!';
-        } else {
-          b.alive = false; b.gag = 'GLUG GLUG!'; feed = b.name + ' fell in the drain!';
-          for (let i = 0; i < 12; i++) particles.push({ x: b.x, y: tableB, vx: (Math.random()-0.5)*4, vy: -Math.random()*3, life: 30, maxLife: 30, hue: b.color });
-        }
+        b.alive = false; b.gag = 'GLUG GLUG!'; feed = b.name + ' fell in the drain!';
+        for (let i = 0; i < 12; i++) particles.push({ x: b.x, y: tableB, vx: (Math.random()-0.5)*4, vy: -Math.random()*3, life: 30, maxLife: 30, hue: b.color });
       }
       if (b.gagTimer > 0) b.gagTimer--;
     });
@@ -4680,16 +4692,17 @@ function startPinball(names) {
     const alive = balls.filter(b => b.alive);
     ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.beginPath(); ctx.roundRect(10, 10, 210, 36, 8); ctx.fill();
     ctx.fillStyle = '#f472b6'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'left';
-    ctx.fillText('🎱 ALIVE: ' + alive.length + (gameTimeOk(startTime) ? '' : '  ⏱ ' + gameTimeLeft(startTime) + 's'), 20, 32);
+    ctx.fillText('🎱 ALIVE: ' + alive.length, 20, 32);
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 42, W - 20, 32, 8); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, H - 20);
 
-    if (alive.length > 1 || !gameTimeOk(startTime)) animId = requestAnimationFrame(loop);
-    else {
+    if (alive.length === 1) {
       cancelAnimationFrame(animId);
-      const winner = alive[0] ? alive[0].name : 'No one';
-      setTimeout(() => { showPhase('pinball', 'winner'); document.getElementById('pinball-winner-name').textContent = winner; }, 1200);
-    }
+      setTimeout(() => { showPhase('pinball', 'winner'); document.getElementById('pinball-winner-name').textContent = alive[0].name; }, 1200);
+    } else if (alive.length === 0) {
+      cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('pinball', 'winner'); document.getElementById('pinball-winner-name').textContent = pickSingleWinner([], balls.map(b => b.name)); }, 1200);
+    } else animId = requestAnimationFrame(loop);
   }
   loop();
 }
@@ -4747,12 +4760,7 @@ function startTrampoline(names) {
       if (b.x - b.r < matL) { b.x = matL + b.r; b.vx = Math.abs(b.vx) * 0.7; }
       if (b.x + b.r > matR) { b.x = matR - b.r; b.vx = -Math.abs(b.vx) * 0.7; }
       if (b.y + b.r < -40 || b.y < -80 || b.x < -60 || b.x > W + 60) {
-        if (!gameTimeOk(startTime)) {
-          b.y = matY - b.r - 15; b.vy = 6; b.vx = (Math.random() - 0.5) * 3;
-          b.gag = 'GRAVITY RETURNS!'; b.gagTimer = 30; feed = 'Orbit blocked — ' + gameTimeLeft(startTime) + 's left!';
-        } else {
-          b.alive = false; b.gag = 'LOST TO SPACE!'; feed = b.name + ' bounced into orbit!';
-        }
+        b.alive = false; b.gag = 'LOST TO SPACE!'; feed = b.name + ' bounced into orbit!';
       }
       if (b.gagTimer > 0) b.gagTimer--;
       b.phase += 0.2;
@@ -4798,11 +4806,13 @@ function startTrampoline(names) {
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 42, W - 20, 32, 8); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, H - 20);
 
-    if (alive.length > 1 || !gameTimeOk(startTime)) animId = requestAnimationFrame(loop);
-    else {
+    if (alive.length === 1) {
       cancelAnimationFrame(animId);
-      setTimeout(() => { showPhase('tramp', 'winner'); document.getElementById('tramp-winner-name').textContent = alive[0] ? alive[0].name : 'No one'; }, 1200);
-    }
+      setTimeout(() => { showPhase('tramp', 'winner'); document.getElementById('tramp-winner-name').textContent = alive[0].name; }, 1200);
+    } else if (alive.length === 0) {
+      cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('tramp', 'winner'); document.getElementById('tramp-winner-name').textContent = pickSingleWinner([], names); }, 1200);
+    } else animId = requestAnimationFrame(loop);
   }
   loop();
 }
@@ -4876,9 +4886,7 @@ function startZeroG(names) {
           f.hp -= 12 + Math.random() * 8;
           f.vx += p.vx * 0.35; f.vy += p.vy * 0.35;
           f.gag = 'FOOD HIT!'; f.gagTimer = 22;
-          if (!gameTimeOk(startTime)) f.hp = Math.max(12, f.hp);
-          if (f.hp <= 0 && gameTimeOk(startTime)) { f.alive = false; feed = f.name + ' got KO\'d by lunch!'; }
-          else if (f.hp <= 0) { f.hp = 12; f.gag = 'STILL KICKING!'; }
+          if (f.hp <= 0) { f.alive = false; feed = f.name + ' got KO\'d by lunch!'; }
           p.life = 0;
         }
       });
@@ -4927,11 +4935,13 @@ function startZeroG(names) {
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 42, W - 20, 32, 8); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, H - 20);
 
-    if (alive.length > 1 || !gameTimeOk(startTime)) animId = requestAnimationFrame(loop);
-    else {
+    if (alive.length === 1) {
       cancelAnimationFrame(animId);
-      setTimeout(() => { showPhase('zerog', 'winner'); document.getElementById('zerog-winner-name').textContent = alive[0] ? alive[0].name : 'No one'; }, 1200);
-    }
+      setTimeout(() => { showPhase('zerog', 'winner'); document.getElementById('zerog-winner-name').textContent = alive[0].name; }, 1200);
+    } else if (alive.length === 0) {
+      cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('zerog', 'winner'); document.getElementById('zerog-winner-name').textContent = pickSingleWinner([], names); }, 1200);
+    } else animId = requestAnimationFrame(loop);
   }
   loop();
 }
@@ -4995,15 +5005,10 @@ function startRubberRodeo(names) {
       if (buckForce > 0.85 && Math.random() < 0.02) { r.gag = gags[Math.floor(Math.random() * gags.length)]; r.gagTimer = 24; }
       if (r.grip > 30 && Math.random() < 0.015) r.grip = Math.min(100, r.grip + 4);
       if (r.grip <= 0) {
-        if (!gameTimeOk(startTime)) {
-          r.grip = 35 + Math.random() * 20; r.gag = 'WHITE-KNUCKLE SAVE!'; r.gagTimer = 28;
-          feed = r.name + ' hangs on — ' + gameTimeLeft(startTime) + 's left!';
-        } else {
-          r.flying = true;
-          r.flyVx = Math.sin(r.angle) * 6 + (Math.random() - 0.5) * 4;
-          r.flyVy = -8 - Math.random() * 5;
-          r.gag = 'BUCKED OFF!'; r.gagTimer = 40;
-        }
+        r.flying = true;
+        r.flyVx = Math.sin(r.angle) * 6 + (Math.random() - 0.5) * 4;
+        r.flyVy = -8 - Math.random() * 5;
+        r.gag = 'BUCKED OFF!'; r.gagTimer = 40;
       }
       if (r.gagTimer > 0) r.gagTimer--;
     });
@@ -5035,12 +5040,13 @@ function startRubberRodeo(names) {
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 42, W - 20, 32, 8); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, H - 20);
 
-    if (alive.length > 1 || !gameTimeOk(startTime)) animId = requestAnimationFrame(loop);
-    else {
+    if (alive.length === 1) {
       cancelAnimationFrame(animId);
-      const winner = alive[0] ? alive[0].name : riders.filter(r => r.holdTime).sort((a,b)=>b.holdTime-a.holdTime)[0]?.name || 'No one';
-      setTimeout(() => { showPhase('rodeo', 'winner'); document.getElementById('rodeo-winner-name').textContent = winner; }, 1200);
-    }
+      setTimeout(() => { showPhase('rodeo', 'winner'); document.getElementById('rodeo-winner-name').textContent = alive[0].name; }, 1200);
+    } else if (alive.length === 0) {
+      cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('rodeo', 'winner'); document.getElementById('rodeo-winner-name').textContent = pickSingleWinner([], names); }, 1200);
+    } else animId = requestAnimationFrame(loop);
   }
   loop();
 }
@@ -5108,11 +5114,9 @@ function startParachute(names) {
       j.x = Math.max(laneW * j.lane + 24, Math.min(laneW * (j.lane + 1) - 24, j.x));
       if (Math.random() < 0.003 && j.chuteOpen) { j.gag = gags[Math.floor(Math.random() * gags.length)]; j.gagTimer = 20; }
       if (j.gagTimer > 0) j.gagTimer--;
-      if (j.alt >= finishAlt && gameTimeOk(startTime)) {
+      if (j.alt >= finishAlt) {
         j.finished = true; j.finishTime = Date.now() - startTime; j.place = places++;
         j.gag = 'LANDED!'; feed = j.name + ' stuck the landing!';
-      } else if (j.alt >= finishAlt) {
-        j.alt = finishAlt - 5; j.vy = Math.min(j.vy, 0.5);
       }
     });
 
@@ -5164,18 +5168,16 @@ function startParachute(names) {
 
     ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.beginPath(); ctx.roundRect(10, 10, 240, 36, 8); ctx.fill();
     ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'left';
-    const leftLabel = gameTimeOk(startTime) ? '' : '  ⏱ ' + gameTimeLeft(startTime) + 's';
-    ctx.fillText('🪂 ALT: ' + Math.floor(leader.alt) + 'm' + leftLabel, 20, 32);
+    ctx.fillText('🪂 ALT: ' + Math.floor(leader.alt) + 'm', 20, 32);
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 42, W - 20, 32, 8); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center';
     ctx.fillText(feed + '  WIND: ' + wind.toFixed(1), W / 2, H - 20);
 
-    if (!allDone) animId = requestAnimationFrame(loop);
-    else {
+    const raceWinner = firstToFinish(jumpers);
+    if (raceWinner) {
       cancelAnimationFrame(animId);
-      const win = [...jumpers].sort((a, b) => a.finishTime - b.finishTime);
-      setTimeout(() => { showPhase('chute', 'winner'); document.getElementById('chute-winner-name').textContent = win[0].name; }, 1000);
-    }
+      setTimeout(() => { showPhase('chute', 'winner'); document.getElementById('chute-winner-name').textContent = raceWinner.name; }, 1000);
+    } else if (!allDone) animId = requestAnimationFrame(loop);
   }
   loop();
 }
@@ -5186,61 +5188,141 @@ function runBowling() {
   showOverlay('bowling-overlay'); showPhase('bowling', 'intro');
   const names = Array.from(entrants);
   if (!names.length) { alert('No entrants yet!'); return; }
-  document.getElementById('bowling-intro-count').textContent = names.length + ' ball' + (names.length===1?'':'s') + ' rolling for strikes';
+  document.getElementById('bowling-intro-count').textContent = names.length + ' pin' + (names.length===1?'':'s') + ' — last cue standing wins';
   setTimeout(() => startBowling(names), 1600);
 }
 function startBowling(names) {
   showPhase('bowling', 'play');
   document.getElementById('bowling-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
   const canvas = document.getElementById('bowling-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, n = names.length, laneH = (H - 60) / n, laneW = W - 140;
-  const trackLen = 9200 + n * 80, finishX = trackLen, startTime = Date.now();
-  const balls = names.map((nm, i) => ({ name: nm, color: colorFor(nm), lane: i, x: 50, y: 40 + i * laneH + laneH / 2, vx: 1.2 + Math.random() * 0.6, vy: 0, spin: 0, pins: 0, gutter: false, gag: '', finished: false, finishTime: 0, rbMult: 1, rbTimer: 0 }));
-  let frame = 0, cameraX = 0, places = 1, feed = '🎳 Stay out of the gutter!';
+  const W = canvas.width, H = canvas.height, n = names.length;
+  const laneL = 100, laneR = W - 100, laneT = 70, laneB = H - 50;
+  const cols = Math.min(6, Math.max(3, Math.ceil(Math.sqrt(n))));
+  const pins = names.map((nm, i) => {
+    const col = i % cols, row = Math.floor(i / cols);
+    const rowW = Math.min(cols, n - row * cols);
+    const offsetX = (cols - rowW) * 28;
+    return {
+      name: nm, color: colorFor(nm), alive: true,
+      x: laneL + 80 + offsetX + col * 56, y: laneT + 40 + row * 48,
+      vx: 0, vy: 0, angle: 0, wobble: 0, gag: ''
+    };
+  });
+  let ball = null, frame = 0, feed = '🎳 Pins set — ball incoming!', rollCd = 90, particles = [];
+
+  function launchBall() {
+    ball = {
+      x: W / 2 + (Math.random() - 0.5) * 30, y: laneB - 30,
+      vx: (Math.random() - 0.5) * 1.8, vy: -11 - Math.random() * 4, r: 20, spin: 0, active: true
+    };
+    feed = '🎳 BALL ROLLING!';
+  }
+
+  function drawPin(p) {
+    if (!p.alive) return;
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.angle);
+    ctx.fillStyle = '#f8fafc'; ctx.fillRect(-8, -22, 16, 28);
+    ctx.strokeStyle = p.color; ctx.lineWidth = 3; ctx.strokeRect(-8, -22, 16, 28);
+    ctx.fillStyle = p.color; ctx.fillRect(-8, -8, 16, 6);
+    ctx.fillStyle = '#1e293b'; ctx.font = 'bold 7px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 6), 0, 4);
+    ctx.restore();
+    if (p.gag) drawGagText(ctx, p.x, p.y - 34, p.gag, '#fbbf24', 11);
+  }
+
+  function knockPin(p, nx, ny, power) {
+    p.vx += nx * power; p.vy += ny * power * 0.7;
+    p.wobble += power * 0.08;
+    p.angle += (Math.random() - 0.5) * 0.4;
+    p.gag = 'WHACK!';
+    if (Math.abs(p.angle) > 0.55 || Math.hypot(p.vx, p.vy) > 6) {
+      p.alive = false; p.gag = 'DOWN!'; feed = p.name + ' got knocked down!';
+      particles.push({ x: p.x, y: p.y, life: 24, maxLife: 24 });
+    }
+  }
+
   let animId;
   function loop() {
-    frame++; applyRubberBand(frame, balls.filter(b => !b.finished), b => b.x);
-    let done = true;
-    balls.forEach(b => {
-      if (b.finished) return; done = false;
-      const cy = 40 + b.lane * laneH + laneH / 2, gutterL = 70, gutterR = W - 70;
-      b.vx *= 0.998; b.vy *= 0.92;
-      if (b.gutter) { b.vy += (cy - b.y) * 0.02; b.vx *= 0.985; if (Math.random() < 0.02) { b.gutter = false; b.gag = 'BACK IN!'; } }
-      else {
-        b.vx += 0.018; if (b.y < cy - laneH * 0.35) b.vy += 0.04; else if (b.y > cy + laneH * 0.35) b.vy -= 0.04;
-        if (b.y < 40 + b.lane * laneH + 8 || b.y > 40 + (b.lane + 1) * laneH - 8) { b.gutter = true; b.gag = 'GUTTER!'; b.vx *= 0.6; }
+    frame++;
+    rollCd--;
+    const alivePins = pins.filter(p => p.alive);
+    if (!ball && alivePins.length > 1 && rollCd <= 0) { launchBall(); rollCd = 140; }
+
+    if (ball && ball.active) {
+      ball.vy += 0.22; ball.vx *= 0.998;
+      ball.x += ball.vx; ball.y += ball.vy; ball.spin += ball.vx * 0.06;
+      if (ball.x < laneL + ball.r) { ball.x = laneL + ball.r; ball.vx = Math.abs(ball.vx) * 0.85; }
+      if (ball.x > laneR - ball.r) { ball.x = laneR - ball.r; ball.vx = -Math.abs(ball.vx) * 0.85; }
+      pins.forEach(p => {
+        if (!p.alive) return;
+        const dx = p.x - ball.x, dy = p.y - ball.y, dist = Math.hypot(dx, dy) || 0.01;
+        if (dist < ball.r + 14) {
+          const nx = dx / dist, ny = dy / dist, power = 5 + Math.hypot(ball.vx, ball.vy) * 0.5;
+          knockPin(p, nx, ny, power);
+          ball.vx = -nx * Math.abs(ball.vx) * 0.6; ball.vy = -ny * Math.abs(ball.vy) * 0.4;
+        }
+      });
+      if (ball.y < laneT - 40 || ball.y > laneB + 60 || (Math.abs(ball.vy) < 0.3 && ball.y > laneB - 100)) {
+        ball.active = false; ball = null; rollCd = 80;
+        feed = alivePins.length > 1 ? 'Next roll...' : 'We have a survivor!';
       }
-      if (Math.random() < 0.004 && !b.gutter) { b.pins++; b.gag = 'STRIKE!'; b.vx += 0.15; }
-      const mv = b.rbTimer > 0 ? b.rbMult : 1; if (b.rbTimer > 0) b.rbTimer--;
-      b.x += b.vx * mv; b.y += b.vy * mv; b.spin += b.vx * 0.05;
-      if (b.x >= finishX) { if (gameTimeOk(startTime)) { b.x = finishX; b.finished = true; b.finishTime = Date.now() - startTime; b.place = places++; } else b.x = finishX - 12; }
-    });
-    const lead = balls.reduce((a, b) => a.x > b.x ? a : b); cameraX = Math.max(0, Math.min(lead.x - W * 0.35, trackLen - W + 100));
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#312e81'; ctx.fillRect(0, 0, W, H);
-    for (let i = 0; i < n; i++) {
-      const ly = 40 + i * laneH;
-      ctx.fillStyle = i % 2 ? '#4338ca' : '#4c1d95'; ctx.fillRect(70 - cameraX, ly, laneW, laneH - 2);
-      ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.strokeRect(70 - cameraX, ly, laneW, laneH - 2);
     }
-    const fx = finishX - cameraX + 70;
-    if (fx > -20) { ctx.fillStyle = '#fff'; for (let i = 0; i < 5; i++) ctx.beginPath(), ctx.arc(fx + i * 8, H / 2 - 20, 5, 0, Math.PI * 2), ctx.fill(); }
-    balls.forEach(b => {
-      const sx = b.x - cameraX + 70, sy = b.y;
-      if (sx < -30 || sx > W + 30) return;
-      ctx.save(); ctx.translate(sx, sy); ctx.rotate(b.spin);
-      const g = ctx.createRadialGradient(-4, -4, 1, 0, 0, 14); g.addColorStop(0, '#fff'); g.addColorStop(1, b.color);
-      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, 14, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 8px Inter'; ctx.textAlign = 'center'; ctx.fillText(b.name.substring(0, 5), 0, 3);
-      ctx.restore();
-      if (b.gag) drawGagText(ctx, sx, sy - 22, b.gag, '#fbbf24', 11);
+
+    pins.forEach(p => {
+      if (!p.alive) return;
+      p.vx *= 0.94; p.vy *= 0.94;
+      p.x += p.vx; p.y += p.vy;
+      p.angle += p.wobble; p.wobble *= 0.92;
+      if (p.y > laneB || p.x < laneL - 20 || p.x > laneR + 20 || Math.abs(p.angle) > 1.1) {
+        p.alive = false; p.gag = 'GONE!'; feed = p.name + ' is out!';
+      }
+      if (Math.abs(p.vx) > 0.5) p.gag = '';
     });
-    ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10, 10, 220, 34, 8); ctx.fill();
+    for (let i = 0; i < pins.length; i++) for (let j = i + 1; j < pins.length; j++) {
+      const a = pins[i], b = pins[j];
+      if (!a.alive || !b.alive) continue;
+      const dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy) || 0.01;
+      if (dist < 28) {
+        const nx = dx / dist, ny = dy / dist, overlap = 28 - dist;
+        a.x -= nx * overlap * 0.5; a.y -= ny * overlap * 0.5;
+        b.x += nx * overlap * 0.5; b.y += ny * overlap * 0.5;
+        const dvn = (a.vx - b.vx) * nx + (a.vy - b.vy) * ny;
+        if (dvn > 0) { a.vx -= dvn * nx * 0.7; a.vy -= dvn * ny * 0.7; b.vx += dvn * nx * 0.7; b.vy += dvn * ny * 0.7; }
+      }
+    }
+
+    ctx.clearRect(0, 0, W, H);
+    const lg = ctx.createLinearGradient(0, 0, 0, H);
+    lg.addColorStop(0, '#312e81'); lg.addColorStop(1, '#1e1b4b');
+    ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#4338ca'; ctx.fillRect(laneL, laneT, laneR - laneL, laneB - laneT);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.strokeRect(laneL, laneT, laneR - laneL, laneB - laneT);
+    ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(laneL, laneB, laneR - laneL, 8);
+    pins.forEach(drawPin);
+    if (ball && ball.active) {
+      ctx.save(); ctx.translate(ball.x, ball.y); ctx.rotate(ball.spin);
+      const g = ctx.createRadialGradient(-5, -5, 1, 0, 0, ball.r);
+      g.addColorStop(0, '#fff'); g.addColorStop(0.5, '#ef4444'); g.addColorStop(1, '#7f1d1d');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, ball.r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.restore();
+    }
+    particles = particles.filter(p => { p.life--; if (p.life <= 0) return false;
+      ctx.globalAlpha = p.life / p.maxLife; ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; return true; });
+    ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10, 10, 200, 34, 8); ctx.fill();
     ctx.fillStyle = '#a5b4fc'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left';
-    ctx.fillText('🎳 ' + (gameTimeOk(startTime) ? 'FINISH!' : gameTimeLeft(startTime) + 's left'), 20, 30);
-    if (!done) animId = requestAnimationFrame(loop);
-    else { cancelAnimationFrame(animId); const win = [...balls].sort((a, b) => a.finishTime - b.finishTime); setTimeout(() => { showPhase('bowling', 'winner'); document.getElementById('bowling-winner-name').textContent = win[0].name; }, 1000); }
+    ctx.fillText('🎳 PINS UP: ' + alivePins.length, 20, 30);
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 42, W - 20, 32, 8); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, H - 20);
+
+    if (alivePins.length === 1) {
+      cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('bowling', 'winner'); document.getElementById('bowling-winner-name').textContent = alivePins[0].name; }, 1200);
+    } else if (alivePins.length === 0) {
+      cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('bowling', 'winner'); document.getElementById('bowling-winner-name').textContent = pickSingleWinner([], names); }, 1200);
+    } else animId = requestAnimationFrame(loop);
   }
+  launchBall();
   loop();
 }
 
@@ -5273,7 +5355,7 @@ function startOfficeChair(names) {
       if (Math.random() < 0.012) { r.spin += 0.5; r.gag = 'SPIN MOVE!'; r.vx += 1.2; }
       const mv = r.rbTimer > 0 ? r.rbMult : 1; if (r.rbTimer > 0) r.rbTimer--;
       r.x += r.vx * mv; r.y += r.vy * mv; r.angle = r.spin;
-      if (r.x >= finishX) { if (gameTimeOk(startTime)) { r.x = finishX; r.finished = true; r.finishTime = Date.now() - startTime; r.place = places++; } else r.x = finishX - 10; }
+      if (r.x >= finishX) { r.x = finishX; r.finished = true; r.finishTime = Date.now() - startTime; r.place = places++; }
     });
     const lead = racers.reduce((a, b) => a.x > b.x ? a : b); cameraX = Math.max(0, Math.min(lead.x - W * 0.3, finishX - W + 120));
     ctx.clearRect(0, 0, W, H);
@@ -5292,9 +5374,10 @@ function startOfficeChair(names) {
       if (r.gag) drawGagText(ctx, sx, sy - 38, r.gag, '#fbbf24', 11);
     });
     ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10, 10, 210, 34, 8); ctx.fill();
-    ctx.fillStyle = '#cbd5e1'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left'; ctx.fillText('🪑 ' + (gameTimeOk(startTime) ? 'MEETING OVER!' : gameTimeLeft(startTime) + 's'), 20, 30);
-    if (!done) animId = requestAnimationFrame(loop);
-    else { cancelAnimationFrame(animId); const win = [...racers].sort((a, b) => a.finishTime - b.finishTime); setTimeout(() => { showPhase('chair', 'winner'); document.getElementById('chair-winner-name').textContent = win[0].name; }, 1000); }
+    
+    const raceWinner = firstToFinish(racers);
+    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(() => { showPhase('chair', 'winner'); document.getElementById('chair-winner-name').textContent = raceWinner.name; }, 1000); }
+    else if (!done) animId = requestAnimationFrame(loop);
   }
   loop();
 }
@@ -5334,7 +5417,7 @@ function startPogo(names) {
         const mv = h.rbTimer > 0 ? h.rbMult : 1; if (h.rbTimer > 0) h.rbTimer--;
         h.x += (1.4 + Math.max(0, -h.vy) * 0.08) * mv; h.y += h.vy * mv * 0.35;
       }
-      if (h.x >= finishX) { if (gameTimeOk(startTime)) { h.x = finishX; h.finished = true; h.finishTime = Date.now() - startTime; h.place = places++; } else h.x = finishX - 10; }
+      if (h.x >= finishX) { h.x = finishX; h.finished = true; h.finishTime = Date.now() - startTime; h.place = places++; }
     });
     const lead = hoppers.reduce((a, b) => a.x > b.x ? a : b); cameraX = Math.max(0, Math.min(lead.x - W * 0.3, finishX - W + 100));
     ctx.clearRect(0, 0, W, H);
@@ -5351,9 +5434,10 @@ function startPogo(names) {
       if (h.gag) drawGagText(ctx, sx, sy - 44, h.gag, '#0d9488', 11);
     });
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, 10, 200, 34, 8); ctx.fill();
-    ctx.fillStyle = '#2dd4bf'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left'; ctx.fillText('🦘 ' + (gameTimeOk(startTime) ? 'BOING!' : gameTimeLeft(startTime) + 's'), 20, 30);
-    if (!done) animId = requestAnimationFrame(loop);
-    else { cancelAnimationFrame(animId); const win = [...hoppers].sort((a, b) => a.finishTime - b.finishTime); setTimeout(() => { showPhase('pogo', 'winner'); document.getElementById('pogo-winner-name').textContent = win[0].name; }, 1000); }
+    
+    const raceWinner = firstToFinish(hoppers);
+    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(() => { showPhase('pogo', 'winner'); document.getElementById('pogo-winner-name').textContent = raceWinner.name; }, 1000); }
+    else if (!done) animId = requestAnimationFrame(loop);
   }
   loop();
 }
@@ -5387,7 +5471,7 @@ function startHamster(names) {
       if (b.bounce > 0) b.bounce--;
       const mv = b.rbTimer > 0 ? b.rbMult : 1; if (b.rbTimer > 0) b.rbTimer--;
       b.dist += b.v * mv; b.spin += b.v * 0.04; b.angle += b.v * 0.02;
-      if (b.dist >= hillLen) { if (gameTimeOk(startTime)) { b.dist = hillLen; b.finished = true; b.finishTime = Date.now() - startTime; b.place = places++; } else b.dist = hillLen - 15; }
+      if (b.dist >= hillLen) { b.dist = hillLen; b.finished = true; b.finishTime = Date.now() - startTime; b.place = places++; }
     });
     const lead = balls.reduce((a, b) => a.dist > b.dist ? a : b);
     ctx.clearRect(0, 0, W, H);
@@ -5409,9 +5493,10 @@ function startHamster(names) {
       if (b.gag) drawGagText(ctx, sx, sy - 34, b.gag, '#d97706', 11);
     });
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, 10, 210, 34, 8); ctx.fill();
-    ctx.fillStyle = '#fcd34d'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left'; ctx.fillText('🐹 ' + Math.floor(lead.dist / hillLen * 100) + '%  ' + (gameTimeOk(startTime) ? '' : gameTimeLeft(startTime) + 's'), 20, 30);
-    if (!done) animId = requestAnimationFrame(loop);
-    else { cancelAnimationFrame(animId); const win = [...balls].sort((a, b) => a.finishTime - b.finishTime); setTimeout(() => { showPhase('hamster', 'winner'); document.getElementById('hamster-winner-name').textContent = win[0].name; }, 1000); }
+    
+    const raceWinner = firstToFinish(balls);
+    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(() => { showPhase('hamster', 'winner'); document.getElementById('hamster-winner-name').textContent = raceWinner.name; }, 1000); }
+    else if (!done) animId = requestAnimationFrame(loop);
   }
   loop();
 }
@@ -5445,7 +5530,7 @@ function startBurrito(names) {
       if (r.filling < 30) r.vx *= 0.98;
       const mv = r.rbTimer > 0 ? r.rbMult : 1; if (r.rbTimer > 0) r.rbTimer--;
       r.x += r.vx * mv; r.angle += r.vx * 0.04;
-      if (r.x >= finishX) { if (gameTimeOk(startTime)) { r.x = finishX; r.finished = true; r.finishTime = Date.now() - startTime; r.place = places++; } else r.x = finishX - 10; }
+      if (r.x >= finishX) { r.x = finishX; r.finished = true; r.finishTime = Date.now() - startTime; r.place = places++; }
     });
     const lead = rolls.reduce((a, b) => a.x > b.x ? a : b); cameraX = Math.max(0, Math.min(lead.x - W * 0.32, finishX - W + 110));
     ctx.clearRect(0, 0, W, H);
@@ -5463,9 +5548,10 @@ function startBurrito(names) {
       if (r.gag) drawGagText(ctx, sx, sy - 40, r.gag, '#ea580c', 11);
     });
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, 10, 220, 34, 8); ctx.fill();
-    ctx.fillStyle = '#fb7185'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left'; ctx.fillText('🌯 ' + (gameTimeOk(startTime) ? 'TASTY FINISH!' : gameTimeLeft(startTime) + 's'), 20, 30);
-    if (!done) animId = requestAnimationFrame(loop);
-    else { cancelAnimationFrame(animId); const win = [...rolls].sort((a, b) => a.finishTime - b.finishTime); setTimeout(() => { showPhase('burrito', 'winner'); document.getElementById('burrito-winner-name').textContent = win[0].name; }, 1000); }
+    
+    const raceWinner = firstToFinish(rolls);
+    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(() => { showPhase('burrito', 'winner'); document.getElementById('burrito-winner-name').textContent = raceWinner.name; }, 1000); }
+    else if (!done) animId = requestAnimationFrame(loop);
   }
   loop();
 }
