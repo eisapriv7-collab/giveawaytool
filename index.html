@@ -5960,22 +5960,28 @@ function startLava(names) {
   const padX = 40, padY = 50, tileW = (W - padX * 2) / cols, tileH = (H - padY * 2) / rows;
   const gags = ['SIZZLE!','TOASTY!','MELTING!','HOT FEET!','RIP SOCKS!'];
   let tiles = Array.from({ length: rows }, () => Array.from({ length: cols }, () => ({ lava: false, heat: 0 })));
+  const safeStarts = [];
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) safeStarts.push({ c, r });
+  safeStarts.sort(() => Math.random() - 0.5);
   let players = names.map((nm, i) => {
-    const c = (i % cols), r = Math.floor(i / cols) % rows;
-    return { name: nm, color: colorFor(nm), alive: true, col: c, row: r, tx: padX + c * tileW + tileW / 2, ty: padY + r * tileH + tileH / 2, vx: 0, vy: 0, gag: '', gagTimer: 0, elimX: 0, elimY: 0 };
+    const spot = safeStarts[i % safeStarts.length];
+    const tc = { x: padX + spot.c * tileW + tileW / 2, y: padY + spot.r * tileH + tileH / 2 };
+    return {
+      name: nm, color: colorFor(nm), alive: true, col: spot.c, row: spot.r,
+      tx: tc.x + (Math.random() - 0.5) * tileW * 0.5, ty: tc.y + (Math.random() - 0.5) * tileH * 0.5,
+      vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2,
+      wanderX: tc.x, wanderY: tc.y, wanderTimer: 30 + Math.floor(Math.random() * 40),
+      gag: '', gagTimer: 0, elimX: 0, elimY: 0
+    };
   });
   let frame = 0, feed = '🌋 Safe tiles shrinking — RUN!', heatTimer = 0, particles = [];
 
   function tileCenter(c, r) { return { x: padX + c * tileW + tileW / 2, y: padY + r * tileH + tileH / 2 }; }
-  function nearestSafe(p) {
-    let best = null, bestD = Infinity;
-    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
-      if (tiles[r][c].lava) continue;
-      const tc = tileCenter(c, r);
-      const d = Math.hypot(tc.x - p.tx, tc.y - p.ty);
-      if (d < bestD) { bestD = d; best = { c, r, x: tc.x, y: tc.y }; }
-    }
-    return best;
+  function randomSafePoint() {
+    const safe = [];
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) if (!tiles[r][c].lava) safe.push(tileCenter(c, r));
+    if (!safe.length) return null;
+    return safe[Math.floor(Math.random() * safe.length)];
   }
 
   function loop() {
@@ -5992,18 +5998,29 @@ function startLava(names) {
     players.forEach(p => {
       if (!p.alive) return;
       if (p.gagTimer > 0) p.gagTimer--;
-      const safe = nearestSafe(p);
-      if (safe) {
-        const dx = safe.x - p.tx, dy = safe.y - p.ty, dist = Math.hypot(dx, dy) || 1;
-        p.vx += (dx / dist) * 0.35 + (Math.random() - 0.5) * 0.2;
-        p.vy += (dy / dist) * 0.35 + (Math.random() - 0.5) * 0.2;
+      p.wanderTimer--;
+      if (p.wanderTimer <= 0) {
+        const pt = randomSafePoint();
+        if (pt) { p.wanderX = pt.x; p.wanderY = pt.y; }
+        p.wanderTimer = 40 + Math.floor(Math.random() * 50);
       }
-      p.vx *= 0.88; p.vy *= 0.88;
+      const gc = Math.floor((p.tx - padX) / tileW), gr = Math.floor((p.ty - padY) / tileH);
+      let fleeX = 0, fleeY = 0;
+      for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+        const nr = gr + dr, nc = gc + dc;
+        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && tiles[nr][nc].lava) {
+          fleeX -= dc * 0.45; fleeY -= dr * 0.45;
+        }
+      }
+      const dx = p.wanderX - p.tx, dy = p.wanderY - p.ty, dist = Math.hypot(dx, dy) || 1;
+      p.vx += (dx / dist) * 0.22 + fleeX + (Math.random() - 0.5) * 0.55;
+      p.vy += (dy / dist) * 0.22 + fleeY + (Math.random() - 0.5) * 0.55;
+      p.vx *= 0.86; p.vy *= 0.86;
       p.tx += p.vx; p.ty += p.vy;
       p.tx = Math.max(padX + 8, Math.min(W - padX - 8, p.tx));
       p.ty = Math.max(padY + 8, Math.min(H - padY - 8, p.ty));
-      const gc = Math.floor((p.tx - padX) / tileW), gr = Math.floor((p.ty - padY) / tileH);
-      if (gc >= 0 && gc < cols && gr >= 0 && gr < rows && tiles[gr][gc].lava) {
+      const gc2 = Math.floor((p.tx - padX) / tileW), gr2 = Math.floor((p.ty - padY) / tileH);
+      if (gc2 >= 0 && gc2 < cols && gr2 >= 0 && gr2 < rows && tiles[gr2][gc2].lava) {
         p.alive = false; p.elimX = p.tx; p.elimY = p.ty;
         p.gag = gags[Math.floor(Math.random() * gags.length)]; p.gagTimer = 50;
         feed = '💀 ' + p.name + ' fell in the lava!';
@@ -6064,28 +6081,33 @@ function startTornado(names) {
     const dist = 180 + Math.random() * 80;
     return { name: nm, color: colorFor(nm), alive: true, x: cx + Math.cos(ang) * dist, y: cy + Math.sin(ang) * dist, vx: 0, vy: 0, gag: '', gagTimer: 0, elimX: 0, elimY: 0 };
   });
-  let frame = 0, feed = '🌪️ Resist the tornado pull!', strength = 0.015, debris = [];
+  let frame = 0, feed = '🌪️ Run from the vortex!', pullStrength = 0.008, debris = [];
 
   function loop() {
     frame++;
-    strength = Math.min(0.055, 0.015 + frame / 8000);
+    pullStrength = Math.min(0.022, 0.008 + frame / 12000);
     if (frame % 8 === 0) debris.push({ ang: Math.random() * Math.PI * 2, dist: 220 + Math.random() * 60, spin: Math.random() * 0.2, life: 40 + Math.random() * 30, size: 2 + Math.random() * 4 });
 
     players.forEach(p => {
       if (!p.alive) return;
       if (p.gagTimer > 0) p.gagTimer--;
       const dx = cx - p.x, dy = cy - p.y, dist = Math.hypot(dx, dy) || 1;
-      p.vx += (dx / dist) * strength * (1 + (220 - Math.min(dist, 220)) / 220);
-      p.vy += (dy / dist) * strength * (1 + (220 - Math.min(dist, 220)) / 220);
-      p.vx += (Math.random() - 0.5) * 0.15; p.vy += (Math.random() - 0.5) * 0.15;
-      p.vx += (-dy / dist) * 0.04; p.vy += (dx / dist) * 0.04;
-      p.vx *= 0.94; p.vy *= 0.94;
+      const panic = Math.max(0, 1 - dist / 240);
+      const flee = 0.55 + panic * 0.9;
+      p.vx += (-dx / dist) * flee + (Math.random() - 0.5) * 0.35;
+      p.vy += (-dy / dist) * flee + (Math.random() - 0.5) * 0.35;
+      if (dist < 160) {
+        p.vx += (dx / dist) * pullStrength * (1.6 - dist / 160);
+        p.vy += (dy / dist) * pullStrength * (1.6 - dist / 160);
+      }
+      p.vx += (-dy / dist) * 0.025; p.vy += (dx / dist) * 0.025;
+      p.vx *= 0.91; p.vy *= 0.91;
       p.x += p.vx; p.y += p.vy;
-      if (p.x < pad) { p.x = pad; p.vx = Math.abs(p.vx); }
-      if (p.x > W - pad) { p.x = W - pad; p.vx = -Math.abs(p.vx); }
-      if (p.y < pad) { p.y = pad; p.vy = Math.abs(p.vy); }
-      if (p.y > H - pad) { p.y = H - pad; p.vy = -Math.abs(p.vy); }
-      if (dist < 38) {
+      if (p.x < pad) { p.x = pad; p.vx = Math.abs(p.vx) * 0.6; }
+      if (p.x > W - pad) { p.x = W - pad; p.vx = -Math.abs(p.vx) * 0.6; }
+      if (p.y < pad) { p.y = pad; p.vy = Math.abs(p.vy) * 0.6; }
+      if (p.y > H - pad) { p.y = H - pad; p.vy = -Math.abs(p.vy) * 0.6; }
+      if (dist < 32) {
         p.alive = false; p.elimX = p.x; p.elimY = p.y;
         p.gag = gags[Math.floor(Math.random() * gags.length)]; p.gagTimer = 55;
         feed = '🌪️ ' + p.name + ' got sucked into the vortex!';
@@ -6112,7 +6134,8 @@ function startTornado(names) {
     });
     players.forEach(p => {
       if (!p.alive) { ctx.globalAlpha = 0.35; drawMiniCharacter(ctx, p.elimX, p.elimY, 12, p.color, { faded: true, rotate: frame * 0.1 }); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 22, p.gag, '#94a3b8', 11); return; }
-      drawMiniCharacter(ctx, p.x, p.y, 14, p.color, { phase: frame * 0.12, rotate: Math.atan2(cy - p.y, cx - p.x) * 0.15 });
+      const pdx = cx - p.x, pdy = cy - p.y;
+      drawMiniCharacter(ctx, p.x, p.y, 14, p.color, { phase: frame * 0.12, rotate: Math.atan2(-pdy, -pdx) * 0.2 });
       ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 34);
     });
     ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10, 10, 230, 34, 8); ctx.fill();
@@ -6144,28 +6167,38 @@ function startTilt(names) {
   const W = canvas.width, H = canvas.height, cx = W / 2, cy = H / 2 + 10, platR = 195;
   const gags = ['FLYING OFF!','WHEEE—NO WAIT!','BARF BAG!','NOT AGAIN!'];
   let players = names.map((nm, i) => {
-    const ang = (i / names.length) * Math.PI * 2, dist = platR * (0.25 + Math.random() * 0.55);
-    return { name: nm, color: colorFor(nm), alive: true, ang, dist, vx: 0, vd: 0, gag: '', gagTimer: 0, elimX: 0, elimY: 0 };
+    const ang = (i / names.length) * Math.PI * 2, dist = platR * (0.15 + Math.random() * 0.55);
+    return {
+      name: nm, color: colorFor(nm), alive: true,
+      lx: Math.cos(ang) * dist, ly: Math.sin(ang) * dist,
+      lvx: 0, lvy: 0, gag: '', gagTimer: 0, elimX: 0, elimY: 0
+    };
   });
-  let frame = 0, feed = '🎡 Hold on — the deck is tilting!', spin = 0.018, tilt = 0;
+  let frame = 0, feed = '🎡 Hold on — the deck is tilting!', spin = 0.012, tilt = 0, platAngle = 0;
 
   function loop() {
     frame++;
-    spin = Math.min(0.045, 0.018 + frame / 6000);
-    tilt = Math.sin(frame * 0.025) * 0.35 + Math.sin(frame * 0.011) * 0.2;
-    const gx = Math.sin(tilt) * 0.35, gy = Math.cos(tilt) * 0.12;
+    spin = Math.min(0.032, 0.012 + frame / 9000);
+    tilt = Math.sin(frame * 0.022) * 0.4 + Math.sin(frame * 0.009) * 0.18;
+    platAngle += spin;
+    const cosA = Math.cos(platAngle), sinA = Math.sin(platAngle);
+    const gravX = Math.sin(tilt) * 0.18, gravY = Math.cos(tilt) * 0.1;
 
     players.forEach(p => {
       if (!p.alive) return;
       if (p.gagTimer > 0) p.gagTimer--;
-      p.ang += spin + (Math.random() - 0.5) * 0.008;
-      p.vd += gx * 0.08 + (Math.random() - 0.5) * 0.04;
-      p.vd += p.dist * spin * spin * 120;
-      p.dist += p.vd; p.vd *= 0.92;
-      if (p.dist > platR - 10) {
+      const dist = Math.hypot(p.lx, p.ly) || 1;
+      p.lvx += (p.lx / dist) * spin * spin * 95;
+      p.lvy += (p.ly / dist) * spin * spin * 95;
+      p.lvx += gravX + (Math.random() - 0.5) * 0.06;
+      p.lvy += gravY + (Math.random() - 0.5) * 0.06;
+      if (dist > platR * 0.5) { p.lvx -= (p.lx / dist) * 0.04; p.lvy -= (p.ly / dist) * 0.04; }
+      p.lvx *= 0.93; p.lvy *= 0.93;
+      p.lx += p.lvx; p.ly += p.lvy;
+      if (Math.hypot(p.lx, p.ly) > platR - 12) {
         p.alive = false;
-        p.elimX = cx + Math.cos(p.ang) * (platR + 30);
-        p.elimY = cy + Math.sin(p.ang) * (platR + 30);
+        p.elimX = cx + p.lx * cosA - p.ly * sinA;
+        p.elimY = cy + p.lx * sinA + p.ly * cosA;
         p.gag = gags[Math.floor(Math.random() * gags.length)]; p.gagTimer = 55;
         feed = '🎡 ' + p.name + ' flew off the ride!';
       }
@@ -6175,7 +6208,7 @@ function startTilt(names) {
     ctx.fillStyle = '#1e1b4b'; ctx.fillRect(0, 0, W, H);
     ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1;
     for (let r = 40; r < 320; r += 40) { ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke(); }
-    ctx.save(); ctx.translate(cx, cy); ctx.rotate(tilt * 0.5);
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(platAngle + tilt * 0.35);
     const g = ctx.createRadialGradient(0, 0, 20, 0, 0, platR);
     g.addColorStop(0, '#c084fc'); g.addColorStop(0.6, '#9333ea'); g.addColorStop(1, '#581c87');
     ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, platR, 0, Math.PI * 2); ctx.fill();
@@ -6185,9 +6218,9 @@ function startTilt(names) {
     ctx.fillStyle = '#64748b'; ctx.fillRect(cx - 12, cy - platR - 40, 24, 50);
 
     players.forEach(p => {
-      const px = cx + Math.cos(p.ang) * p.dist, py = cy + Math.sin(p.ang) * p.dist * (1 + gy * 0.3);
+      const px = cx + p.lx * cosA - p.ly * sinA, py = cy + p.lx * sinA + p.ly * cosA;
       if (!p.alive) { ctx.globalAlpha = 0.35; drawMiniCharacter(ctx, p.elimX, p.elimY, 12, p.color, { faded: true, rotate: frame * 0.08 }); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 22, p.gag, '#e879f9', 11); return; }
-      drawMiniCharacter(ctx, px, py, 14, p.color, { phase: frame * 0.14, rotate: p.ang + Math.PI / 2 });
+      drawMiniCharacter(ctx, px, py, 14, p.color, { phase: frame * 0.14, rotate: Math.atan2(p.ly, p.lx) + platAngle });
       ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), px, py - 32);
     });
     ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10, 10, 230, 34, 8); ctx.fill();
@@ -6224,7 +6257,9 @@ function startBee(names) {
     vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2,
     gag: '', gagTimer: 0, elimX: 0, elimY: 0, panic: Math.random() * 6
   }));
-  let bees = [], frame = 0, feed = '🐝 Bees incoming — stay moving!', spawnT = 0;
+  let bees = [], frame = 0, feed = '🐝 A few angry bees — keep moving!', spawnT = 0;
+  const maxBees = () => Math.min(4, 1 + Math.floor(frame / 1200));
+  spawnBee(); if (names.length > 3) spawnBee();
 
   function spawnBee() {
     const side = Math.floor(Math.random() * 4);
@@ -6238,7 +6273,7 @@ function startBee(names) {
 
   function loop() {
     frame++; spawnT++;
-    if (bees.length < 8 + Math.floor(frame / 400) && spawnT > 50) { spawnBee(); spawnT = 0; }
+    if (bees.length < maxBees() && spawnT > 110) { spawnBee(); spawnT = 0; }
 
     const alive = players.filter(p => p.alive);
     bees.forEach(b => {
