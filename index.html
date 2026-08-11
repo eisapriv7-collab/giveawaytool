@@ -169,6 +169,9 @@
         <button onclick="launchMusical()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#e879f9,#86198f);">🪑 Musical Chairs</button>
         <button onclick="launchPie()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#fb923c,#9a3412);">🥧 Pie Eating Contest</button>
         <button onclick="launchBanana()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#facc15,#854d0e);color:#1c1917;">🍌 Banana Slip Chaos</button>
+        <button onclick="launchCannon()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f97316,#7c2d12);">🎪 Human Cannonball</button>
+        <button onclick="launchWipeout()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#06b6d4,#164e63);">🌊 Wipeout Wrecking Balls</button>
+        <button onclick="launchHobbyHorse()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f472b6,#9d174d);">🐴 Hobby Horse Derby</button>
       </div>
       <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">1-on-1 Combat (pick 2 entrants)</div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -530,6 +533,45 @@
   </div>
 </div>
 
+<!-- ==================== HUMAN CANNONBALL (all entrants, turn-based) ==================== -->
+<div id="cannon-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#f97316] text-sm font-bold uppercase tracking-widest mb-2">🎪 Human Cannonball</div><h1 class="text-4xl md:text-5xl font-black text-white">Distance Contest</h1></div>
+    <div id="cannon-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Loading the cannon...</div><div class="text-sm text-gray-600" id="cannon-intro-count">Everyone gets one launch</div></div>
+    <div id="cannon-phase-play" class="hidden w-full max-w-6xl">
+      <div id="cannon-feed" class="text-center text-[#ffd700] font-bold text-xl mb-2 h-7">Loading contestant...</div>
+      <canvas id="cannon-canvas" width="1100" height="520" class="w-full rounded-2xl border border-white/10"></canvas>
+    </div>
+    <div id="cannon-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🎪</div><div class="text-2xl text-[#f97316] font-bold mb-2">FURTHEST FLIGHT</div><div id="cannon-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== WIPEOUT WRECKING BALLS (all entrants) ==================== -->
+<div id="wipeout-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#06b6d4] text-sm font-bold uppercase tracking-widest mb-2">🌊 Wipeout Wrecking Balls</div><h1 class="text-4xl md:text-5xl font-black text-white">Don't Get Bonked</h1></div>
+    <div id="wipeout-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Balls swinging into position...</div><div class="text-sm text-gray-600" id="wipeout-intro-count">Everyone runs the gauntlet</div></div>
+    <div id="wipeout-phase-play" class="hidden w-full max-w-6xl">
+      <canvas id="wipeout-canvas" width="1100" height="520" class="w-full rounded-2xl border border-white/10"></canvas>
+      <div id="wipeout-legend" class="legend-scroll mt-3"></div>
+    </div>
+    <div id="wipeout-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🏆</div><div class="text-2xl text-[#06b6d4] font-bold mb-2">SURVIVED THE GAUNTLET</div><div id="wipeout-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== HOBBY HORSE DERBY (all entrants) ==================== -->
+<div id="hobbyhorse-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#f472b6] text-sm font-bold uppercase tracking-widest mb-2">🐴 Hobby Horse Derby</div><h1 class="text-4xl md:text-5xl font-black text-white">Giddy Up, Chaos Ensues</h1></div>
+    <div id="hobbyhorse-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Saddling up...</div><div class="text-sm text-gray-600" id="hobbyhorse-intro-count">Everyone gets a hobby horse</div></div>
+    <div id="hobbyhorse-phase-play" class="hidden w-full max-w-6xl">
+      <canvas id="hobbyhorse-canvas" width="1100" height="500" class="w-full rounded-2xl border border-white/10"></canvas>
+      <div id="hobbyhorse-legend" class="legend-scroll mt-3"></div>
+    </div>
+    <div id="hobbyhorse-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🐴</div><div class="text-2xl text-[#f472b6] font-bold mb-2">CHAMPION RIDER</div><div id="hobbyhorse-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
 <!-- ==================== BOXING MATCH (1v1, enhanced) ==================== -->
 <div id="boxing-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
   <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
@@ -631,6 +673,16 @@ function lightenHex(hex, amt) {
   const c = parseInt(hex.slice(1),16); let r=(c>>16)&255,g=(c>>8)&255,b=c&255;
   r=Math.min(255,r+amt); g=Math.min(255,g+amt); b=Math.min(255,b+amt);
   return `rgb(${r},${g},${b})`;
+}
+
+/* Small comedic caption bubble used by the slapstick games (Cannonball, Wipeout, Hobby Horse). */
+function drawGagText(ctx, x, y, text, color, size) {
+  ctx.save();
+  ctx.font = 'bold ' + (size||13) + 'px Inter';
+  ctx.textAlign = 'center';
+  ctx.strokeStyle = 'rgba(0,0,0,0.6)'; ctx.lineWidth = 3; ctx.strokeText(text, x, y);
+  ctx.fillStyle = color || '#fff'; ctx.fillText(text, x, y);
+  ctx.restore();
 }
 
 /* ==================== RUBBER-BAND CATCH-UP HELPER ====================
@@ -876,6 +928,9 @@ function launchSnail() { openGamePopup('snail'); }
 function launchMusical() { openGamePopup('musical'); }
 function launchPie() { openGamePopup('pie'); }
 function launchBanana() { openGamePopup('banana'); }
+function launchCannon() { openGamePopup('cannon'); }
+function launchWipeout() { openGamePopup('wipeout'); }
+function launchHobbyHorse() { openGamePopup('hobbyhorse'); }
 function launchBoxingMatch() { openGamePopup('boxing'); }
 function launchSwordDuel() { openGamePopup('sword'); }
 
@@ -3007,6 +3062,317 @@ function startBanana(names) {
   loop();
 }
 
+/* ==================== HUMAN CANNONBALL (every entrant, turn-based — real projectile arc + bouncing ragdoll landing) ==================== */
+function runCannon() {
+  showOverlay('cannon-overlay'); showPhase('cannon', 'intro');
+  const names = Array.from(entrants);
+  if (names.length === 0) { alert('No entrants yet!'); return; }
+  document.getElementById('cannon-intro-count').textContent = names.length + ' contestant' + (names.length===1?'':'s') + ' waiting their turn';
+  setTimeout(() => startCannon(names), 1600);
+}
+function startCannon(names) {
+  showPhase('cannon', 'play');
+  const canvas = document.getElementById('cannon-canvas'); const ctx = canvas.getContext('2d');
+  const feed = document.getElementById('cannon-feed');
+  const W = canvas.width, H = canvas.height, groundY = H - 60;
+  const cannonX = 90, cannonY = groundY - 40;
+  const gagLines = ['WHEEEEE!','OOF!','AAAAAH!','SEND IT!','WHOMP!','TIMBERRR!','YEET!','BONK!'];
+  const contestants = names.map(nm => ({ name: nm, color: colorFor(nm), distance: 0, done:false }));
+  let queue = [...contestants];
+  let results = [];
+  let frame = 0, particles = [], dustPuffs = [];
+  function setFeed(t) { feed.textContent = t; }
+  function drawScene(barrelAngle) {
+    const g = ctx.createLinearGradient(0,0,0,groundY); g.addColorStop(0,'#7dd3fc'); g.addColorStop(1,'#bae6fd'); ctx.fillStyle=g; ctx.fillRect(0,0,W,groundY);
+    ctx.fillStyle='#4d7c0f'; ctx.fillRect(0,groundY,W,H-groundY);
+    // distance markers
+    for (let d=100; d<W; d+=100) { ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(d,groundY); ctx.lineTo(d,groundY+10); ctx.stroke(); ctx.fillStyle='rgba(0,0,0,0.35)'; ctx.font='10px Inter'; ctx.textAlign='center'; ctx.fillText(Math.round((d-cannonX)/2)+'m', d, groundY+22); }
+    // cannon
+    ctx.save(); ctx.translate(cannonX, cannonY);
+    ctx.fillStyle='#374151'; ctx.beginPath(); ctx.arc(0,0,26,0,Math.PI*2); ctx.fill();
+    ctx.save(); ctx.rotate(-barrelAngle);
+    ctx.fillStyle='#1f2937'; ctx.beginPath(); ctx.roundRect(-8,-58,16,58,6); ctx.fill();
+    ctx.restore();
+    ctx.fillStyle='#4b5563'; ctx.beginPath(); ctx.rect(-30,10,60,22); ctx.fill();
+    ctx.restore();
+  }
+  function drawFx() {
+    particles = particles.filter(p => { p.x+=p.vx; p.y+=p.vy; p.vy+=0.15; p.life--; if (p.life<=0) return false; const a=p.life/p.maxLife; ctx.fillStyle=`rgba(255,220,150,${a})`; ctx.beginPath(); ctx.arc(p.x,p.y,3*a+1,0,Math.PI*2); ctx.fill(); return true; });
+    dustPuffs = dustPuffs.filter(p => { p.r += 0.8; p.life--; if (p.life<=0) return false; const a=p.life/p.maxLife*0.5; ctx.strokeStyle=`rgba(120,110,90,${a})`; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.stroke(); return true; });
+  }
+  function drawHUD() {
+    const sorted = [...results].sort((a,b) => b.distance-a.distance);
+    if (!sorted.length) return;
+    const boxH = Math.min(190, 30+Math.min(sorted.length,8)*16);
+    ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(W-210,10,190,boxH,10); ctx.fill();
+    ctx.fillStyle='#f97316'; ctx.font='bold 12px Inter'; ctx.textAlign='left'; ctx.fillText('🎪 DISTANCES',W-200,28);
+    sorted.slice(0,8).forEach((c,i) => { ctx.fillStyle=c.color; ctx.fillRect(W-200,35+i*16,8,8); ctx.fillStyle='#fff'; ctx.font='11px Inter'; ctx.fillText((i+1)+'. '+c.name.substring(0,12)+' — '+Math.round(c.distance)+'m',W-188,43+i*16); });
+  }
+  function launchNext() {
+    if (queue.length === 0) { endContest(); return; }
+    const c = queue.shift();
+    setFeed('Loading ' + c.name + ' into the cannon...');
+    let loadFrame = 0;
+    const power = 13 + Math.random()*4;
+    const angle = (38 + Math.random()*20) * Math.PI/180;
+    const wind = (Math.random()-0.5)*0.12;
+    function aimAnim() {
+      loadFrame++;
+      ctx.clearRect(0,0,W,H); drawScene(angle * Math.min(1, loadFrame/30)); drawFx(); drawHUD();
+      if (loadFrame < 34) requestAnimationFrame(aimAnim);
+      else { setFeed(c.name + ' — 3... 2... 1...'); setTimeout(() => fireContestant(c, power, angle, wind), 700); }
+    }
+    aimAnim();
+  }
+  function fireContestant(c, power, angle, wind) {
+    setFeed(c.name + ' BLASTS OFF!');
+    for (let i=0;i<20;i++) particles.push({ x: cannonX, y: cannonY-55, vx:(Math.random()-0.5)*4, vy:-Math.random()*3, life:24, maxLife:24 });
+    let vx = Math.cos(angle)*power, vy = -Math.sin(angle)*power;
+    let x = cannonX, y = cannonY-55, spin=0, spinSpeed = power*0.35, bounces=0, settled=false;
+    const midFlightGag = gagLines[Math.floor(Math.random()*gagLines.length)];
+    let animId2;
+    function flightLoop() {
+      frame++;
+      if (!settled) {
+        vy += 0.32; vx += wind*0.03;
+        x += vx; y += vy; spin += spinSpeed;
+        if (x > W-50) { x = W-50; settled = true; vx=0; vy=0; }
+        if (y > groundY-8) {
+          y = groundY-8; bounces++;
+          dustPuffs.push({x,y:groundY,r:4,life:22,maxLife:22});
+          if (Math.abs(vy) > 2 && bounces < 4) { vy *= -0.42; vx *= 0.55; spinSpeed *= 0.6; }
+          else { settled = true; vx = 0; vy = 0; }
+        }
+      }
+      ctx.clearRect(0,0,W,H); drawScene(0.66);
+      drawMiniCharacter(ctx, x, y, 16, c.color, { rotate: spin, phase: frame*0.3, armSwing: 8 });
+      if (!settled && bounces===0) drawGagText(ctx, x, y-38, midFlightGag, '#fde047', 15);
+      if (bounces>0 && bounces<=2) drawGagText(ctx, x, y-38, 'OOF!', '#f87171', 15);
+      drawFx(); drawHUD();
+      if (!settled) { animId2 = requestAnimationFrame(flightLoop); }
+      else {
+        const distance = Math.max(0, (x-cannonX)/2);
+        c.distance = distance; results.push(c);
+        setFeed(c.name + ' lands ' + Math.round(distance) + 'm away!');
+        drawGagText(ctx, x, y-38, 'THUD.', '#fff', 15);
+        setTimeout(() => launchNext(), 1400);
+      }
+    }
+    flightLoop();
+  }
+  function endContest() {
+    const winner = results.reduce((a,b) => a.distance>b.distance?a:b);
+    setFeed(winner.name + ' wins with a ' + Math.round(winner.distance) + 'm flight!');
+    setTimeout(() => { showPhase('cannon','winner'); document.getElementById('cannon-winner-name').textContent = winner.name; }, 1200);
+  }
+  launchNext();
+}
+
+/* ==================== WIPEOUT WRECKING BALLS (every entrant — swinging pendulum hazards, real ragdoll flail) ==================== */
+function runWipeout() {
+  showOverlay('wipeout-overlay'); showPhase('wipeout', 'intro');
+  const names = Array.from(entrants);
+  if (names.length === 0) { alert('No entrants yet!'); return; }
+  document.getElementById('wipeout-intro-count').textContent = names.length + ' runner' + (names.length===1?'':'s') + ' facing the gauntlet';
+  setTimeout(() => startWipeout(names), 1600);
+}
+function startWipeout(names) {
+  showPhase('wipeout', 'play');
+  document.getElementById('wipeout-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('wipeout-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const trackTop = 40, trackBottom = H-30, n = names.length, laneH = (trackBottom-trackTop)/n;
+  const trackLength = 6800 + n*70, finishX = trackLength;
+  const gagLines = ['BONK!','WHAM!','YOWCH!','WHOOPS!','TIMBER!','SPLAT!'];
+  const runners = names.map((nm,i) => ({ name:nm, x:40, y:trackTop+i*laneH+laneH*0.5, lane:i, color:colorFor(nm), speed:0, maxSpeed:2.5+Math.random()*1.3, accel:0.04+Math.random()*0.04, flailTimer:0, recoverTimer:0, invuln:0, spin:0, stride:Math.random()*Math.PI*2, gag:'', finished:false, finishTime:0, rbMult:1, rbTimer:0 }));
+  const balls = [];
+  const midY = trackTop + (trackBottom-trackTop)/2;
+  for (let d=1000, k=0; d<trackLength-500; d+=850+Math.random()*400, k++) {
+    balls.push({ trackX:d, centerY: midY, amp: (trackBottom-trackTop)*0.42, freq: 0.02+Math.random()*0.015, phase: Math.random()*Math.PI*2, r: Math.max(18, Math.min(32, 220/Math.sqrt(n))) });
+  }
+  let startTime = Date.now(), frame=0, cameraX=0, places=1, dust=[];
+  function ballY(b) { return b.centerY + Math.sin(frame*b.freq + b.phase) * b.amp; }
+  function drawTrack() {
+    const g = ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#0c4a6e'); g.addColorStop(1,'#082f49'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    for (let i=0;i<n;i++) { const ly=trackTop+i*laneH; ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.setLineDash([12,12]); ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(0,ly); ctx.lineTo(W,ly); ctx.stroke(); ctx.setLineDash([]); }
+    const fx = finishX-cameraX;
+    if (fx>-100&&fx<W+100) { for (let y=trackTop;y<trackBottom;y+=10) for (let x=0;x<28;x+=9) { ctx.fillStyle=((Math.floor(y/10)+Math.floor(x/9))%2===0)?'#fff':'#0c4a6e'; ctx.fillRect(fx+x,y,9,10); } ctx.fillStyle='#fff'; ctx.font='bold 13px Inter'; ctx.textAlign='center'; ctx.fillText('FINISH', fx+14, trackTop-10); }
+  }
+  function drawBall(b) {
+    const x = b.trackX-cameraX; if (x<-60||x>W+60) return;
+    const y = ballY(b);
+    ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,y); ctx.stroke();
+    const gr = ctx.createRadialGradient(x-b.r*0.3,y-b.r*0.3,2,x,y,b.r); gr.addColorStop(0,'#94a3b8'); gr.addColorStop(1,'#334155');
+    ctx.fillStyle=gr; ctx.beginPath(); ctx.arc(x,y,b.r,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,0.3)'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y,b.r,0,Math.PI*2); ctx.stroke();
+  }
+  function drawDust() { dust = dust.filter(p => { p.r+=0.7; p.life--; if (p.life<=0) return false; const a=p.life/p.maxLife*0.5; ctx.strokeStyle=`rgba(255,255,255,${a})`; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.stroke(); return true; }); }
+  function drawRunner(r) {
+    const sx = r.x-cameraX, sy = r.y, sc = Math.max(0.5,Math.min(1,laneH/50));
+    if (sx<-60||sx>W+60) return;
+    ctx.save(); ctx.translate(sx,sy); ctx.scale(sc,sc);
+    ctx.fillStyle='rgba(0,0,0,0.25)'; ctx.beginPath(); ctx.ellipse(0,16,13,4,0,0,Math.PI*2); ctx.fill();
+    const isFlailing = r.flailTimer>0;
+    drawMiniCharacter(ctx, 0, isFlailing?-8:0, 15, r.color, { rotate: isFlailing?r.spin:0, phase: isFlailing?0:r.stride, armSwing: isFlailing ? 14 : Math.sin(r.stride*2)*6, flash: r.invuln>0 && Math.floor(frame/4)%2===0 });
+    if (isFlailing) {
+      for (let k=0;k<3;k++) { const a=frame*0.3+k*2.1; ctx.fillStyle='#fde047'; ctx.font='12px Inter'; ctx.textAlign='center'; ctx.fillText('✦', Math.cos(a)*18, -30+Math.sin(a)*6); }
+      drawGagText(ctx, 0, -40, r.gag, '#fde047', 14);
+    }
+    ctx.fillStyle='#fff'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.fillText(r.name.substring(0,10), 0, -48);
+    ctx.restore();
+  }
+  function drawHUD() {
+    const sorted = [...runners].sort((a,b) => b.x-a.x);
+    const boxH = Math.min(200, 30+Math.min(sorted.length,8)*16);
+    ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10,10,190,boxH,10); ctx.fill();
+    ctx.fillStyle='#06b6d4'; ctx.font='bold 12px Inter'; ctx.textAlign='left'; ctx.fillText('🌊 LEADERBOARD',20,28);
+    sorted.slice(0,8).forEach((r,i) => { ctx.fillStyle=r.color; ctx.fillRect(20,35+i*16,8,8); ctx.fillStyle='#fff'; ctx.font='11px Inter'; ctx.fillText((i+1)+'. '+r.name.substring(0,14),32,43+i*16); });
+  }
+  let animId;
+  function loop() {
+    frame++;
+    let allFinished = true;
+    applyRubberBand(frame, runners.filter(r=>!r.finished && r.flailTimer<=0), r=>r.x);
+    runners.forEach(r => {
+      if (r.finished) return;
+      allFinished = false;
+      if (r.flailTimer > 0) { r.flailTimer--; r.spin += 0.55; if (r.flailTimer<=0) { r.recoverTimer = 26; r.invuln = 40; } }
+      else if (r.recoverTimer > 0) { r.recoverTimer--; r.x += 0.4; }
+      else {
+        if (r.speed < r.maxSpeed) r.speed += r.accel;
+        if (r.invuln > 0) r.invuln--;
+        if (r.rbTimer > 0) r.rbTimer--;
+        const mv = r.speed * (r.rbTimer>0 ? r.rbMult : 1);
+        r.x += mv; r.stride += 0.25*mv;
+        if (r.invuln <= 0) {
+          balls.forEach(b => {
+            if (Math.abs(b.trackX-r.x) < b.r+10) {
+              const by = ballY(b);
+              if (Math.abs(by-r.y) < b.r+10) {
+                r.flailTimer = 55+Math.random()*30; r.x = Math.max(40, r.x - 30 - Math.random()*20);
+                r.gag = gagLines[Math.floor(Math.random()*gagLines.length)]; r.invuln = 999;
+                dust.push({x:r.x-cameraX+40, y:r.y, r:4, life:20, maxLife:20});
+              }
+            }
+          });
+        }
+      }
+      if (r.x >= finishX) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; }
+    });
+    const leader = runners.reduce((a,b) => a.x>b.x?a:b);
+    cameraX = Math.max(0, Math.min(leader.x - W*0.3, trackLength - W + 150));
+    ctx.clearRect(0,0,W,H); drawTrack(); balls.forEach(drawBall); runners.forEach(drawRunner); drawDust(); drawHUD();
+    if (!allFinished) { animId = requestAnimationFrame(loop); }
+    else {
+      cancelAnimationFrame(animId);
+      const finishers = [...runners].sort((a,b) => a.finishTime-b.finishTime);
+      setTimeout(() => { showPhase('wipeout','winner'); document.getElementById('wipeout-winner-name').textContent = finishers[0].name; }, 1000);
+    }
+  }
+  loop();
+}
+
+/* ==================== HOBBY HORSE DERBY (every entrant — comedic gallop, bucks & face-plants, remount cycle) ==================== */
+function runHobbyHorse() {
+  showOverlay('hobbyhorse-overlay'); showPhase('hobbyhorse', 'intro');
+  const names = Array.from(entrants);
+  if (names.length === 0) { alert('No entrants yet!'); return; }
+  document.getElementById('hobbyhorse-intro-count').textContent = names.length + ' rider' + (names.length===1?'':'s') + ' saddling up';
+  setTimeout(() => startHobbyHorse(names), 1600);
+}
+function startHobbyHorse(names) {
+  showPhase('hobbyhorse', 'play');
+  document.getElementById('hobbyhorse-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('hobbyhorse-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const trackTop = 30, trackBottom = H-30, n = names.length, laneH = (trackBottom-trackTop)/n;
+  const groundOffset = laneH*0.7;
+  const trackLength = 5800 + n*60, finishX = trackLength;
+  const gagLines = ['NEIGH!','WHOA THERE!','GIDDY UP!','EEK!','WHOOPS!','YEEHAW!'];
+  const riders = names.map((nm,i) => ({ name:nm, x:40, y:trackTop+i*laneH+groundOffset, lane:i, color:colorFor(nm), speed:0, maxSpeed:2.3+Math.random()*1.3, accel:0.045+Math.random()*0.05, bounce:Math.random()*Math.PI*2, fallen:false, fallTimer:0, remountTimer:0, buckFlash:0, gag:'', finished:false, finishTime:0, rbMult:1, rbTimer:0 }));
+  let startTime = Date.now(), frame=0, cameraX=0, places=1, dust=[];
+  function drawTrack() {
+    const g = ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#fce7f3'); g.addColorStop(1,'#fbcfe8'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    for (let i=0;i<n;i++) { const ly=trackTop+i*laneH; ctx.strokeStyle='rgba(0,0,0,0.08)'; ctx.setLineDash([12,12]); ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(0,ly); ctx.lineTo(W,ly); ctx.stroke(); ctx.setLineDash([]); }
+    const fx = finishX-cameraX;
+    if (fx>-100&&fx<W+100) { for (let y=trackTop;y<trackBottom;y+=10) for (let x=0;x<28;x+=9) { ctx.fillStyle=((Math.floor(y/10)+Math.floor(x/9))%2===0)?'#831843':'#fff'; ctx.fillRect(fx+x,y,9,10); } ctx.fillStyle='#831843'; ctx.font='bold 13px Inter'; ctx.textAlign='center'; ctx.fillText('FINISH', fx+14, trackTop-8); }
+  }
+  function drawDust() { dust = dust.filter(p => { p.r+=0.6; p.life--; if (p.life<=0) return false; const a=p.life/p.maxLife*0.4; ctx.strokeStyle=`rgba(120,80,60,${a})`; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.stroke(); return true; }); }
+  function drawHobbyHorseStick(x,y,color,bob) {
+    ctx.strokeStyle='#a16207'; ctx.lineWidth=4; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(x-6,y+16); ctx.lineTo(x+8,y-6+bob); ctx.stroke();
+    ctx.fillStyle=color; ctx.beginPath(); ctx.ellipse(x+10,y-10+bob,9,7,0.3,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x+13,y-13+bob,1.6,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#78350f'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x+7,y-16+bob); ctx.lineTo(x+3,y-22+bob); ctx.stroke();
+  }
+  function drawRider(r) {
+    const sx = r.x-cameraX, sy = r.y, sc = Math.max(0.5,Math.min(1,laneH/48));
+    if (sx<-60||sx>W+60) return;
+    ctx.save(); ctx.translate(sx,sy); ctx.scale(sc,sc);
+    ctx.fillStyle='rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(0,16,13,4,0,0,Math.PI*2); ctx.fill();
+    if (r.fallen) {
+      drawMiniCharacter(ctx, 0, 4, 15, r.color, { rotate: Math.PI/2, phase:0, armSwing: 10 });
+      drawGagText(ctx, 0, -30, r.gag, '#ec4899', 13);
+    } else if (r.remountTimer > 0) {
+      drawMiniCharacter(ctx, -6, 6, 14, r.color, { rotate: 0.4, phase:0, armSwing: 6 });
+      drawHobbyHorseStick(8, 12, r.color, 0);
+      drawGagText(ctx, 0, -28, 'climbing back on...', '#f472b6', 11);
+    } else {
+      const bob = Math.sin(r.bounce) * 7;
+      drawHobbyHorseStick(2, 6+bob*0.4, r.color, 0);
+      drawMiniCharacter(ctx, 0, bob, 15, r.color, { flash: r.buckFlash>0, phase: r.bounce, armSwing: Math.sin(r.bounce)*10 });
+      if (r.buckFlash>0) { drawGagText(ctx, 0, -38, r.gag, '#f472b6', 13); r.buckFlash--; }
+    }
+    ctx.fillStyle='#831843'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.fillText(r.name.substring(0,10), 0, -48);
+    ctx.restore();
+  }
+  function drawHUD() {
+    const sorted = [...riders].sort((a,b) => b.x-a.x);
+    const boxH = Math.min(200, 30+Math.min(sorted.length,8)*16);
+    ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.beginPath(); ctx.roundRect(10,10,190,boxH,10); ctx.fill();
+    ctx.fillStyle='#be185d'; ctx.font='bold 12px Inter'; ctx.textAlign='left'; ctx.fillText('🐴 STANDINGS',20,28);
+    sorted.slice(0,8).forEach((r,i) => { ctx.fillStyle=r.color; ctx.fillRect(20,35+i*16,8,8); ctx.fillStyle='#500724'; ctx.font='11px Inter'; ctx.fillText((i+1)+'. '+r.name.substring(0,14),32,43+i*16); });
+  }
+  let animId;
+  function loop() {
+    frame++;
+    let allFinished = true;
+    applyRubberBand(frame, riders.filter(r=>!r.finished && !r.fallen && r.remountTimer<=0), r=>r.x);
+    riders.forEach(r => {
+      if (r.finished) return;
+      allFinished = false;
+      if (r.fallen) {
+        r.fallTimer--;
+        if (r.fallTimer <= 0) { r.fallen = false; r.remountTimer = 34+Math.random()*16; dust.push({x:r.x-cameraX,y:r.y,r:4,life:18,maxLife:18}); }
+      } else if (r.remountTimer > 0) {
+        r.remountTimer--; r.x += 0.25;
+      } else {
+        r.bounce += 0.18 + r.speed*0.03;
+        if (r.speed < r.maxSpeed) r.speed += r.accel;
+        if (r.rbTimer > 0) r.rbTimer--;
+        const mv = r.speed * (r.rbTimer>0 ? r.rbMult : 1);
+        r.x += mv;
+        // random bucks: usually just a funny hop, occasionally an actual face-plant
+        if (Math.random() < 0.006) {
+          if (Math.random() < 0.4) { r.fallen = true; r.fallTimer = 40+Math.random()*30; r.gag = gagLines[Math.floor(Math.random()*gagLines.length)]; r.speed *= 0.3; dust.push({x:r.x-cameraX,y:r.y,r:4,life:18,maxLife:18}); }
+          else { r.buckFlash = 24; r.gag = gagLines[Math.floor(Math.random()*gagLines.length)]; r.speed = Math.min(r.maxSpeed*1.3, r.speed+0.6); }
+        }
+      }
+      if (r.x >= finishX) { r.x = finishX; r.finished = true; r.finishTime = Date.now()-startTime; r.place = places++; }
+    });
+    const leader = riders.reduce((a,b) => a.x>b.x?a:b);
+    cameraX = Math.max(0, Math.min(leader.x - W*0.3, trackLength - W + 150));
+    ctx.clearRect(0,0,W,H); drawTrack(); riders.forEach(drawRider); drawDust(); drawHUD();
+    if (!allFinished) { animId = requestAnimationFrame(loop); }
+    else {
+      cancelAnimationFrame(animId);
+      const finishers = [...riders].sort((a,b) => a.finishTime-b.finishTime);
+      setTimeout(() => { showPhase('hobbyhorse','winner'); document.getElementById('hobbyhorse-winner-name').textContent = finishers[0].name; }, 1000);
+    }
+  }
+  loop();
+}
+
 /* ==================== BOXING MATCH (1v1, ENHANCED — dodges, backflips, special moves, 5 rounds) ==================== */
 function runBoxingMatch() {
   const names = Array.from(entrants);
@@ -3372,6 +3738,9 @@ function startSwordDuel(p1Name, p2Name) {
       else if (game === 'musical') runMusical();
       else if (game === 'pie') runPie();
       else if (game === 'banana') runBanana();
+      else if (game === 'cannon') runCannon();
+      else if (game === 'wipeout') runWipeout();
+      else if (game === 'hobbyhorse') runHobbyHorse();
       else if (game === 'boxing') runBoxingMatch();
       else if (game === 'sword') runSwordDuel();
     }, 200);
