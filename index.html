@@ -188,6 +188,12 @@
         <button onclick="launchPogo()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#2dd4bf,#0f766e);">🦘 Pogo Stick Pandemonium</button>
         <button onclick="launchHamster()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#fcd34d,#d97706);">🐹 Hamster Ball Hill</button>
         <button onclick="launchBurrito()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#fb7185,#9f1239);">🌯 Burrito Roll Downhill</button>
+        <button onclick="launchLava()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f97316,#9a3412);">🌋 Lava Floor Panic</button>
+        <button onclick="launchTornado()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#64748b,#334155);">🌪️ Tornado Alley</button>
+        <button onclick="launchTilt()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#e879f9,#86198f);">🎡 Tilt-A-Whirl</button>
+        <button onclick="launchBee()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#facc15,#a16207);color:#1c1917;">🐝 Bee Swarm Chaos</button>
+        <button onclick="launchSubway()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#22c55e,#14532d);">🚇 Subway Sprint</button>
+
       </div>
       <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">1-on-1 Combat (pick 2 entrants)</div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -769,6 +775,57 @@
   </div>
 </div>
 
+
+<!-- ==================== LAVA FLOOR PANIC ==================== -->
+<div id="lava-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#f97316] text-sm font-bold uppercase tracking-widest mb-2">🌋 Lava Floor Panic</div><h1 class="text-4xl md:text-5xl font-black text-white">The Floor Is Lava</h1></div>
+    <div id="lava-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Tiles are heating up...</div><div class="text-sm text-gray-600" id="lava-intro-count">Don't fall in!</div></div>
+    <div id="lava-phase-play" class="hidden w-full max-w-6xl"><canvas id="lava-canvas" width="1100" height="520" class="w-full rounded-2xl border border-white/10"></canvas><div id="lava-legend" class="legend-scroll mt-3"></div></div>
+    <div id="lava-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🌋</div><div class="text-2xl text-[#f97316] font-bold mb-2">LAVA SURVIVOR</div><div id="lava-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== TORNADO ALLEY ==================== -->
+<div id="tornado-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#64748b] text-sm font-bold uppercase tracking-widest mb-2">🌪️ Tornado Alley</div><h1 class="text-4xl md:text-5xl font-black text-white">Hold On Tight</h1></div>
+    <div id="tornado-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Twister incoming...</div><div class="text-sm text-gray-600" id="tornado-intro-count">Resist the pull!</div></div>
+    <div id="tornado-phase-play" class="hidden w-full max-w-6xl"><canvas id="tornado-canvas" width="1100" height="520" class="w-full rounded-2xl border border-white/10"></canvas><div id="tornado-legend" class="legend-scroll mt-3"></div></div>
+    <div id="tornado-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🌪️</div><div class="text-2xl text-[#94a3b8] font-bold mb-2">STORM SURVIVOR</div><div id="tornado-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== TILT-A-WHIRL ==================== -->
+<div id="tilt-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#e879f9] text-sm font-bold uppercase tracking-widest mb-2">🎡 Tilt-A-Whirl</div><h1 class="text-4xl md:text-5xl font-black text-white">Don't Fly Off!</h1></div>
+    <div id="tilt-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Strapping in...</div><div class="text-sm text-gray-600" id="tilt-intro-count">Centrifugal force is NOT your friend</div></div>
+    <div id="tilt-phase-play" class="hidden w-full max-w-6xl"><canvas id="tilt-canvas" width="1100" height="520" class="w-full rounded-2xl border border-white/10"></canvas><div id="tilt-legend" class="legend-scroll mt-3"></div></div>
+    <div id="tilt-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🎡</div><div class="text-2xl text-[#e879f9] font-bold mb-2">CARNIVAL KING</div><div id="tilt-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== BEE SWARM CHAOS ==================== -->
+<div id="bee-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#facc15] text-sm font-bold uppercase tracking-widest mb-2">🐝 Bee Swarm Chaos</div><h1 class="text-4xl md:text-5xl font-black text-white">Run From The Hive</h1></div>
+    <div id="bee-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Bees are angry...</div><div class="text-sm text-gray-600" id="bee-intro-count">Don't get stung!</div></div>
+    <div id="bee-phase-play" class="hidden w-full max-w-6xl"><canvas id="bee-canvas" width="1100" height="520" class="w-full rounded-2xl border border-white/10"></canvas><div id="bee-legend" class="legend-scroll mt-3"></div></div>
+    <div id="bee-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🐝</div><div class="text-2xl text-[#facc15] font-bold mb-2">BEE MASTER</div><div id="bee-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== SUBWAY SPRINT ==================== -->
+<div id="subway-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#22c55e] text-sm font-bold uppercase tracking-widest mb-2">🚇 Subway Sprint</div><h1 class="text-4xl md:text-5xl font-black text-white">Dodge The Trains</h1></div>
+    <div id="subway-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Boarding the express...</div><div class="text-sm text-gray-600" id="subway-intro-count">First to the station wins</div></div>
+    <div id="subway-phase-play" class="hidden w-full max-w-6xl"><canvas id="subway-canvas" width="1100" height="520" class="w-full rounded-2xl border border-white/10"></canvas><div id="subway-legend" class="legend-scroll mt-3"></div></div>
+    <div id="subway-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🚇</div><div class="text-2xl text-[#22c55e] font-bold mb-2">SUBWAY CHAMP</div><div id="subway-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
 <!-- ==================== BOXING MATCH (1v1, enhanced) ==================== -->
 <div id="boxing-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
   <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
@@ -920,7 +977,7 @@ function firstToFinish(participants) {
 }
 
 /* ==================== RACE SECRET: !masturbo (once per player per race) ==================== */
-const RACE_GAME_IDS = ['racing','swimming','balloon','obstacle','downhill','rocket','tower','snail','banana','wipeout','hobbyhorse','sack','cart','penguin','mop','chair','pogo','hamster','burrito','chute'];
+const RACE_GAME_IDS = ['racing','swimming','balloon','obstacle','downhill','rocket','tower','snail','banana','wipeout','hobbyhorse','sack','cart','penguin','mop','chair','pogo','hamster','burrito','chute','subway'];
 const MASTURBO_FRAMES = 280;
 const MASTURBO_MULT = 2.6;
 const RACE_MAP_SCALE = 1.85;
@@ -1455,6 +1512,12 @@ function launchOfficeChair() { openGamePopup('chair'); }
 function launchPogo() { openGamePopup('pogo'); }
 function launchHamster() { openGamePopup('hamster'); }
 function launchBurrito() { openGamePopup('burrito'); }
+function launchLava() { openGamePopup('lava'); }
+function launchTornado() { openGamePopup('tornado'); }
+function launchTilt() { openGamePopup('tilt'); }
+function launchBee() { openGamePopup('bee'); }
+function launchSubway() { openGamePopup('subway'); }
+
 
 /* ==================== GIVEAWAY LAUNCHER ==================== */
 function runGiveaway() {
@@ -5880,6 +5943,468 @@ function startBurrito(names) {
 }
 
 
+
+/* ==================== LAVA FLOOR PANIC ==================== */
+function runLava() {
+  showOverlay('lava-overlay'); showPhase('lava', 'intro');
+  const names = Array.from(entrants);
+  if (!names.length) { alert('No entrants yet!'); return; }
+  document.getElementById('lava-intro-count').textContent = names.length + ' player' + (names.length === 1 ? '' : 's') + ' on the grid';
+  setTimeout(() => startLava(names), 1600);
+}
+function startLava(names) {
+  showPhase('lava', 'play');
+  document.getElementById('lava-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('lava-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, cols = 14, rows = 9;
+  const padX = 40, padY = 50, tileW = (W - padX * 2) / cols, tileH = (H - padY * 2) / rows;
+  const gags = ['SIZZLE!','TOASTY!','MELTING!','HOT FEET!','RIP SOCKS!'];
+  let tiles = Array.from({ length: rows }, () => Array.from({ length: cols }, () => ({ lava: false, heat: 0 })));
+  let players = names.map((nm, i) => {
+    const c = (i % cols), r = Math.floor(i / cols) % rows;
+    return { name: nm, color: colorFor(nm), alive: true, col: c, row: r, tx: padX + c * tileW + tileW / 2, ty: padY + r * tileH + tileH / 2, vx: 0, vy: 0, gag: '', gagTimer: 0, elimX: 0, elimY: 0 };
+  });
+  let frame = 0, feed = '🌋 Safe tiles shrinking — RUN!', heatTimer = 0, particles = [];
+
+  function tileCenter(c, r) { return { x: padX + c * tileW + tileW / 2, y: padY + r * tileH + tileH / 2 }; }
+  function nearestSafe(p) {
+    let best = null, bestD = Infinity;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      if (tiles[r][c].lava) continue;
+      const tc = tileCenter(c, r);
+      const d = Math.hypot(tc.x - p.tx, tc.y - p.ty);
+      if (d < bestD) { bestD = d; best = { c, r, x: tc.x, y: tc.y }; }
+    }
+    return best;
+  }
+
+  function loop() {
+    frame++; heatTimer++;
+    if (heatTimer > 90 && heatTimer % 45 === 0) {
+      const safe = [];
+      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) if (!tiles[r][c].lava) safe.push({ r, c });
+      if (safe.length > Math.max(8, players.filter(p => p.alive).length + 2)) {
+        const pick = safe[Math.floor(Math.random() * safe.length)];
+        tiles[pick.r][pick.c].lava = true;
+        feed = '🔥 A tile turned to LAVA!';
+      }
+    }
+    players.forEach(p => {
+      if (!p.alive) return;
+      if (p.gagTimer > 0) p.gagTimer--;
+      const safe = nearestSafe(p);
+      if (safe) {
+        const dx = safe.x - p.tx, dy = safe.y - p.ty, dist = Math.hypot(dx, dy) || 1;
+        p.vx += (dx / dist) * 0.35 + (Math.random() - 0.5) * 0.2;
+        p.vy += (dy / dist) * 0.35 + (Math.random() - 0.5) * 0.2;
+      }
+      p.vx *= 0.88; p.vy *= 0.88;
+      p.tx += p.vx; p.ty += p.vy;
+      p.tx = Math.max(padX + 8, Math.min(W - padX - 8, p.tx));
+      p.ty = Math.max(padY + 8, Math.min(H - padY - 8, p.ty));
+      const gc = Math.floor((p.tx - padX) / tileW), gr = Math.floor((p.ty - padY) / tileH);
+      if (gc >= 0 && gc < cols && gr >= 0 && gr < rows && tiles[gr][gc].lava) {
+        p.alive = false; p.elimX = p.tx; p.elimY = p.ty;
+        p.gag = gags[Math.floor(Math.random() * gags.length)]; p.gagTimer = 50;
+        feed = '💀 ' + p.name + ' fell in the lava!';
+        for (let i = 0; i < 12; i++) particles.push({ x: p.tx, y: p.ty, vx: (Math.random() - 0.5) * 4, vy: -Math.random() * 4, life: 25, maxLife: 25, hue: 20 });
+      }
+    });
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#1c1917'; ctx.fillRect(0, 0, W, H);
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const x = padX + c * tileW, y = padY + r * tileH;
+      if (tiles[r][c].lava) {
+        const pulse = 0.7 + Math.sin(frame * 0.08 + c + r) * 0.15;
+        ctx.fillStyle = `rgba(249,115,22,${pulse})`; ctx.fillRect(x + 1, y + 1, tileW - 2, tileH - 2);
+        ctx.fillStyle = `rgba(234,88,12,${pulse * 0.6})`; ctx.fillRect(x + 4, y + 4, tileW - 8, tileH - 8);
+      } else {
+        ctx.fillStyle = (r + c) % 2 ? '#374151' : '#4b5563'; ctx.fillRect(x + 1, y + 1, tileW - 2, tileH - 2);
+      }
+    }
+    particles = particles.filter(pt => { pt.x += pt.vx; pt.y += pt.vy; pt.life--; if (pt.life <= 0) return false; ctx.fillStyle = `hsla(${pt.hue},100%,55%,${pt.life / pt.maxLife})`; ctx.beginPath(); ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2); ctx.fill(); return true; });
+    players.forEach(p => {
+      if (!p.alive) { ctx.globalAlpha = 0.35; drawMiniCharacter(ctx, p.elimX, p.elimY, 12, p.color, { faded: true }); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 22, p.gag, '#fb923c', 11); return; }
+      drawMiniCharacter(ctx, p.tx, p.ty, 14, p.color, { phase: frame * 0.15, armSwing: Math.sin(frame * 0.2) * 8 });
+      if (p.gagTimer > 0) drawGagText(ctx, p.tx, p.ty - 28, p.gag, '#fbbf24', 12);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.tx, p.ty - 36);
+    });
+    ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10, 10, 240, 34, 8); ctx.fill();
+    ctx.fillStyle = '#f97316'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'left'; ctx.fillText('🌋 ALIVE: ' + players.filter(p => p.alive).length, 20, 32);
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 38, W - 20, 28, 8); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, H - 18);
+
+    const alive = players.filter(p => p.alive);
+    if (alive.length <= 1) {
+      cancelAnimationFrame(animId);
+      const w = pickSingleWinner(alive, names);
+      setTimeout(() => { showPhase('lava', 'winner'); document.getElementById('lava-winner-name').textContent = w; }, 1400);
+    } else animId = requestAnimationFrame(loop);
+  }
+  let animId = requestAnimationFrame(loop);
+}
+
+/* ==================== TORNADO ALLEY ==================== */
+function runTornado() {
+  showOverlay('tornado-overlay'); showPhase('tornado', 'intro');
+  const names = Array.from(entrants);
+  if (!names.length) { alert('No entrants yet!'); return; }
+  document.getElementById('tornado-intro-count').textContent = names.length + ' storm chaser' + (names.length === 1 ? '' : 's');
+  setTimeout(() => startTornado(names), 1600);
+}
+function startTornado(names) {
+  showPhase('tornado', 'play');
+  document.getElementById('tornado-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('tornado-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, cx = W / 2, cy = H / 2;
+  const pad = 50, gags = ['SUCKED IN!','BYE BYE!','SPINNING OUT!','TWISTED!'];
+  let players = names.map((nm, i) => {
+    const ang = (i / names.length) * Math.PI * 2;
+    const dist = 180 + Math.random() * 80;
+    return { name: nm, color: colorFor(nm), alive: true, x: cx + Math.cos(ang) * dist, y: cy + Math.sin(ang) * dist, vx: 0, vy: 0, gag: '', gagTimer: 0, elimX: 0, elimY: 0 };
+  });
+  let frame = 0, feed = '🌪️ Resist the tornado pull!', strength = 0.015, debris = [];
+
+  function loop() {
+    frame++;
+    strength = Math.min(0.055, 0.015 + frame / 8000);
+    if (frame % 8 === 0) debris.push({ ang: Math.random() * Math.PI * 2, dist: 220 + Math.random() * 60, spin: Math.random() * 0.2, life: 40 + Math.random() * 30, size: 2 + Math.random() * 4 });
+
+    players.forEach(p => {
+      if (!p.alive) return;
+      if (p.gagTimer > 0) p.gagTimer--;
+      const dx = cx - p.x, dy = cy - p.y, dist = Math.hypot(dx, dy) || 1;
+      p.vx += (dx / dist) * strength * (1 + (220 - Math.min(dist, 220)) / 220);
+      p.vy += (dy / dist) * strength * (1 + (220 - Math.min(dist, 220)) / 220);
+      p.vx += (Math.random() - 0.5) * 0.15; p.vy += (Math.random() - 0.5) * 0.15;
+      p.vx += (-dy / dist) * 0.04; p.vy += (dx / dist) * 0.04;
+      p.vx *= 0.94; p.vy *= 0.94;
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < pad) { p.x = pad; p.vx = Math.abs(p.vx); }
+      if (p.x > W - pad) { p.x = W - pad; p.vx = -Math.abs(p.vx); }
+      if (p.y < pad) { p.y = pad; p.vy = Math.abs(p.vy); }
+      if (p.y > H - pad) { p.y = H - pad; p.vy = -Math.abs(p.vy); }
+      if (dist < 38) {
+        p.alive = false; p.elimX = p.x; p.elimY = p.y;
+        p.gag = gags[Math.floor(Math.random() * gags.length)]; p.gagTimer = 55;
+        feed = '🌪️ ' + p.name + ' got sucked into the vortex!';
+      }
+    });
+
+    ctx.clearRect(0, 0, W, H);
+    const sky = ctx.createLinearGradient(0, 0, 0, H); sky.addColorStop(0, '#334155'); sky.addColorStop(1, '#475569');
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#3f6212'; ctx.fillRect(0, H - 60, W, 60);
+    for (let i = 0; i < 12; i++) {
+      const a = frame * 0.03 + i * 0.52, r = 20 + i * 14;
+      ctx.strokeStyle = `rgba(148,163,184,${0.15 + i * 0.04})`; ctx.lineWidth = 3 + i;
+      ctx.beginPath(); ctx.arc(cx, cy, r, a, a + Math.PI * 1.2); ctx.stroke();
+    }
+    ctx.fillStyle = 'rgba(100,116,139,0.5)'; ctx.beginPath(); ctx.arc(cx, cy, 35, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(30,41,59,0.8)'; ctx.beginPath(); ctx.arc(cx, cy, 18, 0, Math.PI * 2); ctx.fill();
+    debris = debris.filter(d => {
+      d.ang += d.spin; d.dist -= 1.8; d.life--;
+      if (d.life <= 0 || d.dist < 20) return false;
+      const x = cx + Math.cos(d.ang) * d.dist, y = cy + Math.sin(d.ang) * d.dist;
+      ctx.fillStyle = 'rgba(203,213,225,0.6)'; ctx.fillRect(x, y, d.size, d.size);
+      return true;
+    });
+    players.forEach(p => {
+      if (!p.alive) { ctx.globalAlpha = 0.35; drawMiniCharacter(ctx, p.elimX, p.elimY, 12, p.color, { faded: true, rotate: frame * 0.1 }); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 22, p.gag, '#94a3b8', 11); return; }
+      drawMiniCharacter(ctx, p.x, p.y, 14, p.color, { phase: frame * 0.12, rotate: Math.atan2(cy - p.y, cx - p.x) * 0.15 });
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 34);
+    });
+    ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10, 10, 230, 34, 8); ctx.fill();
+    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'left'; ctx.fillText('🌪️ ALIVE: ' + players.filter(p => p.alive).length, 20, 32);
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 38, W - 20, 28, 8); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, H - 18);
+
+    const alive = players.filter(p => p.alive);
+    if (alive.length <= 1) {
+      cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('tornado', 'winner'); document.getElementById('tornado-winner-name').textContent = pickSingleWinner(alive, names); }, 1400);
+    } else animId = requestAnimationFrame(loop);
+  }
+  let animId = requestAnimationFrame(loop);
+}
+
+/* ==================== TILT-A-WHIRL ==================== */
+function runTilt() {
+  showOverlay('tilt-overlay'); showPhase('tilt', 'intro');
+  const names = Array.from(entrants);
+  if (!names.length) { alert('No entrants yet!'); return; }
+  document.getElementById('tilt-intro-count').textContent = names.length + ' rider' + (names.length === 1 ? '' : 's') + ' on the spin deck';
+  setTimeout(() => startTilt(names), 1600);
+}
+function startTilt(names) {
+  showPhase('tilt', 'play');
+  document.getElementById('tilt-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('tilt-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, cx = W / 2, cy = H / 2 + 10, platR = 195;
+  const gags = ['FLYING OFF!','WHEEE—NO WAIT!','BARF BAG!','NOT AGAIN!'];
+  let players = names.map((nm, i) => {
+    const ang = (i / names.length) * Math.PI * 2, dist = platR * (0.25 + Math.random() * 0.55);
+    return { name: nm, color: colorFor(nm), alive: true, ang, dist, vx: 0, vd: 0, gag: '', gagTimer: 0, elimX: 0, elimY: 0 };
+  });
+  let frame = 0, feed = '🎡 Hold on — the deck is tilting!', spin = 0.018, tilt = 0;
+
+  function loop() {
+    frame++;
+    spin = Math.min(0.045, 0.018 + frame / 6000);
+    tilt = Math.sin(frame * 0.025) * 0.35 + Math.sin(frame * 0.011) * 0.2;
+    const gx = Math.sin(tilt) * 0.35, gy = Math.cos(tilt) * 0.12;
+
+    players.forEach(p => {
+      if (!p.alive) return;
+      if (p.gagTimer > 0) p.gagTimer--;
+      p.ang += spin + (Math.random() - 0.5) * 0.008;
+      p.vd += gx * 0.08 + (Math.random() - 0.5) * 0.04;
+      p.vd += p.dist * spin * spin * 120;
+      p.dist += p.vd; p.vd *= 0.92;
+      if (p.dist > platR - 10) {
+        p.alive = false;
+        p.elimX = cx + Math.cos(p.ang) * (platR + 30);
+        p.elimY = cy + Math.sin(p.ang) * (platR + 30);
+        p.gag = gags[Math.floor(Math.random() * gags.length)]; p.gagTimer = 55;
+        feed = '🎡 ' + p.name + ' flew off the ride!';
+      }
+    });
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#1e1b4b'; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1;
+    for (let r = 40; r < 320; r += 40) { ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke(); }
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(tilt * 0.5);
+    const g = ctx.createRadialGradient(0, 0, 20, 0, 0, platR);
+    g.addColorStop(0, '#c084fc'); g.addColorStop(0.6, '#9333ea'); g.addColorStop(1, '#581c87');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, platR, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#f0abfc'; ctx.lineWidth = 5; ctx.stroke();
+    for (let i = 0; i < 8; i++) { ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(i * Math.PI / 4) * platR, Math.sin(i * Math.PI / 4) * platR); ctx.stroke(); }
+    ctx.restore();
+    ctx.fillStyle = '#64748b'; ctx.fillRect(cx - 12, cy - platR - 40, 24, 50);
+
+    players.forEach(p => {
+      const px = cx + Math.cos(p.ang) * p.dist, py = cy + Math.sin(p.ang) * p.dist * (1 + gy * 0.3);
+      if (!p.alive) { ctx.globalAlpha = 0.35; drawMiniCharacter(ctx, p.elimX, p.elimY, 12, p.color, { faded: true, rotate: frame * 0.08 }); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 22, p.gag, '#e879f9', 11); return; }
+      drawMiniCharacter(ctx, px, py, 14, p.color, { phase: frame * 0.14, rotate: p.ang + Math.PI / 2 });
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), px, py - 32);
+    });
+    ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10, 10, 230, 34, 8); ctx.fill();
+    ctx.fillStyle = '#e879f9'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'left'; ctx.fillText('🎡 ALIVE: ' + players.filter(p => p.alive).length, 20, 32);
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 38, W - 20, 28, 8); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, H - 18);
+
+    const alive = players.filter(p => p.alive);
+    if (alive.length <= 1) {
+      cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('tilt', 'winner'); document.getElementById('tilt-winner-name').textContent = pickSingleWinner(alive, names); }, 1400);
+    } else animId = requestAnimationFrame(loop);
+  }
+  let animId = requestAnimationFrame(loop);
+}
+
+/* ==================== BEE SWARM CHAOS ==================== */
+function runBee() {
+  showOverlay('bee-overlay'); showPhase('bee', 'intro');
+  const names = Array.from(entrants);
+  if (!names.length) { alert('No entrants yet!'); return; }
+  document.getElementById('bee-intro-count').textContent = names.length + ' runner' + (names.length === 1 ? '' : 's') + ' vs the hive';
+  setTimeout(() => startBee(names), 1600);
+}
+function startBee(names) {
+  showPhase('bee', 'play');
+  document.getElementById('bee-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('bee-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, pad = 55;
+  const gags = ['STUNG!','BZZZT!','NOT THE FACE!','ALLERGIC!'];
+  let players = names.map((nm, i) => ({
+    name: nm, color: colorFor(nm), alive: true,
+    x: pad + 80 + (i % 5) * 90, y: pad + 60 + Math.floor(i / 5) * 80,
+    vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2,
+    gag: '', gagTimer: 0, elimX: 0, elimY: 0, panic: Math.random() * 6
+  }));
+  let bees = [], frame = 0, feed = '🐝 Bees incoming — stay moving!', spawnT = 0;
+
+  function spawnBee() {
+    const side = Math.floor(Math.random() * 4);
+    let x, y;
+    if (side === 0) { x = pad; y = pad + Math.random() * (H - pad * 2); }
+    else if (side === 1) { x = W - pad; y = pad + Math.random() * (H - pad * 2); }
+    else if (side === 2) { x = pad + Math.random() * (W - pad * 2); y = pad; }
+    else { x = pad + Math.random() * (W - pad * 2); y = H - pad; }
+    bees.push({ x, y, vx: 0, vy: 0, buzz: Math.random() * Math.PI * 2 });
+  }
+
+  function loop() {
+    frame++; spawnT++;
+    if (bees.length < 8 + Math.floor(frame / 400) && spawnT > 50) { spawnBee(); spawnT = 0; }
+
+    const alive = players.filter(p => p.alive);
+    bees.forEach(b => {
+      let target = null, td = Infinity;
+      alive.forEach(p => { const d = Math.hypot(p.x - b.x, p.y - b.y); if (d < td) { td = d; target = p; } });
+      if (target) {
+        const dx = target.x - b.x, dy = target.y - b.y, d = Math.hypot(dx, dy) || 1;
+        const spd = 1.4 + Math.min(1.2, frame / 2000);
+        b.vx += (dx / d) * spd * 0.15; b.vy += (dy / d) * spd * 0.15;
+      }
+      b.buzz += 0.3; b.vx += Math.sin(b.buzz) * 0.08; b.vy += Math.cos(b.buzz * 1.3) * 0.08;
+      b.vx *= 0.92; b.vy *= 0.92; b.x += b.vx; b.y += b.vy;
+    });
+
+    players.forEach(p => {
+      if (!p.alive) return;
+      if (p.gagTimer > 0) p.gagTimer--;
+      p.panic += 0.1;
+      p.x += p.vx + Math.sin(p.panic) * 0.8; p.y += p.vy + Math.cos(p.panic * 1.2) * 0.8;
+      if (Math.random() < 0.02) { p.vx = (Math.random() - 0.5) * 3.5; p.vy = (Math.random() - 0.5) * 3.5; }
+      p.vx *= 0.95; p.vy *= 0.95;
+      if (p.x < pad) { p.x = pad; p.vx = Math.abs(p.vx); }
+      if (p.x > W - pad) { p.x = W - pad; p.vx = -Math.abs(p.vx); }
+      if (p.y < pad) { p.y = pad; p.vy = Math.abs(p.vy); }
+      if (p.y > H - pad) { p.y = H - pad; p.vy = -Math.abs(p.vy); }
+      bees.forEach(b => {
+        if (Math.hypot(b.x - p.x, b.y - p.y) < 18) {
+          p.alive = false; p.elimX = p.x; p.elimY = p.y;
+          p.gag = gags[Math.floor(Math.random() * gags.length)]; p.gagTimer = 55;
+          feed = '🐝 ' + p.name + ' got STUNG!';
+        }
+      });
+    });
+
+    ctx.clearRect(0, 0, W, H);
+    const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#fef9c3'); bg.addColorStop(1, '#fde047');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(180,83,9,0.3)'; ctx.lineWidth = 4; ctx.strokeRect(pad, pad, W - pad * 2, H - pad * 2);
+    ctx.font = '40px serif'; ctx.textAlign = 'center'; ctx.fillText('🍯', W - 80, 80);
+    bees.forEach(b => {
+      ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(Math.atan2(b.vy, b.vx));
+      ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.ellipse(0, 0, 8, 5, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#1c1917'; ctx.fillRect(-5, -2, 3, 4); ctx.fillRect(0, -2, 3, 4);
+      ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.beginPath(); ctx.ellipse(-3, -4, 4, 2.5, -0.4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(-3, 4, 4, 2.5, 0.4, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    });
+    players.forEach(p => {
+      if (!p.alive) { ctx.globalAlpha = 0.35; drawMiniCharacter(ctx, p.elimX, p.elimY, 12, p.color, { faded: true }); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 22, p.gag, '#ca8a04', 11); return; }
+      drawMiniCharacter(ctx, p.x, p.y, 14, p.color, { phase: frame * 0.18, armSwing: Math.sin(frame * 0.3) * 10 });
+      ctx.fillStyle = '#422006'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 34);
+    });
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, 10, 220, 34, 8); ctx.fill();
+    ctx.fillStyle = '#ca8a04'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'left'; ctx.fillText('🐝 ALIVE: ' + players.filter(p => p.alive).length, 20, 32);
+    ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.beginPath(); ctx.roundRect(10, H - 38, W - 20, 28, 8); ctx.fill();
+    ctx.fillStyle = '#422006'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, H - 18);
+
+    const left = players.filter(p => p.alive);
+    if (left.length <= 1) {
+      cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('bee', 'winner'); document.getElementById('bee-winner-name').textContent = pickSingleWinner(left, names); }, 1400);
+    } else animId = requestAnimationFrame(loop);
+  }
+  let animId = requestAnimationFrame(loop);
+}
+
+/* ==================== SUBWAY SPRINT ==================== */
+function runSubway() {
+  showOverlay('subway-overlay'); showPhase('subway', 'intro');
+  const names = Array.from(entrants);
+  if (!names.length) { alert('No entrants yet!'); return; }
+  armRaceTurbo(names);
+  document.getElementById('subway-intro-count').textContent = names.length + ' commuter' + (names.length === 1 ? '' : 's') + ' racing to the station';
+  setTimeout(() => startSubway(names), 1600);
+}
+function startSubway(names) {
+  showPhase('subway', 'play');
+  document.getElementById('subway-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const canvas = document.getElementById('subway-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, n = names.length, laneH = (H - 60) / n;
+  const finishX = scaledRaceLen(8800, 80, n), startTime = Date.now();
+  const gags = ['HIT!','TRAIN!','BONK!','OW MY HEAD!'];
+  let runners = names.map((nm, i) => ({
+    name: nm, color: colorFor(nm), lane: i, x: 40, speed: 0, maxSpeed: 2 + Math.random() * 1.2, accel: 0.018 + Math.random() * 0.01,
+    finished: false, finishTime: 0, stun: 0, gag: '', gagTimer: 0, rbMult: 1, rbTimer: 0
+  }));
+  let trains = [], frame = 0, cameraX = 0, places = 1, feed = '🚇 Dodge the trains!';
+
+  function spawnTrain() {
+    const lane = Math.floor(Math.random() * n);
+    trains.push({ lane, x: cameraX + W + 80 + Math.random() * 200, w: 90 + Math.random() * 60, h: laneH * 0.75, spd: 4 + Math.random() * 2 });
+  }
+
+  function loop() {
+    frame++;
+    if (frame % 110 === 0) spawnTrain();
+    applyRubberBand(frame, runners.filter(r => !r.finished), r => r.x);
+    let done = true;
+    runners.forEach(r => {
+      if (r.finished) return; done = false;
+      if (r.gagTimer > 0) r.gagTimer--;
+      if (r.stun > 0) { r.stun--; return; }
+      if (r.speed < r.maxSpeed) r.speed += r.accel;
+      const mv = r.rbTimer > 0 ? r.rbMult : 1; if (r.rbTimer > 0) r.rbTimer--;
+      r.x += r.speed * mv * raceSpeedMult(r);
+      trains.forEach(t => {
+        if (t.lane !== r.lane) return;
+        const rx = r.x - cameraX, ty = 40 + r.lane * laneH + laneH * 0.5;
+        const tx = t.x - cameraX;
+        if (rx + 12 > tx && rx - 12 < tx + t.w) {
+          r.stun = 35 + Math.random() * 20; r.speed *= 0.4;
+          r.gag = gags[Math.floor(Math.random() * gags.length)]; r.gagTimer = 40;
+          feed = '🚇 ' + r.name + ' hit a train!';
+        }
+      });
+      if (r.x >= finishX) { r.x = finishX; r.finished = true; r.finishTime = Date.now() - startTime; r.place = places++; }
+    });
+    trains.forEach(t => { t.x -= t.spd; });
+    trains = trains.filter(t => t.x > cameraX - 150);
+
+    const lead = runners.reduce((a, b) => a.x > b.x ? a : b);
+    cameraX = Math.max(0, Math.min(lead.x - W * 0.35, finishX - W + 120));
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, W, H);
+    for (let i = 0; i < n; i++) {
+      const ly = 40 + i * laneH;
+      ctx.fillStyle = i % 2 ? '#1e293b' : '#334155'; ctx.fillRect(0, ly, W, laneH);
+      ctx.strokeStyle = '#facc15'; ctx.setLineDash([12, 8]); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(-cameraX % 80, ly + laneH); ctx.lineTo(W, ly + laneH); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    for (let d = 500; d < finishX; d += 500) {
+      const dx = d - cameraX;
+      if (dx > -20 && dx < W + 20) { ctx.fillStyle = '#64748b'; ctx.fillRect(dx, 30, 8, H - 50); }
+    }
+    const fx = finishX - cameraX;
+    if (fx > -60 && fx < W + 60) {
+      ctx.fillStyle = '#22c55e'; ctx.fillRect(fx, 35, 10, H - 70);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'center'; ctx.fillText('STATION', fx + 5, 28);
+    }
+    trains.forEach(t => {
+      const sx = t.x - cameraX, sy = 40 + t.lane * laneH + (laneH - t.h) / 2;
+      ctx.fillStyle = '#dc2626'; ctx.fillRect(sx, sy, t.w, t.h);
+      ctx.fillStyle = '#fef08a'; for (let w = 0; w < t.w; w += 22) ctx.fillRect(sx + w + 4, sy + 8, 14, t.h - 16);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.fillText('🚇', sx + t.w / 2, sy + t.h / 2 + 4);
+    });
+    runners.forEach(r => {
+      const sx = r.x - cameraX, sy = 40 + r.lane * laneH + laneH * 0.55;
+      drawMiniCharacter(ctx, sx, sy, 13, r.color, { phase: frame * 0.14, armSwing: Math.sin(frame * 0.25 + r.lane) * 8 });
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 9px Inter'; ctx.textAlign = 'center'; ctx.fillText(r.name.substring(0, 10), sx, sy - 26);
+      if (r.gagTimer > 0) drawGagText(ctx, sx, sy - 38, r.gag, raceSpeedMult(r) > 1 ? '#ff6600' : '#fbbf24', 11);
+      if (r.gag === 'MA TURBO!!') drawGagText(ctx, sx, sy - 50, r.gag, '#ff6600', 12);
+    });
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, 10, 200, 32, 8); ctx.fill();
+    ctx.fillStyle = '#22c55e'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left'; ctx.fillText('🚇 RACE LIVE', 20, 30);
+
+    const raceWinner = firstToFinish(runners);
+    if (raceWinner) {
+      endRaceTurbo(); cancelAnimationFrame(animId);
+      setTimeout(() => { showPhase('subway', 'winner'); document.getElementById('subway-winner-name').textContent = raceWinner.name; }, 1100);
+    } else if (!done) animId = requestAnimationFrame(loop);
+  }
+  beginRaceTurbo(runners);
+  loop();
+}
+
 /* ==================== SWORD DUEL (1v1 launcher) ==================== */
 function runSwordDuel() {
   const names = Array.from(entrants);
@@ -5952,6 +6477,11 @@ function launchSwordWith(p1Name, p2Name) {
       else if (game === 'pogo') runPogo();
       else if (game === 'hamster') runHamster();
       else if (game === 'burrito') runBurrito();
+      else if (game === 'lava') runLava();
+      else if (game === 'tornado') runTornado();
+      else if (game === 'tilt') runTilt();
+      else if (game === 'bee') runBee();
+      else if (game === 'subway') runSubway();
       else if (game === 'boxing') runBoxingMatch();
       else if (game === 'sword') runSwordDuel();
     }, 200);
