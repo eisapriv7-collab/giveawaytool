@@ -5226,7 +5226,7 @@ function runBowling() {
   showOverlay('bowling-overlay'); showPhase('bowling', 'intro');
   const names = Array.from(entrants);
   if (!names.length) { alert('No entrants yet!'); return; }
-  document.getElementById('bowling-intro-count').textContent = names.length + ' pin' + (names.length===1?'':'s') + ' — last cue standing wins';
+  document.getElementById('bowling-intro-count').textContent = names.length + ' pin' + (names.length===1?'':'s') + ' scattered — last cue standing wins';
   setTimeout(() => startBowling(names), 1600);
 }
 function startBowling(names) {
@@ -5234,24 +5234,51 @@ function startBowling(names) {
   document.getElementById('bowling-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
   const canvas = document.getElementById('bowling-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height, n = names.length;
-  const laneL = 100, laneR = W - 100, laneT = 70, laneB = H - 50;
-  const cols = Math.min(6, Math.max(3, Math.ceil(Math.sqrt(n))));
-  const pins = names.map((nm, i) => {
-    const col = i % cols, row = Math.floor(i / cols);
-    const rowW = Math.min(cols, n - row * cols);
-    const offsetX = (cols - rowW) * 28;
-    return {
-      name: nm, color: colorFor(nm), alive: true,
-      x: laneL + 80 + offsetX + col * 56, y: laneT + 40 + row * 48,
-      vx: 0, vy: 0, angle: 0, wobble: 0, gag: ''
-    };
-  });
-  let ball = null, frame = 0, feed = '🎳 Pins set — ball incoming!', rollCd = 90, particles = [];
+  const laneL = 55, laneR = W - 55, laneT = 45, laneB = H - 35;
+  const pinMargin = 30, minPinDist = 34;
+
+  function spreadPins() {
+    const placed = [];
+    names.forEach(nm => {
+      let x, y, tries = 0;
+      do {
+        x = laneL + pinMargin + Math.random() * (laneR - laneL - pinMargin * 2);
+        y = laneT + pinMargin + Math.random() * (laneB - laneT - pinMargin * 2 - 50);
+        tries++;
+      } while (tries < 120 && placed.some(p => Math.hypot(p.x - x, p.y - y) < minPinDist));
+      placed.push({
+        name: nm, color: colorFor(nm), alive: true,
+        x, y, vx: 0, vy: 0, angle: 0, wobble: 0, gag: ''
+      });
+    });
+    return placed;
+  }
+
+  const pins = spreadPins();
+  let ball = null, frame = 0, feed = '🎳 Pins scattered — balls incoming from below!', rollCd = 50, particles = [];
 
   function launchBall() {
+    const alivePins = pins.filter(p => p.alive);
+    const spawnX = laneL + 25 + Math.random() * (laneR - laneL - 50);
+    const spawnY = laneB - 12;
+    let targetX, targetY;
+    if (alivePins.length && Math.random() < 0.75) {
+      const target = alivePins[Math.floor(Math.random() * alivePins.length)];
+      targetX = target.x + (Math.random() - 0.5) * 50;
+      targetY = target.y + (Math.random() - 0.5) * 40;
+    } else {
+      targetX = laneL + pinMargin + Math.random() * (laneR - laneL - pinMargin * 2);
+      targetY = laneT + pinMargin + Math.random() * (laneB - laneT - pinMargin * 2 - 60);
+    }
+    const dx = targetX - spawnX, dy = targetY - spawnY;
+    const dist = Math.hypot(dx, dy) || 1;
+    const speed = 11 + Math.random() * 6;
+    const spread = (Math.random() - 0.5) * 2.2;
     ball = {
-      x: W / 2 + (Math.random() - 0.5) * 30, y: laneB - 30,
-      vx: (Math.random() - 0.5) * 1.8, vy: -11 - Math.random() * 4, r: 20, spin: 0, active: true
+      x: spawnX, y: spawnY,
+      vx: (dx / dist) * speed + spread,
+      vy: (dy / dist) * speed + (Math.random() - 0.5) * 1.5,
+      r: 20, spin: 0, active: true
     };
     feed = '🎳 BALL ROLLING!';
   }
@@ -5283,7 +5310,7 @@ function startBowling(names) {
     frame++;
     rollCd--;
     const alivePins = pins.filter(p => p.alive);
-    if (!ball && alivePins.length > 1 && rollCd <= 0) { launchBall(); rollCd = 140; }
+    if (!ball && alivePins.length > 1 && rollCd <= 0) { launchBall(); rollCd = 110; }
 
     if (ball && ball.active) {
       ball.vy += 0.22; ball.vx *= 0.998;
@@ -5299,9 +5326,10 @@ function startBowling(names) {
           ball.vx = -nx * Math.abs(ball.vx) * 0.6; ball.vy = -ny * Math.abs(ball.vy) * 0.4;
         }
       });
-      if (ball.y < laneT - 40 || ball.y > laneB + 60 || (Math.abs(ball.vy) < 0.3 && ball.y > laneB - 100)) {
-        ball.active = false; ball = null; rollCd = 80;
-        feed = alivePins.length > 1 ? 'Next roll...' : 'We have a survivor!';
+      if (ball.y < laneT - 50 || ball.y > laneB + 50 || ball.x < laneL - 60 || ball.x > laneR + 60 ||
+          (Math.abs(ball.vy) < 0.4 && Math.abs(ball.vx) < 0.4 && ball.y > laneB - 80)) {
+        ball.active = false; ball = null; rollCd = 55;
+        feed = alivePins.length > 1 ? 'Next roll from a new angle...' : 'We have a survivor!';
       }
     }
 
