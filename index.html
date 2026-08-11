@@ -223,7 +223,7 @@
     <div id="dice-phase-waiting" class="text-center"><div class="text-2xl text-gray-400 mb-4">Connecting to chat...</div></div>
     <div id="dice-phase-collect" class="hidden text-center w-full max-w-5xl px-6">
       <div class="text-6xl font-black text-[#ffd700] mb-2" id="dice-timer">10</div>
-      <div class="text-xl text-gray-300 mb-4">Type <span class="text-[#53fc18] font-bold">!num1</span> to <span class="text-[#53fc18] font-bold">!num6</span> — type fast!</div>
+      <div class="text-xl text-gray-300 mb-4">Type <span class="text-[#53fc18] font-bold">!num1</span> to <span class="text-[#53fc18] font-bold">!num6</span> — match either die to survive!</div>
       <div class="flex items-center justify-center gap-3 mb-6"><span id="dice-round-badge" class="inline-block px-4 py-2 rounded-full bg-white/5 text-white text-sm font-bold">Round 1</span><span id="dice-count-badge" class="p-count-badge">0 alive</span></div>
       <div id="dice-players-grid" class="p-grid max-h-72 overflow-y-auto"></div>
     </div>
@@ -1194,14 +1194,23 @@ function diceResolve(d1, d2, sum) {
   const survivors = {}, eliminated = {};
   Object.keys(gameState.players).forEach(n => {
     const pick = gameState.players[n];
-    if (pick && Math.abs(pick - (sum / 2)) <= 1.5) survivors[n] = null; else eliminated[n] = pick || '?';
+    if (pick && (pick === d1 || pick === d2)) survivors[n] = pick;
+    else eliminated[n] = pick || '?';
   });
+  if (Object.keys(survivors).length === 0 && Object.keys(gameState.players).length > 1) {
+    showPhase('dice', 'resolve');
+    document.getElementById('dice-result-text').textContent = '🎲 ' + d1 + ' & ' + d2;
+    document.getElementById('dice-result-sub').textContent = 'Nobody matched! Rolling again...';
+    setTimeout(() => diceRoll(), 2500);
+    return;
+  }
   const hl = {}; Object.keys(survivors).forEach(n => hl[n] = 'survivor'); Object.keys(eliminated).forEach(n => hl[n] = 'eliminated');
   const combined = Object.assign({}, survivors, eliminated);
   gameState.players = survivors;
   showPhase('dice', 'resolve');
-  document.getElementById('dice-result-text').textContent = d1 + ' + ' + d2 + ' = ' + sum;
-  document.getElementById('dice-result-sub').textContent = Object.keys(survivors).length + ' survivors advance!';
+  const numsLabel = d1 === d2 ? '!' + d1 : '!' + d1 + ' or !' + d2;
+  document.getElementById('dice-result-text').textContent = '🎲 ' + d1 + ' & ' + d2;
+  document.getElementById('dice-result-sub').textContent = 'Survivors picked ' + numsLabel + ' — ' + Object.keys(survivors).length + ' advance!';
   renderPlayerGrid('dice-survivors-grid', combined, { highlight: hl, showValue: true });
   if (Object.keys(survivors).length <= 1) setTimeout(() => diceEndGame(Object.keys(survivors)[0] || 'No one'), 3000);
   else { gameState.round++; setTimeout(() => diceStartRound(), 4000); }
@@ -1210,6 +1219,7 @@ function diceEndGame(winner) { showPhase('dice', 'winner'); document.getElementB
 
 /* ==================== TRIVIA BLITZ ==================== */
 const triviaQuestions = [
+  { q: 'Is Cheetoo trans?', a: 'Yes', b: 'Yes', c: 'Yes', d: 'Yes', correct: 'all' },
   { q: 'What is the capital of France?', a: 'Paris', b: 'London', c: 'Berlin', d: 'Madrid', correct: 'a' },
   { q: 'How many continents are there?', a: '5', b: '6', c: '7', d: '8', correct: 'c' },
   { q: 'What planet is known as the Red Planet?', a: 'Venus', b: 'Mars', c: 'Jupiter', d: 'Saturn', correct: 'b' },
@@ -1250,11 +1260,16 @@ function updateTriviaBars() {
 function triviaReveal() {
   gameState.phase = 'reveal'; showPhase('trivia', 'reveal');
   const q = gameState.currentQ, correct = q.correct;
-  document.getElementById('trivia-correct-answer').textContent = correct.toUpperCase() + '. ' + q[correct];
+  if (correct === 'all') {
+    document.getElementById('trivia-correct-answer').textContent = 'ALL CORRECT — Yes! 🏳️‍⚧️';
+  } else {
+    document.getElementById('trivia-correct-answer').textContent = correct.toUpperCase() + '. ' + q[correct];
+  }
   const survivors = {}, hl = {};
   Object.keys(gameState.players).forEach(n => {
     const ans = gameState.answered[n];
-    if (ans === correct) { survivors[n] = true; hl[n] = 'survivor'; } else { hl[n] = 'eliminated'; }
+    const isCorrect = correct === 'all' ? (ans === 'a' || ans === 'b' || ans === 'c' || ans === 'd') : ans === correct;
+    if (isCorrect) { survivors[n] = true; hl[n] = 'survivor'; } else { hl[n] = 'eliminated'; }
   });
   renderPlayerGrid('trivia-survivors-grid', gameState.players, { highlight: hl });
   gameState.players = survivors;
@@ -4235,7 +4250,7 @@ function startDodgeball(names) {
   let animId;
   function loop() {
     frame++; spawnTimer++;
-    if (spawnTimer > 110 && balls.length < 3 + Math.min(3, Math.floor(frame / 700))) { spawnBall(); spawnTimer = 0; }
+    if (balls.length === 0 && spawnTimer > 140) { spawnBall(); spawnTimer = 0; }
 
     ctx.clearRect(0, 0, W, H);
     drawArena();
@@ -4310,7 +4325,7 @@ function startDodgeball(names) {
       setTimeout(() => { showPhase('dodgeball', 'winner'); document.getElementById('dodgeball-winner-name').textContent = winner.name; }, 1800);
     }
   }
-  for (let i = 0; i < 1; i++) spawnBall();
+  spawnBall();
   loop();
 }
 
