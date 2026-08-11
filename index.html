@@ -919,6 +919,64 @@ function firstToFinish(participants) {
   return (participants || []).filter(p => p.finished).sort((a, b) => (a.finishTime || 0) - (b.finishTime || 0))[0] || null;
 }
 
+/* ==================== RACE SECRET: !masturbo (once per player per race) ==================== */
+const RACE_GAME_IDS = ['racing','swimming','balloon','obstacle','downhill','rocket','tower','snail','banana','wipeout','hobbyhorse','sack','cart','penguin','mop','chair','pogo','hamster','burrito','chute'];
+const MASTURBO_FRAMES = 240;
+const MASTURBO_MULT = 2.35;
+const RACE_MAP_SCALE = 1.85;
+let raceTurboState = { active: false, racers: [] };
+
+function scaledRaceLen(base, per, n) {
+  return Math.round((base + n * per) * RACE_MAP_SCALE);
+}
+
+function beginRaceTurbo(racers) {
+  (racers || []).forEach(r => { if (r) { r.masturboUsed = false; r.masturboTimer = 0; } });
+  raceTurboState.active = true;
+  raceTurboState.racers = racers || [];
+}
+
+function endRaceTurbo() {
+  raceTurboState.active = false;
+  raceTurboState.racers = [];
+}
+
+function findRaceRacer(sender) {
+  if (!raceTurboState.active) return null;
+  const s = String(sender || '').trim();
+  const lower = s.toLowerCase();
+  return raceTurboState.racers.find(r => r && (r.name === s || r.name.toLowerCase() === lower)) || null;
+}
+
+function raceSpeedMult(r) {
+  if (!r) return 1;
+  if (r.masturboTimer > 0) {
+    r.masturboTimer--;
+    if (r.masturboTimer <= 0 && r.gag === 'MA TURBO!!') r.gag = '';
+  }
+  return r.masturboTimer > 0 ? MASTURBO_MULT : 1;
+}
+
+function triggerMasTurbo(racer) {
+  if (!racer || racer.finished || racer.masturboUsed || racer.popped) return false;
+  racer.masturboUsed = true;
+  racer.masturboTimer = MASTURBO_FRAMES;
+  racer.gag = 'MA TURBO!!';
+  if (racer.gagTimer !== undefined) racer.gagTimer = 50;
+  if (racer.maxSpeed !== undefined && racer.speed !== undefined) racer.speed = Math.max(racer.speed, racer.maxSpeed * 0.92);
+  if (racer.cruiseSpeed !== undefined) racer.speed = Math.min(racer.cruiseSpeed * 2.6, (racer.speed || 0) + 3.5);
+  if (racer.vAlt !== undefined) racer.vAlt = Math.max(racer.vAlt, racer.vAlt * 1.35 + 0.35);
+  if (racer.vy !== undefined && racer.chuteOpen) racer.vy = Math.min(racer.vy + 0.45, 3.2);
+  if (racer.boostTimer !== undefined) racer.boostTimer = Math.max(racer.boostTimer || 0, MASTURBO_FRAMES);
+  if (racer.burstTimer !== undefined && racer.burstTimer <= 0) racer.burstTimer = 35;
+  return true;
+}
+
+function handleRaceChatCommand(sender, text) {
+  if (!/\b!masturbo\b/.test(String(text || '').trim().toLowerCase())) return false;
+  return triggerMasTurbo(findRaceRacer(sender));
+}
+
 /* ==================== SETUP & NAVIGATION ==================== */
 function createGiveaway() {
   try {
@@ -1130,6 +1188,7 @@ function connectRawWS() {
 }
 
 function routeChatMessage(sender, text, rawText) {
+  if (handleRaceChatCommand(sender, text)) return;
   if (!gameState.active) return;
   const t = text.trim().toLowerCase();
   const key = findPlayerKey(sender);
@@ -1713,7 +1772,7 @@ function startRacing(names) {
     rbMult: 1, rbTimer: 0
   }));
   let startTime = Date.now(), frame = 0, cameraX = 0;
-  const trackLength = 9000 + n * 120, finishX = trackLength;
+  const trackLength = scaledRaceLen(9000, 120, n), finishX = trackLength;
   let places = 1, particles = [];
 
   function drawTrack() {
@@ -1779,7 +1838,7 @@ function startRacing(names) {
         if (Math.random() < 0.003) car.speed -= 1;
         if (Math.random() < 0.002) car.speed += 0.5;
         if (car.rbTimer > 0) car.rbTimer--;
-        car.x += car.speed * (car.rbTimer > 0 ? car.rbMult : 1);
+        car.x += car.speed * raceSpeedMult(car) * (car.rbTimer > 0 ? car.rbMult : 1);
         if (car.x >= finishX) { car.x = finishX; car.finished = true; car.finishTime = Date.now() - startTime; car.place = places++; }
       }
     });
@@ -1789,7 +1848,7 @@ function startRacing(names) {
     cars.forEach(drawCar); updateParticles(); updateHUD();
     const raceWinner = firstToFinish(cars);
     if (raceWinner) {
-      cancelAnimationFrame(animId);
+      endRaceTurbo(); cancelAnimationFrame(animId);
       setTimeout(() => {
         showPhase('racing', 'winner');
         document.getElementById('racing-winner-name').textContent = raceWinner.name;
@@ -1798,6 +1857,7 @@ function startRacing(names) {
       }, 1200);
     } else if (!allFinished) animId = requestAnimationFrame(loop);
   }
+  beginRaceTurbo(cars);
   loop();
 }
 
@@ -1826,7 +1886,7 @@ function startSwimming(names) {
   const W = canvas.width, H = canvas.height;
   const poolTop = 30, poolBottom = H - 40;
   const n = names.length, laneH = (poolBottom - poolTop) / n;
-  const trackLength = 8000 + n * 90, finishX = trackLength;
+  const trackLength = scaledRaceLen(8000, 90, n), finishX = trackLength;
   const swimmers = names.map((nm, i) => ({ name: nm, x: 70, y: poolTop + i*laneH + laneH/2, color: colorFor(nm), lane: i, speed: 0, maxSpeed: 2.2 + Math.random()*1.6, accel: 0.02+Math.random()*0.02, strokePhase: Math.random()*Math.PI*2, strokeRate: 0.08+Math.random()*0.04, finished: false, finishTime: 0, place: 0, wake: [], rbMult: 1, rbTimer: 0 }));
   let startTime = Date.now(), frame = 0, cameraX = 0, places = 1, particles = [], bubbles = [];
 
@@ -1892,7 +1952,7 @@ function startSwimming(names) {
         if (Math.random() < 0.01) s.speed -= 0.1;
         if (Math.random() < 0.005) s.speed += 0.15;
         if (s.rbTimer > 0) s.rbTimer--;
-        s.x += s.speed * (s.rbTimer > 0 ? s.rbMult : 1);
+        s.x += s.speed * raceSpeedMult(s) * (s.rbTimer > 0 ? s.rbMult : 1);
         if (s.x >= finishX) { s.x = finishX; s.finished = true; s.finishTime = Date.now()-startTime; s.place = places++; }
       }
     });
@@ -1901,7 +1961,7 @@ function startSwimming(names) {
     ctx.clearRect(0,0,W,H); drawPool(); swimmers.forEach(drawSwimmer); updateParticles(); drawHUD();
     const raceWinner = firstToFinish(swimmers);
     if (raceWinner) {
-      cancelAnimationFrame(animId);
+      endRaceTurbo(); cancelAnimationFrame(animId);
       setTimeout(() => {
         showPhase('swim', 'winner');
         document.getElementById('swim-winner-name').textContent = raceWinner.name;
@@ -1910,6 +1970,7 @@ function startSwimming(names) {
       }, 1200);
     } else if (!allFinished) animId = requestAnimationFrame(loop);
   }
+  beginRaceTurbo(swimmers);
   loop();
 }
 
@@ -2051,7 +2112,7 @@ function startBalloonRace(names) {
   const W = canvas.width, H = canvas.height;
   const n = names.length;
   const colW = W / n;
-  const finishAlt = 2700 + n * 34; // total climb distance — paced for a real race, not a 3-second sprint
+  const finishAlt = scaledRaceLen(2700, 34, n); // total climb distance — paced for a real race, not a 3-second sprint
   const balloons = names.map((nm,i) => ({ name: nm, alt: 0, vAlt: 0.85+Math.random()*0.55, baseX: colW*i+colW/2, sway: Math.random()*Math.PI*2, swaySpd: 0.018+Math.random()*0.02, swayAmt: Math.min(colW*0.35, 34), color: colorFor(nm), r: Math.max(10, Math.min(20, colW*0.3)), finished:false, finishTime:0, popped:false, hits:0, stunTimer:0, boostTimer:0, rbMult:1, rbTimer:0 }));
   // pre-lay obstacle & thermal bands up the whole track so the climb has real structure, not random chaos
   const bands = [];
@@ -2121,7 +2182,7 @@ function startBalloonRace(names) {
         let climb = b.vAlt * (b.boostTimer>0 ? 1.9 : 1) * (b.rbTimer>0 ? b.rbMult : 1);
         if (Math.random() < 0.01) b.vAlt = Math.min(1.7, b.vAlt+0.08);
         if (Math.random() < 0.008) b.vAlt = Math.max(0.5, b.vAlt-0.08);
-        b.alt += climb;
+        b.alt += climb * raceSpeedMult(b);
       }
       if (b.boostTimer>0) b.boostTimer--;
       if (b.rbTimer>0) b.rbTimer--;
@@ -2144,7 +2205,7 @@ function startBalloonRace(names) {
     const remaining = balloons.filter(b => !b.finished && !b.popped);
     const raceWinner = firstToFinish(balloons);
     if (raceWinner) {
-      cancelAnimationFrame(animId);
+      endRaceTurbo(); cancelAnimationFrame(animId);
       setTimeout(() => { showPhase('balloon','winner'); document.getElementById('balloon-winner-name').textContent = raceWinner.name; }, 900);
     } else if (remaining.length > 0) animId = requestAnimationFrame(loop);
     else {
@@ -2153,6 +2214,7 @@ function startBalloonRace(names) {
       setTimeout(() => { showPhase('balloon','winner'); document.getElementById('balloon-winner-name').textContent = w; }, 900);
     }
   }
+  beginRaceTurbo(balloons);
   loop();
 }
 
@@ -2171,7 +2233,7 @@ function startObstacleSprint(names) {
   const W = canvas.width, H = canvas.height;
   const trackTop = 30, trackBottom = H - 30, n = names.length, laneH = (trackBottom-trackTop)/n;
   const groundOffset = laneH*0.72;
-  const trackLength = 9000 + n*85, finishX = trackLength;
+  const trackLength = scaledRaceLen(9000, 85, n), finishX = trackLength;
   const runners = names.map((nm,i) => ({ name: nm, x: 40, y: trackTop+i*laneH+groundOffset, lane:i, color: colorFor(nm), speed: 0, maxSpeed: 2.6+Math.random()*1.5, accel:0.04+Math.random()*0.04, vy:0, jumping:false, ducking:false, groundY: trackTop+i*laneH+groundOffset, stride:Math.random()*Math.PI*2, stunned:0, boostTimer:0, finished:false, finishTime:0, place:0, rbMult:1, rbTimer:0 }));
   const obstacles = [];
   for (let d=900; d<trackLength-500; d+=560+Math.random()*420) {
@@ -2244,7 +2306,7 @@ function startObstacleSprint(names) {
         const spd = (r.speed + (r.boostTimer>0 ? 1.4 : 0)) * (r.rbTimer>0 ? r.rbMult : 1);
         if (r.speed < r.maxSpeed) r.speed += r.accel;
         if (r.rbTimer > 0) r.rbTimer--;
-        r.x += spd; r.stride += 0.25*spd;
+        r.x += spd * raceSpeedMult(r); r.stride += 0.25*spd * raceSpeedMult(r);
         const nextObs = obstacles.find(o => Math.abs(o.x - r.x) < 26);
         if (nextObs && !r.jumping) {
           if (nextObs.type==='hurdle') { r.jumping = true; r.vy = -22; r._jt = 0; }
@@ -2269,10 +2331,11 @@ function startObstacleSprint(names) {
     runners.forEach(drawRunner); drawHUD();
     const raceWinner = firstToFinish(runners);
     if (raceWinner) {
-      cancelAnimationFrame(animId);
+      endRaceTurbo(); cancelAnimationFrame(animId);
       setTimeout(() => { showPhase('obstacle','winner'); document.getElementById('obstacle-winner-name').textContent = raceWinner.name; }, 900);
     } else if (!allFinished) animId = requestAnimationFrame(loop);
   }
+  beginRaceTurbo(runners);
   loop();
 }
 
@@ -2532,7 +2595,7 @@ function startDownhill(names) {
   const W = canvas.width, H = canvas.height;
   const trackTop = 30, trackBottom = H - 30, n = names.length, laneH = (trackBottom-trackTop)/n;
   const groundOffset = laneH*0.72;
-  const trackLength = 8200 + n*80, finishX = trackLength;
+  const trackLength = scaledRaceLen(8200, 80, n), finishX = trackLength;
   const riders = names.map((nm,i) => ({ name:nm, x:40, y:trackTop+i*laneH+groundOffset, lane:i, color:colorFor(nm), speed:0, maxSpeed:2.8+Math.random()*1.5, accel:0.045+Math.random()*0.045, stunned:0, buried:false, finished:false, finishTime:0, lean:0, rbMult:1, rbTimer:0 }));
   const trees = [];
   for (let d=800; d<trackLength-500; d+=380+Math.random()*280) trees.push({ x:d, lane: Math.floor(Math.random()*n) });
@@ -2596,7 +2659,7 @@ function startDownhill(names) {
       else {
         if (r.speed < r.maxSpeed) r.speed += r.accel;
         if (r.rbTimer > 0) r.rbTimer--;
-        r.x += r.speed * (r.rbTimer > 0 ? r.rbMult : 1); r.lean = (Math.random()-0.5)*0.6;
+        r.x += r.speed * raceSpeedMult(r) * (r.rbTimer > 0 ? r.rbMult : 1); r.lean = (Math.random()-0.5)*0.6;
         const nextTree = trees.find(t => t.lane===r.lane && Math.abs(t.x-r.x) < 16);
         if (nextTree && Math.random() < 0.035) { r.speed *= 0.4; r.stunned = 22; r.lean = 1.4; }
       }
@@ -2610,7 +2673,7 @@ function startDownhill(names) {
     const remaining = riders.filter(r => !r.finished && !r.buried);
     const raceWinner = firstToFinish(riders);
     if (raceWinner) {
-      cancelAnimationFrame(animId);
+      endRaceTurbo(); cancelAnimationFrame(animId);
       setTimeout(() => { showPhase('downhill','winner'); document.getElementById('downhill-winner-name').textContent = raceWinner.name; }, 1000);
     } else if (remaining.length > 0) { animId = requestAnimationFrame(loop); }
     else {
@@ -2620,6 +2683,7 @@ function startDownhill(names) {
       setTimeout(() => { showPhase('downhill','winner'); document.getElementById('downhill-winner-name').textContent = w; }, 1000);
     }
   }
+  beginRaceTurbo(riders);
   loop();
 }
 
@@ -2637,7 +2701,7 @@ function startRocket(names) {
   const canvas = document.getElementById('rocket-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   const n = names.length, laneH = (H-60)/n;
-  const trackLength = 8600 + n*80, finishX = trackLength;
+  const trackLength = scaledRaceLen(8600, 80, n), finishX = trackLength;
   const rockets = names.map((nm,i) => ({ name:nm, x:60, y:30+i*laneH+laneH/2, color:colorFor(nm), speed:1.6+Math.random()*0.6, cruiseSpeed:1.6+Math.random()*0.6, boosting:false, fuel:100, stunned:0, finished:false, finishTime:0, rbMult:1, rbTimer:0 }));
   const asteroids = [];
   for (let d=700; d<trackLength-500; d+=380+Math.random()*300) asteroids.push({ x:d, lane: Math.floor(Math.random()*n) });
@@ -2706,7 +2770,7 @@ function startRocket(names) {
         if (r.boosting) { r.speed = Math.min(r.cruiseSpeed*2.1, r.speed+0.06); r.fuel -= 0.4; }
         else { r.speed = Math.max(r.cruiseSpeed*0.55, r.speed-0.03); r.fuel = Math.min(100, r.fuel+0.08); }
         if (r.rbTimer > 0) r.rbTimer--;
-        r.x += r.speed * (r.rbTimer > 0 ? r.rbMult : 1);
+        r.x += r.speed * raceSpeedMult(r) * (r.rbTimer > 0 ? r.rbMult : 1);
         const lane = Math.round((r.y-30-laneH/2)/laneH);
         const hitAsteroid = asteroids.find(a => a.lane===lane && Math.abs(a.x-r.x) < 16);
         if (hitAsteroid && Math.random() < 0.05) { r.speed *= 0.3; r.fuel = Math.max(0, r.fuel-15); r.stunned = 20; }
@@ -2723,10 +2787,11 @@ function startRocket(names) {
     rockets.forEach(drawRocket); drawHUD();
     const raceWinner = firstToFinish(rockets);
     if (raceWinner) {
-      cancelAnimationFrame(animId);
+      endRaceTurbo(); cancelAnimationFrame(animId);
       setTimeout(() => { showPhase('rocket','winner'); document.getElementById('rocket-winner-name').textContent = raceWinner.name; }, 1000);
     } else if (!allFinished) animId = requestAnimationFrame(loop);
   }
+  beginRaceTurbo(rockets);
   loop();
 }
 
@@ -2813,7 +2878,7 @@ function startFishing(names) {
     ctx.clearRect(0,0,W,H); drawScene(); anglers.forEach(drawAngler); drawFishArcs(); drawHUD();
     const raceWinner = firstToFinish(anglers);
     if (raceWinner) {
-      cancelAnimationFrame(animId);
+      endRaceTurbo(); cancelAnimationFrame(animId);
       setFeed(raceWinner.name+' wins the derby with '+raceWinner.weight.toFixed(1)+'lb!');
       setTimeout(() => { showPhase('fishing','winner'); document.getElementById('fishing-winner-name').textContent = raceWinner.name; }, 1300);
     } else animId = requestAnimationFrame(loop);
@@ -2835,7 +2900,7 @@ function startTower(names) {
   const canvas = document.getElementById('tower-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   const n = names.length, colW = W / n;
-  const finishAlt = 2850 + n*32;
+  const finishAlt = scaledRaceLen(2850, 32, n);
   const climbers = names.map((nm,i) => ({ name:nm, alt:0, vAlt: 0.7+Math.random()*0.5, baseX: colW*i+colW/2, sway: Math.random()*Math.PI*2, color: colorFor(nm), r: Math.max(9, Math.min(17, colW*0.28)), finished:false, finishTime:0, stunTimer:0, boostTimer:0, rbMult:1, rbTimer:0 }));
   const rockBands = [];
   for (let a=450; a<finishAlt-300; a+=340+Math.random()*260) rockBands.push({ alt:a, x: 40+Math.random()*(W-80) });
@@ -2904,7 +2969,7 @@ function startTower(names) {
       if (c.stunTimer > 0) { c.stunTimer--; }
       else {
         const climb = c.vAlt * (c.boostTimer>0 ? 1.7 : 1) * (c.rbTimer>0 ? c.rbMult : 1);
-        c.alt += climb;
+        c.alt += climb * raceSpeedMult(c);
         if (c.boostTimer>0) c.boostTimer--;
         if (c.rbTimer>0) c.rbTimer--;
         const cx = c.baseX + Math.sin(c.sway)*10;
@@ -2920,10 +2985,11 @@ function startTower(names) {
     climbers.forEach(drawClimber); drawHUD();
     const raceWinner = firstToFinish(climbers);
     if (raceWinner) {
-      cancelAnimationFrame(animId);
+      endRaceTurbo(); cancelAnimationFrame(animId);
       setTimeout(() => { showPhase('tower','winner'); document.getElementById('tower-winner-name').textContent = raceWinner.name; }, 1000);
     } else if (!allDone) animId = requestAnimationFrame(loop);
   }
+  beginRaceTurbo(climbers);
   loop();
 }
 
@@ -3050,7 +3116,7 @@ function startSnail(names) {
   const canvas = document.getElementById('snail-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   const trackTop = 30, trackBottom = H-30, n = names.length, laneH = (trackBottom-trackTop)/n;
-  const trackLength = 3200 + n*24, finishX = trackLength;
+  const trackLength = scaledRaceLen(3200, 24, n), finishX = trackLength;
   const snails = names.map((nm,i) => ({ name:nm, x:40, y:trackTop+i*laneH+laneH/2, color:colorFor(nm), speed:0.25+Math.random()*0.2, napTimer:0, burstTimer:0, trail:[], finished:false, finishTime:0, bob:Math.random()*Math.PI*2 }));
   let startTime = Date.now(), frame=0, cameraX=0, places=1;
   function drawTrack() {
@@ -3098,9 +3164,9 @@ function startSnail(names) {
       allFinished = false;
       s.bob += 0.05;
       if (s.napTimer > 0) { s.napTimer--; }
-      else if (s.burstTimer > 0) { s.burstTimer--; s.x += s.speed*3.2; }
+      else if (s.burstTimer > 0) { s.burstTimer--; s.x += s.speed*3.2*raceSpeedMult(s); }
       else {
-        s.x += s.speed;
+        s.x += s.speed * raceSpeedMult(s);
         const gapFrac = maxX>0 ? (maxX - s.x) / maxX : 0;
         const isLeader = gapFrac <= 0.0001;
         // the leader dozes off more often; whoever's furthest behind gets the better odds of a burst
@@ -3116,10 +3182,11 @@ function startSnail(names) {
     ctx.clearRect(0,0,W,H); drawTrack(); snails.forEach(drawSnail); drawHUD();
     const raceWinner = firstToFinish(snails);
     if (raceWinner) {
-      cancelAnimationFrame(animId);
+      endRaceTurbo(); cancelAnimationFrame(animId);
       setTimeout(() => { showPhase('snail','winner'); document.getElementById('snail-winner-name').textContent = raceWinner.name; }, 1000);
     } else if (!allFinished) { animId = requestAnimationFrame(loop); }
   }
+  beginRaceTurbo(snails);
   loop();
 }
 
@@ -3300,7 +3367,7 @@ function startPie(names) {
     ctx.clearRect(0,0,W,H); drawScene(); eaters.forEach(drawEater); drawHUD();
     const raceWinner = firstToFinish(eaters);
     if (raceWinner) {
-      cancelAnimationFrame(animId);
+      endRaceTurbo(); cancelAnimationFrame(animId);
       setFeed(raceWinner.name+' wins with '+raceWinner.pies+' pies!');
       setTimeout(() => { showPhase('pie','winner'); document.getElementById('pie-winner-name').textContent = raceWinner.name; }, 1300);
     } else animId = requestAnimationFrame(loop);
@@ -3323,7 +3390,7 @@ function startBanana(names) {
   const W = canvas.width, H = canvas.height;
   const trackTop = 30, trackBottom = H-30, n = names.length, laneH = (trackBottom-trackTop)/n;
   const groundOffset = laneH*0.72;
-  const trackLength = 6600 + n*70, finishX = trackLength;
+  const trackLength = scaledRaceLen(6600, 70, n), finishX = trackLength;
   const runners = names.map((nm,i) => ({ name:nm, x:40, y:trackTop+i*laneH+groundOffset, lane:i, color:colorFor(nm), speed:0, maxSpeed:2.6+Math.random()*1.4, accel:0.045+Math.random()*0.045, stunned:0, spin:0, stride:Math.random()*Math.PI*2, finished:false, finishTime:0, rbMult:1, rbTimer:0 }));
   const peels = [];
   for (let d=650; d<trackLength-500; d+=320+Math.random()*260) peels.push({ x:d, lane: Math.floor(Math.random()*n), used:false });
@@ -3374,7 +3441,7 @@ function startBanana(names) {
         if (r.speed < r.maxSpeed) r.speed += r.accel;
         if (r.rbTimer > 0) r.rbTimer--;
         const mv = r.speed * (r.rbTimer>0 ? r.rbMult : 1);
-        r.x += mv; r.stride += 0.25*mv;
+        r.x += mv * raceSpeedMult(r); r.stride += 0.25*mv * raceSpeedMult(r);
         const peel = peels.find(pl => !pl.used && pl.lane===r.lane && Math.abs(pl.x-r.x) < 14);
         if (peel) { peel.used = true; r.speed *= 0.3; r.stunned = 26; r.spin = 0; }
       }
@@ -3385,10 +3452,11 @@ function startBanana(names) {
     ctx.clearRect(0,0,W,H); drawTrack(); peels.forEach(drawPeel); runners.forEach(drawRunner); drawHUD();
     const raceWinner = firstToFinish(runners);
     if (raceWinner) {
-      cancelAnimationFrame(animId);
+      endRaceTurbo(); cancelAnimationFrame(animId);
       setTimeout(() => { showPhase('banana','winner'); document.getElementById('banana-winner-name').textContent = raceWinner.name; }, 1000);
     } else if (!allFinished) { animId = requestAnimationFrame(loop); }
   }
+  beginRaceTurbo(runners);
   loop();
 }
 
@@ -3514,7 +3582,7 @@ function startWipeout(names) {
   const canvas = document.getElementById('wipeout-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   const trackTop = 40, trackBottom = H-30, n = names.length, laneH = (trackBottom-trackTop)/n;
-  const trackLength = 6800 + n*70, finishX = trackLength;
+  const trackLength = scaledRaceLen(6800, 70, n), finishX = trackLength;
   const gagLines = ['BONK!','WHAM!','YOWCH!','WHOOPS!','TIMBER!','SPLAT!'];
   const runners = names.map((nm,i) => ({ name:nm, x:40, y:trackTop+i*laneH+laneH*0.5, lane:i, color:colorFor(nm), speed:0, maxSpeed:2.5+Math.random()*1.3, accel:0.04+Math.random()*0.04, flailTimer:0, recoverTimer:0, invuln:0, spin:0, stride:Math.random()*Math.PI*2, gag:'', finished:false, finishTime:0, rbMult:1, rbTimer:0 }));
   const balls = [];
@@ -3569,13 +3637,13 @@ function startWipeout(names) {
       if (r.finished) return;
       allFinished = false;
       if (r.flailTimer > 0) { r.flailTimer--; r.spin += 0.55; if (r.flailTimer<=0) { r.recoverTimer = 26; r.invuln = 40; } }
-      else if (r.recoverTimer > 0) { r.recoverTimer--; r.x += 0.4; }
+      else if (r.recoverTimer > 0) { r.recoverTimer--; r.x += 0.4 * raceSpeedMult(r); }
       else {
         if (r.speed < r.maxSpeed) r.speed += r.accel;
         if (r.invuln > 0) r.invuln--;
         if (r.rbTimer > 0) r.rbTimer--;
         const mv = r.speed * (r.rbTimer>0 ? r.rbMult : 1);
-        r.x += mv; r.stride += 0.25*mv;
+        r.x += mv * raceSpeedMult(r); r.stride += 0.25*mv * raceSpeedMult(r);
         if (r.invuln <= 0) {
           balls.forEach(b => {
             if (Math.abs(b.trackX-r.x) < b.r+10) {
@@ -3596,10 +3664,11 @@ function startWipeout(names) {
     ctx.clearRect(0,0,W,H); drawTrack(); balls.forEach(drawBall); runners.forEach(drawRunner); drawDust(); drawHUD();
     const raceWinner = firstToFinish(runners);
     if (raceWinner) {
-      cancelAnimationFrame(animId);
+      endRaceTurbo(); cancelAnimationFrame(animId);
       setTimeout(() => { showPhase('wipeout','winner'); document.getElementById('wipeout-winner-name').textContent = raceWinner.name; }, 1000);
     } else if (!allFinished) { animId = requestAnimationFrame(loop); }
   }
+  beginRaceTurbo(runners);
   loop();
 }
 
@@ -3618,7 +3687,7 @@ function startHobbyHorse(names) {
   const W = canvas.width, H = canvas.height;
   const trackTop = 30, trackBottom = H-30, n = names.length, laneH = (trackBottom-trackTop)/n;
   const groundOffset = laneH*0.7;
-  const trackLength = 5800 + n*60, finishX = trackLength;
+  const trackLength = scaledRaceLen(5800, 60, n), finishX = trackLength;
   const gagLines = ['NEIGH!','WHOA THERE!','GIDDY UP!','EEK!','WHOOPS!','YEEHAW!'];
   const riders = names.map((nm,i) => ({ name:nm, x:40, y:trackTop+i*laneH+groundOffset, lane:i, color:colorFor(nm), speed:0, maxSpeed:2.3+Math.random()*1.3, accel:0.045+Math.random()*0.05, bounce:Math.random()*Math.PI*2, fallen:false, fallTimer:0, remountTimer:0, buckFlash:0, gag:'', finished:false, finishTime:0, rbMult:1, rbTimer:0 }));
   let startTime = Date.now(), frame=0, cameraX=0, places=1, dust=[];
@@ -3676,13 +3745,13 @@ function startHobbyHorse(names) {
         r.fallTimer--;
         if (r.fallTimer <= 0) { r.fallen = false; r.remountTimer = 34+Math.random()*16; dust.push({x:r.x-cameraX,y:r.y,r:4,life:18,maxLife:18}); }
       } else if (r.remountTimer > 0) {
-        r.remountTimer--; r.x += 0.25;
+        r.remountTimer--; r.x += 0.25 * raceSpeedMult(r);
       } else {
         r.bounce += 0.18 + r.speed*0.03;
         if (r.speed < r.maxSpeed) r.speed += r.accel;
         if (r.rbTimer > 0) r.rbTimer--;
         const mv = r.speed * (r.rbTimer>0 ? r.rbMult : 1);
-        r.x += mv;
+        r.x += mv * raceSpeedMult(r);
         // random bucks: usually just a funny hop, occasionally an actual face-plant
         if (Math.random() < 0.006) {
           if (Math.random() < 0.4) { r.fallen = true; r.fallTimer = 40+Math.random()*30; r.gag = gagLines[Math.floor(Math.random()*gagLines.length)]; r.speed *= 0.3; dust.push({x:r.x-cameraX,y:r.y,r:4,life:18,maxLife:18}); }
@@ -3696,10 +3765,11 @@ function startHobbyHorse(names) {
     ctx.clearRect(0,0,W,H); drawTrack(); riders.forEach(drawRider); drawDust(); drawHUD();
     const raceWinner = firstToFinish(riders);
     if (raceWinner) {
-      cancelAnimationFrame(animId);
+      endRaceTurbo(); cancelAnimationFrame(animId);
       setTimeout(() => { showPhase('hobbyhorse','winner'); document.getElementById('hobbyhorse-winner-name').textContent = raceWinner.name; }, 1000);
     } else if (!allFinished) { animId = requestAnimationFrame(loop); }
   }
+  beginRaceTurbo(riders);
   loop();
 }
 
@@ -4137,7 +4207,7 @@ function startSackHop(names) {
   document.getElementById('sack-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
   const canvas = document.getElementById('sack-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height, trackTop = 30, trackBottom = H-30, n = names.length, laneH = (trackBottom-trackTop)/n;
-  const groundOffset = laneH*0.7, trackLength = 9200+n*90, finishX = trackLength;
+  const groundOffset = laneH*0.7, trackLength = scaledRaceLen(9200, 90, n), finishX = trackLength;
   const gagLines = ['OOF!','BONK!','WHOOPS!','NOT AGAIN!','MY KNEES!'];
   const runners = names.map((nm,i) => ({ name:nm, x:40, y:trackTop+i*laneH+groundOffset, lane:i, color:colorFor(nm), speed:0, maxSpeed:2.1+Math.random()*1.2, accel:0.04+Math.random()*0.04, hopPhase:Math.random()*Math.PI*2, fallen:false, fallTimer:0, recoverTimer:0, gag:'', finished:false, finishTime:0, rbMult:1, rbTimer:0 }));
   let startTime = Date.now(), frame=0, cameraX=0, places=1, dust=[];
@@ -4182,12 +4252,12 @@ function startSackHop(names) {
     runners.forEach(r => {
       if (r.finished) return; allDone=false;
       if (r.fallen) { r.fallTimer--; if (r.fallTimer<=0) { r.fallen=false; r.recoverTimer=38+Math.random()*18; r.gag=''; } }
-      else if (r.recoverTimer>0) { r.recoverTimer--; r.x+=0.2; }
+      else if (r.recoverTimer>0) { r.recoverTimer--; r.x+=0.2*raceSpeedMult(r); }
       else {
         r.hopPhase+=0.22+r.speed*0.04;
         if (r.speed<r.maxSpeed) r.speed+=r.accel;
         const mv=r.speed*(r.rbTimer>0?r.rbMult:1); if (r.rbTimer>0) r.rbTimer--;
-        r.x+=mv*(0.6+Math.abs(Math.sin(r.hopPhase))*0.5);
+        r.x+=mv*raceSpeedMult(r)*(0.6+Math.abs(Math.sin(r.hopPhase))*0.5);
         if (Math.random()<0.007) { r.fallen=true; r.fallTimer=45+Math.random()*25; r.gag=gagLines[Math.floor(Math.random()*gagLines.length)]; r.speed*=0.35; dust.push({x:r.x-cameraX,y:r.y,r:4,life:16,maxLife:16}); }
       }
       if (r.x>=finishX) { r.x=finishX; r.finished=true; r.finishTime=Date.now()-startTime; r.place=places++; }
@@ -4195,9 +4265,10 @@ function startSackHop(names) {
     const leader=runners.reduce((a,b)=>a.x>b.x?a:b); cameraX=Math.max(0,Math.min(leader.x-W*0.3,trackLength-W+150));
     ctx.clearRect(0,0,W,H); drawTrack(); runners.forEach(drawSack); drawHUD();
     const raceWinner = firstToFinish(runners);
-    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(()=>{ showPhase('sack','winner'); document.getElementById('sack-winner-name').textContent=raceWinner.name; },1000); }
+    if (raceWinner) { endRaceTurbo(); cancelAnimationFrame(animId); setTimeout(()=>{ showPhase('sack','winner'); document.getElementById('sack-winner-name').textContent=raceWinner.name; },1000); }
     else if (!allDone) animId=requestAnimationFrame(loop);
   }
+  beginRaceTurbo(runners);
   loop();
 }
 
@@ -4214,7 +4285,7 @@ function startCartChaos(names) {
   document.getElementById('cart-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
   const canvas = document.getElementById('cart-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height, trackTop = 40, trackBottom = H-40, n = names.length, laneH = (trackBottom-trackTop)/n;
-  const trackLength = 9000+n*85, finishX = trackLength;
+  const trackLength = scaledRaceLen(9000, 85, n), finishX = trackLength;
   const comments = ['CLEAN UP AISLE 4!','SPILLED EVERYTHING!','WOBBLE WOBBLE!','SHELF IMPACT!','MY COUPONS!'];
   const displays = []; for (let i=400;i<trackLength;i+=280+Math.random()*180) displays.push({x:i, lane:Math.floor(Math.random()*n), hit:false});
   const racers = names.map((nm,i) => ({ name:nm, x:30, y:trackTop+i*laneH+laneH*0.55, lane:i, color:colorFor(nm), speed:1.2+Math.random()*0.8, wobble:Math.random()*Math.PI*2, wobbleSpd:0.08+Math.random()*0.04, items:5+Math.floor(Math.random()*4), spillTimer:0, gag:'', finished:false, finishTime:0, rbMult:1, rbTimer:0 }));
@@ -4257,7 +4328,7 @@ function startCartChaos(names) {
       let spd=r.speed*(r.rbTimer>0?r.rbMult:1); if (r.rbTimer>0) r.rbTimer--;
       if (r.spillTimer>0) { r.spillTimer--; spd*=0.35; }
       else {
-        r.x+=spd;
+        r.x+=spd*raceSpeedMult(r);
         displays.forEach(d => { if (!d.hit && d.lane===r.lane && Math.abs(r.x-d.x)<28) { d.hit=true; r.items=Math.max(0,r.items-2); r.spillTimer=50+Math.random()*30; r.gag=comments[Math.floor(Math.random()*comments.length)]; feed=r.name+' crashed a display!'; r.speed*=0.7; } });
         if (Math.random()<0.004 && r.items>0) { r.items--; r.spillTimer=35; r.gag='SPILLED!'; feed=r.name+' dropped groceries!'; }
       }
@@ -4266,9 +4337,10 @@ function startCartChaos(names) {
     const leader=racers.reduce((a,b)=>a.x>b.x?a:b); cameraX=Math.max(0,Math.min(leader.x-W*0.28,trackLength-W+120));
     ctx.clearRect(0,0,W,H); drawAisle(); racers.forEach(drawCart); drawHUD();
     const raceWinner = firstToFinish(racers);
-    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(()=>{ showPhase('cart','winner'); document.getElementById('cart-winner-name').textContent=raceWinner.name; },1000); }
+    if (raceWinner) { endRaceTurbo(); cancelAnimationFrame(animId); setTimeout(()=>{ showPhase('cart','winner'); document.getElementById('cart-winner-name').textContent=raceWinner.name; },1000); }
     else if (!allDone) animId=requestAnimationFrame(loop);
   }
+  beginRaceTurbo(racers);
   loop();
 }
 
@@ -4285,7 +4357,7 @@ function startPenguinWaddle(names) {
   document.getElementById('penguin-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
   const canvas = document.getElementById('penguin-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height, trackTop = 35, trackBottom = H-35, n = names.length, laneH = (trackBottom-trackTop)/n;
-  const trackLength = 9100+n*85, finishX = trackLength;
+  const trackLength = scaledRaceLen(9100, 85, n), finishX = trackLength;
   const icePatches = []; for (let i=350;i<trackLength;i+=200+Math.random()*160) icePatches.push({x:i, lane:Math.floor(Math.random()*n), w:80+Math.random()*60});
   const birds = names.map((nm,i) => ({ name:nm, x:35, y:trackTop+i*laneH+laneH*0.6, lane:i, color:colorFor(nm), speed:1.4+Math.random()*0.9, waddle:Math.random()*Math.PI*2, sliding:false, slideTimer:0, spin:0, gag:'', finished:false, finishTime:0, rbMult:1, rbTimer:0 }));
   let startTime=Date.now(), frame=0, cameraX=0, places=1;
@@ -4323,11 +4395,11 @@ function startPenguinWaddle(names) {
     let allDone=true;
     birds.forEach(r => {
       if (r.finished) return; allDone=false;
-      if (r.sliding) { r.slideTimer--; r.spin+=0.18; r.x+=2.8; if (r.slideTimer<=0) { r.sliding=false; r.gag=''; } }
+      if (r.sliding) { r.slideTimer--; r.spin+=0.18; r.x+=2.8*raceSpeedMult(r); if (r.slideTimer<=0) { r.sliding=false; r.gag=''; } }
       else {
         r.waddle+=0.16;
         let spd=r.speed*(r.rbTimer>0?r.rbMult:1); if (r.rbTimer>0) r.rbTimer--;
-        r.x+=spd*(0.7+Math.abs(Math.sin(r.waddle))*0.35);
+        r.x+=spd*(0.7+Math.abs(Math.sin(r.waddle))*0.35)*raceSpeedMult(r);
         icePatches.forEach(p => { if (p.lane===r.lane && r.x>p.x && r.x<p.x+p.w && Math.random()<0.015) { r.sliding=true; r.slideTimer=40+Math.random()*25; r.gag='SLIP!'; r.spin=Math.random()*0.4; } });
       }
       if (r.x>=finishX) { r.x=finishX; r.finished=true; r.finishTime=Date.now()-startTime; r.place=places++; }
@@ -4335,9 +4407,10 @@ function startPenguinWaddle(names) {
     const leader=birds.reduce((a,b)=>a.x>b.x?a:b); cameraX=Math.max(0,Math.min(leader.x-W*0.3,trackLength-W+130));
     ctx.clearRect(0,0,W,H); drawRink(); birds.forEach(drawPenguin); drawHUD();
     const raceWinner = firstToFinish(birds);
-    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(()=>{ showPhase('penguin','winner'); document.getElementById('penguin-winner-name').textContent=raceWinner.name; },1000); }
+    if (raceWinner) { endRaceTurbo(); cancelAnimationFrame(animId); setTimeout(()=>{ showPhase('penguin','winner'); document.getElementById('penguin-winner-name').textContent=raceWinner.name; },1000); }
     else if (!allDone) animId=requestAnimationFrame(loop);
   }
+  beginRaceTurbo(birds);
   loop();
 }
 
@@ -4542,7 +4615,7 @@ function startMopSprint(names) {
   document.getElementById('mop-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
   const canvas = document.getElementById('mop-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height, trackTop = 30, trackBottom = H-30, n = names.length, laneH = (trackBottom-trackTop)/n;
-  const trackLength = 8800+n*80, finishX = trackLength;
+  const trackLength = scaledRaceLen(8800, 80, n), finishX = trackLength;
   const wetZones = []; for (let i=300;i<trackLength;i+=180+Math.random()*140) wetZones.push({x:i, lane:Math.floor(Math.random()*n), w:70+Math.random()*50});
   const gagLines = ['WHOA!','SLIDE!','WET FLOOR!','WIPEOUT!','MY BAD!'];
   const runners = names.map((nm,i) => ({ name:nm, x:40, y:trackTop+i*laneH+laneH*0.65, lane:i, color:colorFor(nm), speed:1.6+Math.random()*1, sliding:false, slideTimer:0, slideVx:0, gag:'', finished:false, finishTime:0, rbMult:1, rbTimer:0 }));
@@ -4580,10 +4653,10 @@ function startMopSprint(names) {
     let allDone=true;
     runners.forEach(r => {
       if (r.finished) return; allDone=false;
-      if (r.sliding) { r.slideTimer--; r.x+=r.slideVx; if (r.slideTimer<=0) { r.sliding=false; r.gag=''; } }
+      if (r.sliding) { r.slideTimer--; r.x+=r.slideVx*raceSpeedMult(r); if (r.slideTimer<=0) { r.sliding=false; r.gag=''; } }
       else {
         let spd=r.speed*(r.rbTimer>0?r.rbMult:1); if (r.rbTimer>0) r.rbTimer--;
-        r.x+=spd;
+        r.x+=spd*raceSpeedMult(r);
         wetZones.forEach(z => { if (z.lane===r.lane && r.x>z.x && r.x<z.x+z.w && Math.random()<0.012) { r.sliding=true; r.slideTimer=35+Math.random()*20; r.slideVx=2.5+Math.random()*2; r.gag=gagLines[Math.floor(Math.random()*gagLines.length)]; } });
         if (Math.random()<0.003) { r.sliding=true; r.slideTimer=30; r.slideVx=3; r.gag='WHOA!'; }
       }
@@ -4592,9 +4665,10 @@ function startMopSprint(names) {
     const leader=runners.reduce((a,b)=>a.x>b.x?a:b); cameraX=Math.max(0,Math.min(leader.x-W*0.3,trackLength-W+120));
     ctx.clearRect(0,0,W,H); drawFloor(); runners.forEach(drawRunner); drawHUD();
     const raceWinner = firstToFinish(runners);
-    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(()=>{ showPhase('mop','winner'); document.getElementById('mop-winner-name').textContent=raceWinner.name; },1000); }
+    if (raceWinner) { endRaceTurbo(); cancelAnimationFrame(animId); setTimeout(()=>{ showPhase('mop','winner'); document.getElementById('mop-winner-name').textContent=raceWinner.name; },1000); }
     else if (!allDone) animId=requestAnimationFrame(loop);
   }
+  beginRaceTurbo(runners);
   loop();
 }
 
@@ -5103,7 +5177,7 @@ function startParachute(names) {
   document.getElementById('chute-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
   const canvas = document.getElementById('chute-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height, n = names.length, laneW = W / n;
-  const fallDist = 14000 + n * 120, groundY = H - 55, scale = H / 750;
+  const fallDist = scaledRaceLen(14000, 120, n), groundY = H - 55, scale = H / 750;
   const finishAlt = fallDist - 80;
   const clouds = Array.from({ length: 22 }, (_, i) => ({ x: (i * 241 + 40) % W, y: 60 + (i * 97) % (H * 0.55), w: 55 + (i % 5) * 12 }));
   const gags = ['WOOSH!', 'TANGLED!', 'MY LUNCH!', 'AHHH!', 'BREEZY!'];
@@ -5147,7 +5221,7 @@ function startParachute(names) {
       }
       const mv = j.rbTimer > 0 ? j.rbMult : 1;
       if (j.rbTimer > 0) j.rbTimer--;
-      j.alt += j.vy * mv * 0.95;
+      j.alt += j.vy * mv * 0.95 * raceSpeedMult(j);
       j.x += (j.vx * mv + wind * 0.08);
       j.x = Math.max(laneW * j.lane + 24, Math.min(laneW * (j.lane + 1) - 24, j.x));
       if (Math.random() < 0.003 && j.chuteOpen) { j.gag = gags[Math.floor(Math.random() * gags.length)]; j.gagTimer = 20; }
@@ -5213,10 +5287,11 @@ function startParachute(names) {
 
     const raceWinner = firstToFinish(jumpers);
     if (raceWinner) {
-      cancelAnimationFrame(animId);
+      endRaceTurbo(); cancelAnimationFrame(animId);
       setTimeout(() => { showPhase('chute', 'winner'); document.getElementById('chute-winner-name').textContent = raceWinner.name; }, 1000);
     } else if (!allDone) animId = requestAnimationFrame(loop);
   }
+  beginRaceTurbo(jumpers);
   loop();
 }
 
@@ -5405,7 +5480,7 @@ function startOfficeChair(names) {
   showPhase('chair', 'play');
   document.getElementById('chair-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
   const canvas = document.getElementById('chair-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, finishX = 8600 + names.length * 75, startTime = Date.now();
+  const W = canvas.width, H = canvas.height, finishX = scaledRaceLen(8600, 75, names.length), startTime = Date.now();
   const racers = names.map((nm, i) => ({ name: nm, color: colorFor(nm), x: 80, y: 80 + i * ((H - 120) / names.length), vx: 0, vy: 0, angle: Math.random() * Math.PI * 2, spin: 0, wobble: Math.random() * Math.PI * 2, finished: false, finishTime: 0, gag: '', rbMult: 1, rbTimer: 0 }));
   let frame = 0, cameraX = 0, places = 1, feed = '🪑 Spin-push your way to the exit!';
   let animId;
@@ -5420,7 +5495,7 @@ function startOfficeChair(names) {
       if (r.y < 50) { r.y = 50; r.vy = Math.abs(r.vy); } if (r.y > H - 50) { r.y = H - 50; r.vy = -Math.abs(r.vy); }
       if (Math.random() < 0.012) { r.spin += 0.5; r.gag = 'SPIN MOVE!'; r.vx += 1.2; }
       const mv = r.rbTimer > 0 ? r.rbMult : 1; if (r.rbTimer > 0) r.rbTimer--;
-      r.x += r.vx * mv; r.y += r.vy * mv; r.angle = r.spin;
+      r.x += r.vx * mv * raceSpeedMult(r); r.y += r.vy * mv; r.angle = r.spin;
       if (r.x >= finishX) { r.x = finishX; r.finished = true; r.finishTime = Date.now() - startTime; r.place = places++; }
     });
     const lead = racers.reduce((a, b) => a.x > b.x ? a : b); cameraX = Math.max(0, Math.min(lead.x - W * 0.3, finishX - W + 120));
@@ -5442,9 +5517,10 @@ function startOfficeChair(names) {
     ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10, 10, 210, 34, 8); ctx.fill();
     
     const raceWinner = firstToFinish(racers);
-    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(() => { showPhase('chair', 'winner'); document.getElementById('chair-winner-name').textContent = raceWinner.name; }, 1000); }
+    if (raceWinner) { endRaceTurbo(); cancelAnimationFrame(animId); setTimeout(() => { showPhase('chair', 'winner'); document.getElementById('chair-winner-name').textContent = raceWinner.name; }, 1000); }
     else if (!done) animId = requestAnimationFrame(loop);
   }
+  beginRaceTurbo(racers);
   loop();
 }
 
@@ -5462,7 +5538,7 @@ function startPogo(names) {
   document.getElementById('pogo-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
   const canvas = document.getElementById('pogo-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height, n = names.length, laneH = (H - 50) / n, groundY = H - 40;
-  const finishX = 9000 + n * 85, startTime = Date.now();
+  const finishX = scaledRaceLen(9000, 85, n), startTime = Date.now();
   const hoppers = names.map((nm, i) => ({ name: nm, color: colorFor(nm), lane: i, x: 40, y: 0, vy: -2, phase: Math.random() * Math.PI * 2, fallen: false, gag: '', finished: false, finishTime: 0, rbMult: 1, rbTimer: 0 }));
   let frame = 0, cameraX = 0, places = 1;
   let animId;
@@ -5478,10 +5554,10 @@ function startPogo(names) {
         h.vy = -(6 + compress * 0.45 + Math.random() * 1.5);
         if (compress > 12 && Math.random() < 0.015) { h.fallen = true; h.gag = 'FACEPLANT!'; h.vy = 2; }
       }
-      if (h.fallen) { h.x += 0.4; if (Math.random() < 0.02) { h.fallen = false; h.gag = 'UP AGAIN!'; h.vy = -5; } }
+      if (h.fallen) { h.x += 0.4 * raceSpeedMult(h); if (Math.random() < 0.02) { h.fallen = false; h.gag = 'UP AGAIN!'; h.vy = -5; } }
       else {
         const mv = h.rbTimer > 0 ? h.rbMult : 1; if (h.rbTimer > 0) h.rbTimer--;
-        h.x += (1.4 + Math.max(0, -h.vy) * 0.08) * mv; h.y += h.vy * mv * 0.35;
+        h.x += (1.4 + Math.max(0, -h.vy) * 0.08) * mv * raceSpeedMult(h); h.y += h.vy * mv * 0.35;
       }
       if (h.x >= finishX) { h.x = finishX; h.finished = true; h.finishTime = Date.now() - startTime; h.place = places++; }
     });
@@ -5502,9 +5578,10 @@ function startPogo(names) {
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, 10, 200, 34, 8); ctx.fill();
     
     const raceWinner = firstToFinish(hoppers);
-    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(() => { showPhase('pogo', 'winner'); document.getElementById('pogo-winner-name').textContent = raceWinner.name; }, 1000); }
+    if (raceWinner) { endRaceTurbo(); cancelAnimationFrame(animId); setTimeout(() => { showPhase('pogo', 'winner'); document.getElementById('pogo-winner-name').textContent = raceWinner.name; }, 1000); }
     else if (!done) animId = requestAnimationFrame(loop);
   }
+  beginRaceTurbo(hoppers);
   loop();
 }
 
@@ -5522,7 +5599,7 @@ function startHamster(names) {
   document.getElementById('hamster-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
   const canvas = document.getElementById('hamster-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height, n = names.length, laneH = (H - 40) / n;
-  const hillLen = 8800 + n * 80, startTime = Date.now();
+  const hillLen = scaledRaceLen(8800, 80, n), startTime = Date.now();
   const balls = names.map((nm, i) => ({ name: nm, color: colorFor(nm), lane: i, dist: 0, v: 0.5 + Math.random() * 0.4, angle: 0, spin: 0, bounce: 0, finished: false, finishTime: 0, gag: '', rbMult: 1, rbTimer: 0 }));
   let frame = 0, places = 1;
   let animId;
@@ -5536,7 +5613,7 @@ function startHamster(names) {
       if (Math.random() < 0.008) { b.bounce = 12; b.gag = 'BUMP!'; b.v += 0.8; }
       if (b.bounce > 0) b.bounce--;
       const mv = b.rbTimer > 0 ? b.rbMult : 1; if (b.rbTimer > 0) b.rbTimer--;
-      b.dist += b.v * mv; b.spin += b.v * 0.04; b.angle += b.v * 0.02;
+      b.dist += b.v * mv * raceSpeedMult(b); b.spin += b.v * 0.04; b.angle += b.v * 0.02;
       if (b.dist >= hillLen) { b.dist = hillLen; b.finished = true; b.finishTime = Date.now() - startTime; b.place = places++; }
     });
     const lead = balls.reduce((a, b) => a.dist > b.dist ? a : b);
@@ -5561,9 +5638,10 @@ function startHamster(names) {
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, 10, 210, 34, 8); ctx.fill();
     
     const raceWinner = firstToFinish(balls);
-    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(() => { showPhase('hamster', 'winner'); document.getElementById('hamster-winner-name').textContent = raceWinner.name; }, 1000); }
+    if (raceWinner) { endRaceTurbo(); cancelAnimationFrame(animId); setTimeout(() => { showPhase('hamster', 'winner'); document.getElementById('hamster-winner-name').textContent = raceWinner.name; }, 1000); }
     else if (!done) animId = requestAnimationFrame(loop);
   }
+  beginRaceTurbo(balls);
   loop();
 }
 
@@ -5581,7 +5659,7 @@ function startBurrito(names) {
   document.getElementById('burrito-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
   const canvas = document.getElementById('burrito-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height, n = names.length, laneH = (H - 50) / n;
-  const finishX = 9100 + n * 85, startTime = Date.now();
+  const finishX = scaledRaceLen(9100, 85, n), startTime = Date.now();
   const rolls = names.map((nm, i) => ({ name: nm, color: colorFor(nm), lane: i, x: 30, y: 0, vx: 0.8 + Math.random() * 0.5, vy: 0, angle: 0, filling: 100, spill: false, gag: '', finished: false, finishTime: 0, rbMult: 1, rbTimer: 0 }));
   let frame = 0, cameraX = 0, places = 1;
   let animId;
@@ -5595,7 +5673,7 @@ function startBurrito(names) {
       if (r.spill && Math.random() < 0.03) { r.spill = false; r.gag = 'REWRAPPED!'; }
       if (r.filling < 30) r.vx *= 0.98;
       const mv = r.rbTimer > 0 ? r.rbMult : 1; if (r.rbTimer > 0) r.rbTimer--;
-      r.x += r.vx * mv; r.angle += r.vx * 0.04;
+      r.x += r.vx * mv * raceSpeedMult(r); r.angle += r.vx * 0.04;
       if (r.x >= finishX) { r.x = finishX; r.finished = true; r.finishTime = Date.now() - startTime; r.place = places++; }
     });
     const lead = rolls.reduce((a, b) => a.x > b.x ? a : b); cameraX = Math.max(0, Math.min(lead.x - W * 0.32, finishX - W + 110));
@@ -5616,9 +5694,10 @@ function startBurrito(names) {
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, 10, 220, 34, 8); ctx.fill();
     
     const raceWinner = firstToFinish(rolls);
-    if (raceWinner) { cancelAnimationFrame(animId); setTimeout(() => { showPhase('burrito', 'winner'); document.getElementById('burrito-winner-name').textContent = raceWinner.name; }, 1000); }
+    if (raceWinner) { endRaceTurbo(); cancelAnimationFrame(animId); setTimeout(() => { showPhase('burrito', 'winner'); document.getElementById('burrito-winner-name').textContent = raceWinner.name; }, 1000); }
     else if (!done) animId = requestAnimationFrame(loop);
   }
+  beginRaceTurbo(rolls);
   loop();
 }
 
@@ -5650,7 +5729,7 @@ function launchSwordWith(p1Name, p2Name) {
     chatroomId = localStorage.getItem('giveaway_chatroom_id') || chatroomId;
     document.getElementById('setup-screen').classList.add('hidden');
     document.getElementById('dashboard-screen').classList.add('hidden');
-    if (INTERACTIVE_GAMES.includes(game)) {
+    if (INTERACTIVE_GAMES.includes(game) || RACE_GAME_IDS.includes(game)) {
       connectKickChat(chatroomId);
     }
     setTimeout(() => {
