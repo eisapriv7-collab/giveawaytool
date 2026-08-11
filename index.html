@@ -14,6 +14,14 @@
     .font-display { font-family:'Space Grotesk','Inter',sans-serif; letter-spacing:-0.02em; }
     .font-mono { font-family:'JetBrains Mono',ui-monospace,monospace; }
     body { background:var(--bg); color:white; overflow-x:hidden; touch-action:manipulation; }
+    .bg-yes-hero { position:fixed; inset:0; z-index:-4; overflow:hidden; pointer-events:none; }
+    .bg-yes-hero__img { position:absolute; inset:-10%; background:url('bg-yes.png') center 35% / cover no-repeat; animation:yesBgPan 16s ease-in-out infinite alternate; will-change:transform; filter:saturate(1.15) contrast(1.08) brightness(0.95); }
+    .bg-yes-hero__img--ghost { opacity:0.28; animation:yesBgPanAlt 20s ease-in-out infinite alternate-reverse; filter:blur(3px) saturate(1.4) hue-rotate(-8deg); mix-blend-mode:screen; }
+    .bg-yes-hero__pulse { position:absolute; inset:0; background:radial-gradient(circle at 50% 70%,rgba(83,252,24,0.12) 0%,transparent 45%); animation:yesBgPulse 4s ease-in-out infinite; }
+    .bg-yes-hero__shade { position:absolute; inset:0; background:linear-gradient(180deg,rgba(5,5,8,0.78) 0%,rgba(5,5,8,0.52) 38%,rgba(5,5,8,0.82) 100%),radial-gradient(ellipse 90% 70% at 50% 15%,rgba(5,5,8,0.35),rgba(5,5,8,0.92)); }
+    @keyframes yesBgPan { 0%{transform:scale(1) translate(0,0);} 50%{transform:scale(1.1) translate(-1.2%,1.5%);} 100%{transform:scale(1.14) translate(1.5%,-1%);} }
+    @keyframes yesBgPanAlt { 0%{transform:scale(1.06) translate(1%,0) rotate(0deg);} 100%{transform:scale(1.18) translate(-2%,2.5%) rotate(0.8deg);} }
+    @keyframes yesBgPulse { 0%,100%{opacity:0.35;transform:scale(1);} 50%{opacity:0.75;transform:scale(1.04);} }
     .bg-mesh { position:fixed; inset:0; z-index:-2; background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(83,252,24,0.09),transparent),radial-gradient(ellipse 55% 40% at 90% 10%,rgba(0,212,255,0.05),transparent),radial-gradient(ellipse 60% 40% at 10% 90%,rgba(255,51,102,0.04),transparent); }
     .bg-grain { position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:0.4; background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px); background-size:44px 44px; -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 20%,black,transparent); mask-image:radial-gradient(ellipse 70% 60% at 50% 20%,black,transparent); }
     .glass { background:rgba(255,255,255,0.02); backdrop-filter:blur(20px); border:1px solid var(--line); box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05); }
@@ -92,6 +100,12 @@
 </head>
 <body>
 <div id="game-chat-pill" class="hidden fixed top-3 right-3 z-[60] px-3 py-1.5 rounded-full text-xs font-bold"></div>
+<div class="bg-yes-hero" aria-hidden="true">
+  <div class="bg-yes-hero__img bg-yes-hero__img--ghost"></div>
+  <div class="bg-yes-hero__img"></div>
+  <div class="bg-yes-hero__pulse"></div>
+  <div class="bg-yes-hero__shade"></div>
+</div>
 <div class="bg-mesh"></div>
 
 <!-- ==================== SETUP SCREEN ==================== -->
