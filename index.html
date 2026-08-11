@@ -107,7 +107,7 @@
       <div><label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Giveaway Title</label><input type="text" id="title" value="Sub Sunday $50 Gift Card" class="input-field w-full px-5 py-4 rounded-xl text-white text-lg"></div>
       <div><label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Chat Keyword</label><input type="text" id="keyword" value="!join" class="input-field w-full px-5 py-4 rounded-xl text-white text-lg font-mono"></div>
       <div><label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Kick Chatroom ID</label><input type="text" id="chatroom-id" value="107612" class="input-field w-full px-5 py-4 rounded-xl text-white text-lg font-mono"><p class="text-gray-600 text-xs mt-2">chetootv = 107612</p></div>
-      <button onclick="createGiveaway()" class="btn-primary w-full py-5 rounded-xl text-lg">Create Giveaway →</button>
+      <button type="button" id="create-giveaway-btn" class="btn-primary w-full py-5 rounded-xl text-lg">Create Giveaway →</button>
     </div>
   </div>
 </div>
@@ -921,16 +921,54 @@ function firstToFinish(participants) {
 
 /* ==================== SETUP & NAVIGATION ==================== */
 function createGiveaway() {
-  giveawayTitle = document.getElementById('title').value.trim() || 'Giveaway';
-  keyword = document.getElementById('keyword').value.trim() || '!join';
-  chatroomId = document.getElementById('chatroom-id').value.trim() || '107612';
-  localStorage.setItem('giveaway_chatroom_id', chatroomId);
-  document.getElementById('dash-title').textContent = giveawayTitle;
-  document.getElementById('stat-keyword').textContent = keyword;
-  document.getElementById('dash-chatroom-id').value = chatroomId;
-  document.getElementById('setup-screen').classList.add('hidden');
-  document.getElementById('dashboard-screen').classList.remove('hidden');
-  updateOverlayUrl();
+  try {
+    const titleEl = document.getElementById('title');
+    const keywordEl = document.getElementById('keyword');
+    const roomEl = document.getElementById('chatroom-id');
+    giveawayTitle = (titleEl && titleEl.value.trim()) || 'Giveaway';
+    keyword = (keywordEl && keywordEl.value.trim()) || '!join';
+    chatroomId = (roomEl && roomEl.value.trim()) || '107612';
+    localStorage.setItem('giveaway_title', giveawayTitle);
+    localStorage.setItem('giveaway_keyword', keyword);
+    localStorage.setItem('giveaway_chatroom_id', chatroomId);
+    const dashTitle = document.getElementById('dash-title');
+    const statKeyword = document.getElementById('stat-keyword');
+    const dashRoom = document.getElementById('dash-chatroom-id');
+    const setup = document.getElementById('setup-screen');
+    const dashboard = document.getElementById('dashboard-screen');
+    if (dashTitle) dashTitle.textContent = giveawayTitle;
+    if (statKeyword) statKeyword.textContent = keyword;
+    if (dashRoom) dashRoom.value = chatroomId;
+    if (setup) setup.classList.add('hidden');
+    if (dashboard) {
+      dashboard.classList.remove('hidden');
+      dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    updateOverlayUrl();
+    connectKickChat(chatroomId);
+  } catch (err) {
+    console.error('createGiveaway failed:', err);
+    alert('Could not open dashboard: ' + (err && err.message ? err.message : err));
+  }
+}
+
+function restoreSetupFields() {
+  const savedTitle = localStorage.getItem('giveaway_title');
+  const savedKeyword = localStorage.getItem('giveaway_keyword');
+  const savedRoom = localStorage.getItem('giveaway_chatroom_id');
+  if (savedTitle) { const el = document.getElementById('title'); if (el) el.value = savedTitle; }
+  if (savedKeyword) { const el = document.getElementById('keyword'); if (el) el.value = savedKeyword; }
+  if (savedRoom) { const el = document.getElementById('chatroom-id'); if (el) el.value = savedRoom; }
+}
+
+function bindSetupForm() {
+  restoreSetupFields();
+  const btn = document.getElementById('create-giveaway-btn');
+  if (btn) btn.addEventListener('click', createGiveaway);
+  ['title', 'keyword', 'chatroom-id'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); createGiveaway(); } });
+  });
 }
 
 function updateOverlayUrl() {
@@ -1067,7 +1105,7 @@ function connectKickChat(roomId) {
       if (chatEvent && msg.data) {
         let data;
         try { data = typeof msg.data === 'string' ? JSON.parse(msg.data) : msg.data; } catch (e) { return; }
-        const sender = data.sender?.username || data.username || 'Unknown';
+        const sender = (data.sender && data.sender.username) || data.username || 'Unknown';
         const raw = (data.content || data.message || '').trim();
         const text = raw.toLowerCase();
         chatLog.push({ sender, text, time: Date.now() });
@@ -2854,7 +2892,7 @@ function startTower(names) {
     ctx.fillStyle=leader.color; ctx.beginPath(); ctx.roundRect(W-308,12,296*progress,16,8); ctx.fill();
     ctx.fillStyle='#fff'; ctx.font='10px Inter'; ctx.textAlign='center'; ctx.fillText(Math.round(progress*100)+'%', W-160,24);
   }
-  let animId, startTime = Date.now();
+  let animId;
   function loop() {
     frame++;
     let allDone = true;
@@ -5657,6 +5695,8 @@ function launchSwordWith(p1Name, p2Name) {
     }
     return;
   }
+
+  bindSetupForm();
 })();
 
 function tapRace(e) {
