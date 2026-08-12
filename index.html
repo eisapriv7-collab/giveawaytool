@@ -225,6 +225,7 @@
         <button onclick="launchPlinko()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f97316,#c2410c);">🎪 Plinko Drop</button>
         <button onclick="launchThunder()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#6366f1,#312e81);">⚡ Thunder Judgment</button>
         <button onclick="launchButts()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f472b6,#9d174d);">🍑 Pick A Butt</button>
+        <button onclick="launchFlush()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#38bdf8,#1e40af);">🚽 Flush Royale</button>
       </div>
       <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">1-on-1 Combat (pick 2 entrants)</div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -979,6 +980,18 @@
   </div>
 </div>
 
+<div id="flush-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#38bdf8] text-sm font-bold uppercase tracking-widest mb-2">🚽 Flush Royale</div><h1 class="text-4xl md:text-5xl font-black text-white">Last Ball Wins</h1></div>
+    <div id="flush-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Filling the bowl...</div><div class="text-sm text-gray-600" id="flush-intro-count"></div></div>
+    <div id="flush-phase-play" class="hidden w-full max-w-5xl">
+      <div id="flush-feed" class="text-center text-gray-300 mb-3 text-lg font-bold">Click a ball to flush!</div>
+      <canvas id="flush-canvas" width="900" height="580" class="w-full rounded-2xl border border-sky-500/20 bg-[#050508] cursor-pointer"></canvas>
+    </div>
+    <div id="flush-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🚽</div><div class="text-2xl text-[#38bdf8] font-bold mb-2">LAST BALL STANDING</div><div id="flush-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
 <!-- ==================== BOXING MATCH (1v1, enhanced) ==================== -->
 <div id="boxing-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
   <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
@@ -1681,6 +1694,7 @@ function launchHighCard() { openGamePopup('highcard'); }
 function launchPlinko() { openGamePopup('plinko'); }
 function launchThunder() { openGamePopup('thunder'); }
 function launchButts() { openGamePopup('butts'); }
+function launchFlush() { openGamePopup('flush'); }
 
 
 
@@ -8107,6 +8121,247 @@ function startButts(names) {
   loop();
 }
 
+/* ==================== FLUSH ROYALE ==================== */
+function drawFlushBall(ctx, x, y, r, color, name, opts) {
+  opts = opts || {};
+  ctx.save();
+  const hl = opts.highlight;
+  if (hl) {
+    ctx.shadowColor = color; ctx.shadowBlur = 22;
+    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(x, y, r + 6, 0, Math.PI * 2); ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+  const grd = ctx.createRadialGradient(x - r * 0.35, y - r * 0.35, r * 0.05, x + r * 0.08, y + r * 0.08, r * 1.05);
+  grd.addColorStop(0, '#ffffff'); grd.addColorStop(0.25, color); grd.addColorStop(1, '#1e293b');
+  ctx.fillStyle = grd;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.fillStyle = '#fff'; ctx.font = 'bold ' + Math.max(8, r * 0.42) + 'px Inter'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(name.substring(0, Math.max(5, Math.floor(r * 0.45))), x, y);
+  ctx.restore();
+}
+
+function drawToilet(ctx, x, y, opts) {
+  opts = opts || {};
+  const lid = opts.lidOpen || 0, swirl = opts.swirl || 0, flushT = opts.flushT || 0, shake = opts.shake || 0;
+  ctx.save(); ctx.translate(x + shake, y);
+
+  ctx.fillStyle = '#e2e8f0'; ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.roundRect(-58, -175, 116, 88, 10); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#cbd5e1'; ctx.fillRect(-50, -168, 100, 12);
+  ctx.fillStyle = '#64748b'; ctx.beginPath(); ctx.roundRect(44, -155, 10, 28, 3); ctx.fill();
+  ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(49, -148, 4, 0, Math.PI * 2); ctx.fill();
+
+  const pipeG = ctx.createLinearGradient(-90, 20, 90, 100);
+  pipeG.addColorStop(0, '#f8fafc'); pipeG.addColorStop(0.5, '#f1f5f9'); pipeG.addColorStop(1, '#cbd5e1');
+  ctx.fillStyle = pipeG; ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.ellipse(0, 42, 92, 58, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#475569';
+  ctx.beginPath(); ctx.ellipse(0, 48, 68, 42, 0, 0, Math.PI * 2); ctx.fill();
+
+  const waterA = Math.max(0.15, 0.75 - flushT * 0.7);
+  if (waterA > 0.2) {
+    ctx.save(); ctx.translate(0, 50); ctx.rotate(swirl);
+    const wg = ctx.createRadialGradient(0, 0, 5, 0, 0, 58);
+    wg.addColorStop(0, 'rgba(125,211,252,0.9)'); wg.addColorStop(0.6, 'rgba(14,165,233,0.65)'); wg.addColorStop(1, 'rgba(2,132,199,0.3)');
+    ctx.fillStyle = wg; ctx.beginPath(); ctx.ellipse(0, 0, 62 * waterA + 8, 38 * waterA + 5, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  ctx.save(); ctx.translate(-38, -8); ctx.rotate(-lid * 1.35);
+  ctx.fillStyle = '#f8fafc'; ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(38, 0, 78, 22, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.restore();
+
+  ctx.fillStyle = '#64748b'; ctx.fillRect(-28, 95, 56, 18);
+  ctx.fillStyle = '#475569'; ctx.beginPath(); ctx.ellipse(0, 108, 34, 8, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+function runFlush() {
+  showOverlay('flush-overlay'); showPhase('flush', 'intro');
+  const names = Array.from(entrants);
+  if (!names.length) { alert('No entrants yet!'); return; }
+  document.getElementById('flush-intro-count').textContent = names.length + ' balls in the bowl room — flush until one survives!';
+  setTimeout(() => startFlush(names), 1600);
+}
+
+function startFlush(names) {
+  showPhase('flush', 'play');
+  let remaining = [...names].sort(() => Math.random() - 0.5);
+  const canvas = document.getElementById('flush-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const feed = document.getElementById('flush-feed');
+  const toiletX = W / 2, toiletY = H - 95;
+  let balls = [], phase = 'pick', flushing = null, hoverIdx = -1, animId = null;
+  let lidOpen = 0, swirl = 0, flushT = 0, shake = 0, particles = [], bubbles = [], round = 0;
+
+  for (let i = 0; i < 15; i++) bubbles.push({ x: toiletX + (Math.random() - 0.5) * 50, y: toiletY + 10 + Math.random() * 20, r: 2 + Math.random() * 3, spd: 0.3 + Math.random() * 0.5, wob: Math.random() * 6 });
+
+  function layoutBalls() {
+    const slots = gridLayout(remaining.length, 50, 55, W - 50, toiletY - 130, 10);
+    balls = remaining.map((name, i) => ({
+      name, color: colorFor(name),
+      x: slots[i].x + slots[i].w / 2, y: slots[i].y + slots[i].h / 2,
+      r: Math.min(28, Math.max(16, Math.min(slots[i].w, slots[i].h) * 0.38)),
+      bob: Math.random() * Math.PI * 2, vx: 0, vy: 0
+    }));
+  }
+  layoutBalls();
+
+  function canvasPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return { x: (e.clientX - rect.left) * (W / rect.width), y: (e.clientY - rect.top) * (H / rect.height) };
+  }
+
+  function hitBall(x, y) {
+    for (let i = balls.length - 1; i >= 0; i--) {
+      if (Math.hypot(x - balls[i].x, y - balls[i].y) < balls[i].r + 8) return i;
+    }
+    return -1;
+  }
+
+  function spawnFlushFX() {
+    for (let i = 0; i < 40; i++) {
+      particles.push({
+        x: toiletX + (Math.random() - 0.5) * 40, y: toiletY + 20,
+        vx: (Math.random() - 0.5) * 6, vy: -3 - Math.random() * 8,
+        r: 2 + Math.random() * 5, life: 1, color: ['#7dd3fc', '#38bdf8', '#fff', '#bae6fd'][i % 4]
+      });
+    }
+    for (let i = 0; i < 20; i++) {
+      particles.push({
+        x: toiletX, y: toiletY + 50,
+        vx: (Math.random() - 0.5) * 3, vy: 4 + Math.random() * 6,
+        r: 3 + Math.random() * 4, life: 1, color: '#0ea5e9'
+      });
+    }
+  }
+
+  function beginFlush(idx) {
+    if (phase !== 'pick') return;
+    phase = 'flush'; round++;
+    const b = balls[idx];
+    flushing = { ...b, stage: 'fly', t: 0, scale: 1, alpha: 1, orbit: 0 };
+    balls.splice(idx, 1);
+    lidOpen = 0; flushT = 0;
+    feed.textContent = '🚽 Flushing ' + b.name + '...';
+  }
+
+  function updateFlush() {
+    if (!flushing) return;
+    flushing.t++;
+    const f = flushing;
+    if (f.stage === 'fly') {
+      lidOpen = Math.min(1, lidOpen + 0.06);
+      const tx = toiletX, ty = toiletY - 55;
+      f.x += (tx - f.x) * 0.12; f.y += (ty - f.y) * 0.12;
+      f.scale = 1 + Math.sin(f.t * 0.2) * 0.05;
+      if (Math.hypot(tx - f.x, ty - f.y) < 8) { f.stage = 'drop'; f.t = 0; }
+    } else if (f.stage === 'drop') {
+      f.vy = (f.vy || 0) + 0.55; f.y += f.vy; f.scale *= 0.99;
+      if (f.y >= toiletY + 15) { f.stage = 'swirl'; f.t = 0; spawnFlushFX(); shake = 6; }
+    } else if (f.stage === 'swirl') {
+      swirl += 0.28; flushT = Math.min(1, flushT + 0.025);
+      f.orbit += 0.35;
+      f.x = toiletX + Math.cos(f.orbit) * (18 - f.t * 0.3);
+      f.y = toiletY + 35 + Math.sin(f.orbit) * (12 - f.t * 0.2);
+      f.scale = Math.max(0.15, 1 - f.t * 0.045);
+      f.alpha = Math.max(0, 1 - f.t * 0.04);
+      if (f.t > 28) { f.stage = 'done'; feed.textContent = '💦 ' + f.name + ' — FLUSHED!'; }
+    } else if (f.stage === 'done') {
+      remaining = remaining.filter(n => n !== f.name);
+      flushing = null; phase = 'pick'; lidOpen = 0; swirl = 0; flushT = 0;
+      if (remaining.length <= 1) {
+        cancelAnimationFrame(animId);
+        showPhase('flush', 'winner');
+        document.getElementById('flush-winner-name').textContent = pickSingleWinner(remaining, names);
+        return;
+      }
+      layoutBalls();
+      feed.textContent = '👆 Pick another ball! (' + remaining.length + ' left)';
+    }
+    shake *= 0.85;
+  }
+
+  function drawScene() {
+    const tg = ctx.createLinearGradient(0, 0, 0, H);
+    tg.addColorStop(0, '#1e3a5f'); tg.addColorStop(0.45, '#334155'); tg.addColorStop(1, '#475569');
+    ctx.fillStyle = tg; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 1;
+    for (let row = 0; row < 12; row++) {
+      for (let col = 0; col < 16; col++) {
+        if ((row + col) % 2 === 0) {
+          ctx.fillStyle = 'rgba(255,255,255,0.03)';
+          ctx.fillRect(col * (W / 16), row * (H / 14), W / 16, H / 14);
+        }
+      }
+    }
+    ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.fillRect(0, toiletY + 70, W, H);
+
+    drawToilet(ctx, toiletX, toiletY, { lidOpen, swirl, flushT, shake });
+
+    bubbles.forEach(b => {
+      b.y -= b.spd; b.wob += 0.05; b.x += Math.sin(b.wob) * 0.3;
+      if (b.y < toiletY + 5) b.y = toiletY + 25;
+      ctx.globalAlpha = 0.45; ctx.strokeStyle = '#bae6fd'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1;
+    });
+
+    balls.forEach((b, i) => {
+      b.bob += 0.04;
+      const by = b.y + Math.sin(b.bob) * 4;
+      drawFlushBall(ctx, b.x, by, b.r, b.color, b.name, { highlight: i === hoverIdx && phase === 'pick' });
+    });
+
+    if (flushing) {
+      ctx.globalAlpha = flushing.alpha;
+      drawFlushBall(ctx, flushing.x, flushing.y, flushing.r * flushing.scale, flushing.color, flushing.name, { highlight: true });
+      ctx.globalAlpha = 1;
+    }
+
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.life -= 0.022;
+      ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+    });
+    particles = particles.filter(p => p.life > 0);
+
+    if (flushT > 0.3) {
+      ctx.fillStyle = `rgba(56,189,248,${flushT * 0.15})`; ctx.font = 'bold 28px Inter'; ctx.textAlign = 'center';
+      ctx.fillText('FLUSH!', toiletX, toiletY - 120 - flushT * 20);
+    }
+
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, 10, 220, 30, 8); ctx.fill();
+    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left'; ctx.fillText('🎱 BALLS LEFT: ' + remaining.length, 20, 30);
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 34, W - 20, 26, 8); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed.textContent, W / 2, H - 16);
+  }
+
+  function loop() {
+    updateFlush();
+    drawScene();
+    animId = requestAnimationFrame(loop);
+  }
+
+  canvas.onmousemove = e => {
+    if (phase !== 'pick') { hoverIdx = -1; canvas.style.cursor = 'default'; return; }
+    const p = canvasPos(e);
+    hoverIdx = hitBall(p.x, p.y);
+    canvas.style.cursor = hoverIdx >= 0 ? 'pointer' : 'default';
+  };
+  canvas.onclick = e => {
+    if (phase !== 'pick') return;
+    const p = canvasPos(e);
+    const idx = hitBall(p.x, p.y);
+    if (idx >= 0) beginFlush(idx);
+  };
+
+  feed.textContent = '👆 CLICK A BALL to flush them down the toilet!';
+  loop();
+}
+
 /* ==================== SWORD DUEL (1v1 launcher) ==================== */
 function runSwordDuel() {
   const names = Array.from(entrants);
@@ -8196,6 +8451,7 @@ function launchSwordWith(p1Name, p2Name) {
       else if (game === 'plinko') runPlinko();
       else if (game === 'thunder') runThunder();
       else if (game === 'butts') runButts();
+      else if (game === 'flush') runFlush();
       else if (game === 'boxing') runBoxingMatch();
       else if (game === 'sword') runSwordDuel();
     }, 200);
