@@ -1405,6 +1405,7 @@ function createGiveaway() {
       dashboard.classList.remove('hidden');
       dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+    initGamePreviewHover();
     updateOverlayUrl();
     connectKickChat(chatroomId);
   } catch (err) {
@@ -1430,7 +1431,6 @@ function bindSetupForm() {
     const el = document.getElementById(id);
     if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); createGiveaway(); } });
   });
-  initGamePreviewHover();
 }
 
 function updateOverlayUrl() {
@@ -1726,12 +1726,14 @@ function onGamePreviewEnter(e) {
 }
 function onGamePreviewLeave() { hideGamePreview(); }
 function initGamePreviewHover() {
-  if (initGamePreviewHover.done) return;
-  initGamePreviewHover.done = true;
+  if (typeof getGamePreviews !== 'function') return;
+  const previews = getGamePreviews();
   document.querySelectorAll('#dashboard-screen button[onclick^="launch"]').forEach(btn => {
+    if (btn.dataset.previewBound) return;
     const fn = (btn.getAttribute('onclick') || '').replace(/\(\).*$/,'').trim();
     const gameId = PREVIEW_LAUNCH_MAP[fn];
-    if (!gameId || !getGamePreviews()[gameId]) return;
+    if (!gameId || !previews[gameId]) return;
+    btn.dataset.previewBound = '1';
     btn.classList.add('game-preview-btn');
     btn.dataset.previewGame = gameId;
     btn.addEventListener('mouseenter', onGamePreviewEnter);
@@ -9218,6 +9220,8 @@ function getGamePreviews() {
   });
   return _gamePreviewsCache;
 }
+initGamePreviewHover();
+
 function tapRace(e) {
   const el = document.getElementById('tap-score');
   let score = parseInt(el.textContent) + 1;
