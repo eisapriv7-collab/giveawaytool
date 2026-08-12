@@ -7822,49 +7822,37 @@ function drawPoopTurd(ctx, x, y, sc, rot, light) {
 function drawCartoonButt(ctx, x, y, sc, opts) {
   opts = opts || {};
   ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
-  const wob = Math.sin(opts.wobble || 0) * 3;
-  const squash = opts.squash || 1;
+  const wob = Math.sin(opts.wobble || 0) * 2;
   const clench = opts.clench || 0;
-  ctx.scale(1 - clench * 0.08, squash);
+  const squash = opts.squash || 1;
+  ctx.scale(1 - clench * 0.05, squash);
 
-  ctx.fillStyle = 'rgba(0,0,0,0.28)'; ctx.beginPath(); ctx.ellipse(2, 38, 48, 13, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.beginPath(); ctx.ellipse(0, 34, 42, 11, 0, 0, Math.PI * 2); ctx.fill();
 
-  function cheek(cx, cy, rx, ry, rot, hi) {
-    const g = ctx.createRadialGradient(cx - rx * 0.35, cy - ry * 0.4, rx * 0.08, cx, cy, rx * 1.1);
-    g.addColorStop(0, hi ? '#fecaca' : '#fdba74');
-    g.addColorStop(0.35, '#f9a8a8');
-    g.addColorStop(0.7, '#e8927c');
-    g.addColorStop(1, '#c97368');
+  function cheek(cx, rot) {
+    const rx = 23 - clench * 2, ry = 27 - clench * 2.5;
+    const g = ctx.createRadialGradient(cx - 7, -4, 2, cx, 2, rx * 1.05);
+    g.addColorStop(0, '#fecdd3'); g.addColorStop(0.45, '#f9a8a4'); g.addColorStop(1, '#d9776a');
     ctx.fillStyle = g;
-    ctx.beginPath(); ctx.ellipse(cx, cy + wob * 0.3, rx, ry, rot, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = 'rgba(127,29,29,0.18)'; ctx.lineWidth = 1.2; ctx.stroke();
-    ctx.fillStyle = 'rgba(255,255,255,0.12)';
-    ctx.beginPath(); ctx.ellipse(cx - rx * 0.25, cy - ry * 0.35 + wob * 0.2, rx * 0.28, ry * 0.18, rot, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx, 2 + wob * 0.15, rx, ry, rot, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.14)';
+    ctx.beginPath(); ctx.ellipse(cx - rx * 0.28, -ry * 0.22 + wob * 0.1, rx * 0.22, ry * 0.14, rot, 0, Math.PI * 2); ctx.fill();
   }
+  cheek(-15 + clench * 2.5, -0.06);
+  cheek(15 - clench * 2.5, 0.06);
 
-  cheek(-21 + clench * 4, 2, 26 - clench * 2, 30 - clench * 3, -0.12, opts.hover);
-  cheek(21 - clench * 4, 2, 26 - clench * 2, 30 - clench * 3, 0.12, opts.hover);
+  ctx.fillStyle = 'rgba(69,26,3,0.45)'; ctx.beginPath();
+  ctx.moveTo(-2.5, -16 + wob); ctx.quadraticCurveTo(0, 6, -1.5, 20 + wob);
+  ctx.lineTo(1.5, 20 + wob); ctx.quadraticCurveTo(0, 6, 2.5, -16 + wob); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(69,26,3,0.55)'; ctx.lineWidth = 1.4;
+  ctx.beginPath(); ctx.moveTo(0, -18 + wob); ctx.quadraticCurveTo(1.5, 5, 0, 22 + wob); ctx.stroke();
 
-  const cg = ctx.createLinearGradient(0, -24, 0, 30);
-  cg.addColorStop(0, 'rgba(69,26,3,0)'); cg.addColorStop(0.45, 'rgba(69,26,3,0.55)'); cg.addColorStop(1, 'rgba(45,19,3,0.75)');
-  ctx.fillStyle = cg; ctx.beginPath();
-  ctx.moveTo(-4, -22 + wob); ctx.quadraticCurveTo(-2 + clench * 3, 0, -3, 18 + wob);
-  ctx.lineTo(3, 18 + wob); ctx.quadraticCurveTo(2 - clench * 3, 0, 4, -22 + wob); ctx.closePath(); ctx.fill();
-
-  ctx.strokeStyle = 'rgba(45,19,3,0.65)'; ctx.lineWidth = 1.8;
-  ctx.beginPath(); ctx.moveTo(0, -24 + wob); ctx.quadraticCurveTo(3 + clench * 2, 4, 0, 28 + wob); ctx.stroke();
-
-  ctx.fillStyle = '#475569'; ctx.fillRect(-34, -42, 68, 14);
-  ctx.fillStyle = '#334155'; ctx.fillRect(-34, -28, 68, 5);
-  ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1; ctx.strokeRect(-34, -42, 68, 19);
-
-  ctx.fillStyle = '#e8927c';
-  ctx.beginPath(); ctx.ellipse(-34, 8, 10, 18, 0.3, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(34, 8, 10, 18, -0.3, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(71,85,105,0.45)'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(-26, -26); ctx.lineTo(26, -26); ctx.stroke();
 
   if (opts.hover) {
     ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 2.5; ctx.setLineDash([6, 4]);
-    ctx.beginPath(); ctx.ellipse(0, 4, 52, 40, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.ellipse(0, 2, 46, 36, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
   }
   ctx.restore();
 }
@@ -7884,7 +7872,7 @@ function startButts(names) {
   const W = canvas.width, H = canvas.height;
   const feed = document.getElementById('butts-feed');
   let butts = [], phase = 'pick', selected = null, cam = { x: W / 2, y: H / 2, zoom: 1 };
-  let zoomT = 0, revealT = 0, poopLogs = [], splats = [], hoverIdx = -1, animId = null, round = 0;
+  let zoomT = 0, revealT = 0, poopLogs = [], splats = [], hoverIdx = -1, animId = null, round = 0, camFocusY = null;
 
   function layoutButts() {
     const slots = gridLayout(remaining.length, 36, 70, W - 36, H - 50, 8);
@@ -7975,25 +7963,30 @@ function startButts(names) {
         ctx.globalAlpha = 1;
       });
       splats = splats.filter(s => s.life > 0);
-
-      if (phase === 'reveal' || phase === 'elim') {
-        const emerge = Math.min(1, revealT);
-        const pileTop = selected.y + 85 + Math.min(poopLogs.length * 8, 40);
-        const charY = pileTop + emerge * 45;
-        ctx.save(); ctx.globalAlpha = emerge;
-        drawMiniCharacter(ctx, selected.x, charY, 22, selected.color, { phase: revealT * 8 });
-        ctx.fillStyle = '#050508'; ctx.strokeStyle = selected.color; ctx.lineWidth = 2;
-        ctx.font = 'bold 16px Inter'; ctx.textAlign = 'center';
-        const nw = ctx.measureText(selected.name).width + 24;
-        ctx.beginPath(); ctx.roundRect(selected.x - nw / 2, charY - 58, nw, 28, 8); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = selected.color; ctx.fillText(selected.name, selected.x, charY - 39);
-        if (phase === 'elim') {
-          ctx.fillStyle = '#ff3366'; ctx.font = 'bold 22px Inter';
-          ctx.fillText('💩 ELIMINATED!', selected.x, charY + 42);
-        }
-        ctx.restore();
-      }
     }
+  }
+
+  function drawRevealPanel() {
+    if (!selected || (phase !== 'reveal' && phase !== 'elim')) return;
+    const emerge = Math.min(1, Math.max(0, revealT));
+    const slide = (1 - emerge) * 80;
+    const py = H * 0.52 + slide;
+    ctx.save(); ctx.globalAlpha = emerge;
+    ctx.fillStyle = 'rgba(5,5,8,0.92)'; ctx.strokeStyle = selected.color; ctx.lineWidth = 3;
+    ctx.shadowColor = selected.color; ctx.shadowBlur = 20;
+    ctx.beginPath(); ctx.roundRect(W / 2 - 200, py, 400, 145, 16); ctx.fill(); ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.font = 'bold 26px Inter'; ctx.textAlign = 'center'; ctx.fillStyle = '#fff';
+    ctx.fillText(selected.name, W / 2, py + 38);
+    drawMiniCharacter(ctx, W / 2, py + 95, 40, selected.color, { phase: revealT * 12 });
+    if (phase === 'elim') {
+      ctx.fillStyle = '#ff3366'; ctx.font = 'bold 20px Inter';
+      ctx.fillText('💩 ELIMINATED!', W / 2, py + 132);
+    } else {
+      ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 13px Inter';
+      ctx.fillText('💩 Pooped out!', W / 2, py + 132);
+    }
+    ctx.restore();
   }
 
   function draw() {
@@ -8005,6 +7998,7 @@ function startButts(names) {
     ctx.translate(W / 2, H / 2); ctx.scale(cam.zoom, cam.zoom); ctx.translate(-cam.x, -cam.y);
     drawWorld();
     ctx.restore();
+    drawRevealPanel();
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, 10, 240, 30, 8); ctx.fill();
     ctx.fillStyle = '#f472b6'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left'; ctx.fillText('🍑 BUTTS LEFT: ' + remaining.length, 20, 30);
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 34, W - 20, 26, 8); ctx.fill();
@@ -8017,7 +8011,7 @@ function startButts(names) {
     setTimeout(() => {
       remaining = remaining.filter(n => n !== selected.name);
       selected = null; phase = 'pick'; zoomT = 0; revealT = 0;
-      poopLogs = []; splats = [];
+      poopLogs = []; splats = []; camFocusY = null;
       cam = { x: W / 2, y: H / 2, zoom: 1 };
       if (remaining.length <= 1) {
         cancelAnimationFrame(animId);
@@ -8032,28 +8026,41 @@ function startButts(names) {
   }
 
   function loop() {
+    if (selected && phase !== 'pick') {
+      const focusY = camFocusY !== null ? camFocusY : selected.y;
+      cam.x += (selected.x - cam.x) * 0.1;
+      cam.y += (focusY - cam.y) * 0.1;
+    }
     if (phase === 'zoom') {
       zoomT = Math.min(1, zoomT + 0.035);
-      cam.x += (selected.x - cam.x) * 0.12;
-      cam.y += (selected.y - cam.y) * 0.12;
-      cam.zoom += (2.8 - cam.zoom) * 0.08;
+      camFocusY = selected.y - 20;
+      cam.zoom += (2.4 - cam.zoom) * 0.08;
       if (zoomT >= 1) { phase = 'squeeze'; revealT = 0; feed.textContent = 'Uh oh... something\'s coming out...'; }
     }
     if (phase === 'squeeze') {
       revealT += 0.035;
       selected.wobble += 0.3;
+      camFocusY = selected.y + 10;
+      cam.zoom += (2.1 - cam.zoom) * 0.04;
       if (revealT > 0.15 && poopLogs.length === 0) pushPoopLog(0, 0, 0);
       if (revealT > 0.45 && poopLogs.length === 1) pushPoopLog(0, 0, 0);
       if (revealT > 0.75 && poopLogs.length === 2) pushPoopLog(0, 0, 0);
       if (revealT > 1.1) {
         phase = 'reveal'; revealT = 0;
+        camFocusY = selected.y + 55;
+        cam.zoom += (1.75 - cam.zoom) * 0.06;
         if (poopLogs.length < 3) pushPoopLog(0, 0, 0);
         feed.textContent = '💩 REVEALING...';
       }
     }
     if (phase === 'reveal') {
-      revealT += 0.025;
+      revealT += 0.028;
+      camFocusY = selected.y + 55;
       if (revealT >= 1) finishReveal();
+    }
+    if (phase === 'elim') {
+      camFocusY = selected.y + 55;
+      cam.zoom += (1.75 - cam.zoom) * 0.06;
     }
     draw(); animId = requestAnimationFrame(loop);
   }
@@ -8070,7 +8077,7 @@ function startButts(names) {
     const idx = hitButt(p.wx, p.wy);
     if (idx < 0) return;
     selected = butts[idx]; phase = 'zoom'; zoomT = 0; revealT = 0;
-    poopLogs = []; splats = [];
+    poopLogs = []; splats = []; camFocusY = selected.y - 20;
     feed.textContent = 'Zooming in on that butt...';
   };
 
