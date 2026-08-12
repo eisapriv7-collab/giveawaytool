@@ -936,14 +936,14 @@
 
 <div id="slot-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
   <div class="absolute inset-0 flex flex-col items-center justify-center p-6 overflow-y-auto">
-    <div class="text-center mb-4"><div class="text-[#ec4899] text-sm font-bold uppercase tracking-widest mb-2">🎰 Jackpot Slots</div><h1 class="text-4xl md:text-5xl font-black text-white">Pull The Lever</h1></div>
-    <div id="slot-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Loading reels...</div><div class="text-sm text-gray-600" id="slot-intro-count"></div></div>
+    <div class="text-center mb-4"><div class="text-[#ffd700] text-sm font-bold uppercase tracking-widest mb-2">🎰 Jackpot Slots</div><h1 class="text-4xl md:text-5xl font-black text-white">Match 3 To Win</h1></div>
+    <div id="slot-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Loading the machine...</div><div class="text-sm text-gray-600" id="slot-intro-count"></div></div>
     <div id="slot-phase-play" class="hidden w-full max-w-3xl">
-      <div id="slot-feed" class="text-center text-gray-300 mb-3 text-lg font-bold">Spinning...</div>
-      <canvas id="slot-canvas" width="720" height="520" class="w-full rounded-2xl border border-pink-500/20 bg-[#050508] cursor-pointer"></canvas>
+      <div id="slot-feed" class="text-center text-gray-300 mb-3 text-lg font-bold">Pull the lever!</div>
+      <canvas id="slot-canvas" width="820" height="560" class="w-full rounded-2xl border-2 border-[#ffd700]/30 bg-[#1a0505] cursor-pointer shadow-[0_0_40px_rgba(255,215,0,0.12)]"></canvas>
       <div id="slot-legend" class="legend-scroll mt-3"></div>
     </div>
-    <div id="slot-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🎰</div><div class="text-2xl text-[#ec4899] font-bold mb-2">JACKPOT SURVIVOR</div><div id="slot-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+    <div id="slot-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🎰</div><div class="text-2xl text-[#ffd700] font-bold mb-2">JACKPOT WINNER</div><div id="slot-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
   </div>
 </div>
 
@@ -7292,158 +7292,275 @@ function runSlot() {
   showOverlay('slot-overlay'); showPhase('slot', 'intro');
   const names = Array.from(entrants);
   if (!names.length) { alert('No entrants yet!'); return; }
-  document.getElementById('slot-intro-count').textContent = names.length + ' symbols — streamer pulls the lever each round!';
+  document.getElementById('slot-intro-count').textContent = names.length + ' symbols — match all 3 reels on the payline to win!';
   armGameStart(() => startSlot(names));
 }
 function startSlot(names) {
   showPhase('slot', 'play');
-  let remaining = [...names].sort(() => Math.random() - 0.5);
+  const items = [...names];
   const canvas = document.getElementById('slot-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   const feed = document.getElementById('slot-feed');
   document.getElementById('slot-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
-  let round = 0, phase = 'ready', reels = [], leverT = 0, flashT = 0, loserName = '', animId = null, leverGlow = 0, leverHover = false;
-  const reelX = [W*0.28, W*0.5, W*0.72], reelW = 110, reelH = 200;
-  const lever = { x: W * 0.89, stemX: W * 0.88, stemY: H * 0.35, stemW: 18, stemH: 80, knobR: 16 };
+
+  const ITEM_H = 58;
+  const reelX = [W * 0.27, W * 0.5, W * 0.73];
+  const reelW = 128, reelTop = H * 0.24, reelH = 232;
+  const payY = reelTop + reelH / 2;
+  const lever = { stemX: W * 0.905, stemY: H * 0.34, stemW: 20, stemH: 96, knobR: 18, x: W * 0.915 };
+
+  let spinCount = 0, phase = 'ready', leverT = 0, leverHover = false, animId = null;
+  let winFlash = 0, jackpotName = '', marqueeT = 0, luckPulse = 0;
+  let reels = [0, 1, 2].map(() => ({ offset: Math.random() * items.length, speed: 0, targetIdx: 0, stopDelay: 0, stopping: false, done: true }));
 
   function canvasPos(e) {
     const rect = canvas.getBoundingClientRect();
     return { x: (e.clientX - rect.left) * (W / rect.width), y: (e.clientY - rect.top) * (H / rect.height) };
   }
   function hitLever(x, y) {
-    const knobY = lever.stemY - leverT * 25;
-    return x >= lever.stemX - 12 && x <= lever.stemX + lever.stemW + 24 && y >= knobY - lever.knobR - 8 && y <= lever.stemY + lever.stemH + 8;
+    const knobY = lever.stemY - leverT * 28;
+    return x >= lever.stemX - 16 && x <= lever.stemX + lever.stemW + 28 && y >= knobY - lever.knobR - 10 && y <= lever.stemY + lever.stemH + 10;
   }
-
-  function initReels() {
-    reels = [0, 1, 2].map(() => ({ offset: Math.random() * Math.max(1, remaining.length), speed: 0, stopAt: 0, done: true }));
+  function reelName(reel, row) {
+    const idx = ((Math.floor(reel.offset) + row) % items.length + items.length) % items.length;
+    return items[idx];
   }
-  initReels();
+  function centerNames() { return reels.map(r => reelName(r, 0)); }
 
-  function drawLever() {
-    const knobY = lever.stemY - leverT * 25;
-    const ready = phase === 'ready';
-    if (ready) {
-      leverGlow = 0.5 + Math.sin(Date.now() * 0.008) * 0.35;
-      ctx.fillStyle = `rgba(236,72,153,${leverGlow * 0.35})`;
-      ctx.beginPath(); ctx.arc(lever.x, knobY, lever.knobR + 18, 0, Math.PI * 2); ctx.fill();
+  function drawCabinet() {
+    const cabX = W * 0.08, cabY = H * 0.06, cabW = W * 0.84, cabH = H * 0.82;
+    const bg = ctx.createLinearGradient(0, cabY, 0, cabY + cabH);
+    bg.addColorStop(0, '#3b0a0a'); bg.addColorStop(0.45, '#5c1010'); bg.addColorStop(1, '#2a0606');
+    ctx.fillStyle = bg; ctx.beginPath(); ctx.roundRect(cabX, cabY, cabW, cabH, 24); ctx.fill();
+    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 5; ctx.stroke();
+    ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 2; ctx.strokeRect(cabX + 8, cabY + 8, cabW - 16, cabH - 16);
+
+    for (let i = 0; i < 12; i++) {
+      const lx = cabX + 24 + i * ((cabW - 48) / 11);
+      const on = Math.sin(marqueeT * 0.12 + i * 0.8) > 0;
+      ctx.fillStyle = on ? '#ffd700' : '#4a1010';
+      ctx.shadowColor = on ? '#ffd700' : 'transparent'; ctx.shadowBlur = on ? 10 : 0;
+      ctx.beginPath(); ctx.arc(lx, cabY + 22, 5, 0, Math.PI * 2); ctx.fill();
     }
-    ctx.fillStyle = '#334155'; ctx.fillRect(lever.stemX, lever.stemY, lever.stemW, lever.stemH);
-    ctx.fillStyle = ready ? (leverHover ? '#f472b6' : '#ec4899') : leverT > 0 ? '#ef4444' : '#64748b';
-    ctx.beginPath(); ctx.arc(lever.x, knobY, lever.knobR, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = ready ? '#ffd700' : '#94a3b8'; ctx.lineWidth = ready ? 3 : 2; ctx.stroke();
-    if (ready) {
-      ctx.fillStyle = '#ffd700'; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center';
-      ctx.fillText(leverHover ? '▶ PULL!' : '👆 PULL', lever.x, knobY + 36);
-    }
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = '#ffd700'; ctx.font = 'bold 26px Inter'; ctx.textAlign = 'center';
+    ctx.fillText('🎰 JACKPOT SLOTS 🎰', W / 2, cabY + 52);
+    ctx.fillStyle = '#fca5a5'; ctx.font = 'bold 12px Inter';
+    ctx.fillText('MATCH 3 ON THE GOLD PAYLINE TO WIN', W / 2, cabY + 72);
   }
 
-  function drawReelStrip(ri, x, finalName, spinning) {
-    const items = remaining.length ? remaining : names;
-    ctx.save(); ctx.beginPath(); ctx.roundRect(x - reelW/2, H*0.22, reelW, reelH, 8); ctx.clip();
-    ctx.fillStyle = '#0f0a10'; ctx.fillRect(x - reelW/2, H*0.22, reelW, reelH);
-    const itemH = 56, centerY = H*0.22 + reelH/2;
-    for (let j = -3; j <= 3; j++) {
-      let idx, yOff;
-      if (spinning && !reels[ri].done) {
-        idx = Math.floor((reels[ri].offset + j) % items.length + items.length) % items.length;
-        yOff = ((reels[ri].offset % 1) + j) * itemH;
-      } else {
-        idx = j === 0 ? items.indexOf(finalName) : Math.floor(Math.random()*items.length);
-        if (idx < 0) idx = 0;
-        yOff = j * itemH;
-      }
-      const nm = items[idx], c = colorFor(nm);
-      const yy = centerY + yOff - itemH/2;
-      ctx.fillStyle = c + '33'; ctx.strokeStyle = c; ctx.lineWidth = j===0 && !spinning ? 3 : 1;
-      ctx.beginPath(); ctx.roundRect(x - reelW/2 + 6, yy - 24, reelW - 12, 48, 6); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = c; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center'; ctx.fillText(nm.substring(0,10), x, yy + 4);
+  function drawReelWindow(ri, x) {
+    ctx.save();
+    ctx.fillStyle = '#120608';
+    ctx.beginPath(); ctx.roundRect(x - reelW / 2 - 6, reelTop - 6, reelW + 12, reelH + 12, 12); ctx.fill();
+    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 4; ctx.stroke();
+    ctx.strokeStyle = '#78350f'; ctx.lineWidth = 2;
+    ctx.strokeRect(x - reelW / 2 - 2, reelTop - 2, reelW + 4, reelH + 4);
+
+    ctx.beginPath(); ctx.roundRect(x - reelW / 2, reelTop, reelW, reelH, 8); ctx.clip();
+    const grad = ctx.createLinearGradient(x - reelW / 2, reelTop, x + reelW / 2, reelTop + reelH);
+    grad.addColorStop(0, '#0a0406'); grad.addColorStop(0.5, '#180810'); grad.addColorStop(1, '#0a0406');
+    ctx.fillStyle = grad; ctx.fillRect(x - reelW / 2, reelTop, reelW, reelH);
+
+    const spinning = phase === 'spin' && !reels[ri].done;
+    for (let j = -4; j <= 4; j++) {
+      const nm = reelName(reels[ri], j);
+      const frac = reels[ri].offset % 1;
+      const yy = payY + (j - frac) * ITEM_H;
+      if (yy < reelTop - ITEM_H || yy > reelTop + reelH + ITEM_H) continue;
+      const c = colorFor(nm);
+      const isPay = Math.abs(yy - payY) < ITEM_H * 0.42;
+      ctx.fillStyle = isPay && !spinning ? c + '55' : c + '22';
+      ctx.strokeStyle = isPay && !spinning ? '#ffd700' : c;
+      ctx.lineWidth = isPay && !spinning ? 3 : 1.5;
+      ctx.beginPath(); ctx.roundRect(x - reelW / 2 + 8, yy - 24, reelW - 16, 48, 8); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = isPay && !spinning ? '#fff' : c;
+      ctx.font = 'bold ' + (isPay && !spinning ? 13 : 11) + 'px Inter';
+      ctx.textAlign = 'center';
+      ctx.fillText(nm.length > 11 ? nm.substring(0, 10) + '…' : nm, x, yy + 4);
     }
     ctx.restore();
+
+    if (phase === 'result' && reels[ri].done) {
+      const cn = centerNames();
+      if (cn[0] === cn[1] && cn[1] === cn[2]) {
+        ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 4; ctx.shadowColor = '#ffd700'; ctx.shadowBlur = 16;
+        ctx.strokeRect(x - reelW / 2 + 4, payY - 28, reelW - 8, 56);
+        ctx.shadowBlur = 0;
+      }
+    }
+  }
+
+  function drawPayline() {
+    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 3; ctx.shadowColor = '#ffd700'; ctx.shadowBlur = 12;
+    ctx.beginPath(); ctx.moveTo(W * 0.12, payY); ctx.lineTo(W * 0.88, payY); ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ffd700'; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center';
+    ctx.fillText('★ PAYLINE ★', W / 2, payY - 10);
+    ctx.fillStyle = '#fbbf24'; ctx.font = '16px Inter';
+    ctx.fillText('◀', W * 0.115, payY + 5);
+    ctx.fillText('▶', W * 0.885, payY + 5);
+  }
+
+  function drawLever() {
+    const knobY = lever.stemY - leverT * 28;
+    const ready = phase === 'ready';
+    ctx.fillStyle = '#475569'; ctx.fillRect(lever.stemX, lever.stemY, lever.stemW, lever.stemH);
+    ctx.fillStyle = '#64748b'; ctx.fillRect(lever.stemX + 3, lever.stemY + 4, lever.stemW - 6, lever.stemH - 8);
+    if (ready) {
+      const glow = 0.45 + Math.sin(Date.now() * 0.009) * 0.35;
+      ctx.fillStyle = `rgba(255,215,0,${glow * 0.35})`;
+      ctx.beginPath(); ctx.arc(lever.x, knobY, lever.knobR + 20, 0, Math.PI * 2); ctx.fill();
+    }
+    const knobGrad = ctx.createRadialGradient(lever.x - 4, knobY - 4, 2, lever.x, knobY, lever.knobR);
+    knobGrad.addColorStop(0, ready ? '#fecaca' : '#94a3b8');
+    knobGrad.addColorStop(1, ready ? '#dc2626' : '#475569');
+    ctx.fillStyle = knobGrad;
+    ctx.beginPath(); ctx.arc(lever.x, knobY, lever.knobR, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = ready ? '#ffd700' : '#64748b'; ctx.lineWidth = 3; ctx.stroke();
+    if (ready) {
+      ctx.fillStyle = '#ffd700'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'center';
+      ctx.fillText(leverHover ? '▶ SPIN!' : '👆 PULL', lever.x, knobY + 38);
+    }
+  }
+
+  function drawLuckMeter() {
+    const luck = Math.min(1, 0.08 + spinCount * 0.12);
+    const mx = W * 0.12, my = H * 0.9, mw = W * 0.76, mh = 14;
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(mx, my, mw, mh, 7); ctx.fill();
+    const lg = ctx.createLinearGradient(mx, my, mx + mw, my);
+    lg.addColorStop(0, '#7f1d1d'); lg.addColorStop(0.5, '#f59e0b'); lg.addColorStop(1, '#ffd700');
+    ctx.fillStyle = lg; ctx.beginPath(); ctx.roundRect(mx + 2, my + 2, (mw - 4) * luck, mh - 4, 5); ctx.fill();
+    ctx.fillStyle = '#fde68a'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center';
+    ctx.fillText('LUCK METER — SPIN ' + spinCount, W / 2, my - 6);
   }
 
   function draw() {
-    ctx.fillStyle = '#120810'; ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = '#ec489933'; ctx.beginPath(); ctx.roundRect(W*0.12, H*0.1, W*0.76, H*0.72, 20); ctx.fill();
-    ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 4; ctx.stroke();
-    ctx.fillStyle = '#ffd700'; ctx.font = 'bold 22px Inter'; ctx.textAlign = 'center'; ctx.fillText('🎰 JACKPOT SLOTS', W/2, H*0.16);
-    ctx.strokeStyle = '#ff3366'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(W*0.14, H*0.52); ctx.lineTo(W*0.86, H*0.52); ctx.stroke();
-    ctx.fillStyle = '#ff336688'; ctx.font = 'bold 10px Inter'; ctx.fillText('▼ LOSER LINE ▼', W/2, H*0.535);
-    const finals = reels.map(r => remaining[r.stopAt] || remaining[0] || loserName);
-    reelX.forEach((x,i) => drawReelStrip(i, x, finals[i], phase === 'spin'));
+    ctx.fillStyle = '#0f0303'; ctx.fillRect(0, 0, W, H);
+    drawCabinet();
+    reelX.forEach((x, i) => drawReelWindow(i, x));
+    drawPayline();
     drawLever();
-    if (flashT > 0) { ctx.fillStyle = `rgba(255,51,102,${flashT*0.4})`; ctx.fillRect(0,0,W,H); flashT -= 0.05; }
-    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H-36, W-20, 26, 8); ctx.fill();
+    drawLuckMeter();
+
+    if (winFlash > 0) {
+      ctx.fillStyle = `rgba(255,215,0,${winFlash * 0.35})`; ctx.fillRect(0, 0, W, H);
+      winFlash -= 0.04;
+    }
+    if (jackpotName && phase === 'result') {
+      ctx.fillStyle = '#ffd700'; ctx.font = 'bold 34px Inter'; ctx.textAlign = 'center';
+      ctx.shadowColor = '#ffd700'; ctx.shadowBlur = 20;
+      ctx.fillText('🎉 JACKPOT! 🎉', W / 2, H * 0.16);
+      ctx.shadowBlur = 0;
+    }
+
+    ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10, H - 38, W - 20, 28, 8); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'center';
-    const hud = phase === 'ready' ? feed : feed.replace(/^[^\s]+\s/, '');
-    ctx.fillText(hud, W/2, H-18);
+    ctx.fillText(feed.textContent, W / 2, H - 20);
+  }
+
+  function finishSpin() {
+    const cn = centerNames();
+    phase = 'result';
+    leverT = 0;
+    if (cn[0] && cn[0] === cn[1] && cn[1] === cn[2]) {
+      jackpotName = cn[0];
+      winFlash = 1;
+      luckPulse = 1;
+      feed.textContent = '🎉 JACKPOT! ' + jackpotName + ' WINS!';
+      document.getElementById('slot-feed').textContent = feed.textContent;
+      setTimeout(() => {
+        cancelAnimationFrame(animId);
+        showPhase('slot', 'winner');
+        document.getElementById('slot-winner-name').textContent = jackpotName;
+      }, 2800);
+    } else {
+      jackpotName = '';
+      feed.textContent = '❌ No match — ' + cn.join(' · ') + ' — pull again!';
+      document.getElementById('slot-feed').textContent = feed.textContent;
+      setTimeout(() => {
+        phase = 'ready';
+        feed.textContent = '👆 PULL THE LEVER! (Spin ' + (spinCount + 1) + ')';
+        document.getElementById('slot-feed').textContent = feed.textContent;
+      }, 2200);
+    }
   }
 
   function loop() {
+    marqueeT++;
     if (phase === 'spin') {
+      let allDone = true;
       reels.forEach(r => {
-        if (!r.done) {
-          r.speed = Math.max(0.02, r.speed * 0.985);
-          r.offset += r.speed * 3;
-          if (r.speed <= 0.025) { r.done = true; r.offset = r.stopAt; }
+        if (r.done) return;
+        allDone = false;
+        if (r.stopDelay > 0) { r.stopDelay--; return; }
+        if (!r.stopping) {
+          r.offset += r.speed * 0.08;
+          r.speed = Math.max(6, r.speed * 0.985);
+          if (r.speed <= 7.5) r.stopping = true;
+        } else {
+          let goal = r.targetIdx;
+          while (goal < r.offset - 0.5) goal += items.length;
+          r.offset += (goal - r.offset) * 0.14;
+          r.speed *= 0.92;
+          if (Math.abs(goal - r.offset) < 0.04) {
+            r.offset = r.targetIdx;
+            r.done = true;
+            r.stopping = false;
+          }
         }
       });
-      if (reels.every(r => r.done)) {
-        phase = 'result'; flashT = 1; leverT = 0;
-        feed.textContent = '🎰 JACKPOT FAIL! ' + loserName + ' is OUT!';
-        remaining = remaining.filter(n => n !== loserName);
-        setTimeout(() => {
-          if (remaining.length <= 1) {
-            cancelAnimationFrame(animId);
-            showPhase('slot', 'winner');
-            document.getElementById('slot-winner-name').textContent = pickSingleWinner(remaining, names);
-            return;
-          }
-          initReels();
-          beginRound();
-        }, 2400);
-      }
+      if (allDone) finishSpin();
     }
-    draw(); animId = requestAnimationFrame(loop);
+    draw();
+    animId = requestAnimationFrame(loop);
   }
 
   function pullLever() {
-    if (phase !== 'ready' || remaining.length <= 1) return;
-    phase = 'spin'; leverT = 1;
-    feed.textContent = 'Round ' + round + ' — SPINNING!';
-    const rolls = remaining.map(n => ({ name: n, val: Math.random() })); rolls.sort((a, b) => a.val - b.val);
-    loserName = rolls[0].name;
+    if (phase !== 'ready') return;
+    spinCount++;
+    phase = 'spin';
+    leverT = 1;
+    feed.textContent = '🎰 SPINNING...';
+    document.getElementById('slot-feed').textContent = feed.textContent;
+
+    const jackpotChance = Math.min(0.88, 0.07 + spinCount * 0.13);
+    const isJackpot = Math.random() < jackpotChance;
+    const winner = items[Math.floor(Math.random() * items.length)];
+    const targets = [0, 1, 2].map(() => Math.floor(Math.random() * items.length));
+    if (isJackpot) {
+      const idx = items.indexOf(winner);
+      targets[0] = targets[1] = targets[2] = idx;
+    } else if (items[targets[0]] === items[targets[1]]) {
+      do { targets[2] = Math.floor(Math.random() * items.length); } while (items[targets[2]] === items[targets[0]]);
+    }
+
     reels = [0, 1, 2].map((_, i) => ({
-      offset: Math.random() * remaining.length, speed: 0.35 + Math.random() * 0.15,
-      stopAt: Math.max(0, remaining.indexOf(i === 1 ? loserName : rolls[Math.floor(Math.random() * rolls.length)].name)),
+      offset: Math.random() * items.length + i * 3,
+      speed: 22 + Math.random() * 8,
+      targetIdx: targets[i],
+      stopDelay: i * 38,
+      stopping: false,
       done: false
     }));
-    setTimeout(() => { leverT = 0; reels.forEach(r => { r.speed = 0.35; }); }, 350);
-  }
 
-  function beginRound() {
-    if (remaining.length <= 1) {
-      showPhase('slot', 'winner');
-      document.getElementById('slot-winner-name').textContent = pickSingleWinner(remaining, names);
-      return;
-    }
-    round++; phase = 'ready'; leverT = 0; loserName = '';
-    feed.textContent = '👆 CLICK THE LEVER TO SPIN! (Round ' + round + ')';
-    document.getElementById('slot-feed').textContent = feed.textContent;
+    setTimeout(() => { leverT = 0; }, 380);
   }
 
   canvas.onmousemove = e => {
     const p = canvasPos(e);
     leverHover = phase === 'ready' && hitLever(p.x, p.y);
-    canvas.style.cursor = leverHover ? 'pointer' : (phase === 'ready' ? 'default' : 'default');
+    canvas.style.cursor = leverHover ? 'pointer' : 'default';
   };
   canvas.onclick = e => {
     const p = canvasPos(e);
     if (phase === 'ready' && hitLever(p.x, p.y)) pullLever();
   };
 
-  loop(); beginRound();
+  feed.textContent = '👆 PULL THE LEVER — match 3 names on the payline!';
+  document.getElementById('slot-feed').textContent = feed.textContent;
+  loop();
 }
 
 /* ==================== BINGO BALL DROP ==================== */
@@ -9482,29 +9599,51 @@ const PV_SCENES = {
     }
   },
   slot: {
-    gw: 900, gh: 560,
-    init() { return { frame: 0, leverT: 0, spin: false, offsets: [0,0,0] }; },
-    tick(st) { st.frame++; if (st.frame%100<60) { st.spin=true; st.offsets = st.offsets.map(o => o+0.25); st.leverT = 1; } else { st.spin=false; st.leverT *= 0.9; } },
+    gw: 820, gh: 560,
+    init() {
+      return { frame: 0, leverT: 0, spin: false, offsets: [0, 0, 0], jackpot: false };
+    },
+    tick(st) {
+      st.frame++;
+      const cycle = st.frame % 140;
+      st.spin = cycle < 90;
+      st.leverT = cycle < 12 ? 1 : cycle < 24 ? 0.4 : 0;
+      if (st.spin) {
+        st.offsets = st.offsets.map(o => o + 0.35);
+      } else {
+        st.jackpot = cycle > 100;
+        st.offsets = st.jackpot ? [0, 0, 0] : [1, 2, 3];
+      }
+    },
     draw(ctx, W, H, st) {
-      ctx.fillStyle = '#120810'; ctx.fillRect(0,0,W,H);
-      ctx.fillStyle = '#ec489933'; ctx.beginPath(); ctx.roundRect(W*0.12,H*0.1,W*0.76,H*0.72,20); ctx.fill();
-      ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 4; ctx.stroke();
-      ctx.fillStyle = '#ffd700'; ctx.font = 'bold 22px Inter'; ctx.textAlign = 'center'; ctx.fillText('🎰 JACKPOT SLOTS', W/2, H*0.16);
-      const reelX = [W*0.28, W*0.5, W*0.72], reelW = 110, reelH = 200;
+      ctx.fillStyle = '#0f0303'; ctx.fillRect(0, 0, W, H);
+      const cabX = W * 0.08, cabY = H * 0.06, cabW = W * 0.84, cabH = H * 0.82;
+      ctx.fillStyle = '#5c1010'; ctx.beginPath(); ctx.roundRect(cabX, cabY, cabW, cabH, 24); ctx.fill();
+      ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 5; ctx.stroke();
+      ctx.fillStyle = '#ffd700'; ctx.font = 'bold 24px Inter'; ctx.textAlign = 'center';
+      ctx.fillText('🎰 JACKPOT SLOTS 🎰', W / 2, cabY + 52);
+      const reelX = [W * 0.27, W * 0.5, W * 0.73], reelW = 128, reelTop = H * 0.24, reelH = 232, payY = reelTop + reelH / 2;
       reelX.forEach((x, ri) => {
-        ctx.save(); ctx.beginPath(); ctx.roundRect(x-reelW/2, H*0.22, reelW, reelH, 8); ctx.clip();
-        ctx.fillStyle = '#0f0a10'; ctx.fillRect(x-reelW/2, H*0.22, reelW, reelH);
+        ctx.save(); ctx.beginPath(); ctx.roundRect(x - reelW / 2, reelTop, reelW, reelH, 8); ctx.clip();
+        ctx.fillStyle = '#180810'; ctx.fillRect(x - reelW / 2, reelTop, reelW, reelH);
         PV_NAMES.forEach((nm, j) => {
-          const yy = H*0.22 + reelH/2 + (j - (st.spin ? st.offsets[ri]%1 : 0)) * 56 - 28;
-          ctx.fillStyle = colorFor(nm)+'33'; ctx.strokeStyle = colorFor(nm); ctx.lineWidth = j===0?3:1;
-          ctx.beginPath(); ctx.roundRect(x-reelW/2+6, yy-24, reelW-12, 48, 6); ctx.fill(); ctx.stroke();
-          ctx.fillStyle = colorFor(nm); ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center'; ctx.fillText(nm, x, yy+4);
+          const off = st.spin ? st.offsets[ri] % 1 : 0;
+          const idx = st.jackpot ? 0 : (j + ri) % PV_NAMES.length;
+          const nm2 = PV_NAMES[idx];
+          const yy = payY + (j - 1 - off) * 58;
+          const c = colorFor(nm2);
+          const isPay = Math.abs(yy - payY) < 24;
+          ctx.fillStyle = isPay ? c + '55' : c + '22'; ctx.strokeStyle = isPay ? '#ffd700' : c; ctx.lineWidth = isPay ? 3 : 1;
+          ctx.beginPath(); ctx.roundRect(x - reelW / 2 + 8, yy - 24, reelW - 16, 48, 8); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = isPay ? '#fff' : c; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center'; ctx.fillText(nm2, x, yy + 4);
         });
         ctx.restore();
       });
-      const knobY = H*0.35 - st.leverT*25;
-      ctx.fillStyle = '#334155'; ctx.fillRect(W*0.88, H*0.35, 18, 80);
-      ctx.fillStyle = '#ec4899'; ctx.beginPath(); ctx.arc(W*0.89, knobY, 16, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(W * 0.12, payY); ctx.lineTo(W * 0.88, payY); ctx.stroke();
+      const knobY = H * 0.34 - st.leverT * 28;
+      ctx.fillStyle = '#64748b'; ctx.fillRect(W * 0.905, H * 0.34, 20, 96);
+      ctx.fillStyle = '#dc2626'; ctx.beginPath(); ctx.arc(W * 0.915, knobY, 18, 0, Math.PI * 2); ctx.fill();
     }
   },
   thunder: {
@@ -9768,7 +9907,7 @@ const GAME_PREVIEW_META = {
   crystal: { scene: 'crystal', title: '🔮 Crystal Ball Curse', desc: 'The crystal reveals cursed entrants. Avoid your fate!' },
   warp: { scene: 'warp', title: '🌌 Warp Jump', desc: 'Players warp between zones. Wrong jump = eliminated!' },
   stocks: { scene: 'stocks', title: '📉 Stock Market Crash', desc: 'Your stock rises or crashes. Last portfolio standing wins!' },
-  slot: { scene: 'slot', title: '🎰 Jackpot Slots', desc: 'Streamer pulls the lever each spin. Match symbols to survive!' },
+  slot: { scene: 'slot', title: '🎰 Jackpot Slots', desc: 'Pull the lever! Match the same name on all 3 reels to win the jackpot!' },
   bingo: { scene: 'bingo', title: '🎱 Bingo Ball Drop', desc: 'Balls drop from the drum. Match your number or bust!' },
   highcard: { scene: 'highcard', title: '🃏 High Card Duel', desc: 'Cards are drawn — lowest card eliminated each round!' },
   plinko: { scene: 'plinko', title: '🎪 Plinko Drop', desc: 'Drop the chip — where it lands decides your fate!' },
