@@ -7799,24 +7799,72 @@ function startThunder(names) {
 }
 
 /* ==================== PICK A BUTT (streamer picks) ==================== */
+function drawPoopTurd(ctx, x, y, sc, rot, light) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(sc, sc);
+  const segs = 5;
+  for (let i = 0; i < segs; i++) {
+    const ang = i * 0.65, px = Math.cos(ang) * i * 5.5, py = i * 11;
+    const rw = 13 - i * 1.4, rh = 10 - i * 1.1;
+    const grd = ctx.createRadialGradient(px - 4, py - 4, 1, px, py, rw);
+    grd.addColorStop(0, light ? '#ca8a04' : '#92400e');
+    grd.addColorStop(0.45, '#78350f');
+    grd.addColorStop(1, '#451a03');
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.ellipse(px, py, rw, rh, ang * 0.25, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(45,19,3,0.55)'; ctx.lineWidth = 1.2; ctx.stroke();
+    if (i < segs - 1) {
+      ctx.fillStyle = 'rgba(69,26,3,0.35)'; ctx.beginPath(); ctx.ellipse(px + 2, py + 6, rw * 0.55, rh * 0.35, 0, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
 function drawCartoonButt(ctx, x, y, sc, opts) {
   opts = opts || {};
   ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
-  const wob = Math.sin(opts.wobble || 0) * 4;
+  const wob = Math.sin(opts.wobble || 0) * 3;
   const squash = opts.squash || 1;
-  ctx.scale(1, squash);
-  ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.beginPath(); ctx.ellipse(0, 32, 40, 11, 0, 0, Math.PI * 2); ctx.fill();
-  const skin = opts.hover ? '#ffb4a2' : '#fca5a5';
-  ctx.fillStyle = skin; ctx.strokeStyle = 'rgba(185,28,28,0.2)'; ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.ellipse(-19, wob, 24, 28, -0.15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-  ctx.beginPath(); ctx.ellipse(19, wob, 24, 28, 0.15, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
-  ctx.strokeStyle = 'rgba(120,53,15,0.4)'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(0, -20 + wob); ctx.quadraticCurveTo(5, 8, 0, 26 + wob); ctx.stroke();
-  ctx.fillStyle = '#475569'; ctx.fillRect(-30, -36, 60, 12);
-  ctx.fillStyle = '#64748b'; ctx.fillRect(-30, -26, 60, 4);
+  const clench = opts.clench || 0;
+  ctx.scale(1 - clench * 0.08, squash);
+
+  ctx.fillStyle = 'rgba(0,0,0,0.28)'; ctx.beginPath(); ctx.ellipse(2, 38, 48, 13, 0, 0, Math.PI * 2); ctx.fill();
+
+  function cheek(cx, cy, rx, ry, rot, hi) {
+    const g = ctx.createRadialGradient(cx - rx * 0.35, cy - ry * 0.4, rx * 0.08, cx, cy, rx * 1.1);
+    g.addColorStop(0, hi ? '#fecaca' : '#fdba74');
+    g.addColorStop(0.35, '#f9a8a8');
+    g.addColorStop(0.7, '#e8927c');
+    g.addColorStop(1, '#c97368');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.ellipse(cx, cy + wob * 0.3, rx, ry, rot, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(127,29,29,0.18)'; ctx.lineWidth = 1.2; ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.beginPath(); ctx.ellipse(cx - rx * 0.25, cy - ry * 0.35 + wob * 0.2, rx * 0.28, ry * 0.18, rot, 0, Math.PI * 2); ctx.fill();
+  }
+
+  cheek(-21 + clench * 4, 2, 26 - clench * 2, 30 - clench * 3, -0.12, opts.hover);
+  cheek(21 - clench * 4, 2, 26 - clench * 2, 30 - clench * 3, 0.12, opts.hover);
+
+  const cg = ctx.createLinearGradient(0, -24, 0, 30);
+  cg.addColorStop(0, 'rgba(69,26,3,0)'); cg.addColorStop(0.45, 'rgba(69,26,3,0.55)'); cg.addColorStop(1, 'rgba(45,19,3,0.75)');
+  ctx.fillStyle = cg; ctx.beginPath();
+  ctx.moveTo(-4, -22 + wob); ctx.quadraticCurveTo(-2 + clench * 3, 0, -3, 18 + wob);
+  ctx.lineTo(3, 18 + wob); ctx.quadraticCurveTo(2 - clench * 3, 0, 4, -22 + wob); ctx.closePath(); ctx.fill();
+
+  ctx.strokeStyle = 'rgba(45,19,3,0.65)'; ctx.lineWidth = 1.8;
+  ctx.beginPath(); ctx.moveTo(0, -24 + wob); ctx.quadraticCurveTo(3 + clench * 2, 4, 0, 28 + wob); ctx.stroke();
+
+  ctx.fillStyle = '#475569'; ctx.fillRect(-34, -42, 68, 14);
+  ctx.fillStyle = '#334155'; ctx.fillRect(-34, -28, 68, 5);
+  ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1; ctx.strokeRect(-34, -42, 68, 19);
+
+  ctx.fillStyle = '#e8927c';
+  ctx.beginPath(); ctx.ellipse(-34, 8, 10, 18, 0.3, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(34, 8, 10, 18, -0.3, 0, Math.PI * 2); ctx.fill();
+
   if (opts.hover) {
-    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 3; ctx.setLineDash([5, 4]);
-    ctx.beginPath(); ctx.ellipse(0, 0, 46, 36, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 2.5; ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.ellipse(0, 4, 52, 40, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
   }
   ctx.restore();
 }
@@ -7836,7 +7884,7 @@ function startButts(names) {
   const W = canvas.width, H = canvas.height;
   const feed = document.getElementById('butts-feed');
   let butts = [], phase = 'pick', selected = null, cam = { x: W / 2, y: H / 2, zoom: 1 };
-  let zoomT = 0, revealT = 0, particles = [], hoverIdx = -1, animId = null, round = 0;
+  let zoomT = 0, revealT = 0, poopLogs = [], splats = [], hoverIdx = -1, animId = null, round = 0;
 
   function layoutButts() {
     const slots = gridLayout(remaining.length, 36, 70, W - 36, H - 50, 8);
@@ -7864,14 +7912,23 @@ function startButts(names) {
     return -1;
   }
 
-  function spawnParticles(x, y, n, colors) {
+  function spawnSplats(x, y, n) {
     for (let i = 0; i < n; i++) {
-      particles.push({
-        x, y, vx: (Math.random() - 0.5) * 9, vy: -2 - Math.random() * 7,
-        r: 3 + Math.random() * 5, life: 1,
-        color: colors[i % colors.length]
+      splats.push({
+        x: x + (Math.random() - 0.5) * 16, y: y + Math.random() * 8,
+        vx: (Math.random() - 0.5) * 4, vy: 1 + Math.random() * 3,
+        r: 2 + Math.random() * 4, life: 1,
+        color: ['#78350f', '#92400e', '#451a03'][i % 3]
       });
     }
+  }
+
+  function pushPoopLog(fromX, fromY, delay) {
+    poopLogs.push({
+      x: fromX, y: fromY, exitY: 0, rot: (Math.random() - 0.5) * 0.4,
+      sc: 0.55 + Math.random() * 0.2, delay: delay || 0, age: 0,
+      landed: false, landY: 0, wobble: Math.random() * Math.PI * 2
+    });
   }
 
   function drawWorld() {
@@ -7881,11 +7938,48 @@ function startButts(names) {
         drawCartoonButt(ctx, b.x, b.y, 1, { wobble: b.wobble, hover: i === hoverIdx });
       });
     } else if (selected) {
-      const squash = phase === 'squeeze' ? 0.75 + Math.sin(revealT * 20) * 0.12 : 1;
-      drawCartoonButt(ctx, selected.x, selected.y, 1 + zoomT * 1.8, { wobble: selected.wobble, squash: phase === 'squeeze' ? squash : 1 });
+      const clench = phase === 'squeeze' ? Math.min(1, revealT * 1.2) : phase === 'reveal' ? 0.35 : 0;
+      const squash = phase === 'squeeze' ? 0.82 + Math.sin(revealT * 18) * 0.1 : 1;
+      const buttSc = 1 + zoomT * 1.8;
+      drawCartoonButt(ctx, selected.x, selected.y, buttSc, {
+        wobble: selected.wobble, squash, clench,
+        hover: false
+      });
+
+      const crackY = selected.y + (18 + zoomT * 32) * buttSc / buttSc;
+      const exitX = selected.x;
+
+      poopLogs.forEach(log => {
+        log.age += 0.016;
+        if (log.age < log.delay) return;
+        const t = log.age - log.delay;
+        if (!log.landed) {
+          log.exitY = Math.min(72, t * 95);
+          log.rot += 0.04;
+          if (log.exitY >= 68) {
+            log.landed = true; log.landY = log.exitY;
+            spawnSplats(exitX + log.x * 0.01, selected.y + log.exitY + 20, 8);
+          }
+        } else {
+          log.wobble += 0.08;
+        }
+        const py = selected.y + 22 * buttSc / buttSc + log.exitY;
+        drawPoopTurd(ctx, exitX, py, log.sc * buttSc * 0.55, log.rot + (log.landed ? Math.sin(log.wobble) * 0.05 : 0), log.landed);
+      });
+
+      splats.forEach(s => {
+        s.x += s.vx; s.y += s.vy; s.vy += 0.25; s.life -= 0.022;
+        ctx.globalAlpha = Math.max(0, s.life);
+        ctx.fillStyle = s.color; ctx.beginPath();
+        ctx.ellipse(s.x, s.y, s.r, s.r * 0.7, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+      splats = splats.filter(s => s.life > 0);
+
       if (phase === 'reveal' || phase === 'elim') {
         const emerge = Math.min(1, revealT);
-        const charY = selected.y + 50 + emerge * 55;
+        const pileTop = selected.y + 85 + Math.min(poopLogs.length * 8, 40);
+        const charY = pileTop + emerge * 45;
         ctx.save(); ctx.globalAlpha = emerge;
         drawMiniCharacter(ctx, selected.x, charY, 22, selected.color, { phase: revealT * 8 });
         ctx.fillStyle = '#050508'; ctx.strokeStyle = selected.color; ctx.lineWidth = 2;
@@ -7900,12 +7994,6 @@ function startButts(names) {
         ctx.restore();
       }
     }
-    particles.forEach(p => {
-      p.x += p.vx; p.y += p.vy; p.vy += 0.2; p.life -= 0.018;
-      ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.color;
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
-    });
-    particles = particles.filter(p => p.life > 0);
   }
 
   function draw() {
@@ -7929,6 +8017,7 @@ function startButts(names) {
     setTimeout(() => {
       remaining = remaining.filter(n => n !== selected.name);
       selected = null; phase = 'pick'; zoomT = 0; revealT = 0;
+      poopLogs = []; splats = [];
       cam = { x: W / 2, y: H / 2, zoom: 1 };
       if (remaining.length <= 1) {
         cancelAnimationFrame(animId);
@@ -7951,11 +8040,14 @@ function startButts(names) {
       if (zoomT >= 1) { phase = 'squeeze'; revealT = 0; feed.textContent = 'Uh oh... something\'s coming out...'; }
     }
     if (phase === 'squeeze') {
-      revealT += 0.04;
-      selected.wobble += 0.25;
-      if (revealT > 1.2) {
+      revealT += 0.035;
+      selected.wobble += 0.3;
+      if (revealT > 0.15 && poopLogs.length === 0) pushPoopLog(0, 0, 0);
+      if (revealT > 0.45 && poopLogs.length === 1) pushPoopLog(0, 0, 0);
+      if (revealT > 0.75 && poopLogs.length === 2) pushPoopLog(0, 0, 0);
+      if (revealT > 1.1) {
         phase = 'reveal'; revealT = 0;
-        spawnParticles(selected.x, selected.y + 20, 35, ['#92400e', '#b45309', '#fcd34d', '#78716c', selected.color]);
+        if (poopLogs.length < 3) pushPoopLog(0, 0, 0);
         feed.textContent = '💩 REVEALING...';
       }
     }
@@ -7978,6 +8070,7 @@ function startButts(names) {
     const idx = hitButt(p.wx, p.wy);
     if (idx < 0) return;
     selected = butts[idx]; phase = 'zoom'; zoomT = 0; revealT = 0;
+    poopLogs = []; splats = [];
     feed.textContent = 'Zooming in on that butt...';
   };
 
