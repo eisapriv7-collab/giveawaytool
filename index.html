@@ -8691,18 +8691,26 @@ function startFlush(names) {
 function drawTwerkBox(ctx, bx, by, bw, bh, opts) {
   opts = opts || {};
   const glow = opts.glow || 0;
+  const ultra = opts.ultra || false;
   ctx.save();
   ctx.translate(bx, by);
   if (opts.shakeRot) ctx.rotate(opts.shakeRot);
-  ctx.shadowColor = '#ec4899';
-  ctx.shadowBlur = 8 + glow * 18;
-  ctx.fillStyle = 'rgba(236,72,153,0.08)';
-  ctx.strokeStyle = 'rgba(236,72,153,0.85)';
-  ctx.lineWidth = 3;
+  ctx.shadowColor = ultra ? '#ff0066' : '#ec4899';
+  ctx.shadowBlur = (8 + glow * 18) * (ultra ? 2.2 : 1);
+  ctx.fillStyle = ultra ? 'rgba(255,0,102,0.14)' : 'rgba(236,72,153,0.08)';
+  ctx.strokeStyle = ultra ? '#ff0066' : 'rgba(236,72,153,0.85)';
+  ctx.lineWidth = ultra ? 4 : 3;
   ctx.beginPath();
   ctx.roundRect(-bw / 2, -bh, bw, bh, 8);
   ctx.fill();
   ctx.stroke();
+  if (ultra) {
+    ctx.strokeStyle = `rgba(255,215,0,${0.35 + glow * 0.45})`;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 4]);
+    ctx.strokeRect(-bw / 2 - 3, -bh - 3, bw + 6, bh + 6);
+    ctx.setLineDash([]);
+  }
   ctx.shadowBlur = 0;
   ctx.strokeStyle = 'rgba(255,255,255,0.35)';
   ctx.lineWidth = 2;
@@ -8718,10 +8726,10 @@ function drawTwerkBox(ctx, bx, by, bw, bh, opts) {
   ctx.lineTo(-bw / 2 + 4, -bh + 14);
   ctx.closePath();
   ctx.fill();
-  ctx.fillStyle = '#ec4899';
+  ctx.fillStyle = ultra ? '#ff0066' : '#ec4899';
   ctx.font = 'bold 11px Inter';
   ctx.textAlign = 'center';
-  ctx.fillText('SHAKE BOX', 0, -bh - 8);
+  ctx.fillText(ultra ? '⚡ ULTRA BOX ⚡' : 'SHAKE BOX', 0, -bh - 8);
   ctx.restore();
 }
 
@@ -8756,12 +8764,30 @@ function drawTwerkBall(ctx, b) {
 
 function drawTwerkStreamer(ctx, cx, cy, sc, opts) {
   opts = opts || {};
+  const ultra = opts.ultra || false;
   const shakeX = opts.shakeX || 0;
   const shakeY = opts.shakeY || 0;
   const shakeRot = opts.shakeRot || 0;
   const phase = opts.phase || 0;
   const faceImg = opts.faceImg;
-  const clap = Math.abs(Math.sin(phase * 2.2)) * 0.08;
+  const clapSpd = ultra ? 5.2 : 2.2;
+  const clapAmp = ultra ? 0.22 : 0.08;
+  const clap = Math.abs(Math.sin(phase * clapSpd)) * clapAmp;
+
+  if (ultra && opts.trail) {
+    opts.trail.forEach((t, i) => {
+      ctx.save();
+      ctx.globalAlpha = t.alpha;
+      ctx.translate(cx + t.sx, cy + t.sy);
+      ctx.scale(sc * 0.98, sc * 0.98);
+      ctx.rotate(t.sr);
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.ellipse(0, 28, 48 + t.clap * 24, 34 + t.clap * 14, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+  }
 
   ctx.save();
   ctx.translate(cx + shakeX, cy + shakeY);
@@ -8802,17 +8828,22 @@ function drawTwerkStreamer(ctx, cx, cy, sc, opts) {
   ctx.fillStyle = '#1d4ed8';
   ctx.fillRect(-34, 30, 68, 14);
 
-  ctx.fillStyle = '#fbbf24';
+  if (ultra) {
+    ctx.shadowColor = '#ff0066';
+    ctx.shadowBlur = 22 + clap * 30;
+  }
+  ctx.fillStyle = ultra ? '#fcd34d' : '#fbbf24';
   ctx.beginPath();
   ctx.ellipse(0, 28, 52 + clap * 30, 38 + clap * 18, 0, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = '#f59e0b';
+  ctx.fillStyle = ultra ? '#f97316' : '#f59e0b';
   ctx.beginPath();
   ctx.ellipse(-18 + clap * 8, 26, 28, 22, -0.15, 0, Math.PI * 2);
   ctx.fill();
   ctx.beginPath();
   ctx.ellipse(18 - clap * 8, 26, 28, 22, 0.15, 0, Math.PI * 2);
   ctx.fill();
+  ctx.shadowBlur = 0;
   ctx.strokeStyle = 'rgba(120,53,15,0.35)';
   ctx.lineWidth = 2;
   ctx.beginPath();
@@ -8830,35 +8861,36 @@ function drawTwerkStreamer(ctx, cx, cy, sc, opts) {
 
   const headX = -34;
   const headY = -92;
+  const headWobble = ultra ? Math.sin(phase * 8) * 4 : 0;
   ctx.fillStyle = '#111827';
   ctx.beginPath();
-  ctx.arc(headX - 18, headY - 4, 14, 0, Math.PI * 2);
+  ctx.arc(headX - 18, headY - 4 + headWobble, 14, 0, Math.PI * 2);
   ctx.fill();
   ctx.strokeStyle = '#374151';
   ctx.lineWidth = 5;
   ctx.beginPath();
-  ctx.arc(headX - 18, headY - 4, 14, 0, Math.PI * 2);
+  ctx.arc(headX - 18, headY - 4 + headWobble, 14, 0, Math.PI * 2);
   ctx.stroke();
 
   ctx.save();
   ctx.beginPath();
-  ctx.arc(headX, headY, 30, 0, Math.PI * 2);
+  ctx.arc(headX, headY + headWobble, 30, 0, Math.PI * 2);
   ctx.clip();
   if (faceImg && faceImg.complete && faceImg.naturalWidth) {
-    ctx.drawImage(faceImg, headX - 30, headY - 30, 60, 60);
+    ctx.drawImage(faceImg, headX - 30, headY - 30 + headWobble, 60, 60);
   } else {
     ctx.fillStyle = '#d4a574';
-    ctx.fillRect(headX - 30, headY - 30, 60, 60);
+    ctx.fillRect(headX - 30, headY - 30 + headWobble, 60, 60);
     ctx.fillStyle = '#1f2937';
     ctx.font = 'bold 20px Inter';
     ctx.textAlign = 'center';
-    ctx.fillText('😆', headX, headY + 8);
+    ctx.fillText('😆', headX, headY + 8 + headWobble);
   }
   ctx.restore();
   ctx.strokeStyle = '#78350f';
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.arc(headX, headY, 30, 0, Math.PI * 2);
+  ctx.arc(headX, headY + headWobble, 30, 0, Math.PI * 2);
   ctx.stroke();
 
   ctx.strokeStyle = '#2563eb';
@@ -8873,13 +8905,16 @@ function drawTwerkStreamer(ctx, cx, cy, sc, opts) {
   ctx.lineTo(8, -34);
   ctx.stroke();
 
-  if (opts.sweat) {
-    ctx.fillStyle = 'rgba(56,189,248,0.75)';
-    [['-58', '-18'], ['52', '-8'], ['-12', '-108']].forEach(([sx, sy], i) => {
-      const px = parseFloat(sx) + Math.sin(phase * 3 + i) * 3;
-      const py = parseFloat(sy) + Math.cos(phase * 2 + i) * 2;
+  if (opts.sweat || ultra) {
+    ctx.fillStyle = ultra ? 'rgba(56,189,248,0.95)' : 'rgba(56,189,248,0.75)';
+    const sweatPts = ultra
+      ? [['-62', '-22'], ['58', '-12'], ['-16', '-112'], ['40', '-60'], ['-44', '10'], ['50', '20']]
+      : [['-58', '-18'], ['52', '-8'], ['-12', '-108']];
+    sweatPts.forEach(([sx, sy], i) => {
+      const px = parseFloat(sx) + Math.sin(phase * (ultra ? 6 : 3) + i) * (ultra ? 5 : 3);
+      const py = parseFloat(sy) + Math.cos(phase * (ultra ? 5 : 2) + i) * (ultra ? 4 : 2);
       ctx.beginPath();
-      ctx.ellipse(px, py, 3, 5, 0.3, 0, Math.PI * 2);
+      ctx.ellipse(px, py, ultra ? 4 : 3, ultra ? 7 : 5, 0.3, 0, Math.PI * 2);
       ctx.fill();
     });
   }
@@ -8905,14 +8940,21 @@ function startTwerk(names) {
   const feed = document.getElementById('twerk-feed');
   const charX = W * 0.46, charY = H * 0.58, charSc = 1.15;
   const boxW = 150, boxH = 105;
+  const ULTRA_AFTER_SEC = 30;
+  const MAX_GAME_SEC = 60;
   let frame = 0, animId = null, shakeIntensity = 1, round = 0;
   let balls = [], ejecting = null, particles = [], notes = [], screenShake = 0;
-  let ejectCooldown = 0, bassPulse = 0;
+  let ejectCooldown = 0, bassPulse = 0, ultraShake = false, ultraAnnounce = 0, ultraFlash = 0;
+  let speedLines = [], buttTrail = [];
+
+  function elapsedSec() { return frame / 60; }
 
   function boxAnchor() {
-    const sx = Math.sin(frame * 0.22) * 14 * shakeIntensity;
-    const sy = Math.sin(frame * 0.31) * 8 * shakeIntensity;
-    const sr = Math.sin(frame * 0.18) * 0.06 * shakeIntensity;
+    const freq = ultraShake ? 2.6 : 1;
+    const amp = ultraShake ? 2.4 : 1;
+    const sx = (Math.sin(frame * 0.22 * freq) * 14 + Math.sin(frame * 0.71) * (ultraShake ? 10 : 0)) * shakeIntensity * amp;
+    const sy = (Math.sin(frame * 0.31 * freq) * 8 + Math.cos(frame * 0.58) * (ultraShake ? 7 : 0)) * shakeIntensity * amp;
+    const sr = (Math.sin(frame * 0.18 * freq) * 0.06 + Math.sin(frame * 0.93) * (ultraShake ? 0.05 : 0)) * shakeIntensity;
     const bx = charX + sx + 8 * charSc;
     const by = charY - 58 * charSc + sy;
     return { bx, by, sx, sy, sr, left: bx - boxW / 2, right: bx + boxW / 2, top: by - boxH, bottom: by };
@@ -8974,44 +9016,97 @@ function startTwerk(names) {
     const b = balls[idx];
     if (!b || !b.alive) return;
     round++;
-    ejectCooldown = 90;
+    ejectCooldown = ultraShake ? Math.max(12, 28 - round) : 90;
     b.alive = false;
     b.revealName = true;
     const box = boxAnchor();
+    const launch = ultraShake ? 1.8 : 1;
     ejecting = {
       ...b,
       t: 0,
-      vx: (b.x - box.bx) * 0.08 + (Math.random() > 0.5 ? 1 : -1) * (6 + shakeIntensity),
-      vy: -8 - shakeIntensity * 2,
+      vx: (b.x - box.bx) * 0.08 + (Math.random() > 0.5 ? 1 : -1) * (6 + shakeIntensity) * launch,
+      vy: (-8 - shakeIntensity * 2) * launch,
       alpha: 1
     };
     spawnPopFX(b.x, b.y, b.color);
-    feed.textContent = '💥 ' + b.name + ' — SHOOK OUT!';
+    if (ultraShake) {
+      screenShake = 18;
+      ultraFlash = 0.7;
+      for (let i = 0; i < 8; i++) {
+        speedLines.push({
+          x: box.bx + (Math.random() - 0.5) * boxW,
+          y: box.by - boxH / 2,
+          len: 40 + Math.random() * 80,
+          ang: -Math.PI / 2 + (Math.random() - 0.5) * 0.8,
+          life: 1
+        });
+      }
+    }
+    feed.textContent = (ultraShake ? '⚡💥 ' : '💥 ') + b.name + ' — SHOOK OUT!';
+  }
+
+  function activateUltraShake() {
+    if (ultraShake) return;
+    ultraShake = true;
+    ultraAnnounce = 150;
+    ultraFlash = 1;
+    screenShake = 24;
+    feed.textContent = '🔥 ULTRA SHAKE ACTIVATED! 🔥';
+    document.getElementById('twerk-feed').textContent = feed.textContent;
+    for (let i = 0; i < 40; i++) {
+      particles.push({
+        x: charX + (Math.random() - 0.5) * 200,
+        y: charY - 80 + Math.random() * 60,
+        vx: (Math.random() - 0.5) * 14,
+        vy: -6 - Math.random() * 10,
+        r: 3 + Math.random() * 6,
+        life: 1,
+        color: ['#ff0066', '#ffd700', '#a855f7', '#fff'][i % 4]
+      });
+    }
   }
 
   function updatePhysics() {
     frame++;
-    shakeIntensity = Math.min(3.2, 1 + frame * 0.0018);
-    if (ejectCooldown > 0) ejectCooldown--;
-    bassPulse = Math.sin(frame * 0.35) * 0.5 + 0.5;
+    const elapsed = elapsedSec();
+    if (elapsed >= ULTRA_AFTER_SEC && remaining.length > 1) activateUltraShake();
+    if (ultraShake) {
+      const ultraT = Math.min(1, (elapsed - ULTRA_AFTER_SEC) / (MAX_GAME_SEC - ULTRA_AFTER_SEC));
+      shakeIntensity = 4 + ultraT * 4.5;
+      bassPulse = Math.abs(Math.sin(frame * 0.55)) * 0.85 + 0.15;
+      screenShake = Math.max(screenShake, 4 + ultraT * 10);
+    } else {
+      shakeIntensity = Math.min(3.2, 1 + elapsed * 0.08);
+      bassPulse = Math.sin(frame * 0.35) * 0.5 + 0.5;
+    }
+    if (ultraAnnounce > 0) ultraAnnounce--;
+    if (ultraFlash > 0) ultraFlash -= 0.03;
+
+    const clap = Math.abs(Math.sin(frame * 0.08 * (ultraShake ? 5.2 : 2.2))) * (ultraShake ? 0.22 : 0.08);
     const box = boxAnchor();
-    const ax = Math.sin(frame * 0.22) * 0.85 * shakeIntensity;
-    const ay = Math.cos(frame * 0.31) * 0.55 * shakeIntensity;
+    buttTrail.unshift({ sx: box.sx, sy: box.sy, sr: box.sr, clap, alpha: ultraShake ? 0.35 : 0.2 });
+    if (buttTrail.length > (ultraShake ? 6 : 3)) buttTrail.pop();
+    buttTrail.forEach((t, i) => { t.alpha *= 0.82; });
+
+    if (ejectCooldown > 0) ejectCooldown--;
+    const ax = (Math.sin(frame * 0.22) * 0.85 + Math.sin(frame * 0.67) * (ultraShake ? 1.2 : 0)) * shakeIntensity;
+    const ay = (Math.cos(frame * 0.31) * 0.55 + Math.cos(frame * 0.58) * (ultraShake ? 0.9 : 0)) * shakeIntensity;
+    const jitter = ultraShake ? 0.45 : 0.15;
 
     balls.forEach(b => {
       if (!b.alive) return;
-      b.vx += ax + (Math.random() - 0.5) * 0.15;
-      b.vy += ay + 0.12 + (Math.random() - 0.5) * 0.1;
-      b.vx *= 0.985;
-      b.vy *= 0.985;
+      b.vx += ax + (Math.random() - 0.5) * jitter;
+      b.vy += ay + 0.12 + (Math.random() - 0.5) * jitter;
+      b.vx *= ultraShake ? 0.978 : 0.985;
+      b.vy *= ultraShake ? 0.978 : 0.985;
       b.x += b.vx;
       b.y += b.vy;
-      b.angle += (b.vx + b.vy) * 0.02;
+      b.angle += (b.vx + b.vy) * (ultraShake ? 0.04 : 0.02);
 
-      if (b.x - b.r < box.left + 4) { b.x = box.left + 4 + b.r; b.vx = Math.abs(b.vx) * 0.72; }
-      if (b.x + b.r > box.right - 4) { b.x = box.right - 4 - b.r; b.vx = -Math.abs(b.vx) * 0.72; }
-      if (b.y - b.r < box.top + 4) { b.y = box.top + 4 + b.r; b.vy = Math.abs(b.vy) * 0.72; }
-      if (b.y + b.r > box.bottom - 4) { b.y = box.bottom - 4 - b.r; b.vy = -Math.abs(b.vy) * 0.72; }
+      if (b.x - b.r < box.left + 4) { b.x = box.left + 4 + b.r; b.vx = Math.abs(b.vx) * (ultraShake ? 0.85 : 0.72); }
+      if (b.x + b.r > box.right - 4) { b.x = box.right - 4 - b.r; b.vx = -Math.abs(b.vx) * (ultraShake ? 0.85 : 0.72); }
+      if (b.y - b.r < box.top + 4) { b.y = box.top + 4 + b.r; b.vy = Math.abs(b.vy) * (ultraShake ? 0.85 : 0.72); }
+      if (b.y + b.r > box.bottom - 4) { b.y = box.bottom - 4 - b.r; b.vy = -Math.abs(b.vy) * (ultraShake ? 0.85 : 0.72); }
     });
 
     if (ejecting) {
@@ -9020,8 +9115,9 @@ function startTwerk(names) {
       ejecting.y += ejecting.vy;
       ejecting.vy += 0.35;
       ejecting.vx *= 0.99;
-      ejecting.alpha = Math.max(0, 1 - ejecting.t * 0.018);
-      if (ejecting.t > 55) {
+      ejecting.alpha = Math.max(0, 1 - ejecting.t * (ultraShake ? 0.028 : 0.018));
+      const ejectDone = ultraShake ? 32 : 55;
+      if (ejecting.t > ejectDone) {
         remaining = remaining.filter(n => n !== ejecting.name);
         ejecting = null;
         if (remaining.length <= 1) {
@@ -9031,52 +9127,103 @@ function startTwerk(names) {
           return;
         }
         spawnBalls();
-        feed.textContent = '🍑 KEEP SHAKING! (' + remaining.length + ' balls left)';
+        feed.textContent = ultraShake
+          ? '⚡ ULTRA SHAKE! (' + remaining.length + ' left)'
+          : '🍑 KEEP SHAKING! (' + remaining.length + ' balls left)';
       }
     } else if (remaining.length > 1 && ejectCooldown <= 0) {
       const alive = balls.filter(b => b.alive);
-      const peak = Math.abs(Math.sin(frame * 0.22)) > 0.92 && Math.abs(Math.cos(frame * 0.31)) > 0.75;
-      const interval = Math.max(70, 130 - round * 4);
-      if (peak && frame % interval < 2 && alive.length) {
-        let pick = 0, best = -1;
-        alive.forEach((b, i) => {
-          const energy = b.vx * b.vx + b.vy * b.vy + (box.bottom - b.y) * 0.05;
-          if (energy > best) { best = energy; pick = balls.indexOf(b); }
-        });
-        beginEject(pick);
+      if (ultraShake) {
+        const ultraElapsed = elapsed - ULTRA_AFTER_SEC;
+        const panic = elapsed >= MAX_GAME_SEC - 10;
+        const interval = panic ? 8 : Math.max(14, 38 - round * 1.5 - ultraElapsed * 0.4);
+        const shouldEject = panic || frame % Math.floor(interval) < 2;
+        if (shouldEject && alive.length) {
+          let pick = 0, best = -1;
+          alive.forEach(b => {
+            const energy = b.vx * b.vx + b.vy * b.vy + (box.bottom - b.y) * 0.08;
+            if (energy > best) { best = energy; pick = balls.indexOf(b); }
+          });
+          beginEject(pick);
+        }
+      } else {
+        const peak = Math.abs(Math.sin(frame * 0.22)) > 0.92 && Math.abs(Math.cos(frame * 0.31)) > 0.75;
+        const interval = Math.max(70, 130 - round * 4);
+        if (peak && frame % interval < 2 && alive.length) {
+          let pick = 0, best = -1;
+          alive.forEach(b => {
+            const energy = b.vx * b.vx + b.vy * b.vy + (box.bottom - b.y) * 0.05;
+            if (energy > best) { best = energy; pick = balls.indexOf(b); }
+          });
+          beginEject(pick);
+        }
       }
     }
+
+    if (ultraShake && frame % 6 === 0) {
+      speedLines.push({
+        x: charX + (Math.random() - 0.5) * 160,
+        y: charY - 40 + Math.random() * 80,
+        len: 30 + Math.random() * 70,
+        ang: Math.random() * Math.PI * 2,
+        life: 0.6 + Math.random() * 0.4
+      });
+    }
+    speedLines.forEach(l => { l.life -= 0.06; });
+    speedLines = speedLines.filter(l => l.life > 0);
 
     particles.forEach(p => { p.x += p.vx; p.y += p.vy; p.vy += 0.15; p.life -= 0.025; });
     particles = particles.filter(p => p.life > 0);
     notes.forEach(n => { n.x += n.vx; n.y += n.vy; n.vy -= 0.04; n.life -= 0.018; });
     notes = notes.filter(n => n.life > 0);
-    screenShake *= 0.88;
+    screenShake *= ultraShake ? 0.92 : 0.88;
   }
 
   function drawScene() {
     const box = boxAnchor();
     const ss = screenShake;
+    const elapsed = elapsedSec();
 
     const bg = ctx.createLinearGradient(0, 0, W, H);
-    bg.addColorStop(0, '#1a0520');
-    bg.addColorStop(0.5, '#2d0a3e');
-    bg.addColorStop(1, '#0f0518');
+    if (ultraShake) {
+      bg.addColorStop(0, '#2a0010');
+      bg.addColorStop(0.5, '#4a0028');
+      bg.addColorStop(1, '#1a0008');
+    } else {
+      bg.addColorStop(0, '#1a0520');
+      bg.addColorStop(0.5, '#2d0a3e');
+      bg.addColorStop(1, '#0f0518');
+    }
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, W, H);
 
-    for (let i = 0; i < 8; i++) {
-      const lx = (W / 8) * i + Math.sin(frame * 0.04 + i) * 30;
-      const g = ctx.createRadialGradient(lx, 0, 0, lx, 0, 180);
-      g.addColorStop(0, `hsla(${(frame * 2 + i * 45) % 360},90%,55%,${0.08 + bassPulse * 0.06})`);
+    for (let i = 0; i < (ultraShake ? 12 : 8); i++) {
+      const lx = (W / (ultraShake ? 12 : 8)) * i + Math.sin(frame * (ultraShake ? 0.09 : 0.04) + i) * (ultraShake ? 50 : 30);
+      const g = ctx.createRadialGradient(lx, 0, 0, lx, 0, ultraShake ? 220 : 180);
+      const hue = ultraShake ? (frame * 4 + i * 30) % 360 : (frame * 2 + i * 45) % 360;
+      g.addColorStop(0, `hsla(${hue},90%,55%,${(ultraShake ? 0.14 : 0.08) + bassPulse * 0.08})`);
       g.addColorStop(1, 'transparent');
       ctx.fillStyle = g;
-      ctx.fillRect(lx - 180, 0, 360, H * 0.55);
+      ctx.fillRect(lx - (ultraShake ? 220 : 180), 0, (ultraShake ? 440 : 360), H * 0.55);
+    }
+
+    if (ultraShake) {
+      speedLines.forEach(l => {
+        ctx.save();
+        ctx.globalAlpha = l.life * 0.55;
+        ctx.strokeStyle = '#ffd700';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(l.x, l.y);
+        ctx.lineTo(l.x + Math.cos(l.ang) * l.len, l.y + Math.sin(l.ang) * l.len);
+        ctx.stroke();
+        ctx.restore();
+      });
     }
 
     ctx.fillStyle = '#12081a';
     ctx.fillRect(0, H - 120, W, 120);
-    ctx.strokeStyle = 'rgba(236,72,153,0.25)';
+    ctx.strokeStyle = ultraShake ? 'rgba(255,0,102,0.45)' : 'rgba(236,72,153,0.25)';
     ctx.lineWidth = 2;
     for (let x = 0; x < W; x += 40) {
       ctx.beginPath();
@@ -9092,12 +9239,14 @@ function startTwerk(names) {
       shakeX: box.sx,
       shakeY: box.sy,
       shakeRot: box.sr,
-      phase: frame * 0.08,
+      phase: frame * (ultraShake ? 0.14 : 0.08),
       faceImg: twerkFaceImg,
-      sweat: shakeIntensity > 1.5
+      sweat: shakeIntensity > 1.5,
+      ultra: ultraShake,
+      trail: buttTrail
     });
 
-    drawTwerkBox(ctx, box.bx, box.by, boxW, boxH, { shakeRot: box.sr * 0.5, glow: bassPulse });
+    drawTwerkBox(ctx, box.bx, box.by, boxW, boxH, { shakeRot: box.sr * 0.5, glow: bassPulse, ultra: ultraShake });
 
     ctx.save();
     ctx.beginPath();
@@ -9150,7 +9299,25 @@ function startTwerk(names) {
     ctx.fill();
     ctx.fillStyle = '#a855f7';
     ctx.textAlign = 'right';
-    ctx.fillText('SHAKE LVL ' + shakeIntensity.toFixed(1), W - 20, 30);
+    ctx.fillText(ultraShake ? '⚡ ULTRA ' + shakeIntensity.toFixed(1) : 'SHAKE LVL ' + shakeIntensity.toFixed(1), W - 20, 30);
+
+    const timerW = W - 220;
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.beginPath();
+    ctx.roundRect(W / 2 - timerW / 2, 10, timerW, 12, 6);
+    ctx.fill();
+    const timerPct = Math.min(1, elapsed / MAX_GAME_SEC);
+    const tg = ctx.createLinearGradient(W / 2 - timerW / 2, 0, W / 2 + timerW / 2, 0);
+    tg.addColorStop(0, elapsed >= ULTRA_AFTER_SEC ? '#ff0066' : '#ec4899');
+    tg.addColorStop(1, elapsed >= ULTRA_AFTER_SEC ? '#ffd700' : '#a855f7');
+    ctx.fillStyle = tg;
+    ctx.beginPath();
+    ctx.roundRect(W / 2 - timerW / 2 + 2, 12, (timerW - 4) * timerPct, 8, 4);
+    ctx.fill();
+    ctx.fillStyle = elapsed >= ULTRA_AFTER_SEC ? '#ffd700' : '#94a3b8';
+    ctx.font = 'bold 9px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText(Math.floor(elapsed) + 's / ' + MAX_GAME_SEC + 's' + (ultraShake ? ' — ULTRA' : ''), W / 2, 8);
 
     ctx.fillStyle = 'rgba(0,0,0,0.55)';
     ctx.beginPath();
@@ -9161,11 +9328,36 @@ function startTwerk(names) {
     ctx.textAlign = 'center';
     ctx.fillText(feed.textContent, W / 2, H - 16);
 
-    if (bassPulse > 0.85) {
+    if (ultraAnnounce > 0) {
+      const pulse = 1 + Math.sin(frame * 0.25) * 0.12;
+      ctx.save();
+      ctx.translate(W / 2, H * 0.14);
+      ctx.scale(pulse, pulse);
+      ctx.fillStyle = `rgba(255,0,102,${0.15 + (ultraAnnounce / 150) * 0.25})`;
+      ctx.fillRect(-W * 0.42, -28, W * 0.84, 56);
+      ctx.fillStyle = '#ffd700';
+      ctx.font = 'bold 38px Inter';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = '#ff0066';
+      ctx.shadowBlur = 24;
+      ctx.fillText('⚡ ULTRA SHAKE ⚡', 0, 10);
+      ctx.shadowBlur = 0;
+      ctx.restore();
+    } else if (ultraShake) {
+      ctx.fillStyle = `rgba(255,0,102,${0.12 + bassPulse * 0.2})`;
+      ctx.font = 'bold 34px Inter';
+      ctx.textAlign = 'center';
+      ctx.fillText('🔥 ULTRA SHAKE 🔥', W / 2, 52);
+    } else if (bassPulse > 0.85) {
       ctx.fillStyle = `rgba(236,72,153,${(bassPulse - 0.85) * 0.35})`;
       ctx.font = 'bold 36px Inter';
       ctx.textAlign = 'center';
       ctx.fillText('🍑 SHAKE!', W / 2, 52);
+    }
+
+    if (ultraFlash > 0) {
+      ctx.fillStyle = `rgba(255,0,102,${ultraFlash * 0.25})`;
+      ctx.fillRect(0, 0, W, H);
     }
   }
 
@@ -9510,17 +9702,19 @@ const PV_SCENES = {
         vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2,
         r: 14, angle: i, alive: true, revealName: false
       }));
-      return { frame: 0, W, H, charX, charY, boxW: 150, boxH: 105, balls, shakeIntensity: 1.5, bassPulse: 0 };
+      return { frame: 0, W, H, charX, charY, boxW: 150, boxH: 105, balls, shakeIntensity: 1.5, bassPulse: 0, ultra: false, trail: [] };
     },
     tick(st) {
       st.frame++;
-      st.shakeIntensity = Math.min(3, 1.2 + st.frame * 0.002);
-      st.bassPulse = Math.sin(st.frame * 0.35) * 0.5 + 0.5;
-      const sx = Math.sin(st.frame * 0.22) * 14 * st.shakeIntensity;
-      const sy = Math.sin(st.frame * 0.31) * 8 * st.shakeIntensity;
-      st.sx = sx; st.sy = sy; st.sr = Math.sin(st.frame * 0.18) * 0.06 * st.shakeIntensity;
-      st.bx = st.charX + sx + 8;
-      st.by = st.charY - 58 + sy;
+      st.ultra = st.frame > 180;
+      st.shakeIntensity = st.ultra ? Math.min(8, 5 + st.frame * 0.002) : Math.min(3, 1.2 + st.frame * 0.002);
+      st.bassPulse = Math.abs(Math.sin(st.frame * (st.ultra ? 0.55 : 0.35))) * 0.85 + 0.15;
+      const freq = st.ultra ? 2.6 : 1, amp = st.ultra ? 2.4 : 1;
+      st.sx = (Math.sin(st.frame * 0.22 * freq) * 14 + Math.sin(st.frame * 0.71) * (st.ultra ? 10 : 0)) * st.shakeIntensity * amp;
+      st.sy = (Math.sin(st.frame * 0.31 * freq) * 8 + Math.cos(st.frame * 0.58) * (st.ultra ? 7 : 0)) * st.shakeIntensity * amp;
+      st.sr = (Math.sin(st.frame * 0.18 * freq) * 0.06 + Math.sin(st.frame * 0.93) * (st.ultra ? 0.05 : 0)) * st.shakeIntensity;
+      st.bx = st.charX + st.sx + 8;
+      st.by = st.charY - 58 + st.sy;
       const ax = Math.sin(st.frame * 0.22) * 0.7 * st.shakeIntensity;
       const ay = Math.cos(st.frame * 0.31) * 0.45 * st.shakeIntensity;
       st.balls.forEach(b => {
@@ -9534,27 +9728,25 @@ const PV_SCENES = {
         if (b.y - b.r < t) { b.y = t + b.r; b.vy = Math.abs(b.vy) * 0.7; }
         if (b.y + b.r > bt) { b.y = bt - b.r; b.vy = -Math.abs(b.vy) * 0.7; }
       });
+      st.trail.unshift({ sx: st.sx, sy: st.sy, sr: st.sr, clap: 0.15, alpha: st.ultra ? 0.35 : 0.2 });
+      if (st.trail.length > (st.ultra ? 6 : 3)) st.trail.pop();
     },
     draw(ctx, W, H, st) {
       const bg = ctx.createLinearGradient(0, 0, W, H);
-      bg.addColorStop(0, '#1a0520'); bg.addColorStop(1, '#0f0518');
+      if (st.ultra) { bg.addColorStop(0, '#2a0010'); bg.addColorStop(1, '#1a0008'); }
+      else { bg.addColorStop(0, '#1a0520'); bg.addColorStop(1, '#0f0518'); }
       ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-      for (let i = 0; i < 6; i++) {
-        const lx = (W / 6) * i + Math.sin(st.frame * 0.04 + i) * 20;
-        const g = ctx.createRadialGradient(lx, 0, 0, lx, 0, 140);
-        g.addColorStop(0, `hsla(${(st.frame * 2 + i * 50) % 360},90%,55%,0.1)`);
-        g.addColorStop(1, 'transparent');
-        ctx.fillStyle = g; ctx.fillRect(lx - 140, 0, 280, H * 0.5);
-      }
-      drawTwerkStreamer(ctx, st.charX, st.charY, 1.15, { shakeX: st.sx, shakeY: st.sy, shakeRot: st.sr, phase: st.frame * 0.08, faceImg: twerkFaceImg, sweat: true });
-      drawTwerkBox(ctx, st.bx, st.by, st.boxW, st.boxH, { shakeRot: st.sr * 0.5, glow: st.bassPulse });
+      drawTwerkStreamer(ctx, st.charX, st.charY, 1.15, { shakeX: st.sx, shakeY: st.sy, shakeRot: st.sr, phase: st.frame * (st.ultra ? 0.14 : 0.08), faceImg: twerkFaceImg, sweat: true, ultra: st.ultra, trail: st.trail });
+      drawTwerkBox(ctx, st.bx, st.by, st.boxW, st.boxH, { shakeRot: st.sr * 0.5, glow: st.bassPulse, ultra: st.ultra });
       ctx.save();
       ctx.beginPath();
       ctx.rect(st.bx - st.boxW / 2 + 2, st.by - st.boxH + 2, st.boxW - 4, st.boxH - 4);
       ctx.clip();
       st.balls.forEach(b => drawTwerkBall(ctx, b));
       ctx.restore();
-      if (st.bassPulse > 0.85) { ctx.fillStyle = 'rgba(236,72,153,0.25)'; ctx.font = 'bold 28px Inter'; ctx.textAlign = 'center'; ctx.fillText('🍑 SHAKE!', W / 2, 48); }
+      ctx.fillStyle = st.ultra ? '#ffd700' : '#ec4899';
+      ctx.font = 'bold ' + (st.ultra ? 32 : 28) + 'px Inter'; ctx.textAlign = 'center';
+      ctx.fillText(st.ultra ? '⚡ ULTRA SHAKE ⚡' : '🍑 SHAKE!', W / 2, 48);
     }
   },
   butts: {
@@ -9914,7 +10106,7 @@ const GAME_PREVIEW_META = {
   thunder: { scene: 'thunder', title: '⚡ Thunder Judgment', desc: 'Zeus strikes the unworthy with lightning!' },
   butts: { scene: 'butts', title: '🍑 Pick A Butt', desc: 'Streamer clicks butts to eliminate. Names hidden until reveal!' },
   flush: { scene: 'flush', title: '🚽 Flush Royale', desc: 'Streamer flushes mystery poops. Last one in the bowl wins!' },
-  twerk: { scene: 'twerk', title: '🍑 Twerk Shake Royale', desc: 'Balls bounce in the butt box — shake eliminates until one survives!' },
+  twerk: { scene: 'twerk', title: '🍑 Twerk Shake Royale', desc: 'Balls bounce in the butt box — after 30s ULTRA SHAKE kicks in to finish within 1 minute!' },
   boxing: { scene: 'boxing', title: '🥊 Boxing Match', desc: '1v1 boxing with combos, blocks, and special moves!' },
   sword: { scene: 'sword', title: '⚔️ Sword Duel', desc: '1v1 fencing duel. Parry, lunge, and strike!' }
 };
