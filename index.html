@@ -224,6 +224,7 @@
         <button onclick="launchHighCard()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#ef4444,#7f1d1d);">🃏 High Card Duel</button>
         <button onclick="launchPlinko()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f97316,#c2410c);">🎪 Plinko Drop</button>
         <button onclick="launchThunder()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#6366f1,#312e81);">⚡ Thunder Judgment</button>
+        <button onclick="launchButts()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f472b6,#9d174d);">🍑 Pick A Butt</button>
       </div>
       <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">1-on-1 Combat (pick 2 entrants)</div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -966,6 +967,18 @@
   </div>
 </div>
 
+<div id="butts-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#f472b6] text-sm font-bold uppercase tracking-widest mb-2">🍑 Pick A Butt</div><h1 class="text-4xl md:text-5xl font-black text-white">Streamer Elimination</h1></div>
+    <div id="butts-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Butts assembling...</div><div class="text-sm text-gray-600" id="butts-intro-count"></div></div>
+    <div id="butts-phase-play" class="hidden w-full max-w-5xl">
+      <div id="butts-feed" class="text-center text-gray-300 mb-3 text-lg font-bold">Click a butt!</div>
+      <canvas id="butts-canvas" width="900" height="560" class="w-full rounded-2xl border border-pink-500/20 bg-[#050508] cursor-pointer"></canvas>
+    </div>
+    <div id="butts-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🍑</div><div class="text-2xl text-[#f472b6] font-bold mb-2">SURVIVOR</div><div id="butts-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
 <!-- ==================== BOXING MATCH (1v1, enhanced) ==================== -->
 <div id="boxing-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
   <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
@@ -1667,6 +1680,7 @@ function launchBingo() { openGamePopup('bingo'); }
 function launchHighCard() { openGamePopup('highcard'); }
 function launchPlinko() { openGamePopup('plinko'); }
 function launchThunder() { openGamePopup('thunder'); }
+function launchButts() { openGamePopup('butts'); }
 
 
 
@@ -7784,6 +7798,193 @@ function startThunder(names) {
   loop(); setTimeout(strikeRound, 800);
 }
 
+/* ==================== PICK A BUTT (streamer picks) ==================== */
+function drawCartoonButt(ctx, x, y, sc, opts) {
+  opts = opts || {};
+  ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
+  const wob = Math.sin(opts.wobble || 0) * 4;
+  const squash = opts.squash || 1;
+  ctx.scale(1, squash);
+  ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.beginPath(); ctx.ellipse(0, 32, 40, 11, 0, 0, Math.PI * 2); ctx.fill();
+  const skin = opts.hover ? '#ffb4a2' : '#fca5a5';
+  ctx.fillStyle = skin; ctx.strokeStyle = 'rgba(185,28,28,0.2)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.ellipse(-19, wob, 24, 28, -0.15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(19, wob, 24, 28, 0.15, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
+  ctx.strokeStyle = 'rgba(120,53,15,0.4)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, -20 + wob); ctx.quadraticCurveTo(5, 8, 0, 26 + wob); ctx.stroke();
+  ctx.fillStyle = '#475569'; ctx.fillRect(-30, -36, 60, 12);
+  ctx.fillStyle = '#64748b'; ctx.fillRect(-30, -26, 60, 4);
+  if (opts.hover) {
+    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 3; ctx.setLineDash([5, 4]);
+    ctx.beginPath(); ctx.ellipse(0, 0, 46, 36, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+  }
+  ctx.restore();
+}
+
+function runButts() {
+  showOverlay('butts-overlay'); showPhase('butts', 'intro');
+  const names = Array.from(entrants);
+  if (!names.length) { alert('No entrants yet!'); return; }
+  document.getElementById('butts-intro-count').textContent = names.length + ' mystery butts — no names until YOU pick one!';
+  setTimeout(() => startButts(names), 1600);
+}
+
+function startButts(names) {
+  showPhase('butts', 'play');
+  let remaining = [...names].sort(() => Math.random() - 0.5);
+  const canvas = document.getElementById('butts-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const feed = document.getElementById('butts-feed');
+  let butts = [], phase = 'pick', selected = null, cam = { x: W / 2, y: H / 2, zoom: 1 };
+  let zoomT = 0, revealT = 0, particles = [], hoverIdx = -1, animId = null, round = 0;
+
+  function layoutButts() {
+    const slots = gridLayout(remaining.length, 36, 70, W - 36, H - 50, 8);
+    butts = remaining.map((name, i) => ({
+      name, color: colorFor(name),
+      x: slots[i].x + slots[i].w / 2, y: slots[i].y + slots[i].h / 2,
+      r: Math.min(slots[i].w, slots[i].h) * 0.42,
+      wobble: Math.random() * Math.PI * 2, wobbleSpd: 0.04 + Math.random() * 0.03
+    }));
+  }
+  layoutButts();
+
+  function canvasPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (W / rect.width), my = (e.clientY - rect.top) * (H / rect.height);
+    const wx = cam.x + (mx - W / 2) / cam.zoom, wy = cam.y + (my - H / 2) / cam.zoom;
+    return { mx, my, wx, wy };
+  }
+
+  function hitButt(wx, wy) {
+    for (let i = butts.length - 1; i >= 0; i--) {
+      const b = butts[i];
+      if (Math.hypot(wx - b.x, wy - b.y) < b.r + 12) return i;
+    }
+    return -1;
+  }
+
+  function spawnParticles(x, y, n, colors) {
+    for (let i = 0; i < n; i++) {
+      particles.push({
+        x, y, vx: (Math.random() - 0.5) * 9, vy: -2 - Math.random() * 7,
+        r: 3 + Math.random() * 5, life: 1,
+        color: colors[i % colors.length]
+      });
+    }
+  }
+
+  function drawWorld() {
+    if (phase === 'pick') {
+      butts.forEach((b, i) => {
+        b.wobble += b.wobbleSpd;
+        drawCartoonButt(ctx, b.x, b.y, 1, { wobble: b.wobble, hover: i === hoverIdx });
+      });
+    } else if (selected) {
+      const squash = phase === 'squeeze' ? 0.75 + Math.sin(revealT * 20) * 0.12 : 1;
+      drawCartoonButt(ctx, selected.x, selected.y, 1 + zoomT * 1.8, { wobble: selected.wobble, squash: phase === 'squeeze' ? squash : 1 });
+      if (phase === 'reveal' || phase === 'elim') {
+        const emerge = Math.min(1, revealT);
+        const charY = selected.y + 50 + emerge * 55;
+        ctx.save(); ctx.globalAlpha = emerge;
+        drawMiniCharacter(ctx, selected.x, charY, 22, selected.color, { phase: revealT * 8 });
+        ctx.fillStyle = '#050508'; ctx.strokeStyle = selected.color; ctx.lineWidth = 2;
+        ctx.font = 'bold 16px Inter'; ctx.textAlign = 'center';
+        const nw = ctx.measureText(selected.name).width + 24;
+        ctx.beginPath(); ctx.roundRect(selected.x - nw / 2, charY - 58, nw, 28, 8); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = selected.color; ctx.fillText(selected.name, selected.x, charY - 39);
+        if (phase === 'elim') {
+          ctx.fillStyle = '#ff3366'; ctx.font = 'bold 22px Inter';
+          ctx.fillText('💩 ELIMINATED!', selected.x, charY + 42);
+        }
+        ctx.restore();
+      }
+    }
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vy += 0.2; p.life -= 0.018;
+      ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
+    });
+    particles = particles.filter(p => p.life > 0);
+  }
+
+  function draw() {
+    ctx.fillStyle = '#1a0a12'; ctx.fillRect(0, 0, W, H);
+    const bg = ctx.createRadialGradient(W / 2, H / 2, 20, W / 2, H / 2, W * 0.6);
+    bg.addColorStop(0, 'rgba(244,114,182,0.08)'); bg.addColorStop(1, 'transparent');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    ctx.save();
+    ctx.translate(W / 2, H / 2); ctx.scale(cam.zoom, cam.zoom); ctx.translate(-cam.x, -cam.y);
+    drawWorld();
+    ctx.restore();
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, 10, 240, 30, 8); ctx.fill();
+    ctx.fillStyle = '#f472b6'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left'; ctx.fillText('🍑 BUTTS LEFT: ' + remaining.length, 20, 30);
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 34, W - 20, 26, 8); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed.textContent, W / 2, H - 16);
+  }
+
+  function finishReveal() {
+    phase = 'elim'; revealT = 1;
+    feed.textContent = '💩 ' + selected.name + ' has been ELIMINATED!';
+    setTimeout(() => {
+      remaining = remaining.filter(n => n !== selected.name);
+      selected = null; phase = 'pick'; zoomT = 0; revealT = 0;
+      cam = { x: W / 2, y: H / 2, zoom: 1 };
+      if (remaining.length <= 1) {
+        cancelAnimationFrame(animId);
+        showPhase('butts', 'winner');
+        document.getElementById('butts-winner-name').textContent = pickSingleWinner(remaining, names);
+        return;
+      }
+      layoutButts();
+      round++;
+      feed.textContent = '👆 Pick another butt! (' + remaining.length + ' left)';
+    }, 2200);
+  }
+
+  function loop() {
+    if (phase === 'zoom') {
+      zoomT = Math.min(1, zoomT + 0.035);
+      cam.x += (selected.x - cam.x) * 0.12;
+      cam.y += (selected.y - cam.y) * 0.12;
+      cam.zoom += (2.8 - cam.zoom) * 0.08;
+      if (zoomT >= 1) { phase = 'squeeze'; revealT = 0; feed.textContent = 'Uh oh... something\'s coming out...'; }
+    }
+    if (phase === 'squeeze') {
+      revealT += 0.04;
+      selected.wobble += 0.25;
+      if (revealT > 1.2) {
+        phase = 'reveal'; revealT = 0;
+        spawnParticles(selected.x, selected.y + 20, 35, ['#92400e', '#b45309', '#fcd34d', '#78716c', selected.color]);
+        feed.textContent = '💩 REVEALING...';
+      }
+    }
+    if (phase === 'reveal') {
+      revealT += 0.025;
+      if (revealT >= 1) finishReveal();
+    }
+    draw(); animId = requestAnimationFrame(loop);
+  }
+
+  canvas.onmousemove = e => {
+    if (phase !== 'pick') { hoverIdx = -1; canvas.style.cursor = 'default'; return; }
+    const p = canvasPos(e);
+    hoverIdx = hitButt(p.wx, p.wy);
+    canvas.style.cursor = hoverIdx >= 0 ? 'pointer' : 'default';
+  };
+  canvas.onclick = e => {
+    if (phase !== 'pick') return;
+    const p = canvasPos(e);
+    const idx = hitButt(p.wx, p.wy);
+    if (idx < 0) return;
+    selected = butts[idx]; phase = 'zoom'; zoomT = 0; revealT = 0;
+    feed.textContent = 'Zooming in on that butt...';
+  };
+
+  feed.textContent = '👆 CLICK A BUTT to eliminate someone! (names hidden)';
+  loop();
+}
+
 /* ==================== SWORD DUEL (1v1 launcher) ==================== */
 function runSwordDuel() {
   const names = Array.from(entrants);
@@ -7872,6 +8073,7 @@ function launchSwordWith(p1Name, p2Name) {
       else if (game === 'highcard') runHighCard();
       else if (game === 'plinko') runPlinko();
       else if (game === 'thunder') runThunder();
+      else if (game === 'butts') runButts();
       else if (game === 'boxing') runBoxingMatch();
       else if (game === 'sword') runSwordDuel();
     }, 200);
