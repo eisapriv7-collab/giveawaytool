@@ -982,13 +982,13 @@
 
 <div id="flush-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
   <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
-    <div class="text-center mb-3"><div class="text-[#38bdf8] text-sm font-bold uppercase tracking-widest mb-2">🚽 Flush Royale</div><h1 class="text-4xl md:text-5xl font-black text-white">Last Ball Wins</h1></div>
+    <div class="text-center mb-3"><div class="text-[#38bdf8] text-sm font-bold uppercase tracking-widest mb-2">🚽 Flush Royale</div><h1 class="text-4xl md:text-5xl font-black text-white">Last Poop Wins</h1></div>
     <div id="flush-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Filling the bowl...</div><div class="text-sm text-gray-600" id="flush-intro-count"></div></div>
     <div id="flush-phase-play" class="hidden w-full max-w-5xl">
-      <div id="flush-feed" class="text-center text-gray-300 mb-3 text-lg font-bold">Click a ball to flush!</div>
+      <div id="flush-feed" class="text-center text-gray-300 mb-3 text-lg font-bold">Click a poop to flush!</div>
       <canvas id="flush-canvas" width="900" height="580" class="w-full rounded-2xl border border-sky-500/20 bg-[#050508] cursor-pointer"></canvas>
     </div>
-    <div id="flush-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🚽</div><div class="text-2xl text-[#38bdf8] font-bold mb-2">LAST BALL STANDING</div><div id="flush-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+    <div id="flush-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🚽</div><div class="text-2xl text-[#38bdf8] font-bold mb-2">LAST POOP STANDING</div><div id="flush-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
   </div>
 </div>
 
@@ -8122,23 +8122,40 @@ function startButts(names) {
 }
 
 /* ==================== FLUSH ROYALE ==================== */
-function drawFlushBall(ctx, x, y, r, color, name, opts) {
+function drawPoopBlob(ctx, x, y, sc, opts) {
   opts = opts || {};
-  ctx.save();
-  const hl = opts.highlight;
-  if (hl) {
-    ctx.shadowColor = color; ctx.shadowBlur = 22;
-    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.arc(x, y, r + 6, 0, Math.PI * 2); ctx.stroke();
+  ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
+  if (opts.highlight) {
+    ctx.shadowColor = '#ffd700'; ctx.shadowBlur = 20;
+    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.ellipse(0, 8, 30, 34, 0, 0, Math.PI * 2); ctx.stroke();
     ctx.shadowBlur = 0;
   }
-  const grd = ctx.createRadialGradient(x - r * 0.35, y - r * 0.35, r * 0.05, x + r * 0.08, y + r * 0.08, r * 1.05);
-  grd.addColorStop(0, '#ffffff'); grd.addColorStop(0.25, color); grd.addColorStop(1, '#1e293b');
-  ctx.fillStyle = grd;
-  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
-  ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 1.5; ctx.stroke();
-  ctx.fillStyle = '#fff'; ctx.font = 'bold ' + Math.max(8, r * 0.42) + 'px Inter'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(name.substring(0, Math.max(5, Math.floor(r * 0.45))), x, y);
+  ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.beginPath(); ctx.ellipse(3, 30, 22, 7, 0, 0, Math.PI * 2); ctx.fill();
+  const segs = 5;
+  for (let i = 0; i < segs; i++) {
+    const ang = i * 0.62, px = Math.cos(ang) * i * 4.2, py = i * 8.5;
+    const rw = 12 - i * 1.3, rh = 10 - i * 0.9;
+    const grd = ctx.createRadialGradient(px - 3, py - 4, 1, px, py, rw);
+    grd.addColorStop(0, '#ca8a04'); grd.addColorStop(0.35, '#92400e'); grd.addColorStop(1, '#451a03');
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.ellipse(px, py, rw, rh, ang * 0.2, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(45,19,3,0.45)'; ctx.lineWidth = 1; ctx.stroke();
+  }
+  ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.beginPath(); ctx.ellipse(-4, 2, 6, 4, -0.3, 0, Math.PI * 2); ctx.fill();
+  if (opts.tint) {
+    ctx.globalAlpha = 0.18; ctx.fillStyle = opts.tint;
+    ctx.beginPath(); ctx.ellipse(2, 10, 14, 18, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+  if (opts.showName && opts.name) {
+    ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center'; ctx.fillStyle = '#fff';
+    ctx.strokeStyle = '#451a03'; ctx.lineWidth = 3; ctx.strokeText(opts.name.substring(0, 12), 0, -14);
+    ctx.fillText(opts.name.substring(0, 12), 0, -14);
+  } else if (opts.number) {
+    ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.fillText('#' + opts.number, 0, -12);
+  }
   ctx.restore();
 }
 
@@ -8147,35 +8164,47 @@ function drawToilet(ctx, x, y, opts) {
   const lid = opts.lidOpen || 0, swirl = opts.swirl || 0, flushT = opts.flushT || 0, shake = opts.shake || 0;
   ctx.save(); ctx.translate(x + shake, y);
 
-  ctx.fillStyle = '#e2e8f0'; ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.roundRect(-58, -175, 116, 88, 10); ctx.fill(); ctx.stroke();
-  ctx.fillStyle = '#cbd5e1'; ctx.fillRect(-50, -168, 100, 12);
-  ctx.fillStyle = '#64748b'; ctx.beginPath(); ctx.roundRect(44, -155, 10, 28, 3); ctx.fill();
-  ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(49, -148, 4, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(0, 118, 55, 12, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#64748b'; ctx.fillRect(-22, 98, 44, 22);
+  ctx.fillStyle = '#94a3b8'; ctx.beginPath(); ctx.ellipse(0, 118, 38, 10, 0, 0, Math.PI * 2); ctx.fill();
 
-  const pipeG = ctx.createLinearGradient(-90, 20, 90, 100);
-  pipeG.addColorStop(0, '#f8fafc'); pipeG.addColorStop(0.5, '#f1f5f9'); pipeG.addColorStop(1, '#cbd5e1');
-  ctx.fillStyle = pipeG; ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2.5;
-  ctx.beginPath(); ctx.ellipse(0, 42, 92, 58, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-  ctx.fillStyle = '#475569';
-  ctx.beginPath(); ctx.ellipse(0, 48, 68, 42, 0, 0, Math.PI * 2); ctx.fill();
+  const bowlG = ctx.createLinearGradient(-95, 10, 95, 110);
+  bowlG.addColorStop(0, '#ffffff'); bowlG.addColorStop(0.4, '#f1f5f9'); bowlG.addColorStop(1, '#cbd5e1');
+  ctx.fillStyle = bowlG; ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(0, 48, 98, 62, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#e2e8f0'; ctx.beginPath(); ctx.ellipse(0, 44, 88, 20, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 3; ctx.stroke();
+  ctx.fillStyle = '#334155';
+  ctx.beginPath(); ctx.ellipse(0, 52, 72, 44, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#1e293b'; ctx.beginPath(); ctx.ellipse(0, 54, 58, 34, 0, 0, Math.PI * 2); ctx.fill();
 
-  const waterA = Math.max(0.15, 0.75 - flushT * 0.7);
-  if (waterA > 0.2) {
-    ctx.save(); ctx.translate(0, 50); ctx.rotate(swirl);
-    const wg = ctx.createRadialGradient(0, 0, 5, 0, 0, 58);
-    wg.addColorStop(0, 'rgba(125,211,252,0.9)'); wg.addColorStop(0.6, 'rgba(14,165,233,0.65)'); wg.addColorStop(1, 'rgba(2,132,199,0.3)');
-    ctx.fillStyle = wg; ctx.beginPath(); ctx.ellipse(0, 0, 62 * waterA + 8, 38 * waterA + 5, 0, 0, Math.PI * 2); ctx.fill();
+  const waterA = Math.max(0.1, 0.8 - flushT * 0.75);
+  if (waterA > 0.12) {
+    ctx.save(); ctx.translate(0, 54); ctx.rotate(swirl);
+    const wg = ctx.createRadialGradient(-8, -6, 4, 0, 0, 55);
+    wg.addColorStop(0, 'rgba(186,230,253,0.95)'); wg.addColorStop(0.5, 'rgba(56,189,248,0.7)'); wg.addColorStop(1, 'rgba(2,132,199,0.25)');
+    ctx.fillStyle = wg; ctx.beginPath(); ctx.ellipse(0, 0, 54 * waterA, 30 * waterA, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.beginPath(); ctx.ellipse(-12, -8, 14, 6, -0.4, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
   }
 
-  ctx.save(); ctx.translate(-38, -8); ctx.rotate(-lid * 1.35);
+  const tankG = ctx.createLinearGradient(-60, -185, 60, -95);
+  tankG.addColorStop(0, '#ffffff'); tankG.addColorStop(0.5, '#f8fafc'); tankG.addColorStop(1, '#e2e8f0');
+  ctx.fillStyle = tankG; ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.roundRect(-62, -188, 124, 96, 12); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#cbd5e1'; ctx.fillRect(-54, -180, 108, 10);
+  ctx.fillStyle = '#94a3b8'; ctx.beginPath(); ctx.roundRect(46, -168, 12, 32, 4); ctx.fill();
+  const btnG = ctx.createRadialGradient(52, -158, 1, 52, -158, 8);
+  btnG.addColorStop(0, '#bae6fd'); btnG.addColorStop(1, '#0284c7');
+  ctx.fillStyle = btnG; ctx.beginPath(); ctx.arc(52, -158, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1; ctx.stroke();
+
+  ctx.save(); ctx.translate(0, 8); ctx.rotate(-lid * 1.45);
   ctx.fillStyle = '#f8fafc'; ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.ellipse(38, 0, 78, 22, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(0, 0, 84, 24, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.ellipse(-20, -6, 28, 8, 0, 0, Math.PI * 2); ctx.fill();
   ctx.restore();
 
-  ctx.fillStyle = '#64748b'; ctx.fillRect(-28, 95, 56, 18);
-  ctx.fillStyle = '#475569'; ctx.beginPath(); ctx.ellipse(0, 108, 34, 8, 0, 0, Math.PI * 2); ctx.fill();
   ctx.restore();
 }
 
@@ -8183,7 +8212,7 @@ function runFlush() {
   showOverlay('flush-overlay'); showPhase('flush', 'intro');
   const names = Array.from(entrants);
   if (!names.length) { alert('No entrants yet!'); return; }
-  document.getElementById('flush-intro-count').textContent = names.length + ' balls in the bowl room — flush until one survives!';
+  document.getElementById('flush-intro-count').textContent = names.length + ' mystery poops — flush until one survives!';
   setTimeout(() => startFlush(names), 1600);
 }
 
@@ -8200,12 +8229,13 @@ function startFlush(names) {
   for (let i = 0; i < 15; i++) bubbles.push({ x: toiletX + (Math.random() - 0.5) * 50, y: toiletY + 10 + Math.random() * 20, r: 2 + Math.random() * 3, spd: 0.3 + Math.random() * 0.5, wob: Math.random() * 6 });
 
   function layoutBalls() {
-    const slots = gridLayout(remaining.length, 50, 55, W - 50, toiletY - 130, 10);
+    const slots = gridLayout(remaining.length, 50, 55, W - 50, toiletY - 140, 10);
     balls = remaining.map((name, i) => ({
-      name, color: colorFor(name),
+      name, color: colorFor(name), num: i + 1,
       x: slots[i].x + slots[i].w / 2, y: slots[i].y + slots[i].h / 2,
-      r: Math.min(28, Math.max(16, Math.min(slots[i].w, slots[i].h) * 0.38)),
-      bob: Math.random() * Math.PI * 2, vx: 0, vy: 0
+      r: Math.min(1.15, Math.max(0.85, Math.min(slots[i].w, slots[i].h) / 52)),
+      bob: Math.random() * Math.PI * 2, vx: 0, vy: 0,
+      rot: (Math.random() - 0.5) * 0.5
     }));
   }
   layoutBalls();
@@ -8217,7 +8247,7 @@ function startFlush(names) {
 
   function hitBall(x, y) {
     for (let i = balls.length - 1; i >= 0; i--) {
-      if (Math.hypot(x - balls[i].x, y - balls[i].y) < balls[i].r + 8) return i;
+      if (Math.hypot(x - balls[i].x, y - balls[i].y) < 34 * balls[i].r) return i;
     }
     return -1;
   }
@@ -8246,7 +8276,7 @@ function startFlush(names) {
     flushing = { ...b, stage: 'fly', t: 0, scale: 1, alpha: 1, orbit: 0 };
     balls.splice(idx, 1);
     lidOpen = 0; flushT = 0;
-    feed.textContent = '🚽 Flushing ' + b.name + '...';
+    feed.textContent = '🚽 Flushing mystery poop #' + b.num + '...';
   }
 
   function updateFlush() {
@@ -8269,6 +8299,7 @@ function startFlush(names) {
       f.y = toiletY + 35 + Math.sin(f.orbit) * (12 - f.t * 0.2);
       f.scale = Math.max(0.15, 1 - f.t * 0.045);
       f.alpha = Math.max(0, 1 - f.t * 0.04);
+      if (f.t > 20) f.revealName = true;
       if (f.t > 28) { f.stage = 'done'; feed.textContent = '💦 ' + f.name + ' — FLUSHED!'; }
     } else if (f.stage === 'done') {
       remaining = remaining.filter(n => n !== f.name);
@@ -8280,7 +8311,7 @@ function startFlush(names) {
         return;
       }
       layoutBalls();
-      feed.textContent = '👆 Pick another ball! (' + remaining.length + ' left)';
+      feed.textContent = '👆 Pick another poop! (' + remaining.length + ' left, names hidden)';
     }
     shake *= 0.85;
   }
@@ -8310,14 +8341,21 @@ function startFlush(names) {
     });
 
     balls.forEach((b, i) => {
-      b.bob += 0.04;
-      const by = b.y + Math.sin(b.bob) * 4;
-      drawFlushBall(ctx, b.x, by, b.r, b.color, b.name, { highlight: i === hoverIdx && phase === 'pick' });
+      b.bob += 0.04; b.rot += 0.008;
+      const by = b.y + Math.sin(b.bob) * 5;
+      ctx.save(); ctx.translate(b.x, by); ctx.rotate(b.rot);
+      drawPoopBlob(ctx, 0, 0, b.r, { highlight: i === hoverIdx && phase === 'pick', number: b.num, tint: b.color });
+      ctx.restore();
     });
 
     if (flushing) {
       ctx.globalAlpha = flushing.alpha;
-      drawFlushBall(ctx, flushing.x, flushing.y, flushing.r * flushing.scale, flushing.color, flushing.name, { highlight: true });
+      ctx.save(); ctx.translate(flushing.x, flushing.y); ctx.rotate(flushing.orbit * 0.3);
+      drawPoopBlob(ctx, 0, 0, flushing.r * flushing.scale, {
+        highlight: true, tint: flushing.color,
+        showName: !!flushing.revealName, name: flushing.name
+      });
+      ctx.restore();
       ctx.globalAlpha = 1;
     }
 
@@ -8334,7 +8372,7 @@ function startFlush(names) {
     }
 
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, 10, 220, 30, 8); ctx.fill();
-    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left'; ctx.fillText('🎱 BALLS LEFT: ' + remaining.length, 20, 30);
+    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left'; ctx.fillText('💩 POOPS LEFT: ' + remaining.length, 20, 30);
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 34, W - 20, 26, 8); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed.textContent, W / 2, H - 16);
   }
@@ -8358,7 +8396,7 @@ function startFlush(names) {
     if (idx >= 0) beginFlush(idx);
   };
 
-  feed.textContent = '👆 CLICK A BALL to flush them down the toilet!';
+  feed.textContent = '👆 CLICK A POOP to flush! (names hidden)';
   loop();
 }
 
