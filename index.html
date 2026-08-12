@@ -26,6 +26,8 @@
     .bg-mesh { position:fixed; inset:0; z-index:1; pointer-events:none; background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(83,252,24,0.06),transparent),radial-gradient(ellipse 55% 40% at 90% 10%,rgba(0,212,255,0.04),transparent),radial-gradient(ellipse 60% 40% at 10% 90%,rgba(255,51,102,0.03),transparent); }
     .bg-grain { position:fixed; inset:0; z-index:2; pointer-events:none; opacity:0.25; background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px); background-size:44px 44px; -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 20%,black,transparent); mask-image:radial-gradient(ellipse 70% 60% at 50% 20%,black,transparent); }
     .site-layer { position:relative; z-index:10; }
+    body.game-mode .bg-yes-hero, body.game-mode .bg-mesh { display:none !important; }
+    body.game-mode { background:#050508 !important; }
     .glass { background:rgba(255,255,255,0.02); backdrop-filter:blur(20px); border:1px solid var(--line); box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05); }
     .hud-panel { position:relative; }
     .hud-panel::before,.hud-panel::after { content:''; position:absolute; width:18px; height:18px; border:2px solid rgba(83,252,24,0.5); pointer-events:none; }
@@ -217,7 +219,12 @@
         <button onclick="launchCrystal()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#a855f7,#581c87);">🔮 Crystal Ball Curse</button>
         <button onclick="launchWarp()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#38bdf8,#1e3a8a);">🌌 Warp Jump</button>
         <button onclick="launchStocks()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#22c55e,#14532d);">📉 Stock Market Crash</button>
-
+        <button onclick="launchSlot()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#ec4899,#831843);">🎰 Jackpot Slots</button>
+        <button onclick="launchBingo()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#0ea5e9,#1e40af);">🎱 Bingo Ball Drop</button>
+        <button onclick="launchHighCard()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#ef4444,#7f1d1d);">🃏 High Card Duel</button>
+        <button onclick="launchPlinko()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f97316,#c2410c);">🎪 Plinko Drop</button>
+        <button onclick="launchThunder()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#6366f1,#312e81);">⚡ Thunder Judgment</button>
+      </div>
       <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">1-on-1 Combat (pick 2 entrants)</div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <button onclick="launchBoxingMatch()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#dc2626,#991b1b);">🥊 Boxing Match</button>
@@ -897,6 +904,75 @@
     <div id="stocks-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Opening bell...</div><div class="text-sm text-gray-600" id="stocks-intro-count"></div></div>
     <div id="stocks-phase-play" class="hidden w-full max-w-6xl"><canvas id="stocks-canvas" width="1100" height="520" class="w-full rounded-2xl border border-green-500/20"></canvas></div>
     <div id="stocks-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">📈</div><div class="text-2xl text-[#22c55e] font-bold mb-2">WOLF OF KICK</div><div id="stocks-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<div id="slot-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6 overflow-y-auto">
+    <div class="text-center mb-4"><div class="text-[#ec4899] text-sm font-bold uppercase tracking-widest mb-2">🎰 Jackpot Slots</div><h1 class="text-4xl md:text-5xl font-black text-white">Pull The Lever</h1></div>
+    <div id="slot-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Loading reels...</div><div class="text-sm text-gray-600" id="slot-intro-count"></div></div>
+    <div id="slot-phase-play" class="hidden w-full max-w-2xl">
+      <div id="slot-feed" class="text-center text-gray-300 mb-4 text-lg font-bold">Spinning...</div>
+      <div class="glass rounded-2xl p-6 border border-pink-500/30">
+        <div class="flex justify-center gap-3 mb-4" id="slot-reels"></div>
+        <div class="text-center text-xs text-gray-500">▼ LOSER LINE ▼</div>
+      </div>
+      <div id="slot-legend" class="legend-scroll mt-4"></div>
+    </div>
+    <div id="slot-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🎰</div><div class="text-2xl text-[#ec4899] font-bold mb-2">JACKPOT SURVIVOR</div><div id="slot-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<div id="bingo-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#0ea5e9] text-sm font-bold uppercase tracking-widest mb-2">🎱 Bingo Ball Drop</div><h1 class="text-4xl md:text-5xl font-black text-white">Last Ball Standing</h1></div>
+    <div id="bingo-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Shaking the drum...</div><div class="text-sm text-gray-600" id="bingo-intro-count"></div></div>
+    <div id="bingo-phase-play" class="hidden w-full max-w-4xl">
+      <div id="bingo-feed" class="text-center text-gray-300 mb-4 text-lg font-bold">Drawing balls...</div>
+      <div class="flex flex-col md:flex-row gap-6 items-start">
+        <div id="bingo-drum" class="glass rounded-full w-48 h-48 flex items-center justify-center text-6xl border-4 border-sky-500/40 mx-auto md:mx-0 shrink-0">🎱</div>
+        <div id="bingo-pool" class="flex-1 grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-80 overflow-y-auto"></div>
+      </div>
+    </div>
+    <div id="bingo-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🎱</div><div class="text-2xl text-[#0ea5e9] font-bold mb-2">LUCKY SURVIVOR</div><div id="bingo-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<div id="highcard-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#ef4444] text-sm font-bold uppercase tracking-widest mb-2">🃏 High Card Duel</div><h1 class="text-4xl md:text-5xl font-black text-white">Draw Or Die</h1></div>
+    <div id="highcard-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Shuffling deck...</div><div class="text-sm text-gray-600" id="highcard-intro-count"></div></div>
+    <div id="highcard-phase-play" class="hidden w-full max-w-3xl">
+      <div id="highcard-feed" class="text-center text-gray-300 mb-6 text-lg font-bold">Dealing...</div>
+      <div class="flex justify-center items-end gap-8 mb-6">
+        <div class="text-center"><div id="highcard-p1-name" class="text-xl font-bold text-white mb-2"></div><div id="highcard-p1-card" class="w-28 h-40 glass rounded-xl flex flex-col items-center justify-center text-4xl border-2 border-white/20">🂠</div></div>
+        <div class="text-3xl font-black text-[#ffd700] pb-16">VS</div>
+        <div class="text-center"><div id="highcard-p2-name" class="text-xl font-bold text-white mb-2"></div><div id="highcard-p2-card" class="w-28 h-40 glass rounded-xl flex flex-col items-center justify-center text-4xl border-2 border-white/20">🂠</div></div>
+      </div>
+      <div id="highcard-remaining" class="text-center text-sm text-gray-500"></div>
+    </div>
+    <div id="highcard-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🃏</div><div class="text-2xl text-[#ef4444] font-bold mb-2">HIGH CARD CHAMP</div><div id="highcard-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<div id="plinko-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div class="text-center mb-3"><div class="text-[#f97316] text-sm font-bold uppercase tracking-widest mb-2">🎪 Plinko Drop</div><h1 class="text-4xl md:text-5xl font-black text-white">Gravity Elimination</h1></div>
+    <div id="plinko-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Setting up pegs...</div><div class="text-sm text-gray-600" id="plinko-intro-count"></div></div>
+    <div id="plinko-phase-play" class="hidden w-full max-w-4xl"><canvas id="plinko-canvas" width="700" height="580" class="w-full rounded-2xl border border-orange-500/20"></canvas></div>
+    <div id="plinko-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🎪</div><div class="text-2xl text-[#f97316] font-bold mb-2">PLINKO SURVIVOR</div><div id="plinko-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<div id="thunder-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6 overflow-y-auto">
+    <div class="text-center mb-3"><div class="text-[#6366f1] text-sm font-bold uppercase tracking-widest mb-2">⚡ Thunder Judgment</div><h1 class="text-4xl md:text-5xl font-black text-white">Zeus Decides</h1></div>
+    <div id="thunder-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Storm clouds gathering...</div><div class="text-sm text-gray-600" id="thunder-intro-count"></div></div>
+    <div id="thunder-phase-play" class="hidden w-full max-w-5xl">
+      <div id="thunder-feed" class="text-center text-gray-300 mb-4 text-lg font-bold">Waiting for lightning...</div>
+      <div id="thunder-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
+    </div>
+    <div id="thunder-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">⚡</div><div class="text-2xl text-[#6366f1] font-bold mb-2">THUNDER SURVIVOR</div><div id="thunder-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
   </div>
 </div>
 
@@ -1596,6 +1672,11 @@ function launchWheelDoom() { openGamePopup('wheel'); }
 function launchCrystal() { openGamePopup('crystal'); }
 function launchWarp() { openGamePopup('warp'); }
 function launchStocks() { openGamePopup('stocks'); }
+function launchSlot() { openGamePopup('slot'); }
+function launchBingo() { openGamePopup('bingo'); }
+function launchHighCard() { openGamePopup('highcard'); }
+function launchPlinko() { openGamePopup('plinko'); }
+function launchThunder() { openGamePopup('thunder'); }
 
 
 
@@ -1666,7 +1747,12 @@ function copyLink(type) {
 }
 
 /* ==================== MINI GAME UTILITIES ==================== */
+function setDashboardBg(show) {
+  document.body.classList.toggle('game-mode', !show);
+}
+
 function showOverlay(id) {
+  setDashboardBg(false);
   document.querySelectorAll('[id$="-overlay"]').forEach(el => el.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
   currentOverlay = id;
@@ -6861,6 +6947,308 @@ function startStocks(names) {
   loop();
 }
 
+/* ==================== JACKPOT SLOTS ==================== */
+function runSlot() {
+  showOverlay('slot-overlay'); showPhase('slot', 'intro');
+  const names = Array.from(entrants);
+  if (!names.length) { alert('No entrants yet!'); return; }
+  document.getElementById('slot-intro-count').textContent = names.length + ' symbols on the reels — lowest spin gets eliminated';
+  setTimeout(() => startSlot(names), 1600);
+}
+function startSlot(names) {
+  showPhase('slot', 'play');
+  let remaining = [...names].sort(() => Math.random() - 0.5);
+  const feed = document.getElementById('slot-feed');
+  const reelsEl = document.getElementById('slot-reels');
+  document.getElementById('slot-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
+  const suits = ['♠','♥','♦','♣'];
+  let round = 0;
+
+  function renderReels(finals) {
+    reelsEl.innerHTML = [0, 1, 2].map(i => {
+      const sym = finals ? finals[i] : remaining[Math.floor(Math.random() * remaining.length)];
+      const c = colorFor(sym);
+      return `<div class="slot-reel w-28 h-36 glass rounded-xl flex flex-col items-center justify-center border-2 transition-all duration-300" style="border-color:${c}88">
+        <div class="text-3xl mb-1">${suits[i]}</div>
+        <div class="text-xs font-bold text-center px-1 truncate w-full" style="color:${c}">${escapeHtml(sym.substring(0, 10))}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function spinRound() {
+    if (remaining.length <= 1) {
+      showPhase('slot', 'winner');
+      document.getElementById('slot-winner-name').textContent = pickSingleWinner(remaining, names);
+      return;
+    }
+    round++;
+    feed.textContent = 'Round ' + round + ' — pulling lever...';
+    let ticks = 0;
+    const spinIv = setInterval(() => { renderReels(null); ticks++; }, 80);
+    setTimeout(() => {
+      clearInterval(spinIv);
+      const rolls = remaining.map(n => ({ name: n, val: Math.random() }));
+      rolls.sort((a, b) => a.val - b.val);
+      const loser = rolls[0].name;
+      const finals = [rolls[Math.floor(Math.random() * rolls.length)].name, loser, rolls[rolls.length - 1].name];
+      renderReels(finals);
+      reelsEl.children[1].style.borderColor = '#ff3366';
+      reelsEl.children[1].style.boxShadow = '0 0 30px rgba(255,51,102,0.6)';
+      reelsEl.children[1].style.transform = 'scale(1.08)';
+      feed.textContent = '🎰 JACKPOT FAIL! ' + loser + ' is OUT!';
+      remaining = remaining.filter(n => n !== loser);
+      setTimeout(spinRound, 2600);
+    }, 1800);
+  }
+  spinRound();
+}
+
+/* ==================== BINGO BALL DROP ==================== */
+function runBingo() {
+  showOverlay('bingo-overlay'); showPhase('bingo', 'intro');
+  const names = Array.from(entrants);
+  if (!names.length) { alert('No entrants yet!'); return; }
+  document.getElementById('bingo-intro-count').textContent = names.length + ' balls in the drum — drawn names are eliminated';
+  setTimeout(() => startBingo(names), 1600);
+}
+function startBingo(names) {
+  showPhase('bingo', 'play');
+  let remaining = [...names].sort(() => Math.random() - 0.5);
+  const pool = document.getElementById('bingo-pool');
+  const feed = document.getElementById('bingo-feed');
+  const drum = document.getElementById('bingo-drum');
+  let round = 0;
+
+  function renderPool() {
+    pool.innerHTML = remaining.map(n =>
+      `<div class="bingo-ball glass rounded-full py-3 px-2 text-center text-xs font-bold truncate transition-all" style="color:${colorFor(n)};border:2px solid ${colorFor(n)}55">🎱 ${escapeHtml(n.substring(0, 10))}</div>`
+    ).join('');
+  }
+  renderPool();
+
+  function drawBall() {
+    if (remaining.length <= 1) {
+      showPhase('bingo', 'winner');
+      document.getElementById('bingo-winner-name').textContent = pickSingleWinner(remaining, names);
+      return;
+    }
+    round++;
+    drum.style.transform = 'rotate(' + (round * 45) + 'deg) scale(1.05)';
+    feed.textContent = 'Round ' + round + ' — shaking drum...';
+    setTimeout(() => {
+      const pick = Math.floor(Math.random() * remaining.length);
+      const victim = remaining[pick];
+      drum.innerHTML = '<div class="text-center"><div class="text-4xl">🎱</div><div class="text-xs font-bold mt-1" style="color:' + colorFor(victim) + '">' + escapeHtml(victim.substring(0, 8)) + '</div></div>';
+      feed.textContent = '🎱 BALL #' + round + ': ' + victim + ' — ELIMINATED!';
+      remaining.splice(pick, 1);
+      drum.style.transform = '';
+      setTimeout(() => { drum.textContent = '🎱'; renderPool(); setTimeout(drawBall, 2000); }, 1400);
+    }, 1200);
+  }
+  setTimeout(drawBall, 800);
+}
+
+/* ==================== HIGH CARD DUEL ==================== */
+const HC_RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+const HC_SUITS = ['♠','♥','♦','♣'];
+function runHighCard() {
+  showOverlay('highcard-overlay'); showPhase('highcard', 'intro');
+  const names = Array.from(entrants);
+  if (!names.length) { alert('No entrants yet!'); return; }
+  document.getElementById('highcard-intro-count').textContent = names.length + ' players — lowest card loses each duel';
+  setTimeout(() => startHighCard(names), 1600);
+}
+function startHighCard(names) {
+  showPhase('highcard', 'play');
+  let remaining = [...names].sort(() => Math.random() - 0.5);
+  const feed = document.getElementById('highcard-feed');
+  const remEl = document.getElementById('highcard-remaining');
+  let round = 0;
+
+  function dealCard() {
+    const rank = Math.floor(Math.random() * 13);
+    const suit = HC_SUITS[Math.floor(Math.random() * 4)];
+    const red = suit === '♥' || suit === '♦';
+    return { rank, suit, label: rank === 9 ? '10' + suit : HC_RANKS[rank] + suit, color: red ? '#ef4444' : '#fff' };
+  }
+
+  function duelRound() {
+    if (remaining.length <= 1) {
+      showPhase('highcard', 'winner');
+      document.getElementById('highcard-winner-name').textContent = pickSingleWinner(remaining, names);
+      return;
+    }
+    round++;
+    const i1 = Math.floor(Math.random() * remaining.length);
+    let i2 = Math.floor(Math.random() * remaining.length);
+    while (i2 === i1 && remaining.length > 1) i2 = Math.floor(Math.random() * remaining.length);
+    const p1 = remaining[i1], p2 = remaining[i2];
+    document.getElementById('highcard-p1-name').textContent = p1;
+    document.getElementById('highcard-p2-name').textContent = p2;
+    document.getElementById('highcard-p1-card').innerHTML = '🂠';
+    document.getElementById('highcard-p2-card').innerHTML = '🂠';
+    remEl.textContent = remaining.length + ' players remaining';
+    feed.textContent = 'Round ' + round + ' — dealing...';
+
+    setTimeout(() => {
+      const c1 = dealCard(), c2 = dealCard();
+      document.getElementById('highcard-p1-card').innerHTML = `<div style="color:${c1.color}" class="text-3xl font-black">${c1.label}</div>`;
+      document.getElementById('highcard-p2-card').innerHTML = `<div style="color:${c2.color}" class="text-3xl font-black">${c2.label}</div>`;
+      if (c1.rank === c2.rank) {
+        feed.textContent = 'TIE! Re-dealing...';
+        setTimeout(duelRound, 1800);
+        return;
+      }
+      const loser = c1.rank < c2.rank ? p1 : p2;
+      const winner = c1.rank < c2.rank ? p2 : p1;
+      feed.textContent = '🃏 ' + loser + ' drew low — OUT! ' + winner + ' advances';
+      remaining = remaining.filter(n => n !== loser);
+      setTimeout(duelRound, 2800);
+    }, 1400);
+  }
+  duelRound();
+}
+
+/* ==================== PLINKO DROP ==================== */
+function runPlinko() {
+  showOverlay('plinko-overlay'); showPhase('plinko', 'intro');
+  const names = Array.from(entrants);
+  if (!names.length) { alert('No entrants yet!'); return; }
+  document.getElementById('plinko-intro-count').textContent = names.length + ' slots — ball lands on eliminated name each round';
+  setTimeout(() => startPlinko(names), 1600);
+}
+function startPlinko(names) {
+  showPhase('plinko', 'play');
+  const canvas = document.getElementById('plinko-canvas'); const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  let remaining = [...names].sort(() => Math.random() - 0.5);
+  const pegR = 5, rows = 10;
+  const pegs = [];
+  for (let r = 0; r < rows; r++) {
+    const cols = r + 3;
+    for (let c = 0; c < cols; c++) {
+      pegs.push({ x: W / 2 + (c - (cols - 1) / 2) * 36, y: 80 + r * 38 });
+    }
+  }
+  let ball = null, feed = '🎪 Dropping ball...', round = 0;
+
+  function slotX(i, n) { return (i + 0.5) * (W / n); }
+
+  function draw(n) {
+    ctx.fillStyle = '#0f0a08'; ctx.fillRect(0, 0, W, H);
+    pegs.forEach(p => { ctx.fillStyle = '#f97316'; ctx.beginPath(); ctx.arc(p.x, p.y, pegR, 0, Math.PI * 2); ctx.fill(); });
+    for (let i = 0; i < n; i++) {
+      const sx = slotX(i, n);
+      ctx.fillStyle = colorFor(remaining[i]) + '44';
+      ctx.strokeStyle = colorFor(remaining[i]);
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.roundRect(sx - W / n / 2 + 4, H - 70, W / n - 8, 50, 6); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center';
+      ctx.fillText(remaining[i].substring(0, 10), sx, H - 38);
+    }
+    if (ball) {
+      ctx.fillStyle = '#ffd700'; ctx.beginPath(); ctx.arc(ball.x, ball.y, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+    }
+    ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(10, 10, W - 20, 32, 8); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, 30);
+  }
+
+  function dropBall() {
+    if (remaining.length <= 1) {
+      showPhase('plinko', 'winner');
+      document.getElementById('plinko-winner-name').textContent = pickSingleWinner(remaining, names);
+      return;
+    }
+    round++;
+    feed = 'Round ' + round + ' — ball dropping...';
+    ball = { x: W / 2 + (Math.random() - 0.5) * 20, y: 20, vx: (Math.random() - 0.5) * 2, vy: 0 };
+    function sim() {
+      ball.vy += 0.35;
+      ball.x += ball.vx;
+      ball.y += ball.vy;
+      pegs.forEach(p => {
+        const dx = ball.x - p.x, dy = ball.y - p.y, dist = Math.hypot(dx, dy);
+        if (dist < pegR + 10) {
+          const ang = Math.atan2(dy, dx);
+          ball.vx = Math.cos(ang) * 4 + (Math.random() - 0.5) * 2;
+          ball.vy = Math.abs(Math.sin(ang) * 3);
+          ball.x = p.x + Math.cos(ang) * (pegR + 11);
+          ball.y = p.y + Math.sin(ang) * (pegR + 11);
+        }
+      });
+      if (ball.x < 12) { ball.x = 12; ball.vx *= -0.6; }
+      if (ball.x > W - 12) { ball.x = W - 12; ball.vx *= -0.6; }
+      draw(remaining.length);
+      if (ball.y >= H - 75) {
+        const slot = Math.max(0, Math.min(remaining.length - 1, Math.floor(ball.x / (W / remaining.length))));
+        const victim = remaining[slot];
+        feed = '🎪 PLINKO! ' + victim + ' got the slot — OUT!';
+        remaining.splice(slot, 1);
+        ball = null;
+        setTimeout(dropBall, 2400);
+        return;
+      }
+      requestAnimationFrame(sim);
+    }
+    sim();
+  }
+  dropBall();
+}
+
+/* ==================== THUNDER JUDGMENT ==================== */
+function runThunder() {
+  showOverlay('thunder-overlay'); showPhase('thunder', 'intro');
+  const names = Array.from(entrants);
+  if (!names.length) { alert('No entrants yet!'); return; }
+  document.getElementById('thunder-intro-count').textContent = names.length + ' mortals await judgment — lightning strikes one each round';
+  setTimeout(() => startThunder(names), 1600);
+}
+function startThunder(names) {
+  showPhase('thunder', 'play');
+  let remaining = [...names].sort(() => Math.random() - 0.5);
+  const grid = document.getElementById('thunder-grid');
+  const feed = document.getElementById('thunder-feed');
+  let round = 0;
+
+  function renderGrid() {
+    grid.innerHTML = remaining.map(n =>
+      `<div class="thunder-card glass rounded-xl p-4 text-center transition-all duration-300" style="border:2px solid ${colorFor(n)}55">
+        <div class="text-3xl mb-2">⚡</div>
+        <div class="text-sm font-bold truncate" style="color:${colorFor(n)}">${escapeHtml(n)}</div>
+      </div>`
+    ).join('');
+  }
+  renderGrid();
+
+  function strike() {
+    if (remaining.length <= 1) {
+      showPhase('thunder', 'winner');
+      document.getElementById('thunder-winner-name').textContent = pickSingleWinner(remaining, names);
+      return;
+    }
+    round++;
+    feed.textContent = 'Round ' + round + ' — clouds rumbling...';
+    grid.querySelectorAll('.thunder-card').forEach(el => { el.style.opacity = '0.7'; el.style.transform = 'scale(0.98)'; });
+    setTimeout(() => {
+      const pick = Math.floor(Math.random() * remaining.length);
+      const victim = remaining[pick];
+      const cards = grid.querySelectorAll('.thunder-card');
+      if (cards[pick]) {
+        cards[pick].style.background = 'linear-gradient(180deg,#6366f1,#312e81)';
+        cards[pick].style.borderColor = '#ffd700';
+        cards[pick].style.boxShadow = '0 0 40px rgba(99,102,241,0.8)';
+        cards[pick].style.transform = 'scale(1.1)';
+        cards[pick].innerHTML = '<div class="text-5xl animate-pulse">⚡</div><div class="text-xs font-bold text-[#ffd700]">SMITED!</div><div class="text-[10px] text-gray-300">' + escapeHtml(victim) + '</div>';
+      }
+      feed.textContent = '⚡ ZEUS STRIKES ' + victim + '!';
+      remaining.splice(pick, 1);
+      setTimeout(() => { renderGrid(); setTimeout(strike, 2200); }, 1600);
+    }, 1400);
+  }
+  setTimeout(strike, 1000);
+}
+
 /* ==================== SWORD DUEL (1v1 launcher) ==================== */
 function runSwordDuel() {
   const names = Array.from(entrants);
@@ -6881,6 +7269,7 @@ function launchSwordWith(p1Name, p2Name) {
   const game = params.get('game');
 
   if (game) {
+    setDashboardBg(false);
     const saved = localStorage.getItem('giveaway_entrants');
     if (saved) { try { JSON.parse(saved).forEach(n => entrants.add(n)); } catch(e){} }
     giveawayTitle = localStorage.getItem('giveaway_title') || 'Giveaway';
@@ -6943,6 +7332,11 @@ function launchSwordWith(p1Name, p2Name) {
       else if (game === 'crystal') runCrystal();
       else if (game === 'warp') runWarp();
       else if (game === 'stocks') runStocks();
+      else if (game === 'slot') runSlot();
+      else if (game === 'bingo') runBingo();
+      else if (game === 'highcard') runHighCard();
+      else if (game === 'plinko') runPlinko();
+      else if (game === 'thunder') runThunder();
       else if (game === 'boxing') runBoxingMatch();
       else if (game === 'sword') runSwordDuel();
     }, 200);
@@ -6950,6 +7344,7 @@ function launchSwordWith(p1Name, p2Name) {
   }
 
   if (params.get('overlay') === '1') {
+    setDashboardBg(false);
     document.getElementById('setup-screen').classList.add('hidden');
     document.getElementById('dashboard-screen').classList.add('hidden');
     document.getElementById('game-overlay').classList.remove('hidden');
@@ -6959,6 +7354,7 @@ function launchSwordWith(p1Name, p2Name) {
   }
 
   if (params.get('race')) {
+    setDashboardBg(false);
     document.getElementById('setup-screen').classList.add('hidden');
     document.getElementById('dashboard-screen').classList.add('hidden');
     const p1 = params.get('p1') || 'Player 1';
