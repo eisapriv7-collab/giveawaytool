@@ -252,7 +252,7 @@
         <button onclick="launchFlush()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#38bdf8,#1e40af);">🚽 Flush Royale</button>
         <button onclick="launchTwerk()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#ec4899,#7c3aed);">🍑 Twerk Shake Royale</button>
       </div>
-      <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2 mt-2">Chaos Sims — 60 Second Mayhem (Streamer Watches)</div>
+      <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2 mt-2">Chaos Sims — 60 Second Insanity 🔥</div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <button onclick="launchChicken()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#fbbf24,#b45309);color:#1c1917;">🐔 Chicken Survival</button>
         <button onclick="launchBombRoulette()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#ef4444,#7f1d1d);">🧨 Bomb Roulette</button>
@@ -9408,6 +9408,44 @@ function startTwerk(names) {
 
 /* ==================== CHAOS SIMS (60s auto-watch) ==================== */
 const SIM60 = 60;
+const SIM_GAGS = {
+  chicken: ['CLUCK NO!','TRIPPED!','GULPED!','NUGGETED!','CORN BLOCKED!','BROILIN!'],
+  bomb: ['BOOM!','RIP!','GG!','NOT ME!','WHY ME?!','KABOOM!'],
+  swarm: ['STUNG!','BZZZT!','ALLERGIC!','HIVE MIND!','NOT THE FACE!'],
+  chair: ['YEETED!','NO SEAT!','FLYING!','BONK!','CHAIR WARS!'],
+  magnet: ['SQUISH!','MERGED!','CRUNCH!','TOO CLOSE!','MAGNETED!'],
+  duck: ['YEETED!','SNATCHED!','CRUSHED!','QUACK NO!','BREADED!'],
+  rat: ['CAUGHT!','SWEPT!','SPLAT!','MEOW NO!','TRAPPED!'],
+  toilet: ['FLUSHED!','DRENCHED!','DIZZY!','BOOM!','SKIBIDI!'],
+  stamina: ['TAPPED OUT!','WHEEZING!','DONE!','CANT!','NO MORE!']
+};
+function simMakeFX() { return { parts: [], texts: [], shake: 0, flash: 0, flashCol: '#fff' }; }
+function simBurst(fx, x, y, col, n, spd) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2;
+    fx.parts.push({ x, y, vx: Math.cos(a) * spd * (0.5 + Math.random()), vy: Math.sin(a) * spd * (0.5 + Math.random()) - 2, r: 2 + Math.random() * 5, life: 1, col: col || '#fff' });
+  }
+  fx.shake = Math.max(fx.shake, Math.min(18, spd));
+}
+function simPopText(fx, x, y, txt, col, sz) {
+  fx.texts.push({ x, y, txt, col: col || '#fff', sz: sz || 16, life: 1, vy: -1.2 - Math.random() });
+}
+function simTickFX(fx) {
+  fx.parts.forEach(p => { p.x += p.vx; p.y += p.vy; p.vy += 0.18; p.life -= 0.028; });
+  fx.parts = fx.parts.filter(p => p.life > 0);
+  fx.texts.forEach(t => { t.y += t.vy; t.life -= 0.022; });
+  fx.texts = fx.texts.filter(t => t.life > 0);
+  fx.shake *= 0.88; if (fx.flash > 0) fx.flash -= 0.06;
+}
+function simDrawFX(ctx, fx, W, H) {
+  fx.parts.forEach(p => { ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.col; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill(); });
+  fx.texts.forEach(t => { ctx.globalAlpha = Math.max(0, t.life); drawGagText(ctx, t.x, t.y, t.txt, t.col, t.sz); });
+  ctx.globalAlpha = 1;
+  if (fx.flash > 0) { ctx.fillStyle = fx.flashCol.replace(')', ',' + fx.flash * 0.35 + ')').replace('rgb', 'rgba').replace('#', ''); if (fx.flashCol[0] === '#') { ctx.fillStyle = fx.flashCol; ctx.globalAlpha = fx.flash * 0.35; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; } }
+  if (fx.flashCol[0] === '#') { ctx.globalAlpha = fx.flash * 0.3; ctx.fillStyle = fx.flashCol; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
+}
+function simChaosMult(elapsed) { return elapsed >= 50 ? 2.5 : elapsed >= 35 ? 1.8 : elapsed >= 15 ? 1.3 : 1; }
+function simPickGag(key) { const g = SIM_GAGS[key]; return g[Math.floor(Math.random() * g.length)]; }
 function simSpawn(names, W, H, pad) {
   return names.map((name, i) => ({
     name, color: colorFor(name), alive: true, r: 14,
@@ -9454,16 +9492,21 @@ function simWinnerLabel(players, names) {
 }
 function simDrawHUD(ctx, W, H, frame, alive, feed, accent, chaos) {
   const elapsed = frame / 60;
-  ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, 10, 200, 30, 8); ctx.fill();
+  const pulse = 0.5 + Math.sin(frame * 0.12) * 0.5;
+  ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.beginPath(); ctx.roundRect(10, 10, 200, 30, 8); ctx.fill();
   ctx.fillStyle = accent; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left';
-  ctx.fillText('ALIVE: ' + alive, 20, 30);
+  ctx.fillText('🔥 ALIVE: ' + alive, 20, 30);
   const tw = W - 220;
-  ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(W / 2 - tw / 2, 10, tw, 12, 6); ctx.fill();
-  ctx.fillStyle = accent; ctx.beginPath(); ctx.roundRect(W / 2 - tw / 2 + 2, 12, (tw - 4) * Math.min(1, elapsed / SIM60), 8, 4); ctx.fill();
-  ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 9px Inter'; ctx.textAlign = 'center';
-  ctx.fillText(Math.floor(elapsed) + 's / ' + SIM60 + 's' + (chaos ? ' CHAOS!' : ''), W / 2, 8);
-  ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 34, W - 20, 26, 8); ctx.fill();
-  ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, H - 16);
+  ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.beginPath(); ctx.roundRect(W / 2 - tw / 2, 10, tw, 14, 7); ctx.fill();
+  const pct = Math.min(1, elapsed / SIM60);
+  const tg = ctx.createLinearGradient(W / 2 - tw / 2, 0, W / 2 + tw / 2, 0);
+  tg.addColorStop(0, accent); tg.addColorStop(1, chaos ? '#ef4444' : accent);
+  ctx.fillStyle = tg; ctx.beginPath(); ctx.roundRect(W / 2 - tw / 2 + 2, 12, (tw - 4) * pct, 10, 5); ctx.fill();
+  ctx.fillStyle = chaos ? '#fca5a5' : '#94a3b8'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center';
+  ctx.fillText(Math.floor(elapsed) + 's / ' + SIM60 + 's' + (chaos ? ' — CHAOS MODE!' : ''), W / 2, 8);
+  if (chaos) { ctx.fillStyle = `rgba(239,68,68,${0.12 + pulse * 0.15})`; ctx.font = 'bold 28px Inter'; ctx.fillText('🔥 CHAOS 🔥', W / 2, 58); }
+  ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.beginPath(); ctx.roundRect(10, H - 36, W - 20, 28, 8); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'center'; ctx.fillText(feed, W / 2, H - 17);
 }
 function simFinish(prefix, players, names, animId) {
   cancelAnimationFrame(animId);
@@ -9529,56 +9572,58 @@ function drawSimToilet(ctx, x, y, sc, evt) {
 function runChicken() { simRun('chicken', Array.from(entrants), '#fbbf24', startChicken); }
 function startChicken(names) {
   const canvas = document.getElementById('chicken-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, pad = 50;
-  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🐔 Chickens released!', animId;
-  let giant = { x: W / 2, y: H / 2, active: false, t: 0 };
-  let elimTimer = 0, chaos = false;
+  const W = canvas.width, H = canvas.height, pad = 45;
+  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🐔 THE FLOCK HAS LOST ITS MIND!', animId;
+  let fx = simMakeFX(), giants = [], elimTimer = 0, corn = [];
+  for (let i = 0; i < 8; i++) corn.push({ x: pad + Math.random() * (W - pad * 2), y: pad + Math.random() * (H - pad * 2), r: 8 });
   function loop() {
-    frame++; const elapsed = frame / 60;
-    if (elapsed >= 50) chaos = true;
+    frame++; const elapsed = frame / 60, chaos = elapsed >= 50, cm = simChaosMult(elapsed);
     if (elapsed >= SIM60) { simFinish('chicken', players, names, animId); return; }
     elimTimer++;
-    const elimInt = chaos ? 45 : 300;
-    if (elimTimer >= elimInt) {
+    if (elimTimer >= (chaos ? 35 : 280 / cm)) {
       elimTimer = 0;
       const alive = players.filter(p => p.alive);
-      const n = chaos ? Math.min(3, alive.length - 1) : Math.min(3, Math.max(1, 1 + Math.floor(Math.random() * 3)));
+      const n = Math.min(chaos ? 3 : 2, Math.max(1, alive.length - 1));
       for (let k = 0; k < n && alive.length > 1; k++) {
         const v = alive.splice(Math.floor(Math.random() * alive.length), 1)[0];
-        v.alive = false; v.elimX = v.x; v.elimY = v.y; v.gag = ['CLUCK NO!','TRIPPED!','CAUGHT!'][k % 3]; v.gagTimer = 50;
-        feed = '🐔 ' + v.name + ' eliminated!';
+        v.alive = false; v.elimX = v.x; v.elimY = v.y; v.gag = simPickGag('chicken'); v.gagTimer = 65;
+        simBurst(fx, v.x, v.y, '#fbbf24', 20, 8); simPopText(fx, v.x, v.y - 20, v.gag, '#ef4444', 14);
+        feed = '🐔 ' + v.name + ' — ' + v.gag;
       }
     }
-    if (Math.random() < (chaos ? 0.04 : 0.008)) { giant.active = true; giant.t = 80; feed = '🐔 GIANT CHICKEN CHASE!'; }
-    if (giant.active) {
-      giant.t--;
-      const tgt = players.find(p => p.alive);
-      if (tgt) { const dx = tgt.x - giant.x, dy = tgt.y - giant.y, d = Math.hypot(dx, dy) || 1; giant.x += dx / d * (chaos ? 4.5 : 2.5); giant.y += dy / d * (chaos ? 4.5 : 2.5); if (d < 35) { tgt.alive = false; tgt.elimX = tgt.x; tgt.elimY = tgt.y; tgt.gag = 'GULPED!'; tgt.gagTimer = 55; feed = '🐔 ' + tgt.name + ' got caught!'; } }
-      if (giant.t <= 0) giant.active = false;
+    if (Math.random() < 0.025 * cm) {
+      giants.push({ x: -60, y: Math.random() * H, t: 100, spd: 3 + cm });
+      feed = '🐔 MEGA CHICKEN INCOMING!!';
     }
+    giants.forEach(g => {
+      g.t--; g.x += g.spd;
+      const tgt = players.filter(p => p.alive).sort((a, b) => a.x - b.x)[0];
+      if (tgt) { g.y += (tgt.y - g.y) * 0.04; if (Math.hypot(g.x - tgt.x, g.y - tgt.y) < 45) { tgt.alive = false; tgt.elimX = tgt.x; tgt.elimY = tgt.y; tgt.gag = 'GULPED!'; tgt.gagTimer = 60; simBurst(fx, tgt.x, tgt.y, '#ef4444', 25, 10); feed = '🐔 ' + tgt.name + ' GOT GULPED!'; } }
+    });
+    giants = giants.filter(g => g.t > 0 && g.x < W + 80);
     players.forEach(p => {
       if (!p.alive) { if (p.gagTimer > 0) p.gagTimer--; return; }
       p.stateT++;
-      if (p.state === 'trip' && p.stateT > 40) { p.state = 'move'; p.stateT = 0; }
-      else if (p.state === 'eat' && p.stateT > 55) { p.state = 'move'; p.stateT = 0; }
-      else if (p.state === 'move') {
-        if (Math.random() < (chaos ? 0.025 : 0.006)) { p.state = Math.random() < 0.5 ? 'trip' : 'eat'; p.stateT = 0; p.vx *= 0.2; p.vy *= 0.2; return; }
-        if (Math.random() < 0.03) { p.vx = (Math.random() - 0.5) * (chaos ? 6 : 3.5); p.vy = (Math.random() - 0.5) * (chaos ? 6 : 3.5); }
-        if (giant.active) { p.vx += (p.x - giant.x) * 0.02; p.vy += (p.y - giant.y) * 0.02; }
-        p.x += p.vx; p.y += p.vy; p.vx *= 0.96; p.vy *= 0.96;
-        simBounce(p, W, H, pad);
-      } else if (p.state === 'trip') { p.vx *= 0.9; p.vy *= 0.9; p.x += p.vx; p.y += p.vy; }
+      if (p.state === 'trip') { p.rot = (p.rot || 0) + 0.2; p.vx *= 0.92; p.vy *= 0.92; p.x += p.vx; p.y += p.vy; if (p.stateT > 35) { p.state = 'move'; p.stateT = 0; p.rot = 0; } return; }
+      if (p.state === 'eat') { if (p.stateT > 40) { p.state = 'move'; p.stateT = 0; } return; }
+      if (Math.random() < 0.018 * cm) { p.state = Math.random() < 0.55 ? 'trip' : 'eat'; p.stateT = 0; simPopText(fx, p.x, p.y - 15, p.state === 'trip' ? 'TRIP!' : 'NOM!', '#fbbf24', 12); return; }
+      giants.forEach(g => { if (Math.hypot(g.x - p.x, g.y - p.y) < 200) { p.vx += (p.x - g.x) * 0.025; p.vy += (p.y - g.y) * 0.025; } });
+      if (Math.random() < 0.05) { p.vx = (Math.random() - 0.5) * 5 * cm; p.vy = (Math.random() - 0.5) * 5 * cm; }
+      p.x += p.vx; p.y += p.vy; p.vx *= 0.95; p.vy *= 0.95; simBounce(p, W, H, pad);
     });
-    simCollide(players);
-    ctx.fillStyle = '#14532d'; ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = 'rgba(34,197,94,0.15)'; for (let i = 0; i < 20; i++) ctx.fillRect((i * 97 + frame) % W, H - 80, 40, 80);
-    if (giant.active) { ctx.font = '80px serif'; ctx.textAlign = 'center'; ctx.fillText('🐔', giant.x, giant.y + 20); }
+    simCollide(players); simTickFX(fx);
+    const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#166534'); bg.addColorStop(1, '#14532d');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(34,197,94,0.2)'; for (let i = 0; i < 25; i++) ctx.fillRect((i * 83 + frame * 2) % W, H - 90, 50, 90);
+    corn.forEach(c => { ctx.font = '18px serif'; ctx.textAlign = 'center'; ctx.fillText('🌽', c.x, c.y); });
+    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
+    giants.forEach(g => { ctx.font = (70 + cm * 10) + 'px serif'; ctx.textAlign = 'center'; ctx.fillText('🐔', g.x, g.y); drawGagText(ctx, g.x, g.y - 50, 'RUN!!', '#ef4444', 16); });
     players.forEach(p => {
-      if (!p.alive) { ctx.globalAlpha = 0.35; drawChicken(ctx, p.elimX, p.elimY, 12, p.color, { phase: frame * 0.1 }); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 28, p.gag, '#fbbf24', 11); return; }
-      drawChicken(ctx, p.x, p.y, 14, p.color, { phase: frame * 0.15, eating: p.state === 'eat', tripped: p.state === 'trip', rot: p.state === 'trip' ? 0.8 : 0 });
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 9px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 28);
+      if (!p.alive) { ctx.globalAlpha = 0.3; drawChicken(ctx, p.elimX, p.elimY, 13, p.color, { phase: frame * 0.1 }); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 32, p.gag, '#fbbf24', 13); return; }
+      drawChicken(ctx, p.x, p.y, 15, p.color, { phase: frame * 0.2, eating: p.state === 'eat', tripped: p.state === 'trip', rot: p.rot || 0 });
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 30);
     });
-    if (chaos) { ctx.fillStyle = 'rgba(239,68,68,0.2)'; ctx.font = 'bold 32px Inter'; ctx.textAlign = 'center'; ctx.fillText('🐔 CHAOS!', W / 2, 50); }
+    simDrawFX(ctx, fx, W, H); ctx.restore();
     simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#fbbf24', chaos);
     animId = requestAnimationFrame(loop);
   }
@@ -9589,14 +9634,13 @@ function runBombRoulette() { simRun('bomb', Array.from(entrants), '#ef4444', sta
 function startBombRoulette(names) {
   const canvas = document.getElementById('bomb-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height, pad = 55, cx = W / 2, cy = H / 2;
-  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🧨 Bomb incoming!', animId;
-  let bomb = null, boomFX = 0, bombRespawn = 0;
+  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🧨 WHO HAS THE BOMB?!', animId;
+  let bomb = null, fx = simMakeFX(), bombRespawn = 0, shockwave = 0;
   function placeCircle() {
-    const alive = players.filter(p => p.alive);
-    alive.forEach((p, i) => {
-      const ang = (i / alive.length) * Math.PI * 2 - Math.PI / 2;
-      const rad = Math.min(W, H) * 0.32;
-      p.x = cx + Math.cos(ang) * rad; p.y = cy + Math.sin(ang) * rad;
+    players.filter(p => p.alive).forEach((p, i, arr) => {
+      const ang = (i / arr.length) * Math.PI * 2 - Math.PI / 2;
+      p.x = cx + Math.cos(ang) * Math.min(W, H) * 0.32;
+      p.y = cy + Math.sin(ang) * Math.min(W, H) * 0.32;
       p.vx = 0; p.vy = 0;
     });
   }
@@ -9604,40 +9648,68 @@ function startBombRoulette(names) {
   function newBomb() {
     const alive = players.filter(p => p.alive);
     if (alive.length <= 1) return;
-    bomb = { target: alive[Math.floor(Math.random() * alive.length)], count: 5 + Math.floor(Math.random() * 2), jumpT: 0 };
+    bomb = { target: alive[Math.floor(Math.random() * alive.length)], count: 5, jumpT: 0, pulse: 0 };
+    simPopText(fx, cx, cy - 80, 'NEW BOMB!', '#ef4444', 20);
   }
   newBomb();
   function loop() {
-    frame++;
-    if (frame / 60 >= SIM60) { simFinish('bomb', players, names, animId); return; }
+    frame++; const elapsed = frame / 60, cm = simChaosMult(elapsed);
+    if (elapsed >= SIM60) { simFinish('bomb', players, names, animId); return; }
     if (bombRespawn > 0) bombRespawn--;
     if (bomb) {
-      bomb.jumpT++;
-      if (bomb.jumpT % 45 === 0 && bomb.count > 1 && Math.random() < 0.55) {
+      bomb.jumpT++; bomb.pulse += 0.2;
+      if (bomb.count <= 3 && bomb.jumpT % 15 === 0) fx.shake = 4 + (5 - bomb.count);
+      if (bomb.jumpT % Math.max(20, 50 - cm * 10) === 0 && bomb.count > 1) {
         const alive = players.filter(p => p.alive && p !== bomb.target);
-        if (alive.length) { bomb.target = alive[Math.floor(Math.random() * alive.length)]; feed = '🧨 Bomb jumped to ' + bomb.target.name + '!'; }
+        if (alive.length) {
+          const old = bomb.target.name;
+          bomb.target = alive[Math.floor(Math.random() * alive.length)];
+          feed = '🧨 ' + old + ' passed to ' + bomb.target.name + '!';
+          simPopText(fx, bomb.target.x, bomb.target.y - 40, 'CAUGHT IT!', '#fbbf24', 14);
+        }
       }
-      if (bomb.jumpT >= 60) { bomb.count--; bomb.jumpT = 0; if (bomb.count <= 0) {
-        bomb.target.alive = false; bomb.target.elimX = bomb.target.x; bomb.target.elimY = bomb.target.y;
-        bomb.target.gag = 'BOOM!'; bomb.target.gagTimer = 60; boomFX = 25;
-        feed = '💥 ' + bomb.target.name + ' EXPLODED!';
-        bomb = null; bombRespawn = 50;
-      }}
+      if (bomb.jumpT >= Math.max(35, 55 - cm * 8)) {
+        bomb.count--; bomb.jumpT = 0;
+        if (bomb.count <= 0) {
+          bomb.target.alive = false; bomb.target.elimX = bomb.target.x; bomb.target.elimY = bomb.target.y;
+          bomb.target.gag = simPickGag('bomb'); bomb.target.gagTimer = 70;
+          simBurst(fx, bomb.target.x, bomb.target.y, '#ef4444', 40, 12);
+          simPopText(fx, bomb.target.x, bomb.target.y - 30, '💥 BOOM!', '#fff', 22);
+          fx.flash = 1; fx.flashCol = '#ef4444'; shockwave = 1; feed = '💥 ' + bomb.target.name + ' EXPLODED!!';
+          bomb = null; bombRespawn = Math.max(25, 45 - cm * 10); placeCircle();
+        }
+      }
+      players.forEach(p => {
+        if (!p.alive || p === bomb.target) return;
+        const d = Math.hypot(p.x - bomb.target.x, p.y - bomb.target.y);
+        if (d < 120) { p.vx += (p.x - bomb.target.x) / d * 0.4; p.vy += (p.y - bomb.target.y) / d * 0.4; }
+      });
     } else if (bombRespawn <= 0 && players.filter(p => p.alive).length > 1) newBomb();
-    if (boomFX > 0) boomFX--;
-    ctx.fillStyle = '#1a0505'; ctx.fillRect(0, 0, W, H);
-    ctx.strokeStyle = 'rgba(239,68,68,0.3)'; ctx.beginPath(); ctx.arc(cx, cy, Math.min(W, H) * 0.34, 0, Math.PI * 2); ctx.stroke();
+    if (shockwave > 0) shockwave += 0.04;
+    simTickFX(fx);
+    ctx.fillStyle = '#0f0202'; ctx.fillRect(0, 0, W, H);
+    const rg = ctx.createRadialGradient(cx, cy, 20, cx, cy, Math.min(W, H) * 0.45);
+    rg.addColorStop(0, 'rgba(239,68,68,0.15)'); rg.addColorStop(1, 'transparent');
+    ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(239,68,68,0.4)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, cy, Math.min(W, H) * 0.34, 0, Math.PI * 2); ctx.stroke();
+    if (shockwave > 0 && shockwave < 1.2) {
+      ctx.strokeStyle = `rgba(239,68,68,${1 - shockwave})`; ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.arc(bomb ? bomb.target.x : cx, bomb ? bomb.target.y : cy, shockwave * 120, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
     players.forEach(p => {
-      if (!p.alive) { ctx.globalAlpha = 0.3; drawMiniCharacter(ctx, p.elimX, p.elimY, 12, p.color, { faded: true }); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 30, p.gag, '#ef4444', 12); return; }
-      drawMiniCharacter(ctx, p.x, p.y, 14, p.color, { phase: frame * 0.1 });
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 9px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 30);
-      if (bomb && bomb.target === p) {
-        ctx.font = '36px Inter'; ctx.fillText('🧨', p.x, p.y - 48);
-        if (bomb.count <= 3) { ctx.fillStyle = '#ef4444'; ctx.font = 'bold 22px Inter'; ctx.fillText(bomb.count, p.x, p.y - 72); }
+      if (!p.alive) { ctx.globalAlpha = 0.25; drawMiniCharacter(ctx, p.elimX, p.elimY, 13, p.color, { faded: true }); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 34, p.gag, '#ef4444', 14); return; }
+      const panic = bomb && bomb.target === p;
+      drawMiniCharacter(ctx, p.x, p.y, 15, p.color, { phase: frame * 0.15, armSwing: panic ? Math.sin(frame * 0.6) * 16 : 4 });
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 32);
+      if (panic) {
+        ctx.font = (40 + Math.sin(bomb.pulse) * 8) + 'px serif'; ctx.fillText('🧨', p.x, p.y - 52);
+        ctx.fillStyle = bomb.count <= 2 ? '#ef4444' : '#fbbf24'; ctx.font = 'bold ' + (28 + Math.sin(frame * 0.4) * 4) + 'px Inter';
+        ctx.fillText(bomb.count, p.x, p.y - 82);
       }
     });
-    if (boomFX > 0) { ctx.fillStyle = `rgba(239,68,68,${boomFX / 25 * 0.5})`; ctx.fillRect(0, 0, W, H); }
-    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#ef4444', false);
+    simDrawFX(ctx, fx, W, H); ctx.restore();
+    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#ef4444', elapsed >= 45);
     animId = requestAnimationFrame(loop);
   }
   animId = requestAnimationFrame(loop);
@@ -9646,51 +9718,60 @@ function startBombRoulette(names) {
 function runSwarm() { simRun('swarm', Array.from(entrants), '#facc15', startSwarm); }
 function startSwarm(names) {
   const canvas = document.getElementById('swarm-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, pad = 50;
-  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🐝 Swarm hunting...', animId;
-  let target = null, bees = [], attackT = 0, attackDur = 0;
+  const W = canvas.width, H = canvas.height, pad = 45;
+  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🐝 THE HIVE IS ANGRY!', animId;
+  let target = null, bees = [], attackT = 0, attackDur = 0, fx = simMakeFX();
   function pickTarget() {
     const alive = players.filter(p => p.alive);
     if (!alive.length) return;
     target = alive[Math.floor(Math.random() * alive.length)];
-    attackDur = 120 + Math.floor(Math.random() * 90);
+    attackDur = 90 + Math.floor(Math.random() * 60);
     attackT = 0;
-    bees = Array.from({ length: 8 }, () => ({ x: target.x + (Math.random() - 0.5) * 80, y: target.y + (Math.random() - 0.5) * 80, vx: 0, vy: 0, buzz: Math.random() * 6 }));
-    feed = '🐝 → ' + target.name + ' is being attacked!';
+    bees = Array.from({ length: 18 }, () => ({ x: target.x + (Math.random() - 0.5) * 120, y: target.y + (Math.random() - 0.5) * 120, vx: 0, vy: 0, buzz: Math.random() * 6 }));
+    feed = '🐝 → ' + target.name + ' IS THE TARGET!!';
+    simPopText(fx, target.x, target.y - 30, 'RUN!!!', '#ef4444', 18);
   }
   pickTarget();
   function loop() {
-    frame++;
-    if (frame / 60 >= SIM60) { simFinish('swarm', players, names, animId); return; }
+    frame++; const elapsed = frame / 60, cm = simChaosMult(elapsed);
+    if (elapsed >= SIM60) { simFinish('swarm', players, names, animId); return; }
     attackT++;
-    if (attackT >= attackDur) { pickTarget(); }
-    if (attackT > attackDur - 20 && Math.random() < 0.08 && target && target.alive) {
-      target.alive = false; target.elimX = target.x; target.elimY = target.y; target.gag = 'STUNG!'; target.gagTimer = 55;
-      feed = '🐝 ' + target.name + ' eliminated!'; pickTarget();
+    if (attackT >= attackDur) pickTarget();
+    if (attackT > attackDur * 0.65 && Math.random() < 0.06 * cm && target && target.alive) {
+      target.alive = false; target.elimX = target.x; target.elimY = target.y;
+      target.gag = simPickGag('swarm'); target.gagTimer = 65;
+      simBurst(fx, target.x, target.y, '#facc15', 25, 9); fx.flash = 0.6; fx.flashCol = '#fef08a';
+      feed = '🐝 ' + target.name + ' — ' + target.gag; pickTarget();
     }
     players.forEach(p => {
       if (!p.alive) { if (p.gagTimer > 0) p.gagTimer--; return; }
-      const panic = target === p ? 1.8 : 1;
-      if (Math.random() < 0.04) { p.vx = (Math.random() - 0.5) * 5 * panic; p.vy = (Math.random() - 0.5) * 5 * panic; }
-      if (target === p) { p.vx += (Math.random() - 0.5) * 0.8; p.vy += (Math.random() - 0.5) * 0.8; }
-      p.x += p.vx; p.y += p.vy; p.vx *= 0.94; p.vy *= 0.94; simBounce(p, W, H, pad);
+      const panic = target === p ? 2.5 * cm : 1;
+      if (Math.random() < 0.06) { p.vx = (Math.random() - 0.5) * 7 * panic; p.vy = (Math.random() - 0.5) * 7 * panic; }
+      if (target === p) { p.vx += (Math.random() - 0.5) * 1.2; p.vy += (Math.random() - 0.5) * 1.2; }
+      else if (target) { const d = Math.hypot(p.x - target.x, p.y - target.y); if (d < 100) { p.vx += (p.x - target.x) / d * 0.3; p.vy += (p.y - target.y) / d * 0.3; } }
+      p.x += p.vx; p.y += p.vy; p.vx *= 0.93; p.vy *= 0.93; simBounce(p, W, H, pad);
     });
     if (target && target.alive) bees.forEach(b => {
       const dx = target.x - b.x, dy = target.y - b.y, d = Math.hypot(dx, dy) || 1;
-      b.vx += dx / d * 0.35; b.vy += dy / d * 0.35; b.buzz += 0.2;
-      b.vx += Math.sin(b.buzz) * 0.15; b.vy += Math.cos(b.buzz) * 0.15;
-      b.vx *= 0.9; b.vy *= 0.9; b.x += b.vx; b.y += b.vy;
+      b.vx += dx / d * 0.5; b.vy += dy / d * 0.5; b.buzz += 0.25;
+      b.vx += Math.sin(b.buzz) * 0.2; b.vy += Math.cos(b.buzz * 1.2) * 0.2;
+      b.vx *= 0.88; b.vy *= 0.88; b.x += b.vx; b.y += b.vy;
     });
-    ctx.fillStyle = '#fef9c3'; ctx.fillRect(0, 0, W, H);
-    ctx.strokeStyle = '#ca8a04'; ctx.strokeRect(pad, pad, W - pad * 2, H - pad * 2);
-    bees.forEach(b => { ctx.font = '16px serif'; ctx.textAlign = 'center'; ctx.fillText('🐝', b.x, b.y); });
+    simTickFX(fx);
+    const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#fef08a'); bg.addColorStop(1, '#fde047');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 4; ctx.strokeRect(pad, pad, W - pad * 2, H - pad * 2);
+    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
+    bees.forEach(b => { ctx.font = '18px serif'; ctx.textAlign = 'center'; ctx.fillText('🐝', b.x, b.y); });
+    if (target && target.alive) { ctx.strokeStyle = 'rgba(239,68,68,0.5)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(target.x, target.y, 50 + Math.sin(frame * 0.2) * 10, 0, Math.PI * 2); ctx.stroke(); }
     players.forEach(p => {
-      if (!p.alive) { ctx.globalAlpha = 0.35; drawMiniCharacter(ctx, p.elimX, p.elimY, 12, p.color); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 28, p.gag, '#ca8a04', 11); return; }
-      drawMiniCharacter(ctx, p.x, p.y, 14, p.color, { phase: frame * 0.2, armSwing: target === p ? Math.sin(frame * 0.5) * 14 : 4 });
-      ctx.fillStyle = '#422006'; ctx.font = 'bold 9px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 30);
-      if (target === p) drawGagText(ctx, p.x, p.y - 44, 'AHHH!', '#ef4444', 12);
+      if (!p.alive) { ctx.globalAlpha = 0.3; drawMiniCharacter(ctx, p.elimX, p.elimY, 13, p.color); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 32, p.gag, '#ca8a04', 13); return; }
+      drawMiniCharacter(ctx, p.x, p.y, 15, p.color, { phase: frame * 0.25, armSwing: target === p ? Math.sin(frame * 0.55) * 18 : 5 });
+      ctx.fillStyle = '#422006'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 32);
+      if (target === p) drawGagText(ctx, p.x, p.y - 48, 'AHHHHH!!', '#ef4444', 15);
     });
-    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#ca8a04', false);
+    simDrawFX(ctx, fx, W, H); ctx.restore();
+    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#ca8a04', elapsed >= 45);
     animId = requestAnimationFrame(loop);
   }
   animId = requestAnimationFrame(loop);
@@ -9699,65 +9780,79 @@ function startSwarm(names) {
 function runChairApoc() { simRun('chairapoc', Array.from(entrants), '#a855f7', startChairApoc); }
 function startChairApoc(names) {
   const canvas = document.getElementById('chairapoc-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, pad = 45;
-  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🪑 Grab a chair!', animId;
-  let chairs = names.map((_, i) => ({ x: pad + 60 + (i % 5) * 150, y: pad + 50 + Math.floor(i / 5) * 100, alive: true, occupant: null }));
-  let vanishTimer = 0;
-  players.forEach(p => { p.seated = false; p.chair = null; });
+  const W = canvas.width, H = canvas.height, pad = 40;
+  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🪑 MUSICAL CHAIRS FROM HELL!', animId;
+  let chairs = names.map((_, i) => ({ x: pad + 55 + (i % 5) * 155, y: pad + 55 + Math.floor(i / 5) * 105, alive: true, occupant: null, vanishT: 0 }));
+  let vanishTimer = 0, fx = simMakeFX();
+  players.forEach(p => { p.seated = false; p.chair = null; p.spin = 0; });
   function loop() {
-    frame++;
-    if (frame / 60 >= SIM60) {
-      players.forEach(p => { if (!p.seated && p.alive) { p.alive = false; p.gag = 'NO CHAIR!'; p.elimX = p.x; p.elimY = p.y; } });
+    frame++; const elapsed = frame / 60, cm = simChaosMult(elapsed);
+    if (elapsed >= SIM60) {
+      players.forEach(p => { if (!p.seated && p.alive) { p.alive = false; p.gag = 'NO CHAIR!'; p.elimX = p.x; p.elimY = p.y; p.gagTimer = 55; } });
       simFinish('chairapoc', players, names, animId); return;
     }
     vanishTimer++;
-    if (vanishTimer >= 240) {
+    if (vanishTimer >= Math.max(180, 240 - cm * 40)) {
       vanishTimer = 0;
-      const open = chairs.filter(c => c.alive && !c.occupant);
-      if (open.length) { const c = open[Math.floor(Math.random() * open.length)]; c.alive = false; feed = '🪑 A chair vanished!'; }
+      const open = chairs.filter(c => c.alive);
+      if (open.length > 1) {
+        const c = open[Math.floor(Math.random() * open.length)];
+        c.alive = false; c.vanishT = 30;
+        simBurst(fx, c.x, c.y, '#a855f7', 20, 8);
+        simPopText(fx, c.x, c.y, 'POOF!', '#c084fc', 16);
+        feed = '🪑 CHAIR VANISHED! SCRAMBLE!';
+        fx.shake = 8;
+      }
     }
-    chairs.filter(c => c.alive).forEach(c => { c.occupant = null; });
+    chairs.forEach(c => { if (c.vanishT > 0) c.vanishT--; c.occupant = null; });
     players.forEach(p => {
       if (!p.alive) return;
       p.seated = false; p.chair = null;
       let best = null, bd = Infinity;
-      chairs.filter(c => c.alive).forEach(c => {
-        const d = Math.hypot(c.x - p.x, c.y - p.y);
-        if (d < bd) { bd = d; best = c; }
-      });
+      chairs.filter(c => c.alive).forEach(c => { const d = Math.hypot(c.x - p.x, c.y - p.y); if (d < bd) { bd = d; best = c; } });
       if (best) {
         const dx = best.x - p.x, dy = best.y - p.y, d = Math.hypot(dx, dy) || 1;
-        p.vx += dx / d * 0.35; p.vy += dy / d * 0.35;
-        if (d < 22) { p.seated = true; p.chair = best; best.occupant = p; p.vx *= 0.5; p.vy *= 0.5; }
+        p.vx += (dx / d) * (0.45 + cm * 0.15); p.vy += (dy / d) * (0.45 + cm * 0.15);
+        if (d < 24) { p.seated = true; p.chair = best; best.occupant = p; }
       }
-      p.x += p.vx; p.y += p.vy; p.vx *= 0.88; p.vy *= 0.88;
+      p.x += p.vx; p.y += p.vy; p.vx *= 0.86; p.vy *= 0.86;
     });
     chairs.filter(c => c.alive && c.occupant).forEach(c => {
-      const rivals = chairs.filter(o => o.alive && o !== c && Math.hypot(o.x - c.x, o.y - c.y) < 30 && o.occupant);
-      if (rivals.length && Math.random() < 0.04) {
-        const loser = Math.random() < 0.5 ? c.occupant : rivals[0].occupant;
-        if (loser) {
-          loser.alive = false; loser.seated = false; loser.elimX = loser.x; loser.elimY = loser.y;
-          loser.vx = (Math.random() - 0.5) * 14; loser.vy = -8 - Math.random() * 6;
-          loser.gag = 'YEETED!'; loser.gagTimer = 55; c.occupant = null;
-          feed = '💥 ' + loser.name + ' launched off a chair!';
+      chairs.filter(o => o.alive && o !== c && o.occupant && Math.hypot(o.x - c.x, o.y - c.y) < 35).forEach(o => {
+        if (Math.random() < 0.07 * cm) {
+          const loser = Math.random() < 0.5 ? c.occupant : o.occupant;
+          if (loser && loser.alive) {
+            loser.alive = false; loser.seated = false; loser.elimX = loser.x; loser.elimY = loser.y;
+            loser.vx = (Math.random() - 0.5) * 16; loser.vy = -10 - Math.random() * 8; loser.spin = (Math.random() - 0.5) * 0.5;
+            loser.gag = simPickGag('chair'); loser.gagTimer = 65;
+            simBurst(fx, loser.x, loser.y, '#a855f7', 18, 10); simPopText(fx, loser.x, loser.y - 25, 'YEET!', '#fff', 18);
+            feed = '💥 ' + loser.name + ' GOT LAUNCHED!';
+            if (c.occupant === loser) c.occupant = null; else o.occupant = null;
+          }
         }
-      }
+      });
     });
-    ctx.fillStyle = '#1e1033'; ctx.fillRect(0, 0, W, H);
-    chairs.forEach(c => { if (!c.alive) return; drawSimChair(ctx, c.x, c.y, 1, !!c.occupant); });
+    simTickFX(fx);
+    ctx.fillStyle = '#1a0a2e'; ctx.fillRect(0, 0, W, H);
+    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
+    chairs.forEach(c => {
+      if (!c.alive) { if (c.vanishT > 0) { ctx.globalAlpha = c.vanishT / 30; drawSimChair(ctx, c.x, c.y, 1.2, false); ctx.globalAlpha = 1; } return; }
+      drawSimChair(ctx, c.x, c.y, c.occupant ? 1.1 : 1, !!c.occupant);
+    });
     players.forEach(p => {
       if (!p.alive) {
-        p.x += p.vx; p.y += p.vy; p.vy += 0.4;
-        ctx.globalAlpha = 0.35; drawMiniCharacter(ctx, p.elimX || p.x, p.elimY || p.y, 12, p.color); ctx.globalAlpha = 1;
-        if (p.gagTimer > 0) drawGagText(ctx, p.x, p.y - 30, p.gag, '#a855f7', 11);
+        p.x += p.vx; p.y += p.vy; p.vy += 0.45; p.spin += 0.08;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.spin); ctx.globalAlpha = 0.35;
+        drawMiniCharacter(ctx, 0, 0, 13, p.color); ctx.globalAlpha = 1; ctx.restore();
+        if (p.gagTimer > 0) drawGagText(ctx, p.x, p.y - 35, p.gag, '#a855f7', 13);
         return;
       }
-      const sx = p.seated && p.chair ? p.chair.x : p.x, sy = p.seated && p.chair ? p.chair.y - 8 : p.y;
-      drawMiniCharacter(ctx, sx, sy, 13, p.color, { phase: p.seated ? 0 : frame * 0.15 });
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 9px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), sx, sy - 28);
+      const sx = p.seated && p.chair ? p.chair.x : p.x, sy = p.seated && p.chair ? p.chair.y - 10 : p.y;
+      drawMiniCharacter(ctx, sx, sy, 14, p.color, { phase: p.seated ? 0 : frame * 0.2, armSwing: p.seated ? 0 : Math.sin(frame * 0.3) * 12 });
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), sx, sy - 30);
     });
-    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#a855f7', false);
+    simDrawFX(ctx, fx, W, H); ctx.restore();
+    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#a855f7', elapsed >= 45);
     animId = requestAnimationFrame(loop);
   }
   animId = requestAnimationFrame(loop);
@@ -9766,46 +9861,67 @@ function startChairApoc(names) {
 function runMagnet() { simRun('magnet', Array.from(entrants), '#38bdf8', startMagnet); }
 function startMagnet(names) {
   const canvas = document.getElementById('magnet-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, pad = 50;
-  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🧲 Magnet chaos!', animId;
-  let magnet = null, magTimer = 0;
+  const W = canvas.width, H = canvas.height, pad = 45;
+  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🧲 MAGNETS ACTIVATED!', animId;
+  let magnet = null, fx = simMakeFX();
   function newMagnet() {
     const alive = players.filter(p => p.alive);
     if (!alive.length) return;
-    magnet = { p: alive[Math.floor(Math.random() * alive.length)], t: 100 + Math.floor(Math.random() * 80) };
-    feed = '🧲 ' + magnet.p.name + ' is the MAGNET!';
+    magnet = { p: alive[Math.floor(Math.random() * alive.length)], t: 70 + Math.floor(Math.random() * 50), pulse: 0, power: 0.7 + Math.random() * 0.5 };
+    feed = '🧲 ' + magnet.p.name + ' IS THE MAGNET!!';
+    simPopText(fx, magnet.p.x, magnet.p.y - 35, 'MAGNET!', '#38bdf8', 18);
   }
   newMagnet();
   function loop() {
-    frame++;
-    if (frame / 60 >= SIM60) { simFinish('magnet', players, names, animId); return; }
+    frame++; const elapsed = frame / 60, cm = simChaosMult(elapsed);
+    if (elapsed >= SIM60) { simFinish('magnet', players, names, animId); return; }
     if (magnet) {
-      magnet.t--;
+      magnet.t--; magnet.pulse += 0.15;
       if (magnet.t <= 0) newMagnet();
+      const range = 180 + cm * 60;
       players.forEach(p => {
         if (!p.alive || p === magnet.p) return;
         const dx = magnet.p.x - p.x, dy = magnet.p.y - p.y, d = Math.hypot(dx, dy) || 1;
-        if (d < 220) { p.vx += dx / d * 0.55; p.vy += dy / d * 0.55; }
+        if (d < range) { p.vx += (dx / d) * magnet.power * (1.2 + cm * 0.3); p.vy += (dy / d) * magnet.power * (1.2 + cm * 0.3); }
       });
     }
     players.forEach(p => {
       if (!p.alive) { if (p.gagTimer > 0) p.gagTimer--; return; }
-      if (Math.random() < 0.02) { p.vx += (Math.random() - 0.5) * 2; p.vy += (Math.random() - 0.5) * 2; }
-      p.x += p.vx; p.y += p.vy; p.vx *= 0.94; p.vy *= 0.94; simBounce(p, W, H, pad);
+      p.x += p.vx; p.y += p.vy; p.vx *= 0.93; p.vy *= 0.93; simBounce(p, W, H, pad);
     });
-    const hit = simCollide(players, 0.9);
-    if (hit && Math.random() < 0.06) {
-      const loser = hit[Math.floor(Math.random() * 2)];
-      if (loser.alive) { loser.alive = false; loser.elimX = loser.x; loser.elimY = loser.y; loser.gag = 'SQUISH!'; loser.gagTimer = 50; feed = '💥 ' + loser.name + ' collision eliminated!'; }
+    for (let i = 0; i < 3; i++) {
+      const hit = simCollide(players, 0.85);
+      if (hit && Math.random() < 0.12 * cm) {
+        const loser = hit[Math.floor(Math.random() * 2)];
+        if (loser.alive) {
+          loser.alive = false; loser.elimX = loser.x; loser.elimY = loser.y; loser.gag = simPickGag('magnet'); loser.gagTimer = 60;
+          simBurst(fx, loser.x, loser.y, '#38bdf8', 22, 9); fx.shake = 10;
+          feed = '💥 ' + loser.name + ' — ' + loser.gag;
+        }
+      }
     }
-    ctx.fillStyle = '#0c1929'; ctx.fillRect(0, 0, W, H);
+    simTickFX(fx);
+    ctx.fillStyle = '#020617'; ctx.fillRect(0, 0, W, H);
+    if (magnet) {
+      const g = ctx.createRadialGradient(magnet.p.x, magnet.p.y, 10, magnet.p.x, magnet.p.y, 180 + cm * 60);
+      g.addColorStop(0, 'rgba(56,189,248,0.25)'); g.addColorStop(1, 'transparent');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      for (let i = 0; i < 8; i++) {
+        const ang = frame * 0.05 + i * Math.PI / 4;
+        ctx.strokeStyle = `rgba(56,189,248,${0.15 + Math.sin(magnet.pulse) * 0.1})`;
+        ctx.beginPath(); ctx.moveTo(magnet.p.x, magnet.p.y);
+        ctx.lineTo(magnet.p.x + Math.cos(ang) * (120 + cm * 40), magnet.p.y + Math.sin(ang) * (120 + cm * 40)); ctx.stroke();
+      }
+    }
+    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
     players.forEach(p => {
-      if (!p.alive) { ctx.globalAlpha = 0.35; drawMiniCharacter(ctx, p.elimX, p.elimY, 12, p.color); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 28, p.gag, '#38bdf8', 11); return; }
-      drawMiniCharacter(ctx, p.x, p.y, 14, p.color, { phase: frame * 0.12 });
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 9px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 30);
-      if (magnet && magnet.p === p) { ctx.font = '28px Inter'; ctx.fillText('🧲', p.x, p.y - 44); }
+      if (!p.alive) { ctx.globalAlpha = 0.3; drawMiniCharacter(ctx, p.elimX, p.elimY, 13, p.color); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 32, p.gag, '#38bdf8', 13); return; }
+      drawMiniCharacter(ctx, p.x, p.y, 15, p.color, { phase: frame * 0.14, armSwing: Math.sin(frame * 0.2 + p.x) * 8 });
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 32);
+      if (magnet && magnet.p === p) { ctx.font = (32 + Math.sin(magnet.pulse) * 6) + 'px serif'; ctx.fillText('🧲', p.x, p.y - 48); }
     });
-    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#38bdf8', false);
+    simDrawFX(ctx, fx, W, H); ctx.restore();
+    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#38bdf8', elapsed >= 45);
     animId = requestAnimationFrame(loop);
   }
   animId = requestAnimationFrame(loop);
@@ -9814,51 +9930,61 @@ function startMagnet(names) {
 function runDuck() { simRun('duck', Array.from(entrants), '#22d3ee', startDuck); }
 function startDuck(names) {
   const canvas = document.getElementById('duck-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, pad = 50;
-  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🦆 Ducks waddling...', animId;
-  let events = [], evtTimer = 0;
+  const W = canvas.width, H = canvas.height, pad = 45;
+  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🦆 DUCK DISASTER!!', animId;
+  let events = [], evtTimer = 80, fx = simMakeFX();
   function triggerEvent() {
-    const types = ['rain','tornado','explosion','eagle','bread'];
-    const t = types[Math.floor(Math.random() * types.length)];
-    events.push({ type: t, t: 0, max: t === 'rain' ? 180 : 100, x: pad + Math.random() * (W - pad * 2), y: pad + Math.random() * (H - pad * 2) });
-    feed = ({ rain: '🌧️ RAIN!', tornado: '🌪️ TORNADO!', explosion: '💥 EXPLOSION!', eagle: '🦅 EAGLE!', bread: '🍞 BREAD!' })[t];
+    const t = ['rain','tornado','explosion','eagle','bread'][Math.floor(Math.random() * 5)];
+    events.push({ type: t, t: 0, max: t === 'rain' ? 140 : 90, x: pad + Math.random() * (W - pad * 2), y: pad + Math.random() * (H - pad * 2), vx: t === 'eagle' ? 4 : 0 });
+    feed = ({ rain: '🌧️ TORRENTIAL RAIN!', tornado: '🌪️ TORNADO!', explosion: '💥 BOOM!', eagle: '🦅 EAGLE!', bread: '🍞 BREAD FROM SKY!' })[t];
+    fx.shake = 6; simPopText(fx, W / 2, 75, feed, '#22d3ee', 15);
   }
+  triggerEvent();
   function loop() {
-    frame++;
-    if (frame / 60 >= SIM60) { simFinish('duck', players, names, animId); return; }
-    evtTimer++; if (evtTimer > 150 + Math.random() * 120) { evtTimer = 0; triggerEvent(); }
+    frame++; const elapsed = frame / 60, cm = simChaosMult(elapsed);
+    if (elapsed >= SIM60) { simFinish('duck', players, names, animId); return; }
+    evtTimer++; if (evtTimer > Math.max(60, 110 - cm * 25)) { evtTimer = 0; triggerEvent(); if (Math.random() < 0.45) triggerEvent(); }
     events.forEach(e => {
-      e.t++;
+      e.t++; if (e.type === 'eagle') { e.x += e.vx; e.y -= 1.5; }
       players.forEach(p => {
         if (!p.alive) return;
-        if (e.type === 'rain') { p.vx += (Math.random() - 0.5) * 0.3; p.vy += 0.15; }
-        if (e.type === 'tornado' && Math.hypot(p.x - e.x, p.y - e.y) < 90) { const ang = frame * 0.15; p.vx += Math.cos(ang) * 0.6; p.vy += Math.sin(ang) * 0.6; }
-        if (e.type === 'explosion' && e.t < 15 && Math.hypot(p.x - e.x, p.y - e.y) < 100) { p.vx += (p.x - e.x) * 0.08; p.vy += (p.y - e.y) * 0.08; if (Math.random() < 0.05) { p.alive = false; p.elimX = p.x; p.elimY = p.y; p.gag = 'YEETED!'; p.gagTimer = 50; } }
-        if (e.type === 'eagle' && e.t > 30 && e.t < 70 && Math.hypot(p.x - e.x, p.y - e.y) < 40) { p.alive = false; p.elimX = p.x; p.elimY = p.y; p.gag = 'SNATCHED!'; p.gagTimer = 55; feed = '🦅 ' + p.name + ' got snatched!'; }
-        if (e.type === 'bread' && e.t > 20 && Math.hypot(p.x - e.x, p.y - e.y) < 60) { p.vx += (e.x - p.x) * 0.02; p.vy += (e.y - p.y) * 0.02; if (Math.random() < 0.03) { p.alive = false; p.gag = 'CRUSHED!'; p.elimX = p.x; p.elimY = p.y; p.gagTimer = 50; } }
+        if (e.type === 'rain') { p.vy += 0.22 * cm; p.vx += (Math.random() - 0.5) * 0.4; }
+        if (e.type === 'tornado' && Math.hypot(p.x - e.x, p.y - e.y) < 100) { const ang = frame * 0.2; p.vx += Math.cos(ang) * 0.85 * cm; p.vy += Math.sin(ang) * 0.85 * cm; }
+        if (e.type === 'explosion' && e.t < 20 && Math.hypot(p.x - e.x, p.y - e.y) < 110) {
+          p.vx += (p.x - e.x) * 0.1 * cm; p.vy += (p.y - e.y) * 0.1 * cm;
+          if (Math.random() < 0.07 * cm) { p.alive = false; p.elimX = p.x; p.elimY = p.y; p.gag = simPickGag('duck'); p.gagTimer = 60; simBurst(fx, p.x, p.y, '#ef4444', 15, 8); feed = '💥 ' + p.name + ' YEETED!'; }
+        }
+        if (e.type === 'eagle' && e.t > 20 && e.t < 80 && Math.hypot(p.x - e.x, p.y - e.y) < 45) {
+          p.alive = false; p.elimX = p.x; p.elimY = p.y; p.gag = 'SNATCHED!'; p.gagTimer = 65; feed = '🦅 ' + p.name + ' SNATCHED!';
+        }
+        if (e.type === 'bread' && e.t > 15 && Math.hypot(p.x - e.x, p.y - (e.y + e.t * 0.8)) < 70 && Math.random() < 0.04 * cm) {
+          p.alive = false; p.gag = 'BREADED!'; p.elimX = p.x; p.elimY = p.y; p.gagTimer = 55;
+        }
       });
     });
     events = events.filter(e => e.t < e.max);
     players.forEach(p => {
       if (!p.alive) { if (p.gagTimer > 0) p.gagTimer--; return; }
-      if (Math.random() < 0.025) { p.vx = (Math.random() - 0.5) * 3; p.vy = (Math.random() - 0.5) * 3; }
-      p.x += p.vx; p.y += p.vy; p.vx *= 0.95; p.vy *= 0.95; simBounce(p, W, H, pad);
+      if (Math.random() < 0.04) { p.vx = (Math.random() - 0.5) * 4; p.vy = (Math.random() - 0.5) * 4; }
+      p.x += p.vx; p.y += p.vy; p.vx *= 0.94; p.vy *= 0.94; simBounce(p, W, H, pad);
     });
-    simCollide(players);
+    simCollide(players); simTickFX(fx);
     ctx.fillStyle = '#0c4a6e'; ctx.fillRect(0, 0, W, H);
+    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
     events.forEach(e => {
-      if (e.type === 'rain') { ctx.fillStyle = 'rgba(56,189,248,0.3)'; for (let i = 0; i < 40; i++) ctx.fillRect((i * 37 + frame * 2) % W, (i * 53 + frame * 5) % H, 2, 12); }
-      if (e.type === 'tornado') { ctx.font = '48px serif'; ctx.fillText('🌪️', e.x, e.y); }
-      if (e.type === 'explosion' && e.t < 20) { ctx.fillStyle = `rgba(239,68,68,${1 - e.t / 20})`; ctx.beginPath(); ctx.arc(e.x, e.y, 20 + e.t * 4, 0, Math.PI * 2); ctx.fill(); }
-      if (e.type === 'eagle') { ctx.font = '56px serif'; ctx.fillText('🦅', e.x + e.t * 2, e.y - e.t); }
-      if (e.type === 'bread') { ctx.font = '64px serif'; ctx.fillText('🍞', e.x, e.y + e.t * 0.5); }
+      if (e.type === 'rain') { ctx.strokeStyle = 'rgba(56,189,248,0.5)'; for (let i = 0; i < 50; i++) { ctx.beginPath(); ctx.moveTo((i * 29 + frame * 3) % W, (i * 41 + frame * 8) % H); ctx.lineTo((i * 29 + frame * 3) % W - 4, (i * 41 + frame * 8) % H + 14); ctx.stroke(); } }
+      if (e.type === 'tornado') { ctx.font = '64px serif'; ctx.textAlign = 'center'; ctx.fillText('🌪️', e.x, e.y); }
+      if (e.type === 'explosion' && e.t < 25) { ctx.fillStyle = `rgba(239,68,68,${1 - e.t / 25})`; ctx.beginPath(); ctx.arc(e.x, e.y, 25 + e.t * 5, 0, Math.PI * 2); ctx.fill(); }
+      if (e.type === 'eagle') { ctx.font = '72px serif'; ctx.fillText('🦅', e.x, e.y); }
+      if (e.type === 'bread') { ctx.font = '80px serif'; ctx.fillText('🍞', e.x, e.y + e.t * 0.8); }
     });
     players.forEach(p => {
-      if (!p.alive) { ctx.globalAlpha = 0.35; drawDuck(ctx, p.elimX, p.elimY, 12, p.color); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 26, p.gag, '#22d3ee', 11); return; }
-      drawDuck(ctx, p.x, p.y, 14, p.color, { rot: Math.sin(frame * 0.1 + p.x) * 0.1 });
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 9px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 26);
+      if (!p.alive) { ctx.globalAlpha = 0.3; drawDuck(ctx, p.elimX, p.elimY, 13, p.color); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 28, p.gag, '#22d3ee', 13); return; }
+      drawDuck(ctx, p.x, p.y, 15, p.color, { rot: Math.sin(frame * 0.12 + p.x) * 0.15 });
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 28);
     });
-    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#22d3ee', false);
+    simDrawFX(ctx, fx, W, H); ctx.restore();
+    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#22d3ee', elapsed >= 45);
     animId = requestAnimationFrame(loop);
   }
   animId = requestAnimationFrame(loop);
@@ -9867,56 +9993,65 @@ function startDuck(names) {
 function runRat() { simRun('rat', Array.from(entrants), '#a8a29e', startRat); }
 function startRat(names) {
   const canvas = document.getElementById('rat-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, pad = 40;
-  let players = simSpawn(names, W, H, pad).map(p => ({ ...p, r: 10 })), frame = 0, feed = '🐀 Rats scurrying...', animId;
-  let falling = [], cat = null, catTimer = 400;
+  const W = canvas.width, H = canvas.height, pad = 38;
+  let players = simSpawn(names, W, H, pad).map(p => ({ ...p, r: 10 })), frame = 0, feed = '🐀 KITCHEN NIGHTMARE!!', animId;
+  let falling = [], cat = null, catTimer = 200, fx = simMakeFX();
   function loop() {
-    frame++;
-    if (frame / 60 >= SIM60) { simFinish('rat', players, names, animId); return; }
-    if (Math.random() < 0.02) falling.push({ emoji: ['🍕','🧀','🥫','🧹'][Math.floor(Math.random()*4)], x: pad + Math.random() * (W - pad*2), y: -20, vy: 2 + Math.random() * 2 });
-    falling.forEach(o => { o.y += o.vy; o.vy += 0.08; });
-    falling = falling.filter(o => o.y < H + 30);
+    frame++; const elapsed = frame / 60, cm = simChaosMult(elapsed);
+    if (elapsed >= SIM60) { simFinish('rat', players, names, animId); return; }
+    if (Math.random() < 0.04 * cm) falling.push({ emoji: ['🍕','🧀','🥫','🧹','🍳'][Math.floor(Math.random()*5)], x: pad + Math.random() * (W - pad*2), y: -30, vy: 3 + Math.random() * 3, rot: Math.random() * 6 });
+    falling.forEach(o => { o.y += o.vy; o.vy += 0.12; o.rot += 0.08; });
+    falling = falling.filter(o => o.y < H + 40);
     falling.forEach(o => {
       players.forEach(p => {
         if (!p.alive) return;
-        if (Math.hypot(o.x - p.x, o.y - p.y) < 20 && o.emoji !== '🧹') { p.vx += (Math.random()-0.5)*4; p.vy += (Math.random()-0.5)*4; }
-        if (o.emoji === '🧹' && Math.hypot(o.x - p.x, o.y - p.y) < 18 && Math.random() < 0.04) { p.alive = false; p.elimX = p.x; p.elimY = p.y; p.gag = 'SWEPT!'; p.gagTimer = 50; }
+        if (Math.hypot(o.x - p.x, o.y - p.y) < 22) {
+          if (o.emoji === '🧹' && Math.random() < 0.06 * cm) { p.alive = false; p.elimX = p.x; p.elimY = p.y; p.gag = simPickGag('rat'); p.gagTimer = 55; simBurst(fx, p.x, p.y, '#78716c', 12, 6); feed = '🧹 ' + p.name + ' SWEPT!'; }
+          else if (o.emoji !== '🧹') { p.vx += (Math.random()-0.5)*5; p.vy += 2; }
+        }
       });
     });
     catTimer--;
     if (catTimer <= 0) {
-      cat = { x: -60, y: H / 2, t: 0, max: 140 };
-      catTimer = 350 + Math.floor(Math.random() * 200);
-      feed = '🐱 CAT INCOMING!';
+      cat = { x: Math.random() < 0.5 ? -80 : W + 80, y: pad + Math.random() * (H - pad * 2), t: 0, max: 120, vx: Math.random() < 0.5 ? 6 : -6 };
+      catTimer = Math.max(150, 280 - cm * 60);
+      feed = '🐱 CAT ATTACK!!'; fx.shake = 12; simPopText(fx, W/2, 70, 'MEOW!!', '#ef4444', 22);
     }
     if (cat) {
-      cat.t++; cat.x += 5;
-      ctx.font = '70px serif'; ctx.fillText('🐱', cat.x, cat.y);
+      cat.t++; cat.x += cat.vx;
       players.forEach(p => {
         if (!p.alive) return;
-        if (Math.hypot(cat.x - p.x, cat.y - p.y) < 55 && Math.random() < 0.12) {
-          p.alive = false; p.elimX = p.x; p.elimY = p.y; p.gag = 'CAUGHT!'; p.gagTimer = 55; feed = '🐱 ' + p.name + ' caught by cat!';
+        if (Math.hypot(cat.x - p.x, cat.y - p.y) < 50 && Math.random() < 0.15 * cm) {
+          p.alive = false; p.elimX = p.x; p.elimY = p.y; p.gag = simPickGag('rat'); p.gagTimer = 60;
+          simBurst(fx, p.x, p.y, '#fca5a5', 20, 9); feed = '🐱 ' + p.name + ' CAUGHT!';
         }
-        if (Math.hypot(cat.x - p.x, cat.y - p.y) < 120) { p.vx += (p.x - cat.x) * 0.04; p.vy += (p.y - cat.y) * 0.04; }
+        if (Math.hypot(cat.x - p.x, cat.y - p.y) < 140) { p.vx += (p.x - cat.x) * 0.05; p.vy += (p.y - cat.y) * 0.05; }
       });
       if (cat.t >= cat.max) cat = null;
     }
     players.forEach(p => {
       if (!p.alive) { if (p.gagTimer > 0) p.gagTimer--; return; }
-      p.vx += (Math.random()-0.5)*0.3; p.vy += (Math.random()-0.5)*0.3;
-      p.x += p.vx; p.y += p.vy; p.vx *= 0.92; p.vy *= 0.92; simBounce(p, W, H, pad);
+      p.vx += (Math.random()-0.5)*0.5; p.vy += (Math.random()-0.5)*0.5;
+      p.x += p.vx; p.y += p.vy; p.vx *= 0.9; p.vy *= 0.9; simBounce(p, W, H, pad);
     });
-    ctx.fillStyle = '#44403c'; ctx.fillRect(0, 0, W, H);
+    simTickFX(fx);
+    ctx.fillStyle = '#292524'; ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = '#57534e'; ctx.fillRect(pad, pad, W-pad*2, H-pad*2);
-    ctx.strokeStyle = '#292524'; ctx.lineWidth = 4; ctx.strokeRect(pad, pad, W-pad*2, H-pad*2);
-    ctx.font = '28px serif';
-    falling.forEach(o => { ctx.fillText(o.emoji, o.x, o.y); });
+    for (let row = 0; row < 8; row++) for (let col = 0; col < 12; col++) {
+      ctx.fillStyle = (row+col)%2 ? '#44403c' : '#3f3f46';
+      ctx.fillRect(pad + col*((W-pad*2)/12), pad + row*((H-pad*2)/8), (W-pad*2)/12, (H-pad*2)/8);
+    }
+    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
+    ctx.font = '32px serif'; ctx.textAlign = 'center';
+    falling.forEach(o => { ctx.save(); ctx.translate(o.x, o.y); ctx.rotate(o.rot); ctx.fillText(o.emoji, 0, 0); ctx.restore(); });
+    if (cat) { ctx.font = '80px serif'; ctx.fillText('🐱', cat.x, cat.y); drawGagText(ctx, cat.x, cat.y - 50, 'MEOW!', '#ef4444', 18); }
     players.forEach(p => {
-      if (!p.alive) { ctx.globalAlpha = 0.35; drawRat(ctx, p.elimX, p.elimY, 9, p.color); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 22, p.gag, '#fca5a5', 10); return; }
-      drawRat(ctx, p.x, p.y, 10, p.color, { rot: Math.atan2(p.vy, p.vx) * 0.3 });
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 8px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 9), p.x, p.y - 18);
+      if (!p.alive) { ctx.globalAlpha = 0.3; drawRat(ctx, p.elimX, p.elimY, 10, p.color); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 24, p.gag, '#fca5a5', 11); return; }
+      drawRat(ctx, p.x, p.y, 11, p.color, { rot: Math.atan2(p.vy, p.vx) * 0.4 });
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 9px Inter'; ctx.fillText(p.name.substring(0, 9), p.x, p.y - 20);
     });
-    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#a8a29e', false);
+    simDrawFX(ctx, fx, W, H); ctx.restore();
+    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#a8a29e', elapsed >= 45);
     animId = requestAnimationFrame(loop);
   }
   animId = requestAnimationFrame(loop);
@@ -9931,48 +10066,89 @@ function startToiletPanic(names) {
     x: pad + 50 + (i % 5) * 155, y: pad + 60 + Math.floor(i / 5) * 130,
     evt: null, evtT: 0, vy: 0, spin: 0, elimX: 0, elimY: 0, gag: '', gagTimer: 0
   }));
-  let frame = 0, feed = '🚽 Toilets armed!', animId;
+  let frame = 0, feed = '🚽 TOILET PANIC!!', animId, fx = simMakeFX(), flood = 0;
+  function triggerToilet(t, evt) {
+    t.evt = evt; t.evtT = 0;
+    feed = '🚽 ' + t.name + ' — ' + ({ launch: '💨 ROCKET LAUNCH', spray: '💦 GEYSER', spin: '🌀 TORNADO SPIN', explode: '💥 PIPE BURST' })[evt] + '!';
+    simPopText(fx, t.x, t.y - 60, feed.split('—')[1] || 'CHAOS!', '#38bdf8', 14);
+    if (evt === 'explode') { fx.shake = 14; fx.flash = 1; fx.flashCol = '#38bdf8'; simBurst(fx, t.x, t.y, '#0ea5e9', 22, 10); }
+  }
   function loop() {
-    frame++;
-    if (frame / 60 >= SIM60) {
+    frame++; const elapsed = frame / 60, cm = simChaosMult(elapsed);
+    if (elapsed >= SIM60) {
       simFinish('toiletpanic', toilets.map(t => ({ name: t.name, alive: t.alive })), names, animId);
       return;
     }
-    if (Math.random() < 0.035) {
+    if (Math.random() < 0.055 * cm) {
       const alive = toilets.filter(t => t.alive && !t.evt);
       if (alive.length) {
         const t = alive[Math.floor(Math.random() * alive.length)];
-        t.evt = ['launch','spray','spin','explode'][Math.floor(Math.random() * 4)];
-        t.evtT = 0;
-        feed = '🚽 ' + t.name + ' — ' + ({ launch: '💨 LAUNCH', spray: '💦 SPRAY', spin: '🌀 SPIN', explode: '💥 EXPLODE' })[t.evt] + '!';
+        triggerToilet(t, ['launch','spray','spin','explode'][Math.floor(Math.random() * 4)]);
+        if (Math.random() < 0.35 * cm && alive.length > 1) {
+          const t2 = alive.filter(x => x !== t)[Math.floor(Math.random() * (alive.length - 1))];
+          if (t2 && !t2.evt) triggerToilet(t2, ['spray','spin','explode'][Math.floor(Math.random() * 3)]);
+        }
       }
     }
+    if (elapsed > 20 && Math.random() < 0.008 * cm) { flood = 120; feed = '🌊 SEWER FLOOD!!'; fx.shake = 10; simPopText(fx, W/2, 80, 'FLOOD!!', '#0ea5e9', 20); }
+    if (flood > 0) flood--;
     toilets.forEach(t => {
       if (!t.alive) { if (t.gagTimer > 0) t.gagTimer--; return; }
+      if (flood > 0 && Math.random() < 0.025 * cm) {
+        t.alive = false; t.gag = simPickGag('toilet'); t.gagTimer = 60; t.elimX = t.x; t.elimY = t.y;
+        simBurst(fx, t.x, t.y, '#38bdf8', 14, 7); feed = '🌊 ' + t.name + ' DROWNED!';
+      }
       if (t.evt) {
         t.evtT++;
-        if (t.evt === 'launch') { t.vy -= 0.8; if (t.evtT > 40) { t.alive = false; t.gag = 'FLUSHED!'; t.gagTimer = 55; t.elimX = t.x; t.elimY = t.y - t.evtT; } }
-        if (t.evt === 'spray' && t.evtT > 50) { if (Math.random() < 0.15) { t.alive = false; t.gag = 'DRENCHED!'; t.gagTimer = 50; t.elimX = t.x; t.elimY = t.y; } t.evt = null; }
-        if (t.evt === 'spin') { t.spin += 0.35; if (t.evtT > 55 && Math.random() < 0.08) { t.alive = false; t.gag = 'DIZZY!'; t.gagTimer = 50; } if (t.evtT > 70) t.evt = null; }
-        if (t.evt === 'explode' && t.evtT > 25) { t.alive = false; t.gag = 'BOOM!'; t.gagTimer = 55; t.elimX = t.x; t.elimY = t.y; }
+        if (t.evt === 'launch') {
+          t.vy -= 1.4 * cm;
+          if (t.evtT > 35) { t.alive = false; t.gag = simPickGag('toilet'); t.gagTimer = 65; t.elimX = t.x; t.elimY = t.y - t.evtT * 3; simBurst(fx, t.x, t.y - t.evtT * 2, '#fff', 18, 9); fx.shake = 8; }
+        }
+        if (t.evt === 'spray') {
+          if (t.evtT > 35 && Math.random() < 0.12 * cm) { t.alive = false; t.gag = simPickGag('toilet'); t.gagTimer = 55; t.elimX = t.x; t.elimY = t.y; simBurst(fx, t.x, t.y, '#0ea5e9', 12, 6); }
+          toilets.forEach(o => {
+            if (o !== t && o.alive && !o.evt && Math.hypot(o.x - t.x, o.y - t.y) < 100 && Math.random() < 0.04 * cm) triggerToilet(o, 'spin');
+          });
+          if (t.evtT > 55) t.evt = null;
+        }
+        if (t.evt === 'spin') {
+          t.spin += 0.55 * cm;
+          if (t.evtT > 40 && Math.random() < 0.1 * cm) { t.alive = false; t.gag = simPickGag('toilet'); t.gagTimer = 55; t.elimX = t.x; t.elimY = t.y; fx.shake = 6; }
+          if (t.evtT > 65) t.evt = null;
+        }
+        if (t.evt === 'explode' && t.evtT > 18) {
+          t.alive = false; t.gag = simPickGag('toilet'); t.gagTimer = 60; t.elimX = t.x; t.elimY = t.y;
+          simBurst(fx, t.x, t.y, '#ef4444', 25, 11); fx.shake = 16; fx.flash = 1; fx.flashCol = '#fff';
+          toilets.forEach(o => {
+            if (o !== t && o.alive && Math.hypot(o.x - t.x, o.y - t.y) < 130 && Math.random() < 0.25 * cm) triggerToilet(o, Math.random() < 0.5 ? 'explode' : 'launch');
+          });
+        }
       }
     });
+    simTickFX(fx);
     ctx.fillStyle = '#0c4a6e'; ctx.fillRect(0, 0, W, H);
+    if (flood > 0) { ctx.fillStyle = `rgba(14,165,233,${0.15 + (flood / 120) * 0.25})`; ctx.fillRect(0, H - flood * 2.5, W, flood * 2.5); }
+    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
     toilets.forEach(t => {
       if (!t.alive) {
-        ctx.globalAlpha = 0.35; drawSimToilet(ctx, t.elimX || t.x, (t.elimY || t.y) + (t.evt === 'launch' ? -t.evtT * 2 : 0), 1, 'explode'); ctx.globalAlpha = 1;
-        if (t.gagTimer > 0) drawGagText(ctx, t.x, t.y - 40, t.gag, '#38bdf8', 11); return;
+        ctx.globalAlpha = 0.3; drawSimToilet(ctx, t.elimX || t.x, (t.elimY || t.y) + (t.evt === 'launch' ? -t.evtT * 3 : 0), 1, 'explode'); ctx.globalAlpha = 1;
+        if (t.gagTimer > 0) drawGagText(ctx, t.x, t.y - 44, t.gag, '#38bdf8', 13); return;
       }
-      const ty = t.y + (t.evt === 'launch' ? t.evtT * -2 : 0);
+      const ty = t.y + (t.evt === 'launch' ? t.evtT * -3 : 0);
       ctx.save(); ctx.translate(t.x, ty); if (t.spin) ctx.rotate(t.spin);
       drawSimToilet(ctx, 0, 0, 1, t.evt);
       ctx.restore();
-      drawMiniCharacter(ctx, t.x, ty - 22, 11, t.color, { phase: t.evt === 'spin' ? frame * 0.3 : 0 });
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 9px Inter'; ctx.textAlign = 'center'; ctx.fillText(t.name.substring(0, 10), t.x, ty - 48);
-      if (t.evt === 'spray') { ctx.font = '20px serif'; ctx.fillText('💦', t.x + 20, ty - 10); }
+      drawMiniCharacter(ctx, t.x, ty - 22, 12, t.color, { phase: t.evt === 'spin' ? frame * 0.45 : frame * 0.1, armSwing: t.evt === 'launch' ? -12 : Math.sin(frame * 0.3) * 8 });
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(t.name.substring(0, 10), t.x, ty - 50);
+      if (t.evt === 'spray') {
+        for (let s = 0; s < 6; s++) { ctx.font = (18 + s * 4) + 'px serif'; ctx.fillText('💦', t.x + 15 + s * 8, ty - 5 - s * 6 + Math.sin(frame * 0.2 + s) * 4); }
+      }
+      if (t.evt === 'explode' && t.evtT < 20) {
+        ctx.fillStyle = `rgba(239,68,68,${1 - t.evtT / 20})`; ctx.beginPath(); ctx.arc(t.x, ty, 20 + t.evtT * 6, 0, Math.PI * 2); ctx.fill();
+      }
     });
-    const aliveCount = toilets.filter(t => t.alive).length;
-    simDrawHUD(ctx, W, H, frame, aliveCount, feed, '#38bdf8', false);
+    simDrawFX(ctx, fx, W, H); ctx.restore();
+    simDrawHUD(ctx, W, H, frame, toilets.filter(t => t.alive).length, feed, '#38bdf8', elapsed >= 45);
     animId = requestAnimationFrame(loop);
   }
   animId = requestAnimationFrame(loop);
@@ -9981,12 +10157,11 @@ function startToiletPanic(names) {
 function runStamina() { simRun('stamina', Array.from(entrants), '#f97316', startStamina); }
 function startStamina(names) {
   const canvas = document.getElementById('stamina-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, pad = 50;
-  let players = simSpawn(names, W, H, pad).map(p => ({ ...p, stamina: 100, effort: 0.8 + Math.random() * 0.4, wobble: Math.random() * 6 }));
-  let frame = 0, feed = '💪 Endurance test — don\'t tap out!', animId;
+  const W = canvas.width, H = canvas.height, pad = 45;
+  let players = simSpawn(names, W, H, pad).map(p => ({ ...p, stamina: 100, effort: 0.8 + Math.random() * 0.4, wobble: Math.random() * 6, sprint: 0, cramp: 0 }));
+  let frame = 0, feed = '💪 STAMINA ROYALE — DON\'T TAP OUT!!', animId, fx = simMakeFX(), hypeTimer = 90;
   function loop() {
-    frame++;
-    const elapsed = frame / 60;
+    frame++; const elapsed = frame / 60, cm = simChaosMult(elapsed);
     if (elapsed >= SIM60) {
       const alive = players.filter(p => p.alive);
       cancelAnimationFrame(animId);
@@ -9994,35 +10169,56 @@ function startStamina(names) {
       document.getElementById('stamina-winner-name').textContent = alive.length ? simWinnerLabel(players, names) : pickSingleWinner([], names);
       return;
     }
+    hypeTimer--;
+    if (hypeTimer <= 0) {
+      hypeTimer = 70 + Math.floor(Math.random() * 80);
+      const cheers = ['GO GO GO!!','PUSH IT!!','NO QUITTING!!','LEGEND!!','HYPE!!','LAST ONE STANDING!!'];
+      simPopText(fx, W/2, 90 + Math.random() * 40, cheers[Math.floor(Math.random() * cheers.length)], '#fbbf24', 16 + Math.random() * 6);
+    }
     players.forEach(p => {
       if (!p.alive) { if (p.gagTimer > 0) p.gagTimer--; return; }
-      p.wobble += 0.12;
-      const drain = (0.08 + elapsed * 0.004) * p.effort * (1 + Math.sin(p.wobble) * 0.15);
+      p.wobble += 0.15 + cm * 0.05;
+      if (Math.random() < 0.012 * cm) { p.sprint = 45; feed = '🔥 ' + p.name + ' SPRINT BURST!'; simPopText(fx, p.x, p.y - 50, 'SPRINT!', '#ef4444', 14); }
+      if (Math.random() < 0.006 * cm) { p.cramp = 35; feed = '😵 ' + p.name + ' CRAMP!!'; fx.shake = 5; }
+      if (p.sprint > 0) { p.sprint--; p.vx += (Math.random() - 0.5) * 1.2; p.vy += (Math.random() - 0.5) * 1.2; }
+      if (p.cramp > 0) { p.cramp--; p.stamina -= 1.5 * cm; }
+      const shake = (100 - p.stamina) / 100;
+      if (shake > 0.3 && Math.random() < 0.15 * shake) simBurst(fx, p.x, p.y - 18, '#fbbf24', 2, 2);
+      const drain = (0.1 + elapsed * 0.006) * p.effort * (1 + Math.sin(p.wobble) * 0.2) * cm * (p.sprint > 0 ? 1.8 : 1);
       p.stamina -= drain;
-      if (Math.random() < 0.015) p.stamina -= 2 + Math.random() * 4;
-      p.x += Math.sin(p.wobble) * 0.6 + p.vx * 0.3;
-      p.y += Math.cos(p.wobble * 1.1) * 0.4 + p.vy * 0.3;
-      p.vx *= 0.9; p.vy *= 0.9; simBounce(p, W, H, pad);
+      if (Math.random() < 0.022 * cm) { p.stamina -= 3 + Math.random() * 6; simBurst(fx, p.x, p.y - 20, '#fbbf24', 4, 3); }
+      p.x += Math.sin(p.wobble) * (0.8 + cm * 0.4) + p.vx * 0.35;
+      p.y += Math.cos(p.wobble * 1.1) * 0.5 + p.vy * 0.35;
+      p.vx *= 0.88; p.vy *= 0.88; simBounce(p, W, H, pad);
       if (p.stamina <= 0) {
-        p.alive = false; p.elimX = p.x; p.elimY = p.y; p.gag = 'TAPPED OUT!'; p.gagTimer = 60;
-        feed = '😮 ' + p.name + ' ran out of stamina!';
+        p.alive = false; p.elimX = p.x; p.elimY = p.y; p.gag = simPickGag('stamina'); p.gagTimer = 65;
+        simBurst(fx, p.x, p.y, '#f97316', 16, 7); fx.shake = 8;
+        feed = '😮 ' + p.name + ' TAPPED OUT!!';
       }
     });
+    simCollide(players, 22);
+    simTickFX(fx);
     ctx.fillStyle = '#1c0a00'; ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = 'rgba(249,115,22,0.08)'; ctx.fillRect(pad, pad, W - pad * 2, H - pad * 2);
+    const pulse = 0.06 + Math.sin(frame * 0.08) * 0.04;
+    ctx.fillStyle = `rgba(249,115,22,${pulse + cm * 0.04})`; ctx.fillRect(pad, pad, W - pad * 2, H - pad * 2);
+    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
     players.forEach(p => {
-      if (!p.alive) { ctx.globalAlpha = 0.35; drawMiniCharacter(ctx, p.elimX, p.elimY, 12, p.color, { faded: true }); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 36, p.gag, '#f97316', 11); return; }
+      if (!p.alive) { ctx.globalAlpha = 0.3; drawMiniCharacter(ctx, p.elimX, p.elimY, 13, p.color, { faded: true }); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 40, p.gag, '#f97316', 13); return; }
       const shake = (100 - p.stamina) / 100;
-      drawMiniCharacter(ctx, p.x + Math.sin(frame * 0.4 + p.wobble) * shake * 3, p.y, 14, p.color, {
-        phase: frame * (0.15 + shake * 0.2), armSwing: Math.sin(frame * 0.35 + p.wobble) * (6 + shake * 10)
+      const sx = p.x + Math.sin(frame * 0.5 + p.wobble) * shake * 5;
+      drawMiniCharacter(ctx, sx, p.y, 15, p.color, {
+        phase: frame * (0.18 + shake * 0.25), armSwing: Math.sin(frame * 0.4 + p.wobble) * (8 + shake * 14)
       });
-      const bw = 36;
-      ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(p.x - bw / 2, p.y - 42, bw, 6);
+      if (p.sprint > 0) { ctx.font = '20px serif'; ctx.fillText('🔥', sx + 18, p.y - 30); }
+      if (p.cramp > 0) { ctx.font = '18px serif'; ctx.fillText('⚡', sx - 18, p.y - 28); }
+      const bw = 42;
+      ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(sx - bw / 2, p.y - 46, bw, 7);
       ctx.fillStyle = p.stamina > 35 ? '#22c55e' : p.stamina > 15 ? '#fbbf24' : '#ef4444';
-      ctx.fillRect(p.x - bw / 2 + 1, p.y - 41, (bw - 2) * (p.stamina / 100), 4);
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 9px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 48);
+      ctx.fillRect(sx - bw / 2 + 1, p.y - 45, (bw - 2) * (p.stamina / 100), 5);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), sx, p.y - 54);
     });
-    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#f97316', elapsed > 50);
+    simDrawFX(ctx, fx, W, H); ctx.restore();
+    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#f97316', elapsed >= 45);
     animId = requestAnimationFrame(loop);
   }
   animId = requestAnimationFrame(loop);
