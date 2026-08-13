@@ -251,18 +251,7 @@
         <button onclick="launchButts()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f472b6,#9d174d);">🍑 Pick A Butt</button>
         <button onclick="launchFlush()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#38bdf8,#1e40af);">🚽 Flush Royale</button>
         <button onclick="launchTwerk()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#ec4899,#7c3aed);">🍑 Twerk Shake Royale</button>
-      </div>
-      <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2 mt-2">Chaos Sims — 60 Second Insanity 🔥</div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <button onclick="launchChicken()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#fbbf24,#b45309);color:#1c1917;">🐔 Chicken Survival</button>
         <button onclick="launchBombRoulette()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#ef4444,#7f1d1d);">🧨 Bomb Roulette</button>
-        <button onclick="launchSwarm()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#facc15,#a16207);color:#1c1917;">🐝 Bee Swarm Arena</button>
-        <button onclick="launchChairApoc()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#a855f7,#581c87);">🪑 Chair Apocalypse</button>
-        <button onclick="launchMagnet()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#38bdf8,#1e40af);">🧲 Magnet Disaster</button>
-        <button onclick="launchDuck()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#22d3ee,#0e7490);">🦆 Duck Disaster</button>
-        <button onclick="launchRat()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#78716c,#44403c);">🐀 Rat Infestation</button>
-        <button onclick="launchToiletPanic()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#38bdf8,#0369a1);">🚽 Toilet Panic</button>
-        <button onclick="launchStamina()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f97316,#c2410c);">💪 Stamina Royale</button>
       </div>
       <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">1-on-1 Combat (pick 2 entrants)</div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -1041,16 +1030,8 @@
   </div>
 </div>
 
-<!-- ==================== CHAOS SIM OVERLAYS (60s) ==================== -->
-<div id="chicken-overlay" class="hidden fixed inset-0 bg-[#050508] z-50"><div class="absolute inset-0 flex flex-col items-center justify-center p-6"><div class="text-center mb-3"><div class="text-[#fbbf24] text-sm font-bold uppercase tracking-widest mb-2">🐔 Chicken Survival</div><h1 class="text-4xl md:text-5xl font-black text-white">Cluck Or Die</h1></div><div id="chicken-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Releasing the flock...</div><div class="text-sm text-gray-600" id="chicken-intro-count"></div></div><div id="chicken-phase-play" class="hidden w-full max-w-5xl"><div id="chicken-feed" class="text-center text-gray-300 mb-3 text-lg font-bold"></div><canvas id="chicken-canvas" width="900" height="580" class="w-full rounded-2xl border border-amber-500/30 bg-[#050508]"></canvas></div><div id="chicken-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🐔</div><div class="text-2xl text-[#fbbf24] font-bold mb-2">SURVIVORS</div><div id="chicken-winner-name" class="text-5xl md:text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div></div></div>
+<!-- ==================== BOMB ROULETTE ==================== -->
 <div id="bomb-overlay" class="hidden fixed inset-0 bg-[#050508] z-50"><div class="absolute inset-0 flex flex-col items-center justify-center p-6"><div class="text-center mb-3"><div class="text-[#ef4444] text-sm font-bold uppercase tracking-widest mb-2">🧨 Bomb Roulette</div><h1 class="text-4xl md:text-5xl font-black text-white">Pass The Boom</h1></div><div id="bomb-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Loading explosives...</div><div class="text-sm text-gray-600" id="bomb-intro-count"></div></div><div id="bomb-phase-play" class="hidden w-full max-w-5xl"><div id="bomb-feed" class="text-center text-gray-300 mb-3 text-lg font-bold"></div><canvas id="bomb-canvas" width="900" height="580" class="w-full rounded-2xl border border-red-500/30 bg-[#050508]"></canvas></div><div id="bomb-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🧨</div><div class="text-2xl text-[#ef4444] font-bold mb-2">SURVIVORS</div><div id="bomb-winner-name" class="text-5xl md:text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div></div></div>
-<div id="swarm-overlay" class="hidden fixed inset-0 bg-[#050508] z-50"><div class="absolute inset-0 flex flex-col items-center justify-center p-6"><div class="text-center mb-3"><div class="text-[#facc15] text-sm font-bold uppercase tracking-widest mb-2">🐝 Bee Swarm Arena</div><h1 class="text-4xl md:text-5xl font-black text-white">Buzz Or Bust</h1></div><div id="swarm-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Angry hive incoming...</div><div class="text-sm text-gray-600" id="swarm-intro-count"></div></div><div id="swarm-phase-play" class="hidden w-full max-w-5xl"><div id="swarm-feed" class="text-center text-gray-300 mb-3 text-lg font-bold"></div><canvas id="swarm-canvas" width="900" height="580" class="w-full rounded-2xl border border-yellow-500/30 bg-[#050508]"></canvas></div><div id="swarm-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🐝</div><div class="text-2xl text-[#facc15] font-bold mb-2">SURVIVORS</div><div id="swarm-winner-name" class="text-5xl md:text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div></div></div>
-<div id="chairapoc-overlay" class="hidden fixed inset-0 bg-[#050508] z-50"><div class="absolute inset-0 flex flex-col items-center justify-center p-6"><div class="text-center mb-3"><div class="text-[#a855f7] text-sm font-bold uppercase tracking-widest mb-2">🪑 Chair Apocalypse</div><h1 class="text-4xl md:text-5xl font-black text-white">Sit Or Yeet</h1></div><div id="chairapoc-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Chairs materializing...</div><div class="text-sm text-gray-600" id="chairapoc-intro-count"></div></div><div id="chairapoc-phase-play" class="hidden w-full max-w-5xl"><div id="chairapoc-feed" class="text-center text-gray-300 mb-3 text-lg font-bold"></div><canvas id="chairapoc-canvas" width="900" height="580" class="w-full rounded-2xl border border-purple-500/30 bg-[#050508]"></canvas></div><div id="chairapoc-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🪑</div><div class="text-2xl text-[#a855f7] font-bold mb-2">SEATED SURVIVORS</div><div id="chairapoc-winner-name" class="text-5xl md:text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div></div></div>
-<div id="magnet-overlay" class="hidden fixed inset-0 bg-[#050508] z-50"><div class="absolute inset-0 flex flex-col items-center justify-center p-6"><div class="text-center mb-3"><div class="text-[#38bdf8] text-sm font-bold uppercase tracking-widest mb-2">🧲 Magnet Disaster</div><h1 class="text-4xl md:text-5xl font-black text-white">Attract &amp; Destroy</h1></div><div id="magnet-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Polarizing the arena...</div><div class="text-sm text-gray-600" id="magnet-intro-count"></div></div><div id="magnet-phase-play" class="hidden w-full max-w-5xl"><div id="magnet-feed" class="text-center text-gray-300 mb-3 text-lg font-bold"></div><canvas id="magnet-canvas" width="900" height="580" class="w-full rounded-2xl border border-sky-500/30 bg-[#050508]"></canvas></div><div id="magnet-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🧲</div><div class="text-2xl text-[#38bdf8] font-bold mb-2">SURVIVORS</div><div id="magnet-winner-name" class="text-5xl md:text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div></div></div>
-<div id="duck-overlay" class="hidden fixed inset-0 bg-[#050508] z-50"><div class="absolute inset-0 flex flex-col items-center justify-center p-6"><div class="text-center mb-3"><div class="text-[#22d3ee] text-sm font-bold uppercase tracking-widest mb-2">🦆 Duck Disaster</div><h1 class="text-4xl md:text-5xl font-black text-white">Quack Or Wreck</h1></div><div id="duck-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Ducks assembling...</div><div class="text-sm text-gray-600" id="duck-intro-count"></div></div><div id="duck-phase-play" class="hidden w-full max-w-5xl"><div id="duck-feed" class="text-center text-gray-300 mb-3 text-lg font-bold"></div><canvas id="duck-canvas" width="900" height="580" class="w-full rounded-2xl border border-cyan-500/30 bg-[#050508]"></canvas></div><div id="duck-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🦆</div><div class="text-2xl text-[#22d3ee] font-bold mb-2">REMAINING DUCKS</div><div id="duck-winner-name" class="text-5xl md:text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div></div></div>
-<div id="rat-overlay" class="hidden fixed inset-0 bg-[#050508] z-50"><div class="absolute inset-0 flex flex-col items-center justify-center p-6"><div class="text-center mb-3"><div class="text-[#a8a29e] text-sm font-bold uppercase tracking-widest mb-2">🐀 Rat Infestation</div><h1 class="text-4xl md:text-5xl font-black text-white">Kitchen Nightmare</h1></div><div id="rat-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Infesting the kitchen...</div><div class="text-sm text-gray-600" id="rat-intro-count"></div></div><div id="rat-phase-play" class="hidden w-full max-w-5xl"><div id="rat-feed" class="text-center text-gray-300 mb-3 text-lg font-bold"></div><canvas id="rat-canvas" width="900" height="580" class="w-full rounded-2xl border border-stone-500/30 bg-[#050508]"></canvas></div><div id="rat-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🐀</div><div class="text-2xl text-[#a8a29e] font-bold mb-2">SURVIVING RATS</div><div id="rat-winner-name" class="text-5xl md:text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div></div></div>
-<div id="toiletpanic-overlay" class="hidden fixed inset-0 bg-[#050508] z-50"><div class="absolute inset-0 flex flex-col items-center justify-center p-6"><div class="text-center mb-3"><div class="text-[#38bdf8] text-sm font-bold uppercase tracking-widest mb-2">🚽 Toilet Panic</div><h1 class="text-4xl md:text-5xl font-black text-white">Porcelain Chaos</h1></div><div id="toiletpanic-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Plumbing unstable...</div><div class="text-sm text-gray-600" id="toiletpanic-intro-count"></div></div><div id="toiletpanic-phase-play" class="hidden w-full max-w-5xl"><div id="toiletpanic-feed" class="text-center text-gray-300 mb-3 text-lg font-bold"></div><canvas id="toiletpanic-canvas" width="900" height="580" class="w-full rounded-2xl border border-sky-500/30 bg-[#050508]"></canvas></div><div id="toiletpanic-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🚽</div><div class="text-2xl text-[#38bdf8] font-bold mb-2">STILL SEATED</div><div id="toiletpanic-winner-name" class="text-5xl md:text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div></div></div>
-<div id="stamina-overlay" class="hidden fixed inset-0 bg-[#050508] z-50"><div class="absolute inset-0 flex flex-col items-center justify-center p-6"><div class="text-center mb-3"><div class="text-[#f97316] text-sm font-bold uppercase tracking-widest mb-2">💪 Stamina Royale</div><h1 class="text-4xl md:text-5xl font-black text-white">Last One Standing</h1></div><div id="stamina-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Warming up...</div><div class="text-sm text-gray-600" id="stamina-intro-count"></div></div><div id="stamina-phase-play" class="hidden w-full max-w-5xl"><div id="stamina-feed" class="text-center text-gray-300 mb-3 text-lg font-bold"></div><canvas id="stamina-canvas" width="900" height="580" class="w-full rounded-2xl border border-orange-500/30 bg-[#050508]"></canvas></div><div id="stamina-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">💪</div><div class="text-2xl text-[#f97316] font-bold mb-2">GREAT STAMINA</div><div id="stamina-winner-name" class="text-5xl md:text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div></div></div>
 
 <!-- ==================== BOXING MATCH (1v1, enhanced) ==================== -->
 <div id="boxing-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
@@ -1696,9 +1677,7 @@ const PREVIEW_LAUNCH_MAP = {
   launchTilt:'tilt', launchBee:'bee', launchSubway:'subway', launchDeal:'deal', launchWheelDoom:'wheel',
   launchCrystal:'crystal', launchWarp:'warp', launchStocks:'stocks', launchSlot:'slot', launchBingo:'bingo',
   launchHighCard:'highcard', launchPlinko:'plinko', launchThunder:'thunder', launchButts:'butts', launchFlush:'flush',
-  launchTwerk:'twerk', launchChicken:'chicken', launchBombRoulette:'bomb', launchSwarm:'swarm',
-  launchChairApoc:'chairapoc', launchMagnet:'magnet', launchDuck:'duck', launchRat:'rat',
-  launchToiletPanic:'toiletpanic', launchStamina:'stamina',
+  launchTwerk:'twerk', launchBombRoulette:'bomb',
   launchBoxingMatch:'boxing', launchSwordDuel:'sword'
 };
 
@@ -1868,15 +1847,7 @@ function launchThunder() { openGamePopup('thunder'); }
 function launchButts() { openGamePopup('butts'); }
 function launchFlush() { openGamePopup('flush'); }
 function launchTwerk() { openGamePopup('twerk'); }
-function launchChicken() { openGamePopup('chicken'); }
 function launchBombRoulette() { openGamePopup('bomb'); }
-function launchSwarm() { openGamePopup('swarm'); }
-function launchChairApoc() { openGamePopup('chairapoc'); }
-function launchMagnet() { openGamePopup('magnet'); }
-function launchDuck() { openGamePopup('duck'); }
-function launchRat() { openGamePopup('rat'); }
-function launchToiletPanic() { openGamePopup('toiletpanic'); }
-function launchStamina() { openGamePopup('stamina'); }
 
 
 
@@ -9406,19 +9377,9 @@ function startTwerk(names) {
   loop();
 }
 
-/* ==================== CHAOS SIMS (60s auto-watch) ==================== */
+/* ==================== BOMB ROULETTE (60s auto-watch) ==================== */
 const SIM60 = 60;
-const SIM_GAGS = {
-  chicken: ['CLUCK NO!','TRIPPED!','GULPED!','NUGGETED!','CORN BLOCKED!','BROILIN!'],
-  bomb: ['BOOM!','RIP!','GG!','NOT ME!','WHY ME?!','KABOOM!'],
-  swarm: ['STUNG!','BZZZT!','ALLERGIC!','HIVE MIND!','NOT THE FACE!'],
-  chair: ['YEETED!','NO SEAT!','FLYING!','BONK!','CHAIR WARS!'],
-  magnet: ['SQUISH!','MERGED!','CRUNCH!','TOO CLOSE!','MAGNETED!'],
-  duck: ['YEETED!','SNATCHED!','CRUSHED!','QUACK NO!','BREADED!'],
-  rat: ['CAUGHT!','SWEPT!','SPLAT!','MEOW NO!','TRAPPED!'],
-  toilet: ['FLUSHED!','DRENCHED!','DIZZY!','BOOM!','SKIBIDI!'],
-  stamina: ['TAPPED OUT!','WHEEZING!','DONE!','CANT!','NO MORE!']
-};
+const SIM_GAGS = { bomb: ['BOOM!','RIP!','GG!','NOT ME!','WHY ME?!','KABOOM!'] };
 function simMakeFX() { return { parts: [], texts: [], shake: 0, flash: 0, flashCol: '#fff' }; }
 function simBurst(fx, x, y, col, n, spd) {
   for (let i = 0; i < n; i++) {
@@ -9517,117 +9478,8 @@ function simRun(prefix, names, accent, startFn) {
   showOverlay(prefix + '-overlay'); showPhase(prefix, 'intro');
   if (!names.length) { alert('No entrants yet!'); return; }
   const el = document.getElementById(prefix + '-intro-count');
-  if (el) el.textContent = names.length + ' entrant' + (names.length === 1 ? '' : 's') + ' — 60 second chaos sim!';
+  if (el) el.textContent = names.length + ' entrant' + (names.length === 1 ? '' : 's') + ' — 60 second bomb roulette!';
   armGameStart(() => { showPhase(prefix, 'play'); startFn(names); });
-}
-
-function drawChicken(ctx, x, y, r, color, opts) {
-  opts = opts || {}; ctx.save(); ctx.translate(x, y);
-  if (opts.rot) ctx.rotate(opts.rot);
-  const flap = Math.sin((opts.phase || 0) * 3) * 0.4;
-  ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.beginPath(); ctx.ellipse(0, r * 0.9, r * 0.7, r * 0.2, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = color || '#fbbf24'; ctx.beginPath(); ctx.ellipse(0, 0, r * 0.55, r * 0.45, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#fef3c7'; ctx.beginPath(); ctx.arc(r * 0.35, -r * 0.15, r * 0.32, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(r * 0.55, -r * 0.05); ctx.lineTo(r * 0.85, 0); ctx.lineTo(r * 0.55, r * 0.05); ctx.fill();
-  ctx.fillStyle = '#1c1917'; ctx.beginPath(); ctx.arc(r * 0.42, -r * 0.22, r * 0.06, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#fde68a'; ctx.beginPath(); ctx.ellipse(-r * 0.35, r * 0.05, r * 0.35, r * 0.18, flap - 0.5, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(-r * 0.35, -r * 0.05, r * 0.35, r * 0.18, -flap - 0.5, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#f59e0b'; ctx.fillRect(-r * 0.08, r * 0.35, r * 0.12, r * 0.35); ctx.fillRect(r * 0.02, r * 0.35, r * 0.12, r * 0.35);
-  if (opts.eating) { ctx.font = r + 'px Inter'; ctx.textAlign = 'center'; ctx.fillText('🌽', r * 0.2, -r * 0.55); }
-  if (opts.tripped) { ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, r * 0.9, 0, Math.PI * 2); ctx.stroke(); }
-  ctx.restore();
-}
-function drawDuck(ctx, x, y, r, color, opts) {
-  opts = opts || {}; ctx.save(); ctx.translate(x, y); if (opts.rot) ctx.rotate(opts.rot);
-  ctx.fillStyle = color || '#facc15'; ctx.beginPath(); ctx.ellipse(0, r * 0.1, r * 0.55, r * 0.4, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#22c55e'; ctx.beginPath(); ctx.arc(r * 0.35, -r * 0.1, r * 0.3, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#f97316'; ctx.beginPath(); ctx.moveTo(r * 0.55, -r * 0.05); ctx.lineTo(r * 0.9, 0); ctx.lineTo(r * 0.55, r * 0.08); ctx.fill();
-  ctx.fillStyle = '#1c1917'; ctx.beginPath(); ctx.arc(r * 0.42, -r * 0.15, r * 0.05, 0, Math.PI * 2); ctx.fill();
-  ctx.restore();
-}
-function drawRat(ctx, x, y, r, color, opts) {
-  opts = opts || {}; ctx.save(); ctx.translate(x, y); if (opts.rot) ctx.rotate(opts.rot);
-  ctx.fillStyle = color || '#78716c'; ctx.beginPath(); ctx.ellipse(0, 0, r * 0.7, r * 0.45, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#a8a29e'; ctx.beginPath(); ctx.arc(r * 0.45, -r * 0.1, r * 0.28, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#fca5a5'; ctx.beginPath(); ctx.arc(-r * 0.55, -r * 0.35, r * 0.18, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.arc(-r * 0.35, -r * 0.45, r * 0.16, 0, Math.PI * 2); ctx.fill();
-  ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-r * 0.7, 0); ctx.quadraticCurveTo(-r * 1.1, -r * 0.2, -r * 1.3, 0); ctx.stroke();
-  ctx.restore();
-}
-function drawSimChair(ctx, x, y, sc, taken) {
-  ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
-  ctx.fillStyle = taken ? '#64748b' : '#a855f7'; ctx.fillRect(-14, -8, 28, 6);
-  ctx.fillRect(-14, -8, 5, 22); ctx.fillRect(9, -8, 5, 22);
-  ctx.fillStyle = taken ? '#475569' : '#7c3aed'; ctx.fillRect(-16, 14, 32, 4);
-  ctx.restore();
-}
-function drawSimToilet(ctx, x, y, sc, evt) {
-  ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
-  ctx.fillStyle = '#e2e8f0'; ctx.beginPath(); ctx.roundRect(-16, -20, 32, 28, 6); ctx.fill();
-  ctx.fillStyle = '#cbd5e1'; ctx.beginPath(); ctx.ellipse(0, 8, 18, 10, 0, 0, Math.PI * 2); ctx.fill();
-  if (evt === 'spin') { ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, 0, 24, 0, Math.PI * 2); ctx.stroke(); }
-  if (evt === 'explode') { ctx.fillStyle = 'rgba(239,68,68,0.4)'; ctx.beginPath(); ctx.arc(0, 0, 30, 0, Math.PI * 2); ctx.fill(); }
-  ctx.restore();
-}
-
-function runChicken() { simRun('chicken', Array.from(entrants), '#fbbf24', startChicken); }
-function startChicken(names) {
-  const canvas = document.getElementById('chicken-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, pad = 45;
-  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🐔 THE FLOCK HAS LOST ITS MIND!', animId;
-  let fx = simMakeFX(), giants = [], elimTimer = 0, corn = [];
-  for (let i = 0; i < 8; i++) corn.push({ x: pad + Math.random() * (W - pad * 2), y: pad + Math.random() * (H - pad * 2), r: 8 });
-  function loop() {
-    frame++; const elapsed = frame / 60, chaos = elapsed >= 50, cm = simChaosMult(elapsed);
-    if (elapsed >= SIM60) { simFinish('chicken', players, names, animId); return; }
-    elimTimer++;
-    if (elimTimer >= (chaos ? 35 : 280 / cm)) {
-      elimTimer = 0;
-      const alive = players.filter(p => p.alive);
-      const n = Math.min(chaos ? 3 : 2, Math.max(1, alive.length - 1));
-      for (let k = 0; k < n && alive.length > 1; k++) {
-        const v = alive.splice(Math.floor(Math.random() * alive.length), 1)[0];
-        v.alive = false; v.elimX = v.x; v.elimY = v.y; v.gag = simPickGag('chicken'); v.gagTimer = 65;
-        simBurst(fx, v.x, v.y, '#fbbf24', 20, 8); simPopText(fx, v.x, v.y - 20, v.gag, '#ef4444', 14);
-        feed = '🐔 ' + v.name + ' — ' + v.gag;
-      }
-    }
-    if (Math.random() < 0.025 * cm) {
-      giants.push({ x: -60, y: Math.random() * H, t: 100, spd: 3 + cm });
-      feed = '🐔 MEGA CHICKEN INCOMING!!';
-    }
-    giants.forEach(g => {
-      g.t--; g.x += g.spd;
-      const tgt = players.filter(p => p.alive).sort((a, b) => a.x - b.x)[0];
-      if (tgt) { g.y += (tgt.y - g.y) * 0.04; if (Math.hypot(g.x - tgt.x, g.y - tgt.y) < 45) { tgt.alive = false; tgt.elimX = tgt.x; tgt.elimY = tgt.y; tgt.gag = 'GULPED!'; tgt.gagTimer = 60; simBurst(fx, tgt.x, tgt.y, '#ef4444', 25, 10); feed = '🐔 ' + tgt.name + ' GOT GULPED!'; } }
-    });
-    giants = giants.filter(g => g.t > 0 && g.x < W + 80);
-    players.forEach(p => {
-      if (!p.alive) { if (p.gagTimer > 0) p.gagTimer--; return; }
-      p.stateT++;
-      if (p.state === 'trip') { p.rot = (p.rot || 0) + 0.2; p.vx *= 0.92; p.vy *= 0.92; p.x += p.vx; p.y += p.vy; if (p.stateT > 35) { p.state = 'move'; p.stateT = 0; p.rot = 0; } return; }
-      if (p.state === 'eat') { if (p.stateT > 40) { p.state = 'move'; p.stateT = 0; } return; }
-      if (Math.random() < 0.018 * cm) { p.state = Math.random() < 0.55 ? 'trip' : 'eat'; p.stateT = 0; simPopText(fx, p.x, p.y - 15, p.state === 'trip' ? 'TRIP!' : 'NOM!', '#fbbf24', 12); return; }
-      giants.forEach(g => { if (Math.hypot(g.x - p.x, g.y - p.y) < 200) { p.vx += (p.x - g.x) * 0.025; p.vy += (p.y - g.y) * 0.025; } });
-      if (Math.random() < 0.05) { p.vx = (Math.random() - 0.5) * 5 * cm; p.vy = (Math.random() - 0.5) * 5 * cm; }
-      p.x += p.vx; p.y += p.vy; p.vx *= 0.95; p.vy *= 0.95; simBounce(p, W, H, pad);
-    });
-    simCollide(players); simTickFX(fx);
-    const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#166534'); bg.addColorStop(1, '#14532d');
-    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = 'rgba(34,197,94,0.2)'; for (let i = 0; i < 25; i++) ctx.fillRect((i * 83 + frame * 2) % W, H - 90, 50, 90);
-    corn.forEach(c => { ctx.font = '18px serif'; ctx.textAlign = 'center'; ctx.fillText('🌽', c.x, c.y); });
-    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
-    giants.forEach(g => { ctx.font = (70 + cm * 10) + 'px serif'; ctx.textAlign = 'center'; ctx.fillText('🐔', g.x, g.y); drawGagText(ctx, g.x, g.y - 50, 'RUN!!', '#ef4444', 16); });
-    players.forEach(p => {
-      if (!p.alive) { ctx.globalAlpha = 0.3; drawChicken(ctx, p.elimX, p.elimY, 13, p.color, { phase: frame * 0.1 }); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 32, p.gag, '#fbbf24', 13); return; }
-      drawChicken(ctx, p.x, p.y, 15, p.color, { phase: frame * 0.2, eating: p.state === 'eat', tripped: p.state === 'trip', rot: p.rot || 0 });
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 30);
-    });
-    simDrawFX(ctx, fx, W, H); ctx.restore();
-    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#fbbf24', chaos);
-    animId = requestAnimationFrame(loop);
-  }
-  animId = requestAnimationFrame(loop);
 }
 
 function runBombRoulette() { simRun('bomb', Array.from(entrants), '#ef4444', startBombRoulette); }
@@ -9635,20 +9487,22 @@ function startBombRoulette(names) {
   const canvas = document.getElementById('bomb-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height, pad = 55, cx = W / 2, cy = H / 2;
   let players = simSpawn(names, W, H, pad), frame = 0, feed = '🧨 WHO HAS THE BOMB?!', animId;
-  let bomb = null, fx = simMakeFX(), bombRespawn = 0, shockwave = 0;
+  let bomb = null, fx = simMakeFX(), bombRespawn = 0, shockwave = 0, blastPos = null;
+  function fuseMax(count) { return Math.max(12, 38 - (5 - count) * 6); }
   function placeCircle() {
     players.filter(p => p.alive).forEach((p, i, arr) => {
       const ang = (i / arr.length) * Math.PI * 2 - Math.PI / 2;
       p.x = cx + Math.cos(ang) * Math.min(W, H) * 0.32;
       p.y = cy + Math.sin(ang) * Math.min(W, H) * 0.32;
-      p.vx = 0; p.vy = 0;
+      p.vx = Math.cos(ang + Math.PI / 2) * 1.5;
+      p.vy = Math.sin(ang + Math.PI / 2) * 1.5;
     });
   }
   placeCircle();
   function newBomb() {
     const alive = players.filter(p => p.alive);
     if (alive.length <= 1) return;
-    bomb = { target: alive[Math.floor(Math.random() * alive.length)], count: 5, jumpT: 0, pulse: 0 };
+    bomb = { target: alive[Math.floor(Math.random() * alive.length)], count: 5, fuse: 0, pulse: 0 };
     simPopText(fx, cx, cy - 80, 'NEW BOMB!', '#ef4444', 20);
   }
   newBomb();
@@ -9657,9 +9511,10 @@ function startBombRoulette(names) {
     if (elapsed >= SIM60) { simFinish('bomb', players, names, animId); return; }
     if (bombRespawn > 0) bombRespawn--;
     if (bomb) {
-      bomb.jumpT++; bomb.pulse += 0.2;
-      if (bomb.count <= 3 && bomb.jumpT % 15 === 0) fx.shake = 4 + (5 - bomb.count);
-      if (bomb.jumpT % Math.max(20, 50 - cm * 10) === 0 && bomb.count > 1) {
+      bomb.fuse++; bomb.pulse += 0.25;
+      const maxFuse = Math.max(10, fuseMax(bomb.count) - cm * 4);
+      if (bomb.count <= 3) fx.shake = Math.max(fx.shake, 3 + (4 - bomb.count) * 2);
+      if (bomb.fuse % Math.max(14, 28 - cm * 6) === 0 && bomb.count > 1) {
         const alive = players.filter(p => p.alive && p !== bomb.target);
         if (alive.length) {
           const old = bomb.target.name;
@@ -9668,33 +9523,48 @@ function startBombRoulette(names) {
           simPopText(fx, bomb.target.x, bomb.target.y - 40, 'CAUGHT IT!', '#fbbf24', 14);
         }
       }
-      if (bomb.jumpT >= Math.max(35, 55 - cm * 8)) {
-        bomb.count--; bomb.jumpT = 0;
+      if (bomb.fuse >= maxFuse) {
+        bomb.count--; bomb.fuse = 0;
         if (bomb.count <= 0) {
-          bomb.target.alive = false; bomb.target.elimX = bomb.target.x; bomb.target.elimY = bomb.target.y;
-          bomb.target.gag = simPickGag('bomb'); bomb.target.gagTimer = 70;
-          simBurst(fx, bomb.target.x, bomb.target.y, '#ef4444', 40, 12);
-          simPopText(fx, bomb.target.x, bomb.target.y - 30, '💥 BOOM!', '#fff', 22);
-          fx.flash = 1; fx.flashCol = '#ef4444'; shockwave = 1; feed = '💥 ' + bomb.target.name + ' EXPLODED!!';
-          bomb = null; bombRespawn = Math.max(25, 45 - cm * 10); placeCircle();
+          const victim = bomb.target;
+          blastPos = { x: victim.x, y: victim.y };
+          victim.alive = false; victim.elimX = victim.x; victim.elimY = victim.y;
+          victim.gag = simPickGag('bomb'); victim.gagTimer = 70;
+          simBurst(fx, victim.x, victim.y, '#ef4444', 40, 12);
+          simPopText(fx, victim.x, victim.y - 30, '💥 BOOM!', '#fff', 22);
+          fx.flash = 1; fx.flashCol = '#ef4444'; shockwave = 0.05;
+          feed = '💥 ' + victim.name + ' EXPLODED!!';
+          bomb = null; bombRespawn = Math.max(20, 35 - cm * 8); placeCircle();
+        } else {
+          feed = '🧨 TICK... ' + bomb.count + '!';
+          fx.shake = 6 + (5 - bomb.count);
         }
       }
-      players.forEach(p => {
-        if (!p.alive || p === bomb.target) return;
-        const d = Math.hypot(p.x - bomb.target.x, p.y - bomb.target.y);
-        if (d < 120) { p.vx += (p.x - bomb.target.x) / d * 0.4; p.vy += (p.y - bomb.target.y) / d * 0.4; }
-      });
+      if (bomb) {
+        const tgt = bomb.target;
+        players.forEach(p => {
+          if (!p.alive || p === tgt) return;
+          const d = Math.hypot(p.x - tgt.x, p.y - tgt.y) || 1;
+          if (d < 140) { p.vx += (p.x - tgt.x) / d * 0.55; p.vy += (p.y - tgt.y) / d * 0.55; }
+        });
+      }
     } else if (bombRespawn <= 0 && players.filter(p => p.alive).length > 1) newBomb();
-    if (shockwave > 0) shockwave += 0.04;
+    players.forEach(p => {
+      if (!p.alive) { if (p.gagTimer > 0) p.gagTimer--; return; }
+      if (Math.random() < 0.06) { p.vx += (Math.random() - 0.5) * 1.2; p.vy += (Math.random() - 0.5) * 1.2; }
+      p.x += p.vx; p.y += p.vy; p.vx *= 0.94; p.vy *= 0.94; simBounce(p, W, H, pad);
+    });
+    if (shockwave > 0) shockwave += 0.05;
+    if (shockwave > 1.3) { shockwave = 0; blastPos = null; }
     simTickFX(fx);
     ctx.fillStyle = '#0f0202'; ctx.fillRect(0, 0, W, H);
     const rg = ctx.createRadialGradient(cx, cy, 20, cx, cy, Math.min(W, H) * 0.45);
     rg.addColorStop(0, 'rgba(239,68,68,0.15)'); rg.addColorStop(1, 'transparent');
     ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
     ctx.strokeStyle = 'rgba(239,68,68,0.4)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, cy, Math.min(W, H) * 0.34, 0, Math.PI * 2); ctx.stroke();
-    if (shockwave > 0 && shockwave < 1.2) {
-      ctx.strokeStyle = `rgba(239,68,68,${1 - shockwave})`; ctx.lineWidth = 6;
-      ctx.beginPath(); ctx.arc(bomb ? bomb.target.x : cx, bomb ? bomb.target.y : cy, shockwave * 120, 0, Math.PI * 2); ctx.stroke();
+    if (shockwave > 0 && blastPos) {
+      ctx.strokeStyle = `rgba(239,68,68,${Math.max(0, 1 - shockwave)})`; ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.arc(blastPos.x, blastPos.y, shockwave * 130, 0, Math.PI * 2); ctx.stroke();
     }
     ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
     players.forEach(p => {
@@ -9704,521 +9574,13 @@ function startBombRoulette(names) {
       ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 32);
       if (panic) {
         ctx.font = (40 + Math.sin(bomb.pulse) * 8) + 'px serif'; ctx.fillText('🧨', p.x, p.y - 52);
-        ctx.fillStyle = bomb.count <= 2 ? '#ef4444' : '#fbbf24'; ctx.font = 'bold ' + (28 + Math.sin(frame * 0.4) * 4) + 'px Inter';
+        ctx.fillStyle = bomb.count <= 2 ? '#ef4444' : '#fbbf24'; ctx.font = 'bold ' + (28 + Math.sin(frame * 0.5) * 4) + 'px Inter';
         ctx.fillText(bomb.count, p.x, p.y - 82);
+        if (bomb.count <= 2) { ctx.fillStyle = '#ef4444'; ctx.font = 'bold 12px Inter'; ctx.fillText('BOOM SOON!', p.x, p.y - 98); }
       }
     });
     simDrawFX(ctx, fx, W, H); ctx.restore();
     simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#ef4444', elapsed >= 45);
-    animId = requestAnimationFrame(loop);
-  }
-  animId = requestAnimationFrame(loop);
-}
-
-function runSwarm() { simRun('swarm', Array.from(entrants), '#facc15', startSwarm); }
-function startSwarm(names) {
-  const canvas = document.getElementById('swarm-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, pad = 45;
-  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🐝 THE HIVE IS ANGRY!', animId;
-  let target = null, bees = [], attackT = 0, attackDur = 0, fx = simMakeFX();
-  function pickTarget() {
-    const alive = players.filter(p => p.alive);
-    if (!alive.length) return;
-    target = alive[Math.floor(Math.random() * alive.length)];
-    attackDur = 90 + Math.floor(Math.random() * 60);
-    attackT = 0;
-    bees = Array.from({ length: 18 }, () => ({ x: target.x + (Math.random() - 0.5) * 120, y: target.y + (Math.random() - 0.5) * 120, vx: 0, vy: 0, buzz: Math.random() * 6 }));
-    feed = '🐝 → ' + target.name + ' IS THE TARGET!!';
-    simPopText(fx, target.x, target.y - 30, 'RUN!!!', '#ef4444', 18);
-  }
-  pickTarget();
-  function loop() {
-    frame++; const elapsed = frame / 60, cm = simChaosMult(elapsed);
-    if (elapsed >= SIM60) { simFinish('swarm', players, names, animId); return; }
-    attackT++;
-    if (attackT >= attackDur) pickTarget();
-    if (attackT > attackDur * 0.65 && Math.random() < 0.06 * cm && target && target.alive) {
-      target.alive = false; target.elimX = target.x; target.elimY = target.y;
-      target.gag = simPickGag('swarm'); target.gagTimer = 65;
-      simBurst(fx, target.x, target.y, '#facc15', 25, 9); fx.flash = 0.6; fx.flashCol = '#fef08a';
-      feed = '🐝 ' + target.name + ' — ' + target.gag; pickTarget();
-    }
-    players.forEach(p => {
-      if (!p.alive) { if (p.gagTimer > 0) p.gagTimer--; return; }
-      const panic = target === p ? 2.5 * cm : 1;
-      if (Math.random() < 0.06) { p.vx = (Math.random() - 0.5) * 7 * panic; p.vy = (Math.random() - 0.5) * 7 * panic; }
-      if (target === p) { p.vx += (Math.random() - 0.5) * 1.2; p.vy += (Math.random() - 0.5) * 1.2; }
-      else if (target) { const d = Math.hypot(p.x - target.x, p.y - target.y); if (d < 100) { p.vx += (p.x - target.x) / d * 0.3; p.vy += (p.y - target.y) / d * 0.3; } }
-      p.x += p.vx; p.y += p.vy; p.vx *= 0.93; p.vy *= 0.93; simBounce(p, W, H, pad);
-    });
-    if (target && target.alive) bees.forEach(b => {
-      const dx = target.x - b.x, dy = target.y - b.y, d = Math.hypot(dx, dy) || 1;
-      b.vx += dx / d * 0.5; b.vy += dy / d * 0.5; b.buzz += 0.25;
-      b.vx += Math.sin(b.buzz) * 0.2; b.vy += Math.cos(b.buzz * 1.2) * 0.2;
-      b.vx *= 0.88; b.vy *= 0.88; b.x += b.vx; b.y += b.vy;
-    });
-    simTickFX(fx);
-    const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#fef08a'); bg.addColorStop(1, '#fde047');
-    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-    ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 4; ctx.strokeRect(pad, pad, W - pad * 2, H - pad * 2);
-    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
-    bees.forEach(b => { ctx.font = '18px serif'; ctx.textAlign = 'center'; ctx.fillText('🐝', b.x, b.y); });
-    if (target && target.alive) { ctx.strokeStyle = 'rgba(239,68,68,0.5)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(target.x, target.y, 50 + Math.sin(frame * 0.2) * 10, 0, Math.PI * 2); ctx.stroke(); }
-    players.forEach(p => {
-      if (!p.alive) { ctx.globalAlpha = 0.3; drawMiniCharacter(ctx, p.elimX, p.elimY, 13, p.color); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 32, p.gag, '#ca8a04', 13); return; }
-      drawMiniCharacter(ctx, p.x, p.y, 15, p.color, { phase: frame * 0.25, armSwing: target === p ? Math.sin(frame * 0.55) * 18 : 5 });
-      ctx.fillStyle = '#422006'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 32);
-      if (target === p) drawGagText(ctx, p.x, p.y - 48, 'AHHHHH!!', '#ef4444', 15);
-    });
-    simDrawFX(ctx, fx, W, H); ctx.restore();
-    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#ca8a04', elapsed >= 45);
-    animId = requestAnimationFrame(loop);
-  }
-  animId = requestAnimationFrame(loop);
-}
-
-function runChairApoc() { simRun('chairapoc', Array.from(entrants), '#a855f7', startChairApoc); }
-function startChairApoc(names) {
-  const canvas = document.getElementById('chairapoc-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, pad = 40;
-  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🪑 MUSICAL CHAIRS FROM HELL!', animId;
-  let chairs = names.map((_, i) => ({ x: pad + 55 + (i % 5) * 155, y: pad + 55 + Math.floor(i / 5) * 105, alive: true, occupant: null, vanishT: 0 }));
-  let vanishTimer = 0, fx = simMakeFX();
-  players.forEach(p => { p.seated = false; p.chair = null; p.spin = 0; });
-  function loop() {
-    frame++; const elapsed = frame / 60, cm = simChaosMult(elapsed);
-    if (elapsed >= SIM60) {
-      players.forEach(p => { if (!p.seated && p.alive) { p.alive = false; p.gag = 'NO CHAIR!'; p.elimX = p.x; p.elimY = p.y; p.gagTimer = 55; } });
-      simFinish('chairapoc', players, names, animId); return;
-    }
-    vanishTimer++;
-    if (vanishTimer >= Math.max(180, 240 - cm * 40)) {
-      vanishTimer = 0;
-      const open = chairs.filter(c => c.alive);
-      if (open.length > 1) {
-        const c = open[Math.floor(Math.random() * open.length)];
-        c.alive = false; c.vanishT = 30;
-        simBurst(fx, c.x, c.y, '#a855f7', 20, 8);
-        simPopText(fx, c.x, c.y, 'POOF!', '#c084fc', 16);
-        feed = '🪑 CHAIR VANISHED! SCRAMBLE!';
-        fx.shake = 8;
-      }
-    }
-    chairs.forEach(c => { if (c.vanishT > 0) c.vanishT--; c.occupant = null; });
-    players.forEach(p => {
-      if (!p.alive) return;
-      p.seated = false; p.chair = null;
-      let best = null, bd = Infinity;
-      chairs.filter(c => c.alive).forEach(c => { const d = Math.hypot(c.x - p.x, c.y - p.y); if (d < bd) { bd = d; best = c; } });
-      if (best) {
-        const dx = best.x - p.x, dy = best.y - p.y, d = Math.hypot(dx, dy) || 1;
-        p.vx += (dx / d) * (0.45 + cm * 0.15); p.vy += (dy / d) * (0.45 + cm * 0.15);
-        if (d < 24) { p.seated = true; p.chair = best; best.occupant = p; }
-      }
-      p.x += p.vx; p.y += p.vy; p.vx *= 0.86; p.vy *= 0.86;
-    });
-    chairs.filter(c => c.alive && c.occupant).forEach(c => {
-      chairs.filter(o => o.alive && o !== c && o.occupant && Math.hypot(o.x - c.x, o.y - c.y) < 35).forEach(o => {
-        if (Math.random() < 0.07 * cm) {
-          const loser = Math.random() < 0.5 ? c.occupant : o.occupant;
-          if (loser && loser.alive) {
-            loser.alive = false; loser.seated = false; loser.elimX = loser.x; loser.elimY = loser.y;
-            loser.vx = (Math.random() - 0.5) * 16; loser.vy = -10 - Math.random() * 8; loser.spin = (Math.random() - 0.5) * 0.5;
-            loser.gag = simPickGag('chair'); loser.gagTimer = 65;
-            simBurst(fx, loser.x, loser.y, '#a855f7', 18, 10); simPopText(fx, loser.x, loser.y - 25, 'YEET!', '#fff', 18);
-            feed = '💥 ' + loser.name + ' GOT LAUNCHED!';
-            if (c.occupant === loser) c.occupant = null; else o.occupant = null;
-          }
-        }
-      });
-    });
-    simTickFX(fx);
-    ctx.fillStyle = '#1a0a2e'; ctx.fillRect(0, 0, W, H);
-    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
-    chairs.forEach(c => {
-      if (!c.alive) { if (c.vanishT > 0) { ctx.globalAlpha = c.vanishT / 30; drawSimChair(ctx, c.x, c.y, 1.2, false); ctx.globalAlpha = 1; } return; }
-      drawSimChair(ctx, c.x, c.y, c.occupant ? 1.1 : 1, !!c.occupant);
-    });
-    players.forEach(p => {
-      if (!p.alive) {
-        p.x += p.vx; p.y += p.vy; p.vy += 0.45; p.spin += 0.08;
-        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.spin); ctx.globalAlpha = 0.35;
-        drawMiniCharacter(ctx, 0, 0, 13, p.color); ctx.globalAlpha = 1; ctx.restore();
-        if (p.gagTimer > 0) drawGagText(ctx, p.x, p.y - 35, p.gag, '#a855f7', 13);
-        return;
-      }
-      const sx = p.seated && p.chair ? p.chair.x : p.x, sy = p.seated && p.chair ? p.chair.y - 10 : p.y;
-      drawMiniCharacter(ctx, sx, sy, 14, p.color, { phase: p.seated ? 0 : frame * 0.2, armSwing: p.seated ? 0 : Math.sin(frame * 0.3) * 12 });
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), sx, sy - 30);
-    });
-    simDrawFX(ctx, fx, W, H); ctx.restore();
-    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#a855f7', elapsed >= 45);
-    animId = requestAnimationFrame(loop);
-  }
-  animId = requestAnimationFrame(loop);
-}
-
-function runMagnet() { simRun('magnet', Array.from(entrants), '#38bdf8', startMagnet); }
-function startMagnet(names) {
-  const canvas = document.getElementById('magnet-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, pad = 45;
-  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🧲 MAGNETS ACTIVATED!', animId;
-  let magnet = null, fx = simMakeFX();
-  function newMagnet() {
-    const alive = players.filter(p => p.alive);
-    if (!alive.length) return;
-    magnet = { p: alive[Math.floor(Math.random() * alive.length)], t: 70 + Math.floor(Math.random() * 50), pulse: 0, power: 0.7 + Math.random() * 0.5 };
-    feed = '🧲 ' + magnet.p.name + ' IS THE MAGNET!!';
-    simPopText(fx, magnet.p.x, magnet.p.y - 35, 'MAGNET!', '#38bdf8', 18);
-  }
-  newMagnet();
-  function loop() {
-    frame++; const elapsed = frame / 60, cm = simChaosMult(elapsed);
-    if (elapsed >= SIM60) { simFinish('magnet', players, names, animId); return; }
-    if (magnet) {
-      magnet.t--; magnet.pulse += 0.15;
-      if (magnet.t <= 0) newMagnet();
-      const range = 180 + cm * 60;
-      players.forEach(p => {
-        if (!p.alive || p === magnet.p) return;
-        const dx = magnet.p.x - p.x, dy = magnet.p.y - p.y, d = Math.hypot(dx, dy) || 1;
-        if (d < range) { p.vx += (dx / d) * magnet.power * (1.2 + cm * 0.3); p.vy += (dy / d) * magnet.power * (1.2 + cm * 0.3); }
-      });
-    }
-    players.forEach(p => {
-      if (!p.alive) { if (p.gagTimer > 0) p.gagTimer--; return; }
-      p.x += p.vx; p.y += p.vy; p.vx *= 0.93; p.vy *= 0.93; simBounce(p, W, H, pad);
-    });
-    for (let i = 0; i < 3; i++) {
-      const hit = simCollide(players, 0.85);
-      if (hit && Math.random() < 0.12 * cm) {
-        const loser = hit[Math.floor(Math.random() * 2)];
-        if (loser.alive) {
-          loser.alive = false; loser.elimX = loser.x; loser.elimY = loser.y; loser.gag = simPickGag('magnet'); loser.gagTimer = 60;
-          simBurst(fx, loser.x, loser.y, '#38bdf8', 22, 9); fx.shake = 10;
-          feed = '💥 ' + loser.name + ' — ' + loser.gag;
-        }
-      }
-    }
-    simTickFX(fx);
-    ctx.fillStyle = '#020617'; ctx.fillRect(0, 0, W, H);
-    if (magnet) {
-      const g = ctx.createRadialGradient(magnet.p.x, magnet.p.y, 10, magnet.p.x, magnet.p.y, 180 + cm * 60);
-      g.addColorStop(0, 'rgba(56,189,248,0.25)'); g.addColorStop(1, 'transparent');
-      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-      for (let i = 0; i < 8; i++) {
-        const ang = frame * 0.05 + i * Math.PI / 4;
-        ctx.strokeStyle = `rgba(56,189,248,${0.15 + Math.sin(magnet.pulse) * 0.1})`;
-        ctx.beginPath(); ctx.moveTo(magnet.p.x, magnet.p.y);
-        ctx.lineTo(magnet.p.x + Math.cos(ang) * (120 + cm * 40), magnet.p.y + Math.sin(ang) * (120 + cm * 40)); ctx.stroke();
-      }
-    }
-    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
-    players.forEach(p => {
-      if (!p.alive) { ctx.globalAlpha = 0.3; drawMiniCharacter(ctx, p.elimX, p.elimY, 13, p.color); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 32, p.gag, '#38bdf8', 13); return; }
-      drawMiniCharacter(ctx, p.x, p.y, 15, p.color, { phase: frame * 0.14, armSwing: Math.sin(frame * 0.2 + p.x) * 8 });
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 32);
-      if (magnet && magnet.p === p) { ctx.font = (32 + Math.sin(magnet.pulse) * 6) + 'px serif'; ctx.fillText('🧲', p.x, p.y - 48); }
-    });
-    simDrawFX(ctx, fx, W, H); ctx.restore();
-    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#38bdf8', elapsed >= 45);
-    animId = requestAnimationFrame(loop);
-  }
-  animId = requestAnimationFrame(loop);
-}
-
-function runDuck() { simRun('duck', Array.from(entrants), '#22d3ee', startDuck); }
-function startDuck(names) {
-  const canvas = document.getElementById('duck-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, pad = 45;
-  let players = simSpawn(names, W, H, pad), frame = 0, feed = '🦆 DUCK DISASTER!!', animId;
-  let events = [], evtTimer = 80, fx = simMakeFX();
-  function triggerEvent() {
-    const t = ['rain','tornado','explosion','eagle','bread'][Math.floor(Math.random() * 5)];
-    events.push({ type: t, t: 0, max: t === 'rain' ? 140 : 90, x: pad + Math.random() * (W - pad * 2), y: pad + Math.random() * (H - pad * 2), vx: t === 'eagle' ? 4 : 0 });
-    feed = ({ rain: '🌧️ TORRENTIAL RAIN!', tornado: '🌪️ TORNADO!', explosion: '💥 BOOM!', eagle: '🦅 EAGLE!', bread: '🍞 BREAD FROM SKY!' })[t];
-    fx.shake = 6; simPopText(fx, W / 2, 75, feed, '#22d3ee', 15);
-  }
-  triggerEvent();
-  function loop() {
-    frame++; const elapsed = frame / 60, cm = simChaosMult(elapsed);
-    if (elapsed >= SIM60) { simFinish('duck', players, names, animId); return; }
-    evtTimer++; if (evtTimer > Math.max(60, 110 - cm * 25)) { evtTimer = 0; triggerEvent(); if (Math.random() < 0.45) triggerEvent(); }
-    events.forEach(e => {
-      e.t++; if (e.type === 'eagle') { e.x += e.vx; e.y -= 1.5; }
-      players.forEach(p => {
-        if (!p.alive) return;
-        if (e.type === 'rain') { p.vy += 0.22 * cm; p.vx += (Math.random() - 0.5) * 0.4; }
-        if (e.type === 'tornado' && Math.hypot(p.x - e.x, p.y - e.y) < 100) { const ang = frame * 0.2; p.vx += Math.cos(ang) * 0.85 * cm; p.vy += Math.sin(ang) * 0.85 * cm; }
-        if (e.type === 'explosion' && e.t < 20 && Math.hypot(p.x - e.x, p.y - e.y) < 110) {
-          p.vx += (p.x - e.x) * 0.1 * cm; p.vy += (p.y - e.y) * 0.1 * cm;
-          if (Math.random() < 0.07 * cm) { p.alive = false; p.elimX = p.x; p.elimY = p.y; p.gag = simPickGag('duck'); p.gagTimer = 60; simBurst(fx, p.x, p.y, '#ef4444', 15, 8); feed = '💥 ' + p.name + ' YEETED!'; }
-        }
-        if (e.type === 'eagle' && e.t > 20 && e.t < 80 && Math.hypot(p.x - e.x, p.y - e.y) < 45) {
-          p.alive = false; p.elimX = p.x; p.elimY = p.y; p.gag = 'SNATCHED!'; p.gagTimer = 65; feed = '🦅 ' + p.name + ' SNATCHED!';
-        }
-        if (e.type === 'bread' && e.t > 15 && Math.hypot(p.x - e.x, p.y - (e.y + e.t * 0.8)) < 70 && Math.random() < 0.04 * cm) {
-          p.alive = false; p.gag = 'BREADED!'; p.elimX = p.x; p.elimY = p.y; p.gagTimer = 55;
-        }
-      });
-    });
-    events = events.filter(e => e.t < e.max);
-    players.forEach(p => {
-      if (!p.alive) { if (p.gagTimer > 0) p.gagTimer--; return; }
-      if (Math.random() < 0.04) { p.vx = (Math.random() - 0.5) * 4; p.vy = (Math.random() - 0.5) * 4; }
-      p.x += p.vx; p.y += p.vy; p.vx *= 0.94; p.vy *= 0.94; simBounce(p, W, H, pad);
-    });
-    simCollide(players); simTickFX(fx);
-    ctx.fillStyle = '#0c4a6e'; ctx.fillRect(0, 0, W, H);
-    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
-    events.forEach(e => {
-      if (e.type === 'rain') { ctx.strokeStyle = 'rgba(56,189,248,0.5)'; for (let i = 0; i < 50; i++) { ctx.beginPath(); ctx.moveTo((i * 29 + frame * 3) % W, (i * 41 + frame * 8) % H); ctx.lineTo((i * 29 + frame * 3) % W - 4, (i * 41 + frame * 8) % H + 14); ctx.stroke(); } }
-      if (e.type === 'tornado') { ctx.font = '64px serif'; ctx.textAlign = 'center'; ctx.fillText('🌪️', e.x, e.y); }
-      if (e.type === 'explosion' && e.t < 25) { ctx.fillStyle = `rgba(239,68,68,${1 - e.t / 25})`; ctx.beginPath(); ctx.arc(e.x, e.y, 25 + e.t * 5, 0, Math.PI * 2); ctx.fill(); }
-      if (e.type === 'eagle') { ctx.font = '72px serif'; ctx.fillText('🦅', e.x, e.y); }
-      if (e.type === 'bread') { ctx.font = '80px serif'; ctx.fillText('🍞', e.x, e.y + e.t * 0.8); }
-    });
-    players.forEach(p => {
-      if (!p.alive) { ctx.globalAlpha = 0.3; drawDuck(ctx, p.elimX, p.elimY, 13, p.color); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 28, p.gag, '#22d3ee', 13); return; }
-      drawDuck(ctx, p.x, p.y, 15, p.color, { rot: Math.sin(frame * 0.12 + p.x) * 0.15 });
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), p.x, p.y - 28);
-    });
-    simDrawFX(ctx, fx, W, H); ctx.restore();
-    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#22d3ee', elapsed >= 45);
-    animId = requestAnimationFrame(loop);
-  }
-  animId = requestAnimationFrame(loop);
-}
-
-function runRat() { simRun('rat', Array.from(entrants), '#a8a29e', startRat); }
-function startRat(names) {
-  const canvas = document.getElementById('rat-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, pad = 38;
-  let players = simSpawn(names, W, H, pad).map(p => ({ ...p, r: 10 })), frame = 0, feed = '🐀 KITCHEN NIGHTMARE!!', animId;
-  let falling = [], cat = null, catTimer = 200, fx = simMakeFX();
-  function loop() {
-    frame++; const elapsed = frame / 60, cm = simChaosMult(elapsed);
-    if (elapsed >= SIM60) { simFinish('rat', players, names, animId); return; }
-    if (Math.random() < 0.04 * cm) falling.push({ emoji: ['🍕','🧀','🥫','🧹','🍳'][Math.floor(Math.random()*5)], x: pad + Math.random() * (W - pad*2), y: -30, vy: 3 + Math.random() * 3, rot: Math.random() * 6 });
-    falling.forEach(o => { o.y += o.vy; o.vy += 0.12; o.rot += 0.08; });
-    falling = falling.filter(o => o.y < H + 40);
-    falling.forEach(o => {
-      players.forEach(p => {
-        if (!p.alive) return;
-        if (Math.hypot(o.x - p.x, o.y - p.y) < 22) {
-          if (o.emoji === '🧹' && Math.random() < 0.06 * cm) { p.alive = false; p.elimX = p.x; p.elimY = p.y; p.gag = simPickGag('rat'); p.gagTimer = 55; simBurst(fx, p.x, p.y, '#78716c', 12, 6); feed = '🧹 ' + p.name + ' SWEPT!'; }
-          else if (o.emoji !== '🧹') { p.vx += (Math.random()-0.5)*5; p.vy += 2; }
-        }
-      });
-    });
-    catTimer--;
-    if (catTimer <= 0) {
-      cat = { x: Math.random() < 0.5 ? -80 : W + 80, y: pad + Math.random() * (H - pad * 2), t: 0, max: 120, vx: Math.random() < 0.5 ? 6 : -6 };
-      catTimer = Math.max(150, 280 - cm * 60);
-      feed = '🐱 CAT ATTACK!!'; fx.shake = 12; simPopText(fx, W/2, 70, 'MEOW!!', '#ef4444', 22);
-    }
-    if (cat) {
-      cat.t++; cat.x += cat.vx;
-      players.forEach(p => {
-        if (!p.alive) return;
-        if (Math.hypot(cat.x - p.x, cat.y - p.y) < 50 && Math.random() < 0.15 * cm) {
-          p.alive = false; p.elimX = p.x; p.elimY = p.y; p.gag = simPickGag('rat'); p.gagTimer = 60;
-          simBurst(fx, p.x, p.y, '#fca5a5', 20, 9); feed = '🐱 ' + p.name + ' CAUGHT!';
-        }
-        if (Math.hypot(cat.x - p.x, cat.y - p.y) < 140) { p.vx += (p.x - cat.x) * 0.05; p.vy += (p.y - cat.y) * 0.05; }
-      });
-      if (cat.t >= cat.max) cat = null;
-    }
-    players.forEach(p => {
-      if (!p.alive) { if (p.gagTimer > 0) p.gagTimer--; return; }
-      p.vx += (Math.random()-0.5)*0.5; p.vy += (Math.random()-0.5)*0.5;
-      p.x += p.vx; p.y += p.vy; p.vx *= 0.9; p.vy *= 0.9; simBounce(p, W, H, pad);
-    });
-    simTickFX(fx);
-    ctx.fillStyle = '#292524'; ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = '#57534e'; ctx.fillRect(pad, pad, W-pad*2, H-pad*2);
-    for (let row = 0; row < 8; row++) for (let col = 0; col < 12; col++) {
-      ctx.fillStyle = (row+col)%2 ? '#44403c' : '#3f3f46';
-      ctx.fillRect(pad + col*((W-pad*2)/12), pad + row*((H-pad*2)/8), (W-pad*2)/12, (H-pad*2)/8);
-    }
-    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
-    ctx.font = '32px serif'; ctx.textAlign = 'center';
-    falling.forEach(o => { ctx.save(); ctx.translate(o.x, o.y); ctx.rotate(o.rot); ctx.fillText(o.emoji, 0, 0); ctx.restore(); });
-    if (cat) { ctx.font = '80px serif'; ctx.fillText('🐱', cat.x, cat.y); drawGagText(ctx, cat.x, cat.y - 50, 'MEOW!', '#ef4444', 18); }
-    players.forEach(p => {
-      if (!p.alive) { ctx.globalAlpha = 0.3; drawRat(ctx, p.elimX, p.elimY, 10, p.color); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 24, p.gag, '#fca5a5', 11); return; }
-      drawRat(ctx, p.x, p.y, 11, p.color, { rot: Math.atan2(p.vy, p.vx) * 0.4 });
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 9px Inter'; ctx.fillText(p.name.substring(0, 9), p.x, p.y - 20);
-    });
-    simDrawFX(ctx, fx, W, H); ctx.restore();
-    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#a8a29e', elapsed >= 45);
-    animId = requestAnimationFrame(loop);
-  }
-  animId = requestAnimationFrame(loop);
-}
-
-function runToiletPanic() { simRun('toiletpanic', Array.from(entrants), '#38bdf8', startToiletPanic); }
-function startToiletPanic(names) {
-  const canvas = document.getElementById('toiletpanic-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, pad = 40;
-  let toilets = names.map((nm, i) => ({
-    name: nm, color: colorFor(nm), alive: true,
-    x: pad + 50 + (i % 5) * 155, y: pad + 60 + Math.floor(i / 5) * 130,
-    evt: null, evtT: 0, vy: 0, spin: 0, elimX: 0, elimY: 0, gag: '', gagTimer: 0
-  }));
-  let frame = 0, feed = '🚽 TOILET PANIC!!', animId, fx = simMakeFX(), flood = 0;
-  function triggerToilet(t, evt) {
-    t.evt = evt; t.evtT = 0;
-    feed = '🚽 ' + t.name + ' — ' + ({ launch: '💨 ROCKET LAUNCH', spray: '💦 GEYSER', spin: '🌀 TORNADO SPIN', explode: '💥 PIPE BURST' })[evt] + '!';
-    simPopText(fx, t.x, t.y - 60, feed.split('—')[1] || 'CHAOS!', '#38bdf8', 14);
-    if (evt === 'explode') { fx.shake = 14; fx.flash = 1; fx.flashCol = '#38bdf8'; simBurst(fx, t.x, t.y, '#0ea5e9', 22, 10); }
-  }
-  function loop() {
-    frame++; const elapsed = frame / 60, cm = simChaosMult(elapsed);
-    if (elapsed >= SIM60) {
-      simFinish('toiletpanic', toilets.map(t => ({ name: t.name, alive: t.alive })), names, animId);
-      return;
-    }
-    if (Math.random() < 0.055 * cm) {
-      const alive = toilets.filter(t => t.alive && !t.evt);
-      if (alive.length) {
-        const t = alive[Math.floor(Math.random() * alive.length)];
-        triggerToilet(t, ['launch','spray','spin','explode'][Math.floor(Math.random() * 4)]);
-        if (Math.random() < 0.35 * cm && alive.length > 1) {
-          const t2 = alive.filter(x => x !== t)[Math.floor(Math.random() * (alive.length - 1))];
-          if (t2 && !t2.evt) triggerToilet(t2, ['spray','spin','explode'][Math.floor(Math.random() * 3)]);
-        }
-      }
-    }
-    if (elapsed > 20 && Math.random() < 0.008 * cm) { flood = 120; feed = '🌊 SEWER FLOOD!!'; fx.shake = 10; simPopText(fx, W/2, 80, 'FLOOD!!', '#0ea5e9', 20); }
-    if (flood > 0) flood--;
-    toilets.forEach(t => {
-      if (!t.alive) { if (t.gagTimer > 0) t.gagTimer--; return; }
-      if (flood > 0 && Math.random() < 0.025 * cm) {
-        t.alive = false; t.gag = simPickGag('toilet'); t.gagTimer = 60; t.elimX = t.x; t.elimY = t.y;
-        simBurst(fx, t.x, t.y, '#38bdf8', 14, 7); feed = '🌊 ' + t.name + ' DROWNED!';
-      }
-      if (t.evt) {
-        t.evtT++;
-        if (t.evt === 'launch') {
-          t.vy -= 1.4 * cm;
-          if (t.evtT > 35) { t.alive = false; t.gag = simPickGag('toilet'); t.gagTimer = 65; t.elimX = t.x; t.elimY = t.y - t.evtT * 3; simBurst(fx, t.x, t.y - t.evtT * 2, '#fff', 18, 9); fx.shake = 8; }
-        }
-        if (t.evt === 'spray') {
-          if (t.evtT > 35 && Math.random() < 0.12 * cm) { t.alive = false; t.gag = simPickGag('toilet'); t.gagTimer = 55; t.elimX = t.x; t.elimY = t.y; simBurst(fx, t.x, t.y, '#0ea5e9', 12, 6); }
-          toilets.forEach(o => {
-            if (o !== t && o.alive && !o.evt && Math.hypot(o.x - t.x, o.y - t.y) < 100 && Math.random() < 0.04 * cm) triggerToilet(o, 'spin');
-          });
-          if (t.evtT > 55) t.evt = null;
-        }
-        if (t.evt === 'spin') {
-          t.spin += 0.55 * cm;
-          if (t.evtT > 40 && Math.random() < 0.1 * cm) { t.alive = false; t.gag = simPickGag('toilet'); t.gagTimer = 55; t.elimX = t.x; t.elimY = t.y; fx.shake = 6; }
-          if (t.evtT > 65) t.evt = null;
-        }
-        if (t.evt === 'explode' && t.evtT > 18) {
-          t.alive = false; t.gag = simPickGag('toilet'); t.gagTimer = 60; t.elimX = t.x; t.elimY = t.y;
-          simBurst(fx, t.x, t.y, '#ef4444', 25, 11); fx.shake = 16; fx.flash = 1; fx.flashCol = '#fff';
-          toilets.forEach(o => {
-            if (o !== t && o.alive && Math.hypot(o.x - t.x, o.y - t.y) < 130 && Math.random() < 0.25 * cm) triggerToilet(o, Math.random() < 0.5 ? 'explode' : 'launch');
-          });
-        }
-      }
-    });
-    simTickFX(fx);
-    ctx.fillStyle = '#0c4a6e'; ctx.fillRect(0, 0, W, H);
-    if (flood > 0) { ctx.fillStyle = `rgba(14,165,233,${0.15 + (flood / 120) * 0.25})`; ctx.fillRect(0, H - flood * 2.5, W, flood * 2.5); }
-    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
-    toilets.forEach(t => {
-      if (!t.alive) {
-        ctx.globalAlpha = 0.3; drawSimToilet(ctx, t.elimX || t.x, (t.elimY || t.y) + (t.evt === 'launch' ? -t.evtT * 3 : 0), 1, 'explode'); ctx.globalAlpha = 1;
-        if (t.gagTimer > 0) drawGagText(ctx, t.x, t.y - 44, t.gag, '#38bdf8', 13); return;
-      }
-      const ty = t.y + (t.evt === 'launch' ? t.evtT * -3 : 0);
-      ctx.save(); ctx.translate(t.x, ty); if (t.spin) ctx.rotate(t.spin);
-      drawSimToilet(ctx, 0, 0, 1, t.evt);
-      ctx.restore();
-      drawMiniCharacter(ctx, t.x, ty - 22, 12, t.color, { phase: t.evt === 'spin' ? frame * 0.45 : frame * 0.1, armSwing: t.evt === 'launch' ? -12 : Math.sin(frame * 0.3) * 8 });
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(t.name.substring(0, 10), t.x, ty - 50);
-      if (t.evt === 'spray') {
-        for (let s = 0; s < 6; s++) { ctx.font = (18 + s * 4) + 'px serif'; ctx.fillText('💦', t.x + 15 + s * 8, ty - 5 - s * 6 + Math.sin(frame * 0.2 + s) * 4); }
-      }
-      if (t.evt === 'explode' && t.evtT < 20) {
-        ctx.fillStyle = `rgba(239,68,68,${1 - t.evtT / 20})`; ctx.beginPath(); ctx.arc(t.x, ty, 20 + t.evtT * 6, 0, Math.PI * 2); ctx.fill();
-      }
-    });
-    simDrawFX(ctx, fx, W, H); ctx.restore();
-    simDrawHUD(ctx, W, H, frame, toilets.filter(t => t.alive).length, feed, '#38bdf8', elapsed >= 45);
-    animId = requestAnimationFrame(loop);
-  }
-  animId = requestAnimationFrame(loop);
-}
-
-function runStamina() { simRun('stamina', Array.from(entrants), '#f97316', startStamina); }
-function startStamina(names) {
-  const canvas = document.getElementById('stamina-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, pad = 45;
-  let players = simSpawn(names, W, H, pad).map(p => ({ ...p, stamina: 100, effort: 0.8 + Math.random() * 0.4, wobble: Math.random() * 6, sprint: 0, cramp: 0 }));
-  let frame = 0, feed = '💪 STAMINA ROYALE — DON\'T TAP OUT!!', animId, fx = simMakeFX(), hypeTimer = 90;
-  function loop() {
-    frame++; const elapsed = frame / 60, cm = simChaosMult(elapsed);
-    if (elapsed >= SIM60) {
-      const alive = players.filter(p => p.alive);
-      cancelAnimationFrame(animId);
-      showPhase('stamina', 'winner');
-      document.getElementById('stamina-winner-name').textContent = alive.length ? simWinnerLabel(players, names) : pickSingleWinner([], names);
-      return;
-    }
-    hypeTimer--;
-    if (hypeTimer <= 0) {
-      hypeTimer = 70 + Math.floor(Math.random() * 80);
-      const cheers = ['GO GO GO!!','PUSH IT!!','NO QUITTING!!','LEGEND!!','HYPE!!','LAST ONE STANDING!!'];
-      simPopText(fx, W/2, 90 + Math.random() * 40, cheers[Math.floor(Math.random() * cheers.length)], '#fbbf24', 16 + Math.random() * 6);
-    }
-    players.forEach(p => {
-      if (!p.alive) { if (p.gagTimer > 0) p.gagTimer--; return; }
-      p.wobble += 0.15 + cm * 0.05;
-      if (Math.random() < 0.012 * cm) { p.sprint = 45; feed = '🔥 ' + p.name + ' SPRINT BURST!'; simPopText(fx, p.x, p.y - 50, 'SPRINT!', '#ef4444', 14); }
-      if (Math.random() < 0.006 * cm) { p.cramp = 35; feed = '😵 ' + p.name + ' CRAMP!!'; fx.shake = 5; }
-      if (p.sprint > 0) { p.sprint--; p.vx += (Math.random() - 0.5) * 1.2; p.vy += (Math.random() - 0.5) * 1.2; }
-      if (p.cramp > 0) { p.cramp--; p.stamina -= 1.5 * cm; }
-      const shake = (100 - p.stamina) / 100;
-      if (shake > 0.3 && Math.random() < 0.15 * shake) simBurst(fx, p.x, p.y - 18, '#fbbf24', 2, 2);
-      const drain = (0.1 + elapsed * 0.006) * p.effort * (1 + Math.sin(p.wobble) * 0.2) * cm * (p.sprint > 0 ? 1.8 : 1);
-      p.stamina -= drain;
-      if (Math.random() < 0.022 * cm) { p.stamina -= 3 + Math.random() * 6; simBurst(fx, p.x, p.y - 20, '#fbbf24', 4, 3); }
-      p.x += Math.sin(p.wobble) * (0.8 + cm * 0.4) + p.vx * 0.35;
-      p.y += Math.cos(p.wobble * 1.1) * 0.5 + p.vy * 0.35;
-      p.vx *= 0.88; p.vy *= 0.88; simBounce(p, W, H, pad);
-      if (p.stamina <= 0) {
-        p.alive = false; p.elimX = p.x; p.elimY = p.y; p.gag = simPickGag('stamina'); p.gagTimer = 65;
-        simBurst(fx, p.x, p.y, '#f97316', 16, 7); fx.shake = 8;
-        feed = '😮 ' + p.name + ' TAPPED OUT!!';
-      }
-    });
-    simCollide(players, 22);
-    simTickFX(fx);
-    ctx.fillStyle = '#1c0a00'; ctx.fillRect(0, 0, W, H);
-    const pulse = 0.06 + Math.sin(frame * 0.08) * 0.04;
-    ctx.fillStyle = `rgba(249,115,22,${pulse + cm * 0.04})`; ctx.fillRect(pad, pad, W - pad * 2, H - pad * 2);
-    ctx.save(); if (fx.shake > 0.5) ctx.translate((Math.random() - 0.5) * fx.shake, (Math.random() - 0.5) * fx.shake);
-    players.forEach(p => {
-      if (!p.alive) { ctx.globalAlpha = 0.3; drawMiniCharacter(ctx, p.elimX, p.elimY, 13, p.color, { faded: true }); ctx.globalAlpha = 1; if (p.gagTimer > 0) drawGagText(ctx, p.elimX, p.elimY - 40, p.gag, '#f97316', 13); return; }
-      const shake = (100 - p.stamina) / 100;
-      const sx = p.x + Math.sin(frame * 0.5 + p.wobble) * shake * 5;
-      drawMiniCharacter(ctx, sx, p.y, 15, p.color, {
-        phase: frame * (0.18 + shake * 0.25), armSwing: Math.sin(frame * 0.4 + p.wobble) * (8 + shake * 14)
-      });
-      if (p.sprint > 0) { ctx.font = '20px serif'; ctx.fillText('🔥', sx + 18, p.y - 30); }
-      if (p.cramp > 0) { ctx.font = '18px serif'; ctx.fillText('⚡', sx - 18, p.y - 28); }
-      const bw = 42;
-      ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(sx - bw / 2, p.y - 46, bw, 7);
-      ctx.fillStyle = p.stamina > 35 ? '#22c55e' : p.stamina > 15 ? '#fbbf24' : '#ef4444';
-      ctx.fillRect(sx - bw / 2 + 1, p.y - 45, (bw - 2) * (p.stamina / 100), 5);
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(p.name.substring(0, 10), sx, p.y - 54);
-    });
-    simDrawFX(ctx, fx, W, H); ctx.restore();
-    simDrawHUD(ctx, W, H, frame, players.filter(p => p.alive).length, feed, '#f97316', elapsed >= 45);
     animId = requestAnimationFrame(loop);
   }
   animId = requestAnimationFrame(loop);
@@ -10315,15 +9677,7 @@ function launchSwordWith(p1Name, p2Name) {
       else if (game === 'butts') runButts();
       else if (game === 'flush') runFlush();
       else if (game === 'twerk') runTwerk();
-      else if (game === 'chicken') runChicken();
       else if (game === 'bomb') runBombRoulette();
-      else if (game === 'swarm') runSwarm();
-      else if (game === 'chairapoc') runChairApoc();
-      else if (game === 'magnet') runMagnet();
-      else if (game === 'duck') runDuck();
-      else if (game === 'rat') runRat();
-      else if (game === 'toiletpanic') runToiletPanic();
-      else if (game === 'stamina') runStamina();
       else if (game === 'boxing') runBoxingMatch();
       else if (game === 'sword') runSwordDuel();
     }, 200);
@@ -10969,15 +10323,7 @@ const GAME_PREVIEW_META = {
   butts: { scene: 'butts', title: '🍑 Pick A Butt', desc: 'Streamer clicks butts to eliminate. Names hidden until reveal!' },
   flush: { scene: 'flush', title: '🚽 Flush Royale', desc: 'Streamer flushes mystery poops. Last one in the bowl wins!' },
   twerk: { scene: 'twerk', title: '🍑 Twerk Shake Royale', desc: 'Balls bounce in the butt box — after 30s ULTRA SHAKE kicks in to finish within 1 minute!' },
-  chicken: { scene: 'bumper', title: '🐔 Chicken Survival', desc: 'Chickens run, trip, eat, and get chased — 60s chaos sim!' },
   bomb: { scene: 'bumper', title: '🧨 Bomb Roulette', desc: 'Hot potato bomb jumps between players until BOOM!' },
-  swarm: { scene: 'bumper', title: '🐝 Bee Swarm Arena', desc: 'Bees pick random targets to sting — survive 60 seconds!' },
-  chairapoc: { scene: 'bumper', title: '🪑 Chair Apocalypse', desc: 'Chairs vanish every 4s — only seated survivors win!' },
-  magnet: { scene: 'bumper', title: '🧲 Magnet Disaster', desc: 'Random magnets pull everyone together — collisions eliminate!' },
-  duck: { scene: 'bumper', title: '🦆 Duck Disaster', desc: 'Ducks vs rain, tornadoes, eagles, and giant bread!' },
-  rat: { scene: 'bumper', title: '🐀 Rat Infestation', desc: 'Rats dodge falling objects and periodic CAT attacks!' },
-  toiletpanic: { scene: 'flush', title: '🚽 Toilet Panic', desc: 'Random toilet events launch, spray, spin, and explode players!' },
-  stamina: { scene: 'obstacle', title: '💪 Stamina Royale', desc: 'Endurance challenge — last one with stamina wins GREAT STAMINA!' },
   boxing: { scene: 'boxing', title: '🥊 Boxing Match', desc: '1v1 boxing with combos, blocks, and special moves!' },
   sword: { scene: 'sword', title: '⚔️ Sword Duel', desc: '1v1 fencing duel. Parry, lunge, and strike!' }
 };
