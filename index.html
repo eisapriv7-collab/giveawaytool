@@ -1025,7 +1025,7 @@
     <div id="dragon-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">The dragon opens wide...</div><div class="text-sm text-gray-600" id="dragon-intro-count"></div></div>
     <div id="dragon-phase-play" class="hidden w-full max-w-5xl">
       <div id="dragon-feed" class="text-center text-gray-300 mb-3 text-lg font-bold">Press a tooth to reveal who got chomped!</div>
-      <canvas id="dragon-canvas" width="900" height="580" class="w-full rounded-2xl border border-amber-700/30 bg-[#e8e4dc] cursor-pointer"></canvas>
+      <canvas id="dragon-canvas" width="900" height="580" class="w-full rounded-2xl border border-amber-700/40 bg-[#1a1612] cursor-pointer"></canvas>
     </div>
     <div id="dragon-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🐉</div><div class="text-2xl text-[#22c55e] font-bold mb-2">LAST ONE STANDING</div><div id="dragon-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
   </div>
@@ -8707,149 +8707,188 @@ function startFlush(names) {
   loop();
 }
 
-/* ==================== DRAGON TEETH (Crocodile Dentist style) ==================== */
-function drawDragonHead(ctx, cx, cy, sc, opts) {
-  opts = opts || {};
-  const f = opts.frame || 0;
-  ctx.save();
-  ctx.translate(cx, cy);
+/* ==================== DRAGON DENTIST (Crocodile Dentist toy) ==================== */
+const CROC_GEO = {
+  hinge: { x: -108, y: 4 },
+  jawOpen: -0.52,
+  lowerGum: { y: 78, rx: 142, ry: 14, a0: 0.55, a1: Math.PI - 0.55 },
+  upperGumLocal: { x: 6, y: 34, rx: 136, ry: 13, a0: 0.58, a1: Math.PI - 0.58 }
+};
 
-  // toy shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.25)';
-  ctx.beginPath(); ctx.ellipse(0, 145 * sc, 170 * sc, 28 * sc, 0, 0, Math.PI * 2); ctx.fill();
-
-  // bottom jaw / body (main tan plastic piece)
-  const bodyG = ctx.createLinearGradient(-160 * sc, 0, 160 * sc, 120 * sc);
-  bodyG.addColorStop(0, '#d4b483'); bodyG.addColorStop(0.5, '#c4a066'); bodyG.addColorStop(1, '#a8844f');
-  ctx.fillStyle = bodyG;
-  ctx.beginPath();
-  ctx.moveTo(-195 * sc, 20 * sc);
-  ctx.quadraticCurveTo(-210 * sc, 90 * sc, -150 * sc, 145 * sc);
-  ctx.quadraticCurveTo(0, 175 * sc, 150 * sc, 145 * sc);
-  ctx.quadraticCurveTo(210 * sc, 90 * sc, 195 * sc, 20 * sc);
-  ctx.quadraticCurveTo(120 * sc, 55 * sc, 0, 58 * sc);
-  ctx.quadraticCurveTo(-120 * sc, 55 * sc, -195 * sc, 20 * sc);
-  ctx.fill();
-  ctx.strokeStyle = '#8f6f45'; ctx.lineWidth = 4 * sc; ctx.stroke();
-
-  // red mouth floor (bottom interior)
-  ctx.fillStyle = '#dc2626';
-  ctx.beginPath(); ctx.ellipse(0, 92 * sc, 150 * sc, 48 * sc, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#b91c1c';
-  ctx.beginPath(); ctx.ellipse(0, 98 * sc, 130 * sc, 32 * sc, 0, 0, Math.PI * 2); ctx.fill();
-
-  // top jaw (hinged open — rotates from back)
-  ctx.save();
-  ctx.translate(-120 * sc, 15 * sc);
-  ctx.rotate(-0.55 + Math.sin(f * 0.04) * 0.015);
-  ctx.translate(120 * sc, -15 * sc);
-
-  const topG = ctx.createLinearGradient(-150 * sc, -120 * sc, 150 * sc, 40 * sc);
-  topG.addColorStop(0, '#d9bc8a'); topG.addColorStop(1, '#b8956a');
-  ctx.fillStyle = topG;
-  ctx.beginPath();
-  ctx.moveTo(-185 * sc, 10 * sc);
-  ctx.quadraticCurveTo(-200 * sc, -40 * sc, -120 * sc, -95 * sc);
-  ctx.quadraticCurveTo(-40 * sc, -145 * sc, 40 * sc, -130 * sc);
-  ctx.quadraticCurveTo(130 * sc, -115 * sc, 185 * sc, 10 * sc);
-  ctx.quadraticCurveTo(80 * sc, 35 * sc, 0, 38 * sc);
-  ctx.quadraticCurveTo(-80 * sc, 35 * sc, -185 * sc, 10 * sc);
-  ctx.fill();
-  ctx.strokeStyle = '#8f6f45'; ctx.lineWidth = 4 * sc; ctx.stroke();
-
-  // red upper mouth interior
-  ctx.fillStyle = '#ef4444';
-  ctx.beginPath(); ctx.ellipse(0, 28 * sc, 140 * sc, 38 * sc, 0, 0, Math.PI * 2); ctx.fill();
-
-  // white spots on top of head
-  ctx.fillStyle = '#fff';
-  [[-50, -100, 14], [-10, -115, 18], [35, -105, 12], [70, -85, 10], [-80, -75, 9], [0, -90, 11]].forEach(([sx, sy, sr]) => {
-    ctx.beginPath(); ctx.arc(sx * sc, sy * sc, sr * sc, 0, Math.PI * 2); ctx.fill();
-  });
-
-  // horns / bumps
-  ctx.fillStyle = '#c4a066';
-  ctx.beginPath(); ctx.moveTo(-55 * sc, -125 * sc); ctx.lineTo(-45 * sc, -155 * sc); ctx.lineTo(-30 * sc, -128 * sc); ctx.fill();
-  ctx.beginPath(); ctx.moveTo(25 * sc, -130 * sc); ctx.lineTo(35 * sc, -160 * sc); ctx.lineTo(50 * sc, -132 * sc); ctx.fill();
-
-  // big cartoon blue eye
-  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(55 * sc, -55 * sc, 38 * sc, 44 * sc, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#2563eb'; ctx.beginPath(); ctx.arc(58 * sc, -50 * sc, 24 * sc, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#1e3a8a'; ctx.beginPath(); ctx.arc(62 * sc, -46 * sc, 12 * sc, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(68 * sc, -54 * sc, 7 * sc, 0, Math.PI * 2); ctx.fill();
-
-  // nostril
-  ctx.fillStyle = '#8f6f45'; ctx.beginPath(); ctx.ellipse(-15 * sc, -15 * sc, 8 * sc, 6 * sc, 0, 0, Math.PI * 2); ctx.fill();
-
-  ctx.restore(); // top jaw
-
-  // lip line on bottom jaw front
-  ctx.strokeStyle = '#8f6f45'; ctx.lineWidth = 5 * sc;
-  ctx.beginPath(); ctx.arc(0, 48 * sc, 165 * sc, 0.12 * Math.PI, 0.88 * Math.PI); ctx.stroke();
-
-  ctx.restore();
+function crocWorld(cx, cy, sc, lx, ly, localAngle) {
+  const hx = cx + CROC_GEO.hinge.x * sc, hy = cy + CROC_GEO.hinge.y * sc;
+  const a = CROC_GEO.jawOpen;
+  const cos = Math.cos(a), sin = Math.sin(a);
+  const dx = lx * sc, dy = ly * sc;
+  return {
+    x: hx + dx * cos - dy * sin,
+    y: hy + dx * sin + dy * cos,
+    angle: a + (localAngle || 0)
+  };
 }
 
-function drawDragonTooth(ctx, x, y, w, h, angle, opts) {
-  opts = opts || {};
-  const press = opts.pressed ? (opts.pressAmt != null ? opts.pressAmt * 0.6 : 0.6) : (opts.hover ? 0.18 : 0);
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(angle);
-  ctx.translate(0, press * h * 0.35);
-  if (opts.hover) { ctx.shadowColor = '#fef9c3'; ctx.shadowBlur = 14; }
-
-  // peg tooth — rounded white plastic cap
-  const r = w * 0.48;
-  const tg = ctx.createLinearGradient(-w / 2, -h, w / 2, h * 0.2);
-  tg.addColorStop(0, '#ffffff'); tg.addColorStop(0.45, '#f8fafc'); tg.addColorStop(1, '#cbd5e1');
-  ctx.fillStyle = tg;
-  ctx.beginPath();
-  ctx.roundRect(-w * 0.42, -h, w * 0.84, h * 0.92, r);
-  ctx.fill();
-  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5;
-  ctx.stroke();
-  // glossy highlight
-  ctx.fillStyle = 'rgba(255,255,255,0.55)';
-  ctx.beginPath(); ctx.ellipse(-w * 0.12, -h * 0.72, w * 0.14, h * 0.18, -0.3, 0, Math.PI * 2); ctx.fill();
-
-  if (opts.revealName && opts.name) {
-    ctx.fillStyle = '#ef4444'; ctx.font = 'bold ' + Math.max(8, w * 0.42) + 'px Inter'; ctx.textAlign = 'center';
-    ctx.fillText(opts.name.substring(0, 7), 0, -h * 0.45);
-  }
-  ctx.restore();
-}
-
-function layoutDragonTeeth(names, cx, cy, mouthW) {
+function layoutDragonTeeth(names, cx, cy, sc) {
   const n = names.length;
-  const upper = Math.ceil(n / 2);
-  const lower = n - upper;
-  const maxRow = Math.max(upper, lower);
-  const toothW = Math.max(16, Math.min(30, (mouthW - 30) / maxRow - 4));
-  const toothH = toothW * 1.35;
+  const lower = Math.ceil(n / 2);
+  const upper = n - lower;
+  const maxRow = Math.max(lower, upper, 1);
+  const toothW = Math.max(20, Math.min(34, (CROC_GEO.lowerGum.rx * 2 * sc - 36) / maxRow - 4));
+  const toothH = toothW * 0.95;
   const teeth = [];
   let idx = 0;
 
-  function rowArc(count, cxOff, cyOff, rx, ry, a0, a1, pointDown) {
+  function lowerRow(count) {
+    const g = CROC_GEO.lowerGum;
     for (let i = 0; i < count; i++) {
       const t = count === 1 ? 0.5 : i / (count - 1);
-      const ang = a0 + (a1 - a0) * t;
-      const x = cx + cxOff + Math.cos(ang) * rx;
-      const y = cy + cyOff + Math.sin(ang) * ry * (pointDown ? 0.55 : -0.45);
-      const toothAng = pointDown ? Math.PI / 2 + (ang - Math.PI / 2) * 0.15 : -Math.PI / 2 + (ang - Math.PI / 2) * 0.15;
+      const ang = g.a0 + (g.a1 - g.a0) * t;
+      const x = cx + Math.cos(ang) * g.rx * sc;
+      const y = cy + g.y * sc + Math.sin(ang) * g.ry * sc;
       teeth.push({
         name: names[idx], color: colorFor(names[idx]),
-        x, y, w: toothW, h: toothH, angle: toothAng, num: idx + 1, row: pointDown ? 'lower' : 'upper'
+        x, y, w: toothW, h: toothH,
+        angle: ang - Math.PI / 2,
+        num: idx + 1, row: 'lower'
       });
       idx++;
     }
   }
 
-  // lower jaw semicircle (like the toy photo)
-  rowArc(lower, 0, 88, mouthW * 0.44, 42, Math.PI * 0.12, Math.PI * 0.88, true);
-  // upper jaw teeth pointing down
-  rowArc(upper, 0, -8, mouthW * 0.4, 36, Math.PI * 0.18, Math.PI * 0.82, false);
+  function upperRow(count) {
+    const g = CROC_GEO.upperGumLocal;
+    for (let i = 0; i < count; i++) {
+      const t = count === 1 ? 0.5 : i / (count - 1);
+      const ang = g.a0 + (g.a1 - g.a0) * t;
+      const lx = g.x + Math.cos(ang) * g.rx;
+      const ly = g.y + Math.sin(ang) * g.ry;
+      const wp = crocWorld(cx, cy, sc, lx, ly, ang + Math.PI / 2);
+      teeth.push({
+        name: names[idx], color: colorFor(names[idx]),
+        x: wp.x, y: wp.y, w: toothW, h: toothH, angle: wp.angle,
+        num: idx + 1, row: 'upper'
+      });
+      idx++;
+    }
+  }
+
+  lowerRow(lower);
+  upperRow(upper);
   return teeth;
+}
+
+function drawCrocPlastic(ctx, pathFn, fill, stroke, lw) {
+  ctx.beginPath(); pathFn(); ctx.fillStyle = fill; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw || 3; ctx.lineJoin = 'round'; ctx.stroke(); }
+}
+
+function drawCrocBottomJaw(ctx, cx, cy, sc) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.fillStyle = 'rgba(0,0,0,0.12)';
+  ctx.beginPath(); ctx.ellipse(8 * sc, 150 * sc, 178 * sc, 28 * sc, 0, 0, Math.PI * 2); ctx.fill();
+  const loG = ctx.createLinearGradient(-170 * sc, 20 * sc, 170 * sc, 140 * sc);
+  loG.addColorStop(0, '#e2c590'); loG.addColorStop(0.5, '#c9a064'); loG.addColorStop(1, '#9a7348');
+  drawCrocPlastic(ctx, () => {
+    ctx.moveTo(-198 * sc, 10 * sc);
+    ctx.bezierCurveTo(-215 * sc, 62 * sc, -188 * sc, 132 * sc, -125 * sc, 158 * sc);
+    ctx.quadraticCurveTo(0, 176 * sc, 125 * sc, 158 * sc);
+    ctx.bezierCurveTo(188 * sc, 132 * sc, 215 * sc, 62 * sc, 198 * sc, 10 * sc);
+    ctx.bezierCurveTo(118 * sc, 46 * sc, -118 * sc, 46 * sc, -198 * sc, 10 * sc);
+  }, loG, '#6b4f30', 3 * sc);
+  ctx.fillStyle = '#b8894f';
+  ctx.beginPath(); ctx.ellipse(0, 72 * sc, 162 * sc, 18 * sc, 0, 0.12 * Math.PI, 0.88 * Math.PI); ctx.fill();
+  const mouthG = ctx.createRadialGradient(0, 92 * sc, 8, 0, 92 * sc, 150 * sc);
+  mouthG.addColorStop(0, '#ff5555'); mouthG.addColorStop(0.55, '#dc2626'); mouthG.addColorStop(1, '#991b1b');
+  ctx.fillStyle = mouthG;
+  ctx.beginPath(); ctx.ellipse(0, 94 * sc, 148 * sc, 52 * sc, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.07)';
+  ctx.beginPath(); ctx.ellipse(-25 * sc, 38 * sc, 92 * sc, 26 * sc, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+function drawCrocTopJaw(ctx, cx, cy, sc, opts) {
+  opts = opts || {};
+  const f = opts.frame || 0;
+  const jawOpen = CROC_GEO.jawOpen + Math.sin(f * 0.05) * 0.006;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.translate(CROC_GEO.hinge.x * sc, CROC_GEO.hinge.y * sc);
+  ctx.rotate(jawOpen);
+  ctx.translate(-CROC_GEO.hinge.x * sc, -CROC_GEO.hinge.y * sc);
+  const upG = ctx.createLinearGradient(-150 * sc, -120 * sc, 150 * sc, 40 * sc);
+  upG.addColorStop(0, '#edd5a3'); upG.addColorStop(0.5, '#c9a064'); upG.addColorStop(1, '#a07840');
+  drawCrocPlastic(ctx, () => {
+    ctx.moveTo(-195 * sc, 6 * sc);
+    ctx.bezierCurveTo(-210 * sc, -48 * sc, -150 * sc, -112 * sc, -55 * sc, -128 * sc);
+    ctx.bezierCurveTo(15 * sc, -140 * sc, 95 * sc, -118 * sc, 172 * sc, 6 * sc);
+    ctx.bezierCurveTo(95 * sc, 38 * sc, -95 * sc, 38 * sc, -195 * sc, 6 * sc);
+  }, upG, '#6b4f30', 3 * sc);
+  ctx.fillStyle = '#b8894f';
+  ctx.beginPath(); ctx.ellipse(6 * sc, 32 * sc, 152 * sc, 17 * sc, 0, 0.22 * Math.PI, 0.78 * Math.PI); ctx.fill();
+  ctx.fillStyle = '#ef4444';
+  ctx.beginPath(); ctx.ellipse(4 * sc, 44 * sc, 138 * sc, 28 * sc, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#fff';
+  [[-28, -88, 14], [12, -102, 18], [52, -92, 12], [78, -72, 10], [-62, -66, 9], [2, -78, 11]].forEach(([sx, sy, sr]) => {
+    ctx.beginPath(); ctx.arc(sx * sc, sy * sc, sr * sc, 0, Math.PI * 2); ctx.fill();
+  });
+  ctx.fillStyle = '#b8894f';
+  [[-36, -112, -24, -142, -12, -114], [26, -116, 38, -148, 50, -118]].forEach(([x1, y1, x2, y2, x3, y3]) => {
+    ctx.beginPath(); ctx.moveTo(x1 * sc, y1 * sc); ctx.lineTo(x2 * sc, y2 * sc); ctx.lineTo(x3 * sc, y3 * sc); ctx.closePath(); ctx.fill();
+  });
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(68 * sc, -52 * sc, 38 * sc, 44 * sc, 0.08, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#6b4f30'; ctx.lineWidth = 2.2 * sc; ctx.stroke();
+  ctx.fillStyle = '#2563eb';
+  ctx.beginPath(); ctx.arc(72 * sc, -46 * sc, 25 * sc, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#1e3a8a';
+  ctx.beginPath(); ctx.arc(76 * sc, -42 * sc, 12 * sc, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(84 * sc, -52 * sc, 8 * sc, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(68 * sc, -38 * sc, 3.5 * sc, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#8b6914';
+  ctx.beginPath(); ctx.ellipse(-2 * sc, -6 * sc, 8 * sc, 6 * sc, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.14)';
+  ctx.beginPath(); ctx.ellipse(-18 * sc, -74 * sc, 72 * sc, 30 * sc, -0.25, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+function drawDragonHead(ctx, cx, cy, sc, opts) {
+  drawCrocBottomJaw(ctx, cx, cy, sc);
+  drawCrocTopJaw(ctx, cx, cy, sc, opts);
+}
+
+function drawDragonTooth(ctx, x, y, w, h, angle, opts) {
+  opts = opts || {};
+  const press = opts.pressed ? (opts.pressAmt != null ? opts.pressAmt * 0.5 : 0.5) : (opts.hover ? 0.12 : 0);
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  const dir = opts.row === 'upper' ? 1 : -1;
+  ctx.translate(0, press * h * 0.35 * dir);
+
+  if (opts.hover) { ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 16; }
+
+  ctx.fillStyle = '#b8894f';
+  ctx.beginPath(); ctx.roundRect(-w * 0.44, -h * 0.08, w * 0.88, h * 0.18, w * 0.12); ctx.fill();
+
+  const tg = ctx.createLinearGradient(0, -h, 0, h * 0.05);
+  tg.addColorStop(0, '#ffffff'); tg.addColorStop(0.4, '#f8fafc'); tg.addColorStop(1, '#cbd5e1');
+  ctx.fillStyle = tg;
+  ctx.beginPath();
+  ctx.roundRect(-w * 0.36, -h, w * 0.72, h, w * 0.38);
+  ctx.fill();
+  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1; ctx.stroke();
+
+  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  ctx.beginPath(); ctx.ellipse(-w * 0.08, -h * 0.72, w * 0.1, h * 0.16, -0.15, 0, Math.PI * 2); ctx.fill();
+
+  if (opts.revealName && opts.name) {
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#dc2626'; ctx.font = 'bold ' + Math.max(9, w * 0.36) + 'px Inter'; ctx.textAlign = 'center';
+    const labelY = dir > 0 ? h * 0.55 : -h * 0.45;
+    ctx.fillText(opts.name.substring(0, 8), 0, labelY);
+  }
+  ctx.restore();
 }
 
 function runDragon() {
@@ -8866,13 +8905,13 @@ function startDragon(names) {
   const canvas = document.getElementById('dragon-canvas'); const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   const feed = document.getElementById('dragon-feed');
-  const headCx = W / 2, headCy = H / 2 + 25;
-  const mouthW = Math.min(420, 260 + remaining.length * 12);
+  const headCx = W / 2, headCy = H / 2 + 10;
+  const crocSc = Math.min(1.15, 0.85 + remaining.length * 0.012);
   let teeth = [], phase = 'pick', pulling = null, hoverIdx = -1, animId = null, frame = 0;
   let particles = [], shake = 0, round = 0;
 
   function relayout() {
-    teeth = layoutDragonTeeth(remaining, headCx, headCy, mouthW);
+    teeth = layoutDragonTeeth(remaining, headCx, headCy, crocSc);
   }
   relayout();
 
@@ -8942,21 +8981,29 @@ function startDragon(names) {
 
   function drawScene() {
     frame++;
-    ctx.fillStyle = '#e8e4dc'; ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = 'rgba(255,255,255,0.65)'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#e8e4dc';
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(0,0,0,0.06)';
+    ctx.beginPath(); ctx.ellipse(W / 2, H * 0.68, 300, 55, 0, 0, Math.PI * 2); ctx.fill();
 
     ctx.save();
     if (shake > 0.5) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
-    drawDragonHead(ctx, headCx, headCy - 40, 0.95, { frame });
 
-    teeth.forEach((t, i) => {
-      drawDragonTooth(ctx, t.x, t.y, t.w, t.h, t.angle, { hover: i === hoverIdx && phase === 'pick' });
+    drawCrocBottomJaw(ctx, headCx, headCy, crocSc);
+    teeth.filter(t => t.row === 'lower').forEach(t => {
+      drawDragonTooth(ctx, t.x, t.y, t.w, t.h, t.angle, { hover: teeth.indexOf(t) === hoverIdx && phase === 'pick', row: 'lower' });
+    });
+    drawCrocTopJaw(ctx, headCx, headCy, crocSc, { frame });
+    teeth.filter(t => t.row === 'upper').forEach(t => {
+      drawDragonTooth(ctx, t.x, t.y, t.w, t.h, t.angle, { hover: teeth.indexOf(t) === hoverIdx && phase === 'pick', row: 'upper' });
     });
 
     if (pulling) {
       drawDragonTooth(ctx, pulling.x, pulling.y, pulling.w, pulling.h, pulling.angle, {
         pressed: true, pressAmt: pulling.pressAmt, revealName: pulling.revealName, name: pulling.name,
-        hover: pulling.stage === 'press'
+        hover: pulling.stage === 'press', row: pulling.row
       });
       if (pulling.revealName) {
         drawGagText(ctx, pulling.x, pulling.y - pulling.h - 28, 'CHOMPED!', '#ef4444', 20);
@@ -10240,9 +10287,8 @@ const PV_SCENES = {
   dragon: {
     gw: 900, gh: 580,
     init() {
-      const cx = 450, cy = 270;
-      const teeth = layoutDragonTeeth(PV_NAMES, cx, cy, 380);
-      return { frame: 0, cx, cy, teeth, pullT: 0, pullIdx: -1 };
+      const cx = 450, cy = 295, sc = 0.92;
+      return { frame: 0, cx, cy, sc, teeth: layoutDragonTeeth(PV_NAMES, cx, cy, sc), pullIdx: -1, pullT: 0 };
     },
     tick(st) {
       st.frame++;
@@ -10251,12 +10297,24 @@ const PV_SCENES = {
     },
     draw(ctx, W, H, st) {
       ctx.fillStyle = '#e8e4dc'; ctx.fillRect(0, 0, W, H);
-      ctx.fillStyle = 'rgba(255,255,255,0.65)'; ctx.fillRect(0, 0, W, H);
-      drawDragonHead(ctx, st.cx, st.cy - 40, 0.85, { frame: st.frame });
-      st.teeth.forEach((t, i) => {
-        if (i === st.pullIdx && st.pullT > 12) return;
-        const pressed = i === st.pullIdx && st.pullT > 0;
-        drawDragonTooth(ctx, t.x, t.y, t.w, t.h, t.angle, { hover: i === (st.pullIdx + 1) % st.teeth.length, pressed });
+      ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.fillRect(0, 0, W, H);
+      drawCrocBottomJaw(ctx, st.cx, st.cy, st.sc);
+      st.teeth.filter(t => t.row === 'lower').forEach((t, i) => {
+        const idx = st.teeth.indexOf(t);
+        if (idx === st.pullIdx && st.pullT > 12) return;
+        drawDragonTooth(ctx, t.x, t.y, t.w, t.h, t.angle, {
+          hover: idx === (st.pullIdx + 1) % st.teeth.length, row: 'lower',
+          pressed: idx === st.pullIdx && st.pullT > 0, pressAmt: Math.min(1, st.pullT / 18)
+        });
+      });
+      drawCrocTopJaw(ctx, st.cx, st.cy, st.sc, { frame: st.frame });
+      st.teeth.filter(t => t.row === 'upper').forEach((t, i) => {
+        const idx = st.teeth.indexOf(t);
+        if (idx === st.pullIdx && st.pullT > 12) return;
+        drawDragonTooth(ctx, t.x, t.y, t.w, t.h, t.angle, {
+          hover: idx === (st.pullIdx + 1) % st.teeth.length, row: 'upper',
+          pressed: idx === st.pullIdx && st.pullT > 0, pressAmt: Math.min(1, st.pullT / 18)
+        });
       });
       ctx.fillStyle = '#78716c'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center';
       ctx.fillText('Press teeth to eliminate!', W / 2, H - 24);
