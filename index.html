@@ -253,6 +253,7 @@
         <button onclick="launchTwerk()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#ec4899,#7c3aed);">🍑 Twerk Shake Royale</button>
         <button onclick="launchBombRoulette()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#ef4444,#7f1d1d);">🧨 Bomb Roulette</button>
         <button onclick="launchChicken()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#fbbf24,#d97706);color:#1c1917;">🐔 Egg Roulette</button>
+        <button onclick="launchBabyOil()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#22c55e,#14532d);">🧴 Baby Oil Rating</button>
       </div>
       <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">1-on-1 Combat (pick 2 entrants)</div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -1019,7 +1020,18 @@
   </div>
 </div>
 
-<div id="chicken-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+<div id="babyoil-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-4 md:p-6">
+    <div class="text-center mb-2"><div class="text-[#22c55e] text-sm font-bold uppercase tracking-widest mb-2">🧴 Baby Oil Rating</div><h1 class="text-3xl md:text-5xl font-black text-white">Who Got The Best Oil?</h1></div>
+    <div id="babyoil-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Bottles loading...</div><div class="text-sm text-gray-600" id="babyoil-intro-count"></div></div>
+    <div id="babyoil-phase-play" class="hidden w-full max-w-6xl">
+      <div id="babyoil-feed" class="text-center text-gray-300 mb-2 text-base md:text-lg font-bold">Testing bottles...</div>
+      <canvas id="babyoil-canvas" width="960" height="600" class="w-full rounded-2xl border border-green-500/30 bg-[#0a1a0a]"></canvas>
+    </div>
+    <div id="babyoil-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🏆</div><div class="text-2xl text-[#22c55e] font-bold mb-2">HIGHEST RATING WINS</div><div id="babyoil-winner-name" class="text-5xl md:text-7xl font-black text-white mb-2"></div><div id="babyoil-winner-score" class="text-3xl text-[#fde047] font-bold mb-4"></div><div class="mt-6 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
   <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
     <div class="text-center mb-3"><div class="text-[#fbbf24] text-sm font-bold uppercase tracking-widest mb-2">🐔 Egg Roulette</div><h1 class="text-4xl md:text-5xl font-black text-white">Click The Chicken</h1></div>
     <div id="chicken-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">The hen is ready to lay...</div><div class="text-sm text-gray-600" id="chicken-intro-count"></div></div>
@@ -1690,7 +1702,7 @@ const PREVIEW_LAUNCH_MAP = {
   launchTilt:'tilt', launchBee:'bee', launchSubway:'subway', launchDeal:'deal', launchWheelDoom:'wheel',
   launchCrystal:'crystal', launchWarp:'warp', launchStocks:'stocks', launchSlot:'slot', launchBingo:'bingo',
   launchHighCard:'highcard', launchPlinko:'plinko', launchThunder:'thunder', launchButts:'butts', launchFlush:'flush',
-  launchTwerk:'twerk', launchBombRoulette:'bomb', launchChicken:'chicken',
+  launchTwerk:'twerk', launchBombRoulette:'bomb', launchChicken:'chicken', launchBabyOil:'babyoil',
   launchBoxingMatch:'boxing', launchSwordDuel:'sword'
 };
 
@@ -1862,6 +1874,7 @@ function launchFlush() { openGamePopup('flush'); }
 function launchTwerk() { openGamePopup('twerk'); }
 function launchBombRoulette() { openGamePopup('bomb'); }
 function launchChicken() { openGamePopup('chicken'); }
+function launchBabyOil() { openGamePopup('babyoil'); }
 
 
 
@@ -9037,6 +9050,502 @@ function startChicken(names) {
   loop();
 }
 
+/* ==================== BABY OIL RATING ==================== */
+const OIL_HOST_IMG = new Image();
+OIL_HOST_IMG.src = 'oil-host.png';
+
+const OIL_EASE = {
+  lerp: (a, b, t) => a + (b - a) * t,
+  outCubic: t => 1 - Math.pow(1 - t, 3),
+  inOutCubic: t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+  outBack: t => { const c = 1.70158; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); },
+  outElastic: t => t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * (2 * Math.PI / 3)) + 1
+};
+
+function layoutOilBottles(names, W, H) {
+  const n = names.length;
+  const cols = Math.max(3, Math.ceil(Math.sqrt(n * 2.1)));
+  const rows = Math.ceil(n / cols);
+  const padX = 36, padTop = 52, padBot = H * 0.38;
+  const cellW = (W - padX * 2) / cols;
+  const cellH = (H - padTop - padBot) / Math.max(1, rows);
+  const bw = Math.max(22, Math.min(56, cellW * 0.52, 640 / cols));
+  const bh = bw * 2.15;
+  return names.map((name, i) => {
+    const col = i % cols, row = Math.floor(i / cols);
+    const tx = padX + col * cellW + cellW / 2;
+    const ty = padTop + row * cellH + cellH / 2;
+    return {
+      name, color: colorFor(name), tx, ty, x: tx, y: ty - 120,
+      w: bw, h: bh, targetRot: (Math.random() - 0.5) * 0.35, rot: 0,
+      spawn: 0, tested: false, rating: null, glow: 0, dim: 0, wobble: 0
+    };
+  });
+}
+
+function drawOilStageBg(ctx, W, H, frame) {
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#052e16'); g.addColorStop(0.45, '#14532d'); g.addColorStop(1, '#052e16');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = 'rgba(34,197,94,0.08)';
+  for (let i = 0; i < 6; i++) {
+    const px = (W * 0.15 + i * W * 0.14 + Math.sin(frame * 0.02 + i) * 20);
+    ctx.beginPath(); ctx.ellipse(px, H * 0.22, 90, 140, 0, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.fillStyle = '#166534';
+  ctx.fillRect(0, H * 0.72, W, H * 0.28);
+  ctx.fillStyle = '#15803d';
+  ctx.beginPath(); ctx.moveTo(0, H * 0.74);
+  ctx.bezierCurveTo(W * 0.25, H * 0.68, W * 0.55, H * 0.78, W, H * 0.72);
+  ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.beginPath(); ctx.ellipse(W / 2, H * 0.78, 140, 22, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(74,222,128,0.25)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(W / 2, H * 0.52, 130, 36, 0, 0, Math.PI * 2); ctx.stroke();
+}
+
+function drawOilBottle(ctx, b, opts) {
+  opts = opts || {};
+  const sel = opts.selected || false;
+  const alpha = opts.alpha != null ? opts.alpha : 1;
+  ctx.save();
+  ctx.globalAlpha = alpha * (1 - b.dim * 0.55);
+  ctx.translate(b.x, b.y);
+  ctx.rotate(b.rot + (b.wobble || 0));
+  if (sel || b.glow > 0) {
+    ctx.shadowColor = sel ? '#fde047' : '#86efac';
+    ctx.shadowBlur = 12 + (b.glow || 0) * 22;
+  }
+  const w = b.w, h = b.h;
+  const bg = ctx.createLinearGradient(0, -h, 0, h);
+  bg.addColorStop(0, 'rgba(255,255,255,0.95)'); bg.addColorStop(0.35, 'rgba(240,249,255,0.85)'); bg.addColorStop(1, 'rgba(186,230,253,0.75)');
+  ctx.fillStyle = bg;
+  ctx.beginPath();
+  ctx.roundRect(-w * 0.32, -h * 0.42, w * 0.64, h * 0.84, w * 0.18);
+  ctx.fill();
+  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.fillStyle = '#f472b6';
+  ctx.beginPath(); ctx.roundRect(-w * 0.28, -h * 0.05, w * 0.56, h * 0.38, w * 0.08); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.font = 'bold ' + Math.max(7, w * 0.19) + 'px Inter'; ctx.textAlign = 'center';
+  ctx.fillText('BABY OIL', 0, h * 0.08);
+  ctx.fillStyle = '#1e293b'; ctx.font = 'bold ' + Math.max(8, w * 0.22) + 'px Inter';
+  const un = b.name.length > 10 ? b.name.substring(0, 9) + '…' : b.name;
+  ctx.fillText(un, 0, h * 0.24);
+  ctx.fillStyle = 'rgba(255,255,255,0.55)';
+  ctx.beginPath(); ctx.ellipse(-w * 0.08, -h * 0.28, w * 0.1, h * 0.12, -0.3, 0, Math.PI * 2); ctx.fill();
+  if (b.rating != null) {
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#fde047'; ctx.font = 'bold ' + Math.max(9, w * 0.24) + 'px Inter';
+    ctx.fillText(b.rating.toFixed(1), 0, -h * 0.52);
+  }
+  ctx.restore();
+}
+
+function drawOilHost(ctx, x, y, sc, pose) {
+  pose = pose || {};
+  const lean = pose.lean || 0;
+  const bounce = pose.bounce || 0;
+  const oil = pose.oilShine || 0;
+  const expr = pose.expr || 'neutral';
+  ctx.save();
+  ctx.translate(x, y + bounce);
+  ctx.rotate(lean);
+  ctx.scale(sc, sc);
+
+  if (pose.thought) {
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(55, -195, 28, 22, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#cbd5e1'; ctx.stroke();
+    ctx.font = '22px serif'; ctx.textAlign = 'center'; ctx.fillText('🤔', 55, -188);
+  }
+  if (pose.pointX != null) {
+    ctx.strokeStyle = '#fde047'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(20, -60); ctx.lineTo(pose.pointX - x, pose.pointY - y); ctx.stroke();
+  }
+
+  const armR = pose.armR || 0;
+  const armL = pose.armL || 0;
+  ctx.fillStyle = '#16a34a';
+  ctx.save(); ctx.translate(38, -20); ctx.rotate(armR);
+  ctx.fillRect(-8, -6, 16, 52); ctx.restore();
+  ctx.save(); ctx.translate(-38, -10); ctx.rotate(armL);
+  ctx.fillRect(-8, -6, 16, 48); ctx.restore();
+
+  if (OIL_HOST_IMG.complete && OIL_HOST_IMG.naturalWidth) {
+    const iw = 200, ih = 260;
+    ctx.drawImage(OIL_HOST_IMG, -iw / 2, -ih + 20, iw, ih);
+  } else {
+    ctx.fillStyle = '#22c55e';
+    ctx.beginPath(); ctx.ellipse(0, -60, 55, 90, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fde047'; ctx.font = '40px serif'; ctx.textAlign = 'center'; ctx.fillText('?', 0, -50);
+  }
+
+  if (oil > 0) {
+    ctx.globalAlpha = oil * 0.45;
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath(); ctx.ellipse(0, -40, 48, 70, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = oil * 0.35;
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath(); ctx.ellipse(-20 + i * 10, -20 + i * 8, 6, 14, 0.2, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  if (expr === 'think') { ctx.font = '28px serif'; ctx.fillText('🤨', 18, -175); }
+  else if (expr === 'excited') { ctx.font = '28px serif'; ctx.fillText('😆', 18, -175); }
+  else if (expr === 'sad') { ctx.font = '28px serif'; ctx.fillText('😒', 18, -175); }
+  else if (expr === 'wow') { ctx.font = '28px serif'; ctx.fillText('🤩', 18, -175); }
+
+  if (pose.bottleHeld) {
+    const b = pose.bottleHeld;
+    ctx.save();
+    ctx.translate(pose.bottleX || 30, pose.bottleY || -120);
+    ctx.rotate(pose.bottleRot || -0.5);
+    drawOilBottle(ctx, { ...b, x: 0, y: 0, rot: 0, dim: 0, glow: 0.5 }, { selected: true });
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+function runBabyOil() {
+  showOverlay('babyoil-overlay'); showPhase('babyoil', 'intro');
+  const names = Array.from(entrants);
+  if (!names.length) { alert('No entrants yet!'); return; }
+  document.getElementById('babyoil-intro-count').textContent = names.length + ' bottles ready for inspection';
+  armGameStart(() => startBabyOil(names));
+}
+
+function startBabyOil(names) {
+  showPhase('babyoil', 'play');
+  const canvas = document.getElementById('babyoil-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const feed = document.getElementById('babyoil-feed');
+  const hostHome = { x: W / 2, y: H * 0.78 };
+  const speed = names.length > 50 ? 0.55 : names.length > 20 ? 0.72 : 1;
+  const dur = n => Math.max(8, Math.round(n * speed));
+
+  let bottles = layoutOilBottles(names, W, H);
+  let ratings = {};
+  let untested = [...bottles];
+  let frame = 0, animId = null;
+  let cam = { x: 0, y: 0, zoom: 1, tx: 0, ty: 0, tz: 1 };
+  let host = { x: hostHome.x, y: hostHome.y, pose: {} };
+  let stage = 'spawn', stageT = 0, selected = null;
+  let oilDrops = [], sparkles = [], confetti = [];
+  let ratingUI = null, finale = null;
+
+  function pickRandomUntested() {
+    const left = untested.filter(b => !b.tested);
+    if (!left.length) return null;
+    return left[Math.floor(Math.random() * left.length)];
+  }
+
+  function genRating() {
+    return Math.round((3 + Math.random() * 6.8) * 10) / 10;
+  }
+
+  function ratingReaction(r) {
+    if (r <= 3) return 'sad';
+    if (r <= 6) return 'neutral';
+    if (r <= 8) return 'think';
+    return 'wow';
+  }
+
+  function spawnOilStream(bx, by, tilt) {
+    for (let i = 0; i < 3; i++) {
+      oilDrops.push({
+        x: bx + Math.sin(tilt) * 8, y: by,
+        vx: (Math.random() - 0.5) * 1.2 + Math.sin(tilt) * 2,
+        vy: 1.5 + Math.random() * 1.5,
+        r: 2 + Math.random() * 3, life: 1, kind: 'drop'
+      });
+    }
+  }
+
+  function beginTest() {
+    selected = pickRandomUntested();
+    if (!selected) { stage = 'finale_pause'; stageT = 0; return; }
+    bottles.forEach(b => { b.glow = b === selected ? 1 : 0; b.dim = b === selected ? 0 : 0.35; });
+    stage = 'think'; stageT = 0;
+    feed.textContent = '🤔 Inspecting bottles... (' + (untested.filter(b => !b.tested).length) + ' left)';
+  }
+
+  function finishWinner() {
+    let best = -1, tied = [];
+    Object.entries(ratings).forEach(([nm, r]) => {
+      if (r > best) { best = r; tied = [nm]; }
+      else if (r === best) tied.push(nm);
+    });
+    const winner = pickSingleWinner(tied, names);
+    cancelAnimationFrame(animId);
+    showPhase('babyoil', 'winner');
+    document.getElementById('babyoil-winner-name').textContent = winner;
+    document.getElementById('babyoil-winner-score').textContent = '⭐ ' + (ratings[winner] || best).toFixed(1) + ' / 10';
+  }
+
+  function updateStage() {
+    stageT++;
+    const sel = selected;
+    const ht = hostHome;
+
+    if (stage === 'spawn') {
+      bottles.forEach((b, i) => {
+        b.spawn = Math.min(1, b.spawn + 0.035);
+        const p = OIL_EASE.outBack(Math.min(1, b.spawn));
+        b.y = OIL_EASE.lerp(b.y, b.ty, p * 0.18 + 0.08);
+        b.rot = OIL_EASE.lerp(0, b.targetRot, p);
+      });
+      if (stageT > dur(55) && bottles.every(b => b.spawn >= 1)) {
+        bottles.forEach(b => { b.y = b.ty; });
+        stage = 'think'; stageT = 0; beginTest();
+      }
+      return;
+    }
+
+    if (stage === 'think') {
+      host.x = OIL_EASE.lerp(host.x, ht.x, 0.08);
+      host.y = OIL_EASE.lerp(host.y, ht.y, 0.08);
+      const look = Math.sin(stageT * 0.08) * 0.08;
+      host.pose = { expr: 'think', thought: true, lean: look, armL: -0.4 + Math.sin(stageT * 0.1) * 0.2, armR: 0.3 };
+      if (sel) sel.wobble = Math.sin(stageT * 0.2) * 0.03 * (stageT > dur(40) ? 2 : 0.5);
+      cam.tz = 1; cam.tx = 0; cam.ty = 0;
+      if (stageT > dur(75)) { stage = 'point'; stageT = 0; }
+      return;
+    }
+
+    if (stage === 'point' && sel) {
+      host.pose = {
+        expr: 'think', thought: false, lean: sel.x < host.x ? -0.12 : 0.12,
+        armR: -1.1, pointX: sel.x, pointY: sel.y,
+        armL: 0.2
+      };
+      sel.glow = 1 + Math.sin(stageT * 0.25) * 0.3;
+      if (stageT > dur(28)) { stage = 'zoom'; stageT = 0; }
+      return;
+    }
+
+    if (stage === 'zoom' && sel) {
+      cam.tx = (W / 2 - sel.x) * 0.85;
+      cam.ty = (H / 2 - sel.y) * 0.55;
+      cam.tz = OIL_EASE.lerp(cam.tz, 1.65, 0.06);
+      sel.wobble = Math.sin(stageT * 0.35) * 0.06;
+      host.pose = { expr: 'think', armR: -0.8, armL: 0.1, lean: 0.05 };
+      if (stageT > dur(42)) { stage = 'approach'; stageT = 0; }
+      return;
+    }
+
+    if (stage === 'approach' && sel) {
+      const tx = sel.x - 55, ty = sel.y + 70;
+      host.x = OIL_EASE.lerp(host.x, tx, 0.07);
+      host.y = OIL_EASE.lerp(host.y, ty, 0.07);
+      host.pose = { expr: 'neutral', armR: -0.5, armL: 0.4, lean: 0.08 };
+      if (stageT > dur(48)) { stage = 'grab'; stageT = 0; }
+      return;
+    }
+
+    if (stage === 'grab' && sel) {
+      const p = OIL_EASE.inOutCubic(Math.min(1, stageT / dur(32)));
+      host.pose = {
+        expr: 'think', armR: -1.3 * p, armL: 0.5,
+        bottleHeld: sel, bottleX: 28 + p * 10, bottleY: -130, bottleRot: -0.3 - p * 0.4
+      };
+      sel.x = OIL_EASE.lerp(sel.x, host.x + 30, p * 0.85);
+      sel.y = OIL_EASE.lerp(sel.y, host.y - 120, p * 0.85);
+      if (stageT > dur(35)) { stage = 'inspect'; stageT = 0; }
+      return;
+    }
+
+    if (stage === 'inspect' && sel) {
+      host.pose = {
+        expr: 'think', thought: stageT < dur(20), armR: -1.2,
+        bottleHeld: sel, bottleX: 32, bottleY: -125, bottleRot: -0.35 + Math.sin(stageT * 0.12) * 0.08
+      };
+      if (stageT > dur(38)) { stage = 'pour'; stageT = 0; host.pose.oilShine = 0; }
+      return;
+    }
+
+    if (stage === 'pour' && sel) {
+      const p = Math.min(1, stageT / dur(95));
+      const tilt = -0.2 - p * 1.35;
+      host.pose = {
+        expr: p > 0.5 ? 'excited' : 'think', armR: -1.6,
+        bottleHeld: sel, bottleX: 15, bottleY: -165 - p * 10, bottleRot: tilt,
+        oilShine: Math.min(1, stageT / dur(60)), lean: Math.sin(stageT * 0.15) * 0.06 * p,
+        bounce: Math.sin(stageT * 0.2) * 3 * p
+      };
+      if (stageT % 2 === 0) spawnOilStream(host.x + 15, host.y - 170, tilt);
+      host.pose.oilShine = Math.min(1, (stageT - dur(15)) / dur(50));
+      if (stageT > dur(100)) { stage = 'rate_think'; stageT = 0; oilDrops = []; }
+      return;
+    }
+
+    if (stage === 'rate_think' && sel) {
+      host.pose = { expr: 'think', thought: true, armR: -0.6, bottleHeld: sel, bottleX: 40, bottleY: -110, bottleRot: 0.1, oilShine: host.pose.oilShine || 0.7 };
+      if (stageT > dur(40)) {
+        const r = genRating();
+        ratings[sel.name] = r;
+        sel.rating = r;
+        ratingUI = { value: 0, target: r, t: 0, expr: ratingReaction(r) };
+        stage = 'rate_reveal'; stageT = 0;
+      }
+      return;
+    }
+
+    if (stage === 'rate_reveal' && sel && ratingUI) {
+      ratingUI.t++;
+      ratingUI.value = OIL_EASE.lerp(ratingUI.value, ratingUI.target, 0.06);
+      if (ratingUI.t > dur(15)) ratingUI.value = OIL_EASE.lerp(ratingUI.value, ratingUI.target, 0.12);
+      host.pose = {
+        expr: ratingUI.expr, armR: ratingUI.target >= 9 ? 0.6 : ratingUI.target <= 3 ? -0.3 : 0.2,
+        bottleHeld: sel, bottleX: 38, bottleY: -108, bottleRot: 0.05, oilShine: 0.5
+      };
+      if (ratingUI.t === 8) {
+        for (let i = 0; i < (ratingUI.target >= 8 ? 16 : 8); i++) {
+          sparkles.push({
+            x: host.x, y: host.y - 100, vx: (Math.random() - 0.5) * 6, vy: -2 - Math.random() * 4,
+            r: 2 + Math.random() * 3, life: 1, color: ratingUI.target >= 8 ? '#fde047' : '#94a3b8'
+          });
+        }
+      }
+      if (ratingUI.t > dur(65) && Math.abs(ratingUI.value - ratingUI.target) < 0.05) {
+        ratingUI.value = ratingUI.target;
+        stage = 'return'; stageT = 0;
+        feed.textContent = '⭐ ' + sel.name + ' scored ' + ratingUI.target.toFixed(1) + '/10';
+      }
+      return;
+    }
+
+    if (stage === 'return' && sel) {
+      const p = OIL_EASE.inOutCubic(Math.min(1, stageT / dur(38)));
+      sel.x = OIL_EASE.lerp(sel.x, sel.tx, p);
+      sel.y = OIL_EASE.lerp(sel.y, sel.ty, p);
+      host.x = OIL_EASE.lerp(host.x, ht.x, 0.08);
+      host.y = OIL_EASE.lerp(host.y, ht.y, 0.08);
+      host.pose = { expr: 'neutral', armR: -0.4 * (1 - p), oilShine: 0.3 * (1 - p) };
+      cam.tz = OIL_EASE.lerp(cam.tz, 1, 0.08);
+      cam.tx = OIL_EASE.lerp(cam.tx, 0, 0.08);
+      cam.ty = OIL_EASE.lerp(cam.ty, 0, 0.08);
+      if (stageT > dur(42)) {
+        sel.tested = true; sel.glow = 0; sel.dim = 0.15;
+        selected = null; ratingUI = null;
+        if (untested.every(b => b.tested)) { stage = 'finale_pause'; stageT = 0; }
+        else { beginTest(); }
+      }
+      return;
+    }
+
+    if (stage === 'finale_pause') {
+      host.pose = { expr: 'think', thought: true, lean: 0.05 };
+      cam.tz = OIL_EASE.lerp(cam.tz, 1, 0.05);
+      cam.tx = OIL_EASE.lerp(cam.tx, 0, 0.05);
+      cam.ty = OIL_EASE.lerp(cam.ty, 0, 0.05);
+      if (stageT > dur(55)) {
+        let best = -1, winB = bottles[0];
+        bottles.forEach(b => { if ((ratings[b.name] || 0) >= best) { best = ratings[b.name] || 0; winB = b; } });
+        finale = { bottle: winB, score: best, t: 0 };
+        stage = 'finale'; stageT = 0;
+        feed.textContent = '🏆 AND THE WINNER IS...';
+      }
+      return;
+    }
+
+    if (stage === 'finale' && finale) {
+      finale.t++;
+      const wb = finale.bottle;
+      bottles.forEach(b => { b.dim = b === wb ? 0 : 0.72; b.glow = b === wb ? 1.2 : 0; });
+      cam.tx = OIL_EASE.lerp(cam.tx, (W / 2 - wb.x) * 0.9, 0.04);
+      cam.ty = OIL_EASE.lerp(cam.ty, (H / 2 - wb.y) * 0.65, 0.04);
+      cam.tz = OIL_EASE.lerp(cam.tz, 1.85, 0.035);
+      wb.wobble = Math.sin(finale.t * 0.2) * 0.08;
+      host.pose = { expr: 'wow', armR: -1.0, pointX: wb.x, pointY: wb.y, lean: 0.1 };
+      if (finale.t % 6 === 0) {
+        confetti.push({
+          x: wb.x, y: wb.y - 40, vx: (Math.random() - 0.5) * 5, vy: -3 - Math.random() * 4,
+          r: 3 + Math.random() * 4, life: 1, color: ['#fde047', '#22c55e', '#fff', '#f472b6'][Math.floor(Math.random() * 4)],
+          rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.2
+        });
+      }
+      if (finale.t > dur(110)) finishWinner();
+    }
+  }
+
+  function drawScene() {
+    frame++;
+    cam.x = OIL_EASE.lerp(cam.x, cam.tx, 0.1);
+    cam.y = OIL_EASE.lerp(cam.y, cam.ty, 0.1);
+    cam.zoom = OIL_EASE.lerp(cam.zoom, cam.tz, 0.1);
+
+    drawOilStageBg(ctx, W, H, frame);
+    ctx.save();
+    ctx.translate(W / 2, H / 2);
+    ctx.scale(cam.zoom, cam.zoom);
+    ctx.translate(-W / 2 + cam.x, -H / 2 + cam.y);
+
+    bottles.forEach(b => drawOilBottle(ctx, b, { selected: b === selected && stage !== 'spawn' }));
+    drawOilHost(ctx, host.x, host.y, 0.95, host.pose);
+
+    oilDrops.forEach(d => {
+      d.x += d.vx; d.y += d.vy; d.vy += 0.22;
+      if (d.y > host.y - 90 && d.y < host.y - 20 && Math.abs(d.x - host.x) < 35) {
+        d.vy *= -0.2; d.vx *= 0.5; d.life -= 0.08;
+        if (Math.random() < 0.3) sparkles.push({ x: d.x, y: d.y, vx: (Math.random() - 0.5) * 2, vy: 1, r: 2, life: 0.8, color: '#fef08a' });
+      }
+      ctx.globalAlpha = d.life; ctx.fillStyle = '#fef9c3';
+      ctx.beginPath(); ctx.ellipse(d.x, d.y, d.r, d.r * 1.3, 0, 0, Math.PI * 2); ctx.fill();
+    });
+    oilDrops = oilDrops.filter(d => d.life > 0 && d.y < H + 20).slice(0, 120);
+
+    sparkles.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vy += 0.06; p.life -= 0.022;
+      ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+    });
+    sparkles = sparkles.filter(p => p.life > 0).slice(0, 80);
+
+    confetti.forEach(c => {
+      c.x += c.vx; c.y += c.vy; c.vy += 0.12; c.rot += c.vr; c.life -= 0.008;
+      ctx.save(); ctx.globalAlpha = Math.max(0, c.life); ctx.translate(c.x, c.y); ctx.rotate(c.rot);
+      ctx.fillStyle = c.color; ctx.fillRect(-c.r, -c.r * 0.6, c.r * 2, c.r * 1.2);
+      ctx.restore();
+    });
+    confetti = confetti.filter(c => c.life > 0).slice(0, 100);
+
+    if (ratingUI && selected) {
+      const bounce = ratingUI.t > dur(50) ? OIL_EASE.outElastic(Math.min(1, (ratingUI.t - dur(50)) / 20)) * 8 : 0;
+      ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(host.x - 90, host.y - 250 - bounce, 180, 58, 12); ctx.fill();
+      ctx.fillStyle = '#fde047'; ctx.font = 'bold 36px Inter'; ctx.textAlign = 'center';
+      ctx.fillText(ratingUI.value.toFixed(1) + ' / 10', host.x, host.y - 212 - bounce);
+    }
+
+    if (stage === 'finale' && finale) {
+      const wb = finale.bottle;
+      ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(wb.x - 110, wb.y - wb.h - 75, 220, 52, 12); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 22px Inter'; ctx.textAlign = 'center';
+      ctx.fillText('🏆 WINNER', wb.x, wb.y - wb.h - 48);
+      ctx.fillStyle = '#fde047'; ctx.font = 'bold 18px Inter';
+      ctx.fillText(finale.score.toFixed(1) + ' / 10', wb.x, wb.y - wb.h - 24);
+    }
+
+    ctx.globalAlpha = 1;
+    ctx.restore();
+
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, 10, 250, 30, 8); ctx.fill();
+    ctx.fillStyle = '#86efac'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left';
+    const tested = bottles.filter(b => b.tested).length;
+    ctx.fillText('🧴 TESTED: ' + tested + ' / ' + bottles.length, 20, 30);
+  }
+
+  function loop() {
+    updateStage();
+    drawScene();
+    animId = requestAnimationFrame(loop);
+  }
+
+  stage = 'spawn'; stageT = 0;
+  feed.textContent = '🧴 Bottles arriving...';
+  loop();
+}
+
 /* ==================== TWERK SHAKE ROYALE ==================== */
 function drawTwerkBox(ctx, bx, by, bw, bh, opts) {
   opts = opts || {};
@@ -10036,6 +10545,7 @@ function launchSwordWith(p1Name, p2Name) {
       else if (game === 'butts') runButts();
       else if (game === 'flush') runFlush();
       else if (game === 'chicken') runChicken();
+      else if (game === 'babyoil') runBabyOil();
       else if (game === 'twerk') runTwerk();
       else if (game === 'bomb') runBombRoulette();
       else if (game === 'boxing') runBoxingMatch();
@@ -10319,6 +10829,31 @@ const PV_SCENES = {
       }
       ctx.fillStyle = '#78350f'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center';
       ctx.fillText('Click the chicken to lay mystery eggs!', W / 2, H - 24);
+    }
+  },
+  babyoil: {
+    gw: 960, gh: 600,
+    init() {
+      const W = 960, H = 600;
+      const bottles = layoutOilBottles(PV_NAMES.slice(0, 8), W, H);
+      bottles.forEach(b => { b.spawn = 1; b.y = b.ty; b.rot = b.targetRot; });
+      return { frame: 0, W, H, bottles, host: { x: W / 2, y: H * 0.78, pose: { expr: 'think', thought: true } }, t: 0 };
+    },
+    tick(st) {
+      st.frame++; st.t++;
+      st.host.pose.armL = -0.35 + Math.sin(st.t * 0.08) * 0.15;
+      if (st.t % 120 === 0) st.bottles.forEach(b => { b.glow = 0; b.dim = 0.2; });
+      if (st.t % 120 === 60) {
+        const pick = st.bottles[Math.floor(Math.random() * st.bottles.length)];
+        st.bottles.forEach(b => { b.glow = b === pick ? 1 : 0; b.dim = b === pick ? 0 : 0.35; });
+      }
+    },
+    draw(ctx, W, H, st) {
+      drawOilStageBg(ctx, W, H, st.frame);
+      st.bottles.forEach(b => drawOilBottle(ctx, b, { selected: b.glow > 0.5 }));
+      drawOilHost(ctx, st.host.x, st.host.y, 0.85, st.host.pose);
+      ctx.fillStyle = '#86efac'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center';
+      ctx.fillText('Every entrant becomes a rated baby oil bottle!', W / 2, H - 22);
     }
   },
   twerk: {
@@ -10738,6 +11273,7 @@ const GAME_PREVIEW_META = {
   twerk: { scene: 'twerk', title: '🍑 Twerk Shake Royale', desc: 'Balls bounce in the butt box — after 30s ULTRA SHAKE kicks in to finish within 1 minute!' },
   bomb: { scene: 'bumper', title: '🧨 Bomb Roulette', desc: 'Hot potato bomb jumps between players until BOOM!' },
   chicken: { scene: 'chicken', title: '🐔 Egg Roulette', desc: 'Click the chicken — it lays an egg that cracks open to reveal who got eliminated!' },
+  babyoil: { scene: 'babyoil', title: '🧴 Baby Oil Rating', desc: 'Every entrant becomes a baby oil bottle — the host tests each one and crowns the highest rating!' },
   boxing: { scene: 'boxing', title: '🥊 Boxing Match', desc: '1v1 boxing with combos, blocks, and special moves!' },
   sword: { scene: 'sword', title: '⚔️ Sword Duel', desc: '1v1 fencing duel. Parry, lunge, and strike!' }
 };
