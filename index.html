@@ -125,6 +125,7 @@
     .special-fill { height:100%; border-radius:4px; transition:width .2s; background:linear-gradient(90deg,#ffd700,#ff9d00); }
   </style>
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 <div id="game-chat-pill" class="hidden fixed top-3 right-3 z-[60] px-3 py-1.5 rounded-full text-xs font-bold"></div>
@@ -255,19 +256,19 @@
         <button onclick="launchChicken()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#fbbf24,#d97706);color:#1c1917;">🐔 Egg Roulette</button>
         <button onclick="launchBabyOil()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#22c55e,#14532d);">🧴 Baby Oil Rating</button>
       </div>
-      <div class="glass rounded-2xl p-4 mb-6 border border-green-500/20">
-        <div class="text-gray-300 text-sm font-bold mb-1">🧴 Baby Oil Rating — Host Image (optional)</div>
-        <div class="text-gray-500 text-xs mb-3">Upload your own image to use as the host character in this game. It's stored only in your browser — nothing is uploaded anywhere.</div>
-        <div class="flex items-center gap-4 flex-wrap">
-          <label class="btn-secondary px-4 py-2 rounded-lg text-sm font-bold cursor-pointer">
-            📁 Choose Image
-            <input type="file" accept="image/*" onchange="handleOilHostImageUpload(event)" class="hidden">
-          </label>
-          <button onclick="removeOilHostImage()" class="text-red-400 text-sm font-bold hover:underline">Remove image</button>
-          <img id="oil-host-preview" class="hidden w-16 h-16 rounded-lg object-cover border border-white/10" alt="Host preview">
-          <span id="oil-host-status" class="text-gray-500 text-xs"></span>
+      <!-- Baby Oil Host Image Upload -->
+      <div class="glass rounded-xl p-4 bg-white/[0.02] mb-4 border border-[#22c55e]/20">
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-gray-500 text-xs font-bold uppercase tracking-widest">🧴 Baby Oil Rating — Host Image</div>
+          <span id="oil-img-status" class="text-xs text-gray-400">Using default</span>
         </div>
+        <div class="flex items-center gap-3">
+          <input type="file" id="oil-host-upload" accept="image/*" class="input-field flex-1 px-3 py-2 rounded-lg text-sm text-white file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-[#22c55e] file:text-black hover:file:bg-[#3dd10f]">
+          <img id="oil-img-preview" class="w-10 h-10 rounded-lg object-cover border border-white/10 hidden" alt="Preview">
+        </div>
+        <p class="text-gray-600 text-xs mt-2">Upload your own image to replace the green "?" host</p>
       </div>
+
       <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">1-on-1 Combat (pick 2 entrants)</div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <button onclick="launchBoxingMatch()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#dc2626,#991b1b);">🥊 Boxing Match</button>
@@ -1888,56 +1889,6 @@ function launchTwerk() { openGamePopup('twerk'); }
 function launchBombRoulette() { openGamePopup('bomb'); }
 function launchChicken() { openGamePopup('chicken'); }
 function launchBabyOil() { openGamePopup('babyoil'); }
-
-/* ---- Baby Oil host image upload (stored locally in the browser, never sent anywhere) ---- */
-function handleOilHostImageUpload(event) {
-  const file = event.target.files && event.target.files[0];
-  const status = document.getElementById('oil-host-status');
-  if (!file) return;
-  if (!file.type.startsWith('image/')) { status.textContent = 'Please choose an image file.'; return; }
-  status.textContent = 'Loading...';
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const img = new Image();
-    img.onload = () => {
-      // Resize down before saving so it stays well within localStorage limits
-      const maxDim = 320;
-      let w = img.naturalWidth, h = img.naturalHeight;
-      if (w > h && w > maxDim) { h = Math.round(h * (maxDim / w)); w = maxDim; }
-      else if (h > maxDim) { w = Math.round(w * (maxDim / h)); h = maxDim; }
-      const c = document.createElement('canvas');
-      c.width = w; c.height = h;
-      c.getContext('2d').drawImage(img, 0, 0, w, h);
-      const dataUrl = c.toDataURL('image/jpeg', 0.85);
-      try {
-        localStorage.setItem('giveaway_babyoil_host_img', dataUrl);
-        showOilHostPreview(dataUrl);
-        status.textContent = 'Saved! Used next time you launch Baby Oil Rating.';
-      } catch (err) {
-        status.textContent = 'Image too large to save — try a smaller one.';
-      }
-    };
-    img.onerror = () => { status.textContent = 'Could not read that image.'; };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-function removeOilHostImage() {
-  localStorage.removeItem('giveaway_babyoil_host_img');
-  showOilHostPreview(null);
-  const status = document.getElementById('oil-host-status');
-  if (status) status.textContent = 'Removed — back to the default host.';
-}
-function showOilHostPreview(dataUrl) {
-  const img = document.getElementById('oil-host-preview');
-  if (!img) return;
-  if (dataUrl) { img.src = dataUrl; img.classList.remove('hidden'); }
-  else { img.src = ''; img.classList.add('hidden'); }
-}
-(function initOilHostPreview() {
-  const saved = localStorage.getItem('giveaway_babyoil_host_img');
-  if (saved) document.addEventListener('DOMContentLoaded', () => showOilHostPreview(saved));
-})();
 
 
 
@@ -9115,7 +9066,33 @@ function startChicken(names) {
 
 /* ==================== BABY OIL RATING ==================== */
 const OIL_HOST_IMG = new Image();
-OIL_HOST_IMG.src = localStorage.getItem('giveaway_babyoil_host_img') || 'oil-host.png';
+OIL_HOST_IMG.src = 'oil-host.png';
+/* ---------- Baby Oil Host Image Upload Handler ---------- */
+(function initOilHostUpload(){
+  const uploadInput = document.getElementById('oil-host-upload');
+  const preview = document.getElementById('oil-img-preview');
+  const status = document.getElementById('oil-img-status');
+  if(!uploadInput) return;
+  uploadInput.addEventListener('change', function(e){
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt){
+      OIL_HOST_IMG.src = evt.target.result;
+      if(preview){
+        preview.src = evt.target.result;
+        preview.classList.remove('hidden');
+      }
+      if(status){
+        status.textContent = 'Custom image loaded';
+        status.classList.add('text-[#22c55e]');
+        status.classList.remove('text-gray-400');
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+})();
+
 
 const OIL_EASE = {
   lerp: (a, b, t) => a + (b - a) * t,
