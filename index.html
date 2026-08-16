@@ -126,6 +126,7 @@
   </style>
 <base target="_blank">
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 <div id="game-chat-pill" class="hidden fixed top-3 right-3 z-[60] px-3 py-1.5 rounded-full text-xs font-bold"></div>
@@ -252,6 +253,7 @@
         <button onclick="launchButts()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f472b6,#9d174d);">🍑 Pick A Butt</button>
         <button onclick="launchFlush()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#38bdf8,#1e40af);">🚽 Flush Royale</button>
         <button onclick="launchTwerk()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#ec4899,#7c3aed);">🍑 Twerk Shake Royale</button>
+        <button onclick="launchBracketGame()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#a855f7,#6d28d9);">🎤 Absurd Bracket</button>
         <button onclick="launchBombRoulette()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#ef4444,#7f1d1d);">🧨 Bomb Roulette</button>
         <button onclick="launchChicken()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#fbbf24,#d97706);color:#1c1917;">🐔 Egg Roulette</button>
         <button onclick="launchBabyOil()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#22c55e,#14532d);">🧴 Baby Oil Rating</button>
@@ -1467,7 +1469,281 @@ function createGiveaway() {
       dashboard.classList.remove('hidden');
       dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    initGamePreviewHover();
+    
+/* ==================== ABSURD BRACKET GAME ==================== */
+const bracketScenarios = [
+  "Who would survive a zombie apocalypse longer?",
+  "Who would make the better parent to a cactus?",
+  "Who would win in a cooking competition using only a microwave?",
+  "Who would be more likely to become a supervillain?",
+  "Who would give better dating advice to a goldfish?",
+  "Who would win a dance-off against a robot?",
+  "Who would be the better astronaut with zero training?",
+  "Who would survive longer on a deserted island with only a spoon?",
+  "Who would win a staring contest against the sun?",
+  "Who would be the better lawyer defending a toaster?",
+  "Who would win a rap battle against a dictionary?",
+  "Who would make the better spy with a neon pink suit?",
+  "Who would survive a haunted house without screaming?",
+  "Who would be the better pirate captain with a rubber duck?",
+  "Who would win a pillow fight against a professional wrestler?",
+  "Who would be the better time traveler who can only go back 5 minutes?",
+  "Who would survive a tornado made of spaghetti?",
+  "Who would be the better ninja who only knows cartwheels?",
+  "Who would win a debate against a very confident toddler?",
+  "Who would be the better dragon trainer with a pet lizard?",
+  "Who would win a thumb war against a crab?",
+  "Who would be the better stand-up comedian for an audience of cats?",
+  "Who would survive being locked in a room full of bubble wrap?",
+  "Who would be the better detective who only uses smell?",
+  "Who would win a race wearing flippers on a dry sidewalk?",
+  "Who would be the better king/queen of a kingdom of squirrels?",
+  "Who would survive a week eating only mustard?",
+  "Who would be the better weather forecaster who is always wrong?",
+  "Who would win a hide-and-seek game in an empty room?",
+  "Who would be the better substitute teacher for a class of wolves?"
+];
+
+let bracketState = {
+  players: [],
+  remaining: [],
+  currentMatch: 0,
+  round: 1,
+  matchInRound: 1,
+  totalMatches: 0,
+  matchups: [],
+  voted: {},
+  votes: { left: 0, right: 0 },
+  timer: null,
+  timeLeft: 20,
+  active: false
+};
+
+function launchBracketGame() {
+  document.body.classList.add('game-mode');
+  document.getElementById('bracket-overlay').classList.remove('hidden');
+  document.getElementById('bracket-howto').classList.remove('hidden');
+  document.getElementById('bracket-phase-matchup').classList.add('hidden');
+  document.getElementById('bracket-phase-reveal').classList.add('hidden');
+  document.getElementById('bracket-phase-winner').classList.add('hidden');
+  resetBracketState();
+}
+
+function resetBracketState() {
+  bracketState = {
+    players: [],
+    remaining: [],
+    currentMatch: 0,
+    round: 1,
+    matchInRound: 1,
+    totalMatches: 0,
+    matchups: [],
+    voted: {},
+    votes: { left: 0, right: 0 },
+    timer: null,
+    timeLeft: 20,
+    active: false
+  };
+}
+
+function startBracketGame() {
+  const entrants = Array.from(entrantSet || new Set());
+  if (entrants.length < 2) {
+    alert('Need at least 2 entrants to start Absurd Bracket!');
+    return;
+  }
+  bracketState.players = entrants;
+  bracketState.remaining = shuffleArray([...entrants]);
+  bracketState.active = true;
+  document.getElementById('bracket-howto').classList.add('hidden');
+  generateMatchups();
+  bracketStartMatchup();
+}
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function generateMatchups() {
+  bracketState.matchups = [];
+  const rem = bracketState.remaining;
+  for (let i = 0; i < rem.length; i += 2) {
+    if (i + 1 < rem.length) {
+      bracketState.matchups.push({ p1: rem[i], p2: rem[i+1], winner: null });
+    } else {
+      bracketState.matchups.push({ p1: rem[i], p2: null, winner: rem[i], bye: true });
+    }
+  }
+  bracketState.currentMatch = 0;
+  bracketState.matchInRound = 1;
+  bracketState.totalMatches = bracketState.matchups.length;
+}
+
+function bracketStartMatchup() {
+  const match = bracketState.matchups[bracketState.currentMatch];
+  if (!match) {
+    bracketAdvanceRound();
+    return;
+  }
+  if (match.bye) {
+    bracketShowBye(match);
+    return;
+  }
+  bracketState.voted = {};
+  bracketState.votes = { left: 0, right: 0 };
+  bracketState.timeLeft = 20;
+  bracketState.phase = 'collect';
+
+  Object.assign(gameState, { type: 'bracket', phase: 'collect', active: true });
+
+  document.getElementById('bracket-phase-matchup').classList.remove('hidden');
+  document.getElementById('bracket-phase-reveal').classList.add('hidden');
+  document.getElementById('bracket-phase-winner').classList.add('hidden');
+
+  document.getElementById('bracket-p1-name').textContent = match.p1;
+  document.getElementById('bracket-p2-name').textContent = match.p2;
+  document.getElementById('bracket-p1-avatar').textContent = match.p1.charAt(0).toUpperCase();
+  document.getElementById('bracket-p2-avatar').textContent = match.p2.charAt(0).toUpperCase();
+
+  const scenario = bracketScenarios[Math.floor(Math.random() * bracketScenarios.length)];
+  document.getElementById('bracket-scenario').textContent = scenario;
+  document.getElementById('bracket-round-label').textContent = 
+    `Round ${bracketState.round} — Match ${bracketState.matchInRound} of ${bracketState.totalMatches}`;
+
+  updateBracketBars();
+  updateBracketGrid();
+
+  bracketState.timer = setInterval(() => {
+    bracketState.timeLeft--;
+    const timerEl = document.getElementById('bracket-timer');
+    if (timerEl) timerEl.textContent = bracketState.timeLeft;
+    if (bracketState.timeLeft <= 0) {
+      clearInterval(bracketState.timer);
+      bracketResolveMatch();
+    }
+  }, 1000);
+}
+
+function bracketShowBye(match) {
+  document.getElementById('bracket-phase-matchup').classList.remove('hidden');
+  document.getElementById('bracket-phase-reveal').classList.add('hidden');
+  document.getElementById('bracket-p1-name').textContent = match.p1;
+  document.getElementById('bracket-p2-name').textContent = 'BYE';
+  document.getElementById('bracket-p1-avatar').textContent = match.p1.charAt(0).toUpperCase();
+  document.getElementById('bracket-p2-avatar').textContent = 'B';
+  document.getElementById('bracket-scenario').textContent = match.p1 + ' gets a free pass this round!';
+  document.getElementById('bracket-round-label').textContent = 
+    `Round ${bracketState.round} — Match ${bracketState.matchInRound} of ${bracketState.totalMatches} (BYE)`;
+  document.getElementById('bracket-timer').textContent = '—';
+  updateBracketGrid();
+  setTimeout(() => {
+    bracketState.currentMatch++;
+    bracketState.matchInRound++;
+    bracketStartMatchup();
+  }, 3000);
+}
+
+function updateBracketBars() {
+  const left = bracketState.votes.left || 0;
+  const right = bracketState.votes.right || 0;
+  const total = left + right || 1;
+  document.getElementById('bracket-count-left').textContent = left;
+  document.getElementById('bracket-count-right').textContent = right;
+  document.getElementById('bracket-bar-left').style.width = (left / total * 100) + '%';
+  document.getElementById('bracket-bar-right').style.width = (right / total * 100) + '%';
+}
+
+function updateBracketGrid() {
+  const grid = document.getElementById('bracket-live-grid');
+  if (!grid) return;
+  const alive = bracketState.remaining.length;
+  const badge = document.getElementById('bracket-alive-badge');
+  if (badge) badge.textContent = alive + ' alive';
+
+  grid.innerHTML = '';
+  bracketState.remaining.forEach(name => {
+    const div = document.createElement('div');
+    div.className = 'p-card';
+    const initial = name.charAt(0).toUpperCase();
+    const hue = name.split('').reduce((a,c)=>a+c.charCodeAt(0),0) % 360;
+    div.innerHTML = `<div class="p-avatar" style="background:hsl(${hue},70%,50%)">${initial}</div><div class="p-name">${name}</div>`;
+    grid.appendChild(div);
+  });
+}
+
+function bracketResolveMatch() {
+  bracketState.phase = 'reveal';
+  Object.assign(gameState, { type: 'bracket', phase: 'reveal', active: true });
+
+  const match = bracketState.matchups[bracketState.currentMatch];
+  const leftVotes = bracketState.votes.left || 0;
+  const rightVotes = bracketState.votes.right || 0;
+  let winner, loser, verdict;
+
+  if (leftVotes > rightVotes) {
+    winner = match.p1; loser = match.p2;
+    verdict = `${match.p1} wins with ${leftVotes} votes vs ${rightVotes}!`;
+  } else if (rightVotes > leftVotes) {
+    winner = match.p2; loser = match.p1;
+    verdict = `${match.p2} wins with ${rightVotes} votes vs ${leftVotes}!`;
+  } else {
+    const coin = Math.random() < 0.5;
+    winner = coin ? match.p1 : match.p2;
+    loser = coin ? match.p2 : match.p1;
+    verdict = `Tie! ${winner} wins the coin flip (${leftVotes}–${rightVotes})!`;
+  }
+
+  match.winner = winner;
+  const idx = bracketState.remaining.indexOf(loser);
+  if (idx > -1) bracketState.remaining.splice(idx, 1);
+
+  document.getElementById('bracket-phase-matchup').classList.add('hidden');
+  document.getElementById('bracket-phase-reveal').classList.remove('hidden');
+  document.getElementById('bracket-verdict-text').textContent = verdict;
+  document.getElementById('bracket-winner-name').textContent = winner;
+  document.getElementById('bracket-winner-avatar').textContent = winner.charAt(0).toUpperCase();
+  const hue = winner.split('').reduce((a,c)=>a+c.charCodeAt(0),0) % 360;
+  document.getElementById('bracket-winner-avatar').style.background = `hsl(${hue},70%,50%)`;
+  document.getElementById('bracket-winner-avatar').style.color = '#fff';
+}
+
+function bracketNextMatch() {
+  bracketState.currentMatch++;
+  bracketState.matchInRound++;
+  if (bracketState.currentMatch >= bracketState.matchups.length) {
+    bracketAdvanceRound();
+  } else {
+    bracketStartMatchup();
+  }
+}
+
+function bracketAdvanceRound() {
+  if (bracketState.remaining.length <= 1) {
+    bracketShowChampion();
+    return;
+  }
+  bracketState.round++;
+  generateMatchups();
+  bracketStartMatchup();
+}
+
+function bracketShowChampion() {
+  const champ = bracketState.remaining[0] || 'Nobody';
+  document.getElementById('bracket-phase-matchup').classList.add('hidden');
+  document.getElementById('bracket-phase-reveal').classList.add('hidden');
+  document.getElementById('bracket-phase-winner').classList.remove('hidden');
+  document.getElementById('bracket-champion-name').textContent = champ;
+  document.getElementById('bracket-champion-scenario').textContent = 
+    `Survived ${bracketState.round} rounds of absurd judgment to claim the crown.`;
+  Object.assign(gameState, { type: 'bracket', phase: 'winner', active: false });
+  bracketState.active = false;
+}
+
+initGamePreviewHover();
     updateOverlayUrl();
     connectKickChat(chatroomId);
   } catch (err) {
@@ -1697,6 +1973,16 @@ function routeChatMessage(sender, text, rawText) {
       if (ans === gameState.answer) gameState.correct.add(key);
       else gameState.wrong.add(key);
       updateMathStats();
+    }
+  }
+  if (gameState.type === 'bracket' && gameState.phase === 'collect') {
+    let choice = null;
+    if (/\b!left\b/.test(t)) choice = 'left';
+    else if (/\b!right\b/.test(t)) choice = 'right';
+    if (choice && !bracketState.voted[key]) {
+      bracketState.voted[key] = choice;
+      bracketState.votes[choice] = (bracketState.votes[choice] || 0) + 1;
+      updateBracketBars();
     }
   }
 }
@@ -11335,6 +11621,280 @@ function getGamePreviews() {
   });
   return _gamePreviewsCache;
 }
+
+/* ==================== ABSURD BRACKET GAME ==================== */
+const bracketScenarios = [
+  "Who would survive a zombie apocalypse longer?",
+  "Who would make the better parent to a cactus?",
+  "Who would win in a cooking competition using only a microwave?",
+  "Who would be more likely to become a supervillain?",
+  "Who would give better dating advice to a goldfish?",
+  "Who would win a dance-off against a robot?",
+  "Who would be the better astronaut with zero training?",
+  "Who would survive longer on a deserted island with only a spoon?",
+  "Who would win a staring contest against the sun?",
+  "Who would be the better lawyer defending a toaster?",
+  "Who would win a rap battle against a dictionary?",
+  "Who would make the better spy with a neon pink suit?",
+  "Who would survive a haunted house without screaming?",
+  "Who would be the better pirate captain with a rubber duck?",
+  "Who would win a pillow fight against a professional wrestler?",
+  "Who would be the better time traveler who can only go back 5 minutes?",
+  "Who would survive a tornado made of spaghetti?",
+  "Who would be the better ninja who only knows cartwheels?",
+  "Who would win a debate against a very confident toddler?",
+  "Who would be the better dragon trainer with a pet lizard?",
+  "Who would win a thumb war against a crab?",
+  "Who would be the better stand-up comedian for an audience of cats?",
+  "Who would survive being locked in a room full of bubble wrap?",
+  "Who would be the better detective who only uses smell?",
+  "Who would win a race wearing flippers on a dry sidewalk?",
+  "Who would be the better king/queen of a kingdom of squirrels?",
+  "Who would survive a week eating only mustard?",
+  "Who would be the better weather forecaster who is always wrong?",
+  "Who would win a hide-and-seek game in an empty room?",
+  "Who would be the better substitute teacher for a class of wolves?"
+];
+
+let bracketState = {
+  players: [],
+  remaining: [],
+  currentMatch: 0,
+  round: 1,
+  matchInRound: 1,
+  totalMatches: 0,
+  matchups: [],
+  voted: {},
+  votes: { left: 0, right: 0 },
+  timer: null,
+  timeLeft: 20,
+  active: false
+};
+
+function launchBracketGame() {
+  document.body.classList.add('game-mode');
+  document.getElementById('bracket-overlay').classList.remove('hidden');
+  document.getElementById('bracket-howto').classList.remove('hidden');
+  document.getElementById('bracket-phase-matchup').classList.add('hidden');
+  document.getElementById('bracket-phase-reveal').classList.add('hidden');
+  document.getElementById('bracket-phase-winner').classList.add('hidden');
+  resetBracketState();
+}
+
+function resetBracketState() {
+  bracketState = {
+    players: [],
+    remaining: [],
+    currentMatch: 0,
+    round: 1,
+    matchInRound: 1,
+    totalMatches: 0,
+    matchups: [],
+    voted: {},
+    votes: { left: 0, right: 0 },
+    timer: null,
+    timeLeft: 20,
+    active: false
+  };
+}
+
+function startBracketGame() {
+  const entrants = Array.from(entrantSet || new Set());
+  if (entrants.length < 2) {
+    alert('Need at least 2 entrants to start Absurd Bracket!');
+    return;
+  }
+  bracketState.players = entrants;
+  bracketState.remaining = shuffleArray([...entrants]);
+  bracketState.active = true;
+  document.getElementById('bracket-howto').classList.add('hidden');
+  generateMatchups();
+  bracketStartMatchup();
+}
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function generateMatchups() {
+  bracketState.matchups = [];
+  const rem = bracketState.remaining;
+  for (let i = 0; i < rem.length; i += 2) {
+    if (i + 1 < rem.length) {
+      bracketState.matchups.push({ p1: rem[i], p2: rem[i+1], winner: null });
+    } else {
+      bracketState.matchups.push({ p1: rem[i], p2: null, winner: rem[i], bye: true });
+    }
+  }
+  bracketState.currentMatch = 0;
+  bracketState.matchInRound = 1;
+  bracketState.totalMatches = bracketState.matchups.length;
+}
+
+function bracketStartMatchup() {
+  const match = bracketState.matchups[bracketState.currentMatch];
+  if (!match) {
+    bracketAdvanceRound();
+    return;
+  }
+  if (match.bye) {
+    bracketShowBye(match);
+    return;
+  }
+  bracketState.voted = {};
+  bracketState.votes = { left: 0, right: 0 };
+  bracketState.timeLeft = 20;
+  bracketState.phase = 'collect';
+
+  Object.assign(gameState, { type: 'bracket', phase: 'collect', active: true });
+
+  document.getElementById('bracket-phase-matchup').classList.remove('hidden');
+  document.getElementById('bracket-phase-reveal').classList.add('hidden');
+  document.getElementById('bracket-phase-winner').classList.add('hidden');
+
+  document.getElementById('bracket-p1-name').textContent = match.p1;
+  document.getElementById('bracket-p2-name').textContent = match.p2;
+  document.getElementById('bracket-p1-avatar').textContent = match.p1.charAt(0).toUpperCase();
+  document.getElementById('bracket-p2-avatar').textContent = match.p2.charAt(0).toUpperCase();
+
+  const scenario = bracketScenarios[Math.floor(Math.random() * bracketScenarios.length)];
+  document.getElementById('bracket-scenario').textContent = scenario;
+  document.getElementById('bracket-round-label').textContent = 
+    `Round ${bracketState.round} — Match ${bracketState.matchInRound} of ${bracketState.totalMatches}`;
+
+  updateBracketBars();
+  updateBracketGrid();
+
+  bracketState.timer = setInterval(() => {
+    bracketState.timeLeft--;
+    const timerEl = document.getElementById('bracket-timer');
+    if (timerEl) timerEl.textContent = bracketState.timeLeft;
+    if (bracketState.timeLeft <= 0) {
+      clearInterval(bracketState.timer);
+      bracketResolveMatch();
+    }
+  }, 1000);
+}
+
+function bracketShowBye(match) {
+  document.getElementById('bracket-phase-matchup').classList.remove('hidden');
+  document.getElementById('bracket-phase-reveal').classList.add('hidden');
+  document.getElementById('bracket-p1-name').textContent = match.p1;
+  document.getElementById('bracket-p2-name').textContent = 'BYE';
+  document.getElementById('bracket-p1-avatar').textContent = match.p1.charAt(0).toUpperCase();
+  document.getElementById('bracket-p2-avatar').textContent = 'B';
+  document.getElementById('bracket-scenario').textContent = match.p1 + ' gets a free pass this round!';
+  document.getElementById('bracket-round-label').textContent = 
+    `Round ${bracketState.round} — Match ${bracketState.matchInRound} of ${bracketState.totalMatches} (BYE)`;
+  document.getElementById('bracket-timer').textContent = '—';
+  updateBracketGrid();
+  setTimeout(() => {
+    bracketState.currentMatch++;
+    bracketState.matchInRound++;
+    bracketStartMatchup();
+  }, 3000);
+}
+
+function updateBracketBars() {
+  const left = bracketState.votes.left || 0;
+  const right = bracketState.votes.right || 0;
+  const total = left + right || 1;
+  document.getElementById('bracket-count-left').textContent = left;
+  document.getElementById('bracket-count-right').textContent = right;
+  document.getElementById('bracket-bar-left').style.width = (left / total * 100) + '%';
+  document.getElementById('bracket-bar-right').style.width = (right / total * 100) + '%';
+}
+
+function updateBracketGrid() {
+  const grid = document.getElementById('bracket-live-grid');
+  if (!grid) return;
+  const alive = bracketState.remaining.length;
+  const badge = document.getElementById('bracket-alive-badge');
+  if (badge) badge.textContent = alive + ' alive';
+
+  grid.innerHTML = '';
+  bracketState.remaining.forEach(name => {
+    const div = document.createElement('div');
+    div.className = 'p-card';
+    const initial = name.charAt(0).toUpperCase();
+    const hue = name.split('').reduce((a,c)=>a+c.charCodeAt(0),0) % 360;
+    div.innerHTML = `<div class="p-avatar" style="background:hsl(${hue},70%,50%)">${initial}</div><div class="p-name">${name}</div>`;
+    grid.appendChild(div);
+  });
+}
+
+function bracketResolveMatch() {
+  bracketState.phase = 'reveal';
+  Object.assign(gameState, { type: 'bracket', phase: 'reveal', active: true });
+
+  const match = bracketState.matchups[bracketState.currentMatch];
+  const leftVotes = bracketState.votes.left || 0;
+  const rightVotes = bracketState.votes.right || 0;
+  let winner, loser, verdict;
+
+  if (leftVotes > rightVotes) {
+    winner = match.p1; loser = match.p2;
+    verdict = `${match.p1} wins with ${leftVotes} votes vs ${rightVotes}!`;
+  } else if (rightVotes > leftVotes) {
+    winner = match.p2; loser = match.p1;
+    verdict = `${match.p2} wins with ${rightVotes} votes vs ${leftVotes}!`;
+  } else {
+    const coin = Math.random() < 0.5;
+    winner = coin ? match.p1 : match.p2;
+    loser = coin ? match.p2 : match.p1;
+    verdict = `Tie! ${winner} wins the coin flip (${leftVotes}–${rightVotes})!`;
+  }
+
+  match.winner = winner;
+  const idx = bracketState.remaining.indexOf(loser);
+  if (idx > -1) bracketState.remaining.splice(idx, 1);
+
+  document.getElementById('bracket-phase-matchup').classList.add('hidden');
+  document.getElementById('bracket-phase-reveal').classList.remove('hidden');
+  document.getElementById('bracket-verdict-text').textContent = verdict;
+  document.getElementById('bracket-winner-name').textContent = winner;
+  document.getElementById('bracket-winner-avatar').textContent = winner.charAt(0).toUpperCase();
+  const hue = winner.split('').reduce((a,c)=>a+c.charCodeAt(0),0) % 360;
+  document.getElementById('bracket-winner-avatar').style.background = `hsl(${hue},70%,50%)`;
+  document.getElementById('bracket-winner-avatar').style.color = '#fff';
+}
+
+function bracketNextMatch() {
+  bracketState.currentMatch++;
+  bracketState.matchInRound++;
+  if (bracketState.currentMatch >= bracketState.matchups.length) {
+    bracketAdvanceRound();
+  } else {
+    bracketStartMatchup();
+  }
+}
+
+function bracketAdvanceRound() {
+  if (bracketState.remaining.length <= 1) {
+    bracketShowChampion();
+    return;
+  }
+  bracketState.round++;
+  generateMatchups();
+  bracketStartMatchup();
+}
+
+function bracketShowChampion() {
+  const champ = bracketState.remaining[0] || 'Nobody';
+  document.getElementById('bracket-phase-matchup').classList.add('hidden');
+  document.getElementById('bracket-phase-reveal').classList.add('hidden');
+  document.getElementById('bracket-phase-winner').classList.remove('hidden');
+  document.getElementById('bracket-champion-name').textContent = champ;
+  document.getElementById('bracket-champion-scenario').textContent = 
+    `Survived ${bracketState.round} rounds of absurd judgment to claim the crown.`;
+  Object.assign(gameState, { type: 'bracket', phase: 'winner', active: false });
+  bracketState.active = false;
+}
+
 initGamePreviewHover();
 
 function tapRace(e) {
@@ -11350,6 +11910,88 @@ function tapRace(e) {
   setTimeout(() => ripple.remove(), 500);
 }
 </script>
+<!-- ==================== ABSURD BRACKET OVERLAY ==================== -->
+<div id="bracket-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="game-bg-animated" id="bg-bracket-overlay"></div>
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-6 overflow-y-auto">
+    <div class="text-center mb-4">
+      <div class="text-[#a855f7] text-sm font-bold uppercase tracking-widest mb-2">🎤 Absurd Bracket</div>
+      <h1 class="text-4xl md:text-5xl font-black text-white">Tournament of Chaos</h1>
+    </div>
+    <div id="bracket-howto" class="w-full max-w-3xl glass rounded-2xl p-6 mb-6 border border-[#a855f7]/30">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-2xl">📖</span>
+        <h2 class="text-xl font-bold text-white">How to Play</h2>
+      </div>
+      <div class="space-y-3 text-gray-300 text-sm">
+        <div class="flex items-start gap-3">
+          <span class="bg-[#a855f7] text-black font-black rounded-full w-6 h-6 flex items-center justify-center text-xs shrink-0 mt-0.5">1</span>
+          <p>Two random entrants are paired up each round. An absurd scenario appears (e.g., "Who would survive a zombie apocalypse?").</p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="bg-[#a855f7] text-black font-black rounded-full w-6 h-6 flex items-center justify-center text-xs shrink-0 mt-0.5">2</span>
+          <p>Chat has <strong class="text-[#ffd700]">20 seconds</strong> to vote by typing <code class="bg-white/10 px-1.5 py-0.5 rounded text-[#53fc18] font-mono">!left</code> or <code class="bg-white/10 px-1.5 py-0.5 rounded text-[#53fc18] font-mono">!right</code> — majority decides the winner.</p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="bg-[#a855f7] text-black font-black rounded-full w-6 h-6 flex items-center justify-center text-xs shrink-0 mt-0.5">3</span>
+          <p>The winner advances to the next round. Loser is eliminated. Rounds repeat until one champion remains.</p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="bg-[#a855f7] text-black font-black rounded-full w-6 h-6 flex items-center justify-center text-xs shrink-0 mt-0.5">4</span>
+          <p>Works perfectly with stream delay — votes are locked in before the reveal. No reaction speed needed!</p>
+        </div>
+      </div>
+      <button onclick="startBracketGame()" class="btn-primary w-full py-4 rounded-xl text-lg font-bold mt-4" style="background:linear-gradient(135deg,#a855f7,#6d28d9);">▶ Start Tournament</button>
+    </div>
+    <div id="bracket-phase-matchup" class="hidden w-full max-w-4xl text-center">
+      <div class="glass rounded-3xl p-8 md:p-10 mb-6 border border-[#a855f7]/20">
+        <div id="bracket-round-label" class="text-[#a855f7] text-sm font-bold uppercase tracking-widest mb-4">Round 1 — Match 1</div>
+        <div class="flex items-center justify-center gap-4 md:gap-8 mb-6">
+          <div class="flex-1 glass rounded-2xl p-6 border-2 border-[#53fc18]/30" id="bracket-p1-card">
+            <div id="bracket-p1-avatar" class="w-16 h-16 rounded-full bg-[#53fc18] text-black font-black text-2xl flex items-center justify-center mx-auto mb-2">A</div>
+            <div id="bracket-p1-name" class="text-xl font-bold text-white">Player 1</div>
+          </div>
+          <div class="text-3xl font-black text-[#ffd700]">VS</div>
+          <div class="flex-1 glass rounded-2xl p-6 border-2 border-[#ff3366]/30" id="bracket-p2-card">
+            <div id="bracket-p2-avatar" class="w-16 h-16 rounded-full bg-[#ff3366] text-white font-black text-2xl flex items-center justify-center mx-auto mb-2">B</div>
+            <div id="bracket-p2-name" class="text-xl font-bold text-white">Player 2</div>
+          </div>
+        </div>
+        <div id="bracket-scenario" class="text-2xl md:text-3xl font-bold text-white mb-4">Who would make the better parent to a cactus?</div>
+        <div class="text-gray-400 text-sm mb-4">Type <span class="text-[#53fc18] font-bold">!left</span> for left player or <span class="text-[#ff3366] font-bold">!right</span> for right player</div>
+        <div class="text-5xl font-black text-[#ffd700] mb-2" id="bracket-timer">20</div>
+        <div class="text-sm text-gray-500">Voting closes automatically</div>
+      </div>
+      <div class="grid grid-cols-2 gap-4 mb-4 max-w-2xl mx-auto">
+        <div class="glass rounded-2xl p-4 relative overflow-hidden"><div class="absolute inset-0 bg-[#53fc18]/10 transition-all" id="bracket-bar-left" style="width:0%"></div><div class="relative z-10 flex items-center justify-between"><span class="font-bold">!left Votes</span><span class="text-sm text-gray-400" id="bracket-count-left">0</span></div></div>
+        <div class="glass rounded-2xl p-4 relative overflow-hidden"><div class="absolute inset-0 bg-[#ff3366]/10 transition-all" id="bracket-bar-right" style="width:0%"></div><div class="relative z-10 flex items-center justify-between"><span class="font-bold">!right Votes</span><span class="text-sm text-gray-400" id="bracket-count-right">0</span></div></div>
+      </div>
+      <div class="text-center mb-4"><span id="bracket-alive-badge" class="p-count-badge">0 alive</span></div>
+      <div id="bracket-live-grid" class="p-grid max-h-40 overflow-y-auto"></div>
+    </div>
+    <div id="bracket-phase-reveal" class="hidden w-full max-w-3xl text-center">
+      <div class="glass rounded-3xl p-10 mb-6">
+        <div class="text-3xl font-bold text-white mb-4">The Verdict</div>
+        <div id="bracket-verdict-text" class="text-2xl text-gray-300 mb-6">Player A wins with 12 votes!</div>
+        <div id="bracket-winner-avatar" class="w-20 h-20 rounded-full bg-[#53fc18] text-black font-black text-3xl flex items-center justify-center mx-auto mb-4">W</div>
+        <div id="bracket-winner-name" class="text-4xl font-black text-white mb-2">Winner Name</div>
+        <div class="text-[#a855f7] font-bold">Advances to next round</div>
+      </div>
+      <button onclick="bracketNextMatch()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold" style="background:linear-gradient(135deg,#a855f7,#6d28d9);">Next Match →</button>
+    </div>
+    <div id="bracket-phase-winner" class="hidden text-center">
+      <div class="text-6xl mb-4">👑</div>
+      <div class="text-2xl text-[#ffd700] font-bold mb-2">TOURNAMENT CHAMPION</div>
+      <div id="bracket-champion-name" class="text-7xl font-black text-white mb-4"></div>
+      <div id="bracket-champion-scenario" class="text-xl text-gray-400 mb-6"></div>
+      <div class="mt-8 flex gap-4 justify-center">
+        <button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button>
+        <button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="streamer-start-wrap" class="hidden fixed inset-0 z-[100] flex items-end justify-center pb-14">
   <button id="streamer-start-btn" type="button" onclick="onStreamerStartClick()" class="streamer-start-btn">▶ START GAME</button>
 </div>
