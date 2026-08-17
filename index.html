@@ -127,6 +127,7 @@
 <base target="_blank">
 <base target="_blank">
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 <div id="game-chat-pill" class="hidden fixed top-3 right-3 z-[60] px-3 py-1.5 rounded-full text-xs font-bold"></div>
@@ -166,9 +167,19 @@
       </div>
       <div class="flex gap-3 flex-wrap">
         <button onclick="addFakeBatch()" class="btn-secondary px-5 py-3 rounded-xl text-sm font-bold">⚡ Add 10 Test</button>
+        <button onclick="toggleManualAdd()" class="btn-secondary px-5 py-3 rounded-xl text-sm font-bold">➕ Add Player</button>
         <button onclick="copyOverlayUrl()" class="glass px-5 py-3 rounded-xl text-sm font-bold text-white">📋 Copy OBS URL</button>
         <button onclick="launchGame()" class="btn-danger px-6 py-3 rounded-xl text-sm font-bold">🚀 Launch Game</button>
       </div>
+    </div>
+    <!-- Manual Player Entry Panel -->
+    <div id="manual-add-panel" class="hidden glass rounded-2xl p-5 mb-8">
+      <div class="flex items-center justify-between mb-3"><h3 class="text-lg font-bold">➕ Add Player Manually</h3><span id="manual-add-feedback" class="text-xs font-bold text-gray-500"></span></div>
+      <div class="flex gap-3">
+        <input type="text" id="manual-name-input" placeholder="Type a player name (or several, separated by commas)" class="input-field flex-1 px-4 py-3 rounded-xl text-white text-sm" onkeydown="if(event.key==='Enter'){event.preventDefault();addManualPlayers();}">
+        <button onclick="addManualPlayers()" class="btn-primary px-6 py-3 rounded-xl text-sm font-bold">Add</button>
+      </div>
+      <p class="text-gray-600 text-xs mt-2">Manually added players join the giveaway just like chat entrants — press Enter to add quickly.</p>
     </div>
     <div class="glass rounded-2xl p-5 mb-8">
       <div class="flex items-center justify-between mb-3"><h3 class="text-lg font-bold">🔌 Kick Chat Connection</h3><span id="conn-badge" class="px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-xs font-bold">DISCONNECTED</span></div>
@@ -1839,6 +1850,38 @@ function addFakeBatch() {
     if (addEntrant(name)) added++;
   }
   if (added) renderEntrants();
+}
+
+/* ==================== MANUAL PLAYER ENTRY ==================== */
+function toggleManualAdd() {
+  const panel = document.getElementById('manual-add-panel');
+  panel.classList.toggle('hidden');
+  if (!panel.classList.contains('hidden')) {
+    document.getElementById('manual-add-feedback').textContent = '';
+    document.getElementById('manual-name-input').focus();
+  }
+}
+
+function addManualPlayers() {
+  const input = document.getElementById('manual-name-input');
+  const feedback = document.getElementById('manual-add-feedback');
+  const names = input.value.split(',').map(s => s.trim()).filter(Boolean);
+  if (!names.length) {
+    feedback.textContent = 'Type a name first';
+    feedback.className = 'text-xs font-bold text-[#ff3366]';
+    return;
+  }
+  let added = 0, dupes = 0;
+  names.forEach(n => { if (addEntrant(n)) added++; else dupes++; });
+  input.value = '';
+  input.focus();
+  if (added) {
+    feedback.textContent = `✅ Added ${added} player${added > 1 ? 's' : ''}${dupes ? ` (${dupes} already joined)` : ''}`;
+    feedback.className = 'text-xs font-bold text-[#53fc18]';
+  } else {
+    feedback.textContent = 'Already in the list';
+    feedback.className = 'text-xs font-bold text-[#ffd700]';
+  }
 }
 
 function escapeHtml(t) {
