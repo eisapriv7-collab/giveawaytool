@@ -12234,6 +12234,7 @@ const manualTournamentState = {
 };
 let manualTournamentSelected = null;
 let manualTournamentDragData = null;
+const manualTournamentStandalonePage = new URLSearchParams(window.location.search).get('tournament') === '1';
 
 function mtEscape(value) {
   return String(value).replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
@@ -12269,6 +12270,22 @@ function mtRestore(snapshot) {
 }
 
 function launchManualTournament() {
+  if (!manualTournamentStandalonePage) {
+    const url = window.location.origin + window.location.pathname + '?tournament=1';
+    const width = Math.min(1500, screen.availWidth || 1500);
+    const height = Math.min(920, screen.availHeight || 920);
+    const left = Math.max(0, Math.round(((screen.availWidth || width) - width) / 2));
+    const top = Math.max(0, Math.round(((screen.availHeight || height) - height) / 2));
+    const features = 'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',popup=1,toolbar=0,menubar=0,location=0,status=0,resizable=1,scrollbars=1';
+    const popup = window.open(url, 'giveaway_tournament_manager', features);
+    if (!popup) alert('The tournament window was blocked. Please allow pop-ups for this site and try again.');
+    else popup.focus();
+    return;
+  }
+  showManualTournamentPage();
+}
+
+function showManualTournamentPage() {
   showOverlay('manual-tournament-overlay');
   manualTournamentSelected = null;
   if (manualTournamentState.seeded) {
@@ -12284,6 +12301,14 @@ function launchManualTournament() {
 }
 
 function closeManualTournament() {
+  if (manualTournamentStandalonePage) {
+    if (window.opener && !window.opener.closed) {
+      window.close();
+      return;
+    }
+    window.location.href = window.location.origin + window.location.pathname;
+    return;
+  }
   document.getElementById('manual-tournament-overlay').classList.add('hidden');
   manualTournamentSelected = null;
   manualTournamentDragData = null;
@@ -12639,6 +12664,18 @@ function spawnManualTournamentConfetti() {
 window.addEventListener('resize', () => {
   if (!document.getElementById('manual-tournament-overlay')?.classList.contains('hidden')) requestAnimationFrame(drawManualTournamentLines);
 });
+
+/* A dedicated tournament URL keeps the dashboard and games out of the stream view. */
+if (manualTournamentStandalonePage) {
+  document.title = 'Tournament Bracket — Streamer View';
+  document.body.classList.add('game-mode', 'tournament-standalone-page');
+  document.getElementById('setup-screen')?.classList.add('hidden');
+  document.getElementById('dashboard-screen')?.classList.add('hidden');
+  document.getElementById('game-chat-pill')?.classList.add('hidden');
+  document.getElementById('streamer-start-wrap')?.classList.add('hidden');
+  document.getElementById('game-preview-panel')?.classList.add('hidden');
+  showManualTournamentPage();
+}
 </script>
 
 <div id="streamer-start-wrap" class="hidden fixed inset-0 z-[100] flex items-end justify-center pb-14">
