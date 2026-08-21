@@ -104,6 +104,86 @@
     .player-hud { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); text-align:center; pointer-events:none; }
     .hidden { display:none !important; }
 
+    /* ===== Streamer-controlled 8-player tournament ===== */
+    .manual-tournament-overlay { position:fixed; inset:0; z-index:155; overflow:auto; color:#f8fafc; background:radial-gradient(circle at 50% -15%,rgba(245,158,11,.2),transparent 38%),radial-gradient(circle at 100% 60%,rgba(83,252,24,.08),transparent 35%),#050508; }
+    .mt-shell { width:min(1540px,100%); min-height:100%; margin:0 auto; padding:28px; }
+    .mt-topbar { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:22px; }
+    .mt-kicker { color:#fbbf24; font:800 11px/1 'JetBrains Mono',monospace; letter-spacing:.2em; text-transform:uppercase; }
+    .mt-title { margin:7px 0 0; font:800 clamp(28px,4vw,50px)/1 'Space Grotesk',sans-serif; letter-spacing:-.035em; }
+    .mt-close { width:42px; height:42px; flex:0 0 42px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05); color:#fff; cursor:pointer; font-size:20px; transition:.2s; }
+    .mt-close:hover { border-color:rgba(251,191,36,.55); background:rgba(251,191,36,.1); transform:translateY(-1px); }
+    .mt-setup { width:min(850px,100%); margin:35px auto 0; padding:clamp(22px,4vw,38px); border:1px solid rgba(251,191,36,.24); border-radius:26px; background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018)); box-shadow:0 30px 80px rgba(0,0,0,.42); }
+    .mt-setup-head { display:flex; align-items:flex-start; gap:14px; margin-bottom:24px; }
+    .mt-step-icon { width:44px; height:44px; display:grid; place-items:center; flex:0 0 44px; border-radius:13px; color:#09090b; background:linear-gradient(135deg,#fde047,#f59e0b); box-shadow:0 8px 25px rgba(245,158,11,.25); font-weight:900; }
+    .mt-setup h2 { margin:0 0 5px; font:750 22px/1.2 'Space Grotesk',sans-serif; }
+    .mt-muted { margin:0; color:#94a3b8; font-size:13px; line-height:1.55; }
+    .mt-name-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .mt-input-wrap { display:flex; align-items:center; gap:10px; min-width:0; padding:8px 12px; border:1px solid rgba(255,255,255,.09); border-radius:13px; background:rgba(0,0,0,.28); transition:.2s; }
+    .mt-input-wrap:focus-within { border-color:rgba(251,191,36,.75); box-shadow:0 0 0 3px rgba(251,191,36,.1); }
+    .mt-seed-num { width:25px; height:25px; display:grid; place-items:center; flex:0 0 25px; border-radius:8px; background:rgba(251,191,36,.12); color:#fbbf24; font:800 11px/1 'JetBrains Mono',monospace; }
+    .mt-name-input { width:100%; min-width:0; border:0; outline:0; background:transparent; color:#fff; font-size:14px; font-weight:700; }
+    .mt-name-input::placeholder { color:#475569; font-weight:500; }
+    .mt-error { min-height:20px; margin-top:12px; color:#fb7185; font-size:12px; font-weight:700; text-align:center; }
+    .mt-primary { width:100%; margin-top:4px; padding:15px 18px; border:0; border-radius:14px; cursor:pointer; color:#09090b; background:linear-gradient(135deg,#fde047,#f59e0b); font-size:15px; font-weight:900; letter-spacing:.01em; transition:.2s; }
+    .mt-primary:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 14px 34px rgba(245,158,11,.25); }
+    .mt-primary:disabled { cursor:not-allowed; opacity:.35; }
+    .mt-board-view { width:100%; }
+    .mt-board-toolbar { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:14px; padding:14px 16px; border:1px solid rgba(255,255,255,.07); border-radius:16px; background:rgba(255,255,255,.025); }
+    .mt-help { color:#cbd5e1; font-size:13px; }
+    .mt-help strong { color:#fbbf24; }
+    .mt-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .mt-action-btn { padding:9px 12px; border:1px solid rgba(255,255,255,.1); border-radius:10px; cursor:pointer; background:rgba(255,255,255,.045); color:#e2e8f0; font-size:12px; font-weight:800; transition:.2s; }
+    .mt-action-btn:hover:not(:disabled) { border-color:rgba(251,191,36,.45); color:#fbbf24; background:rgba(251,191,36,.08); }
+    .mt-action-btn:disabled { cursor:not-allowed; opacity:.32; }
+    .mt-progress-track { height:5px; overflow:hidden; margin-bottom:16px; border-radius:99px; background:rgba(255,255,255,.06); }
+    .mt-progress-fill { height:100%; width:0; border-radius:inherit; background:linear-gradient(90deg,#f59e0b,#fde047,#53fc18); transition:width .35s ease; }
+    .mt-bracket-scroll { width:100%; overflow-x:auto; padding-bottom:12px; border:1px solid rgba(255,255,255,.07); border-radius:22px; background:linear-gradient(180deg,rgba(255,255,255,.026),rgba(255,255,255,.012)); scrollbar-color:#475569 transparent; }
+    .mt-bracket-board { position:relative; display:grid; grid-template-columns:repeat(4,minmax(230px,1fr)); gap:70px; width:100%; min-width:1200px; height:660px; padding:20px 28px 24px; }
+    .mt-lines { position:absolute; inset:0; z-index:0; overflow:visible; pointer-events:none; }
+    .mt-line { fill:none; stroke:rgba(168,85,247,.34); stroke-width:2; vector-effect:non-scaling-stroke; }
+    .mt-line.is-complete { stroke:#53fc18; filter:drop-shadow(0 0 5px rgba(83,252,24,.35)); }
+    .mt-stage { position:relative; z-index:2; min-width:0; }
+    .mt-stage-label { height:34px; display:flex; align-items:center; justify-content:center; gap:8px; color:#94a3b8; font:800 10px/1 'JetBrains Mono',monospace; letter-spacing:.16em; text-transform:uppercase; }
+    .mt-stage-label span { display:inline-grid; place-items:center; width:21px; height:21px; border-radius:7px; background:rgba(255,255,255,.07); color:#fbbf24; letter-spacing:0; }
+    .mt-stage-body { height:580px; display:flex; flex-direction:column; justify-content:space-around; gap:12px; }
+    .mt-match { position:relative; padding:9px; border:1px solid rgba(255,255,255,.09); border-radius:14px; background:linear-gradient(145deg,rgba(19,19,30,.98),rgba(9,9,15,.98)); box-shadow:0 14px 32px rgba(0,0,0,.28); transition:.25s; }
+    .mt-match.is-decided { border-color:rgba(83,252,24,.28); }
+    .mt-match-tag { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; padding:0 2px; color:#64748b; font:700 9px/1.2 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; }
+    .mt-match-tag .done { color:#53fc18; }
+    .mt-player-chip,.mt-drop-slot { min-height:42px; border-radius:10px; }
+    .mt-player-chip { position:relative; display:flex; align-items:center; gap:9px; padding:7px 9px; border:1px solid rgba(255,255,255,.085); background:rgba(255,255,255,.045); cursor:grab; user-select:none; transition:transform .16s,border-color .16s,opacity .16s,background .16s,box-shadow .16s; }
+    .mt-player-chip + .mt-player-chip { margin-top:6px; }
+    .mt-player-chip:hover { transform:translateX(3px); border-color:rgba(251,191,36,.55); background:rgba(251,191,36,.08); }
+    .mt-player-chip:active { cursor:grabbing; }
+    .mt-player-chip.is-picked { border-color:#fbbf24; box-shadow:0 0 0 3px rgba(251,191,36,.14); }
+    .mt-player-chip.is-advanced { border-color:rgba(83,252,24,.56); background:rgba(83,252,24,.09); box-shadow:0 0 18px rgba(83,252,24,.08); }
+    .mt-player-chip.is-eliminated { opacity:.35; filter:grayscale(.5); }
+    .mt-avatar { width:27px; height:27px; display:grid; place-items:center; flex:0 0 27px; border-radius:8px; color:white; font-size:11px; font-weight:900; box-shadow:inset 0 1px 0 rgba(255,255,255,.2); }
+    .mt-player-name { min-width:0; overflow:hidden; color:#f8fafc; font-size:12px; font-weight:800; text-overflow:ellipsis; white-space:nowrap; }
+    .mt-drag-icon { margin-left:auto; color:#475569; font-size:13px; }
+    .mt-win-mark { margin-left:auto; color:#53fc18; font-size:11px; font-weight:900; }
+    .mt-drop-slot { display:flex; align-items:center; margin-top:6px; padding:4px; border:1px dashed rgba(148,163,184,.22); background:rgba(2,6,23,.38); transition:.18s; }
+    .mt-drop-slot:first-of-type { margin-top:0; }
+    .mt-drop-slot .mt-player-chip { width:100%; min-height:34px; margin:0; padding:4px 6px; }
+    .mt-drop-placeholder { width:100%; padding:0 8px; color:#475569; font:700 9px/1.2 'JetBrains Mono',monospace; text-align:center; text-transform:uppercase; }
+    .mt-drop-slot.is-valid { border-color:#fbbf24; background:rgba(251,191,36,.12); box-shadow:0 0 0 3px rgba(251,191,36,.1); }
+    .mt-drop-slot.is-over { border-color:#53fc18; background:rgba(83,252,24,.13); transform:scale(1.025); }
+    .mt-champion-card { position:relative; display:grid; place-items:center; min-height:190px; padding:16px; overflow:hidden; border:1px solid rgba(251,191,36,.34); border-radius:20px; background:radial-gradient(circle at 50% 10%,rgba(251,191,36,.2),transparent 60%),rgba(13,13,20,.96); text-align:center; box-shadow:0 20px 45px rgba(0,0,0,.35); }
+    .mt-champion-card::before { content:'🏆'; position:absolute; top:14px; font-size:38px; filter:drop-shadow(0 8px 14px rgba(245,158,11,.25)); }
+    .mt-champion-card .mt-drop-slot { width:100%; min-height:58px; margin-top:54px; border-color:rgba(251,191,36,.3); }
+    .mt-champion-card.has-winner { border-color:#fbbf24; animation:mtChampionPulse 1.8s ease-in-out infinite; }
+    .mt-champion-card.has-winner .mt-player-chip { justify-content:center; border-color:#fbbf24; background:rgba(251,191,36,.13); cursor:default; }
+    .mt-champion-card.has-winner .mt-avatar { width:34px; height:34px; flex-basis:34px; }
+    .mt-champion-label { position:absolute; top:63px; color:#fbbf24; font:900 10px/1 'JetBrains Mono',monospace; letter-spacing:.15em; text-transform:uppercase; }
+    .mt-status { margin:14px 0 0; min-height:22px; color:#94a3b8; font-size:13px; font-weight:700; text-align:center; }
+    .mt-status.success { color:#53fc18; }
+    .mt-status.error { color:#fb7185; }
+    .mt-confetti-piece { position:fixed; z-index:180; top:-20px; width:9px; height:14px; border-radius:2px; pointer-events:none; animation:mtConfettiFall 2.8s cubic-bezier(.15,.8,.25,1) forwards; }
+    @keyframes mtChampionPulse { 0%,100%{box-shadow:0 20px 45px rgba(0,0,0,.35),0 0 0 rgba(251,191,36,0)} 50%{box-shadow:0 20px 45px rgba(0,0,0,.35),0 0 34px rgba(251,191,36,.24)} }
+    @keyframes mtConfettiFall { to{transform:translate3d(var(--drift),105vh,0) rotate(820deg);opacity:.1} }
+    @media (max-width:700px) { .mt-shell{padding:18px 12px}.mt-name-grid{grid-template-columns:1fr}.mt-title{font-size:30px}.mt-board-toolbar{align-items:flex-start}.mt-actions{width:100%}.mt-action-btn{flex:1}.mt-bracket-board{min-width:1120px;padding-inline:20px} }
+    @media (prefers-reduced-motion:reduce) { .mt-player-chip,.mt-primary,.mt-close{transition:none}.mt-champion-card.has-winner{animation:none}.mt-confetti-piece{display:none} }
+
     /* ===== Enhanced Participant Display ===== */
     .p-card { animation:slideIn 0.35s ease; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:8px; display:flex; flex-direction:column; align-items:center; gap:6px; position:relative; transition:all .25s; }
     .p-avatar { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; color:#050508; flex-shrink:0; box-shadow:0 2px 10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.35); border:2px solid rgba(255,255,255,0.15); }
@@ -195,6 +275,21 @@
     <div class="glass rounded-3xl p-6 md:p-8 mb-8">
       <div class="flex items-center justify-between mb-6"><h3 class="text-xl font-bold">👥 Live Entrants</h3><span id="entrant-badge" class="px-3 py-1 rounded-full bg-[#53fc18]/10 text-[#53fc18] text-xs font-bold">0</span></div>
       <div id="entrants-grid" class="p-grid max-h-80 overflow-y-auto pr-2"><div class="col-span-full text-center py-12 text-gray-600"><div class="text-4xl mb-3">💬</div><p>Waiting for chatters...</p></div></div>
+    </div>
+
+    <!-- Standalone Tournament Manager (separate from games) -->
+    <div class="glass rounded-3xl p-6 md:p-8 mb-8 border border-[#fbbf24]/30" style="background:linear-gradient(135deg,rgba(251,191,36,.09),rgba(255,255,255,.015));">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0" style="background:linear-gradient(135deg,#fde047,#f59e0b);box-shadow:0 10px 30px rgba(245,158,11,.22);">🏆</div>
+          <div>
+            <div class="text-[#fbbf24] text-xs font-bold uppercase tracking-widest mb-1">Standalone tool</div>
+            <h3 class="text-2xl font-black text-white">Tournament Manager</h3>
+            <p class="text-gray-400 text-sm mt-1">Enter 8 names, randomize the bracket, then drag each winner into the next round.</p>
+          </div>
+        </div>
+        <button onclick="launchManualTournament()" class="btn-primary px-7 py-4 rounded-xl text-lg shrink-0" style="background:linear-gradient(135deg,#fde047,#f59e0b);color:#09090b;">Open Tournament →</button>
+      </div>
     </div>
 
     <div class="glass rounded-3xl p-6 md:p-8 border-[#ffd700]/20 border mb-8">
@@ -12034,6 +12129,477 @@ function tapRace(e) {
     </div>
   </div>
 </div>
+
+<!-- ==================== STREAMER 8-PLAYER TOURNAMENT ==================== -->
+<div id="manual-tournament-overlay" class="hidden manual-tournament-overlay">
+  <div class="mt-shell">
+    <div class="mt-topbar">
+      <div>
+        <div class="mt-kicker">Streamer control room · 8 player bracket</div>
+        <h1 class="mt-title">Tournament Bracket</h1>
+      </div>
+      <button type="button" class="mt-close" onclick="closeManualTournament()" aria-label="Close tournament">✕</button>
+    </div>
+
+    <section id="manual-tournament-setup" class="mt-setup">
+      <div class="mt-setup-head">
+        <div class="mt-step-icon">8</div>
+        <div>
+          <h2>Enter every player</h2>
+          <p class="mt-muted">Exactly eight unique names are required. Pairings are randomized when the bracket is created.</p>
+        </div>
+      </div>
+      <div class="mt-name-grid">
+        <label class="mt-input-wrap"><span class="mt-seed-num">1</span><input id="mt-name-0" class="mt-name-input" type="text" maxlength="28" autocomplete="off" placeholder="Player name" oninput="validateManualTournamentNames()"></label>
+        <label class="mt-input-wrap"><span class="mt-seed-num">2</span><input id="mt-name-1" class="mt-name-input" type="text" maxlength="28" autocomplete="off" placeholder="Player name" oninput="validateManualTournamentNames()"></label>
+        <label class="mt-input-wrap"><span class="mt-seed-num">3</span><input id="mt-name-2" class="mt-name-input" type="text" maxlength="28" autocomplete="off" placeholder="Player name" oninput="validateManualTournamentNames()"></label>
+        <label class="mt-input-wrap"><span class="mt-seed-num">4</span><input id="mt-name-3" class="mt-name-input" type="text" maxlength="28" autocomplete="off" placeholder="Player name" oninput="validateManualTournamentNames()"></label>
+        <label class="mt-input-wrap"><span class="mt-seed-num">5</span><input id="mt-name-4" class="mt-name-input" type="text" maxlength="28" autocomplete="off" placeholder="Player name" oninput="validateManualTournamentNames()"></label>
+        <label class="mt-input-wrap"><span class="mt-seed-num">6</span><input id="mt-name-5" class="mt-name-input" type="text" maxlength="28" autocomplete="off" placeholder="Player name" oninput="validateManualTournamentNames()"></label>
+        <label class="mt-input-wrap"><span class="mt-seed-num">7</span><input id="mt-name-6" class="mt-name-input" type="text" maxlength="28" autocomplete="off" placeholder="Player name" oninput="validateManualTournamentNames()"></label>
+        <label class="mt-input-wrap"><span class="mt-seed-num">8</span><input id="mt-name-7" class="mt-name-input" type="text" maxlength="28" autocomplete="off" placeholder="Player name" oninput="validateManualTournamentNames()"></label>
+      </div>
+      <div id="manual-tournament-error" class="mt-error" role="alert"></div>
+      <button id="manual-tournament-create" type="button" class="mt-primary" onclick="createManualTournament()" disabled>Randomize opponents &amp; create bracket →</button>
+    </section>
+
+    <section id="manual-tournament-board-view" class="hidden mt-board-view">
+      <div class="mt-board-toolbar">
+        <div class="mt-help"><strong>Streamer:</strong> drag a match winner into the connected slot in the next round. You can also tap a player, then tap the highlighted slot.</div>
+        <div class="mt-actions">
+          <button id="manual-tournament-undo" class="mt-action-btn" type="button" onclick="undoManualTournamentAdvance()">↶ Undo</button>
+          <button class="mt-action-btn" type="button" onclick="clearManualTournamentResults()">Clear results</button>
+          <button class="mt-action-btn" type="button" onclick="rerandomizeManualTournament()">⤨ Re-randomize</button>
+          <button class="mt-action-btn" type="button" onclick="editManualTournamentPlayers()">✎ Edit names</button>
+        </div>
+      </div>
+      <div class="mt-progress-track"><div id="manual-tournament-progress" class="mt-progress-fill"></div></div>
+      <div class="mt-bracket-scroll">
+        <div id="manual-tournament-board" class="mt-bracket-board" aria-label="Eight player tournament bracket"></div>
+      </div>
+      <div id="manual-tournament-status" class="mt-status" aria-live="polite"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+/* Streamer-only manual tournament: 8 names, random pairings, drag winners forward. */
+const manualTournamentState = {
+  seeded: false,
+  names: [],
+  qf: [null, null, null, null],
+  sf: [null, null],
+  final: null,
+  history: []
+};
+let manualTournamentSelected = null;
+let manualTournamentDragData = null;
+
+function mtEscape(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
+}
+
+function mtInitials(name) {
+  return String(name).trim().split(/\s+/).slice(0, 2).map(part => part.charAt(0)).join('').toUpperCase() || '?';
+}
+
+function mtHue(name) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
+  return Math.abs(hash) % 360;
+}
+
+function mtShuffle(list) {
+  const result = [...list];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+function mtSnapshot() {
+  return { qf: [...manualTournamentState.qf], sf: [...manualTournamentState.sf], final: manualTournamentState.final };
+}
+
+function mtRestore(snapshot) {
+  manualTournamentState.qf = [...snapshot.qf];
+  manualTournamentState.sf = [...snapshot.sf];
+  manualTournamentState.final = snapshot.final;
+}
+
+function launchManualTournament() {
+  showOverlay('manual-tournament-overlay');
+  manualTournamentSelected = null;
+  if (manualTournamentState.seeded) {
+    document.getElementById('manual-tournament-setup').classList.add('hidden');
+    document.getElementById('manual-tournament-board-view').classList.remove('hidden');
+    renderManualTournament();
+  } else {
+    document.getElementById('manual-tournament-setup').classList.remove('hidden');
+    document.getElementById('manual-tournament-board-view').classList.add('hidden');
+    validateManualTournamentNames();
+    setTimeout(() => document.getElementById('mt-name-0')?.focus(), 60);
+  }
+}
+
+function closeManualTournament() {
+  document.getElementById('manual-tournament-overlay').classList.add('hidden');
+  manualTournamentSelected = null;
+  manualTournamentDragData = null;
+  setDashboardBg(true);
+  currentOverlay = null;
+}
+
+function getManualTournamentInputNames() {
+  return Array.from({ length: 8 }, (_, i) => (document.getElementById('mt-name-' + i)?.value || '').trim());
+}
+
+function validateManualTournamentNames() {
+  const names = getManualTournamentInputNames();
+  const complete = names.every(Boolean);
+  const normalized = names.filter(Boolean).map(name => name.toLocaleLowerCase());
+  const unique = new Set(normalized).size === normalized.length;
+  const button = document.getElementById('manual-tournament-create');
+  const error = document.getElementById('manual-tournament-error');
+  if (button) button.disabled = !(complete && unique);
+  if (!error) return complete && unique;
+  if (!complete) error.textContent = names.some(Boolean) ? 'Fill all 8 player slots to continue.' : '';
+  else if (!unique) error.textContent = 'Every player name must be unique.';
+  else error.textContent = '';
+  return complete && unique;
+}
+
+function createManualTournament() {
+  if (!validateManualTournamentNames()) return;
+  manualTournamentState.names = mtShuffle(getManualTournamentInputNames());
+  manualTournamentState.qf = [null, null, null, null];
+  manualTournamentState.sf = [null, null];
+  manualTournamentState.final = null;
+  manualTournamentState.history = [];
+  manualTournamentState.seeded = true;
+  manualTournamentSelected = null;
+  document.getElementById('manual-tournament-setup').classList.add('hidden');
+  document.getElementById('manual-tournament-board-view').classList.remove('hidden');
+  renderManualTournament();
+  setManualTournamentStatus('Opponents randomized. Drag each quarterfinal winner into the next round.', 'success');
+}
+
+function editManualTournamentPlayers() {
+  const progress = getManualTournamentProgressCount();
+  if (progress && !window.confirm('Editing names will clear the current tournament. Continue?')) return;
+  manualTournamentState.names.forEach((name, i) => {
+    const input = document.getElementById('mt-name-' + i);
+    if (input) input.value = name;
+  });
+  manualTournamentState.seeded = false;
+  manualTournamentState.qf = [null, null, null, null];
+  manualTournamentState.sf = [null, null];
+  manualTournamentState.final = null;
+  manualTournamentState.history = [];
+  document.getElementById('manual-tournament-board-view').classList.add('hidden');
+  document.getElementById('manual-tournament-setup').classList.remove('hidden');
+  validateManualTournamentNames();
+  setTimeout(() => document.getElementById('mt-name-0')?.focus(), 40);
+}
+
+function clearManualTournamentResults() {
+  if (getManualTournamentProgressCount() && !window.confirm('Clear every winner while keeping these pairings?')) return;
+  manualTournamentState.qf = [null, null, null, null];
+  manualTournamentState.sf = [null, null];
+  manualTournamentState.final = null;
+  manualTournamentState.history = [];
+  manualTournamentSelected = null;
+  renderManualTournament();
+  setManualTournamentStatus('Results cleared. The original random pairings are still in place.');
+}
+
+function rerandomizeManualTournament() {
+  if (getManualTournamentProgressCount() && !window.confirm('Randomize new opponents and clear every result?')) return;
+  manualTournamentState.names = mtShuffle(manualTournamentState.names);
+  manualTournamentState.qf = [null, null, null, null];
+  manualTournamentState.sf = [null, null];
+  manualTournamentState.final = null;
+  manualTournamentState.history = [];
+  manualTournamentSelected = null;
+  renderManualTournament();
+  setManualTournamentStatus('New opponents randomized.', 'success');
+}
+
+function undoManualTournamentAdvance() {
+  const snapshot = manualTournamentState.history.pop();
+  if (!snapshot) return;
+  mtRestore(snapshot);
+  manualTournamentSelected = null;
+  renderManualTournament();
+  setManualTournamentStatus('Last winner selection undone.');
+}
+
+function getManualTournamentProgressCount() {
+  return manualTournamentState.qf.filter(Boolean).length + manualTournamentState.sf.filter(Boolean).length + (manualTournamentState.final ? 1 : 0);
+}
+
+function mtPlayerChip(name, round, match, decidedWinner) {
+  if (!name) return '';
+  const advanced = decidedWinner === name;
+  const eliminated = Boolean(decidedWinner) && !advanced;
+  const classes = ['mt-player-chip'];
+  if (advanced) classes.push('is-advanced');
+  if (eliminated) classes.push('is-eliminated');
+  const safeName = mtEscape(name);
+  return `<div class="${classes.join(' ')}" draggable="true" data-mt-player="${safeName}" data-mt-round="${round}" data-mt-match="${match}">
+    <span class="mt-avatar" style="background:hsl(${mtHue(name)} 68% 45%)">${mtEscape(mtInitials(name))}</span>
+    <span class="mt-player-name">${safeName}</span>
+    ${advanced ? '<span class="mt-win-mark">WIN ✓</span>' : '<span class="mt-drag-icon">⠿</span>'}
+  </div>`;
+}
+
+function mtDropSlot(targetRound, targetMatch, name, chipRound, chipMatch, decidedWinner, label) {
+  const filled = Boolean(name);
+  return `<div id="mt-target-${targetRound}-${targetMatch}" class="mt-drop-slot${filled ? ' is-filled' : ''}" data-mt-target-round="${targetRound}" data-mt-target-match="${targetMatch}">
+    ${filled ? mtPlayerChip(name, chipRound, chipMatch, decidedWinner) : `<span class="mt-drop-placeholder">${mtEscape(label)}</span>`}
+  </div>`;
+}
+
+function mtMatchCard(id, label, content, decided) {
+  return `<article id="${id}" class="mt-match${decided ? ' is-decided' : ''}">
+    <div class="mt-match-tag"><span>${label}</span>${decided ? '<span class="done">Winner locked</span>' : '<span>Drag winner →</span>'}</div>
+    ${content}
+  </article>`;
+}
+
+function renderManualTournament() {
+  if (!manualTournamentState.seeded) return;
+  const board = document.getElementById('manual-tournament-board');
+  if (!board) return;
+  const names = manualTournamentState.names;
+
+  const qfCards = Array.from({ length: 4 }, (_, match) => {
+    const p1 = names[match * 2];
+    const p2 = names[match * 2 + 1];
+    const winner = manualTournamentState.qf[match];
+    return mtMatchCard('mt-source-qf-' + match, 'Match ' + (match + 1), mtPlayerChip(p1, 'qf', match, winner) + mtPlayerChip(p2, 'qf', match, winner), winner);
+  }).join('');
+
+  const sfCards = Array.from({ length: 2 }, (_, match) => {
+    const firstQf = match * 2;
+    const winner = manualTournamentState.sf[match];
+    const slots = mtDropSlot('qf', firstQf, manualTournamentState.qf[firstQf], 'sf', match, winner, 'Winner of match ' + (firstQf + 1)) +
+      mtDropSlot('qf', firstQf + 1, manualTournamentState.qf[firstQf + 1], 'sf', match, winner, 'Winner of match ' + (firstQf + 2));
+    return mtMatchCard('mt-source-sf-' + match, 'Semifinal ' + (match + 1), slots, winner);
+  }).join('');
+
+  const finalSlots = mtDropSlot('sf', 0, manualTournamentState.sf[0], 'final', 0, manualTournamentState.final, 'Winner of semifinal 1') +
+    mtDropSlot('sf', 1, manualTournamentState.sf[1], 'final', 0, manualTournamentState.final, 'Winner of semifinal 2');
+  const finalCard = mtMatchCard('mt-source-final-0', 'Championship match', finalSlots, manualTournamentState.final);
+
+  const champion = manualTournamentState.final;
+  const championChip = champion ? `<div class="mt-player-chip is-advanced"><span class="mt-avatar" style="background:hsl(${mtHue(champion)} 68% 45%)">${mtEscape(mtInitials(champion))}</span><span class="mt-player-name">${mtEscape(champion)}</span><span class="mt-win-mark">CHAMPION</span></div>` : '<span class="mt-drop-placeholder">Drop the final winner here</span>';
+
+  board.innerHTML = `
+    <svg id="manual-tournament-lines" class="mt-lines" aria-hidden="true"></svg>
+    <section class="mt-stage"><div class="mt-stage-label"><span>1</span> Quarterfinals</div><div class="mt-stage-body">${qfCards}</div></section>
+    <section class="mt-stage"><div class="mt-stage-label"><span>2</span> Semifinals</div><div class="mt-stage-body">${sfCards}</div></section>
+    <section class="mt-stage"><div class="mt-stage-label"><span>3</span> Final</div><div class="mt-stage-body">${finalCard}</div></section>
+    <section class="mt-stage"><div class="mt-stage-label"><span>4</span> Champion</div><div class="mt-stage-body"><div class="mt-champion-card${champion ? ' has-winner' : ''}"><div class="mt-champion-label">Tournament champion</div><div id="mt-target-final-0" class="mt-drop-slot${champion ? ' is-filled' : ''}" data-mt-target-round="final" data-mt-target-match="0">${championChip}</div></div></div></section>`;
+
+  bindManualTournamentDragAndDrop();
+  updateManualTournamentProgress();
+  document.getElementById('manual-tournament-undo').disabled = manualTournamentState.history.length === 0;
+  requestAnimationFrame(drawManualTournamentLines);
+}
+
+function bindManualTournamentDragAndDrop() {
+  document.querySelectorAll('#manual-tournament-board .mt-player-chip[data-mt-round]').forEach(chip => {
+    chip.addEventListener('dragstart', event => {
+      const data = {
+        player: chip.dataset.mtPlayer,
+        round: chip.dataset.mtRound,
+        match: Number(chip.dataset.mtMatch)
+      };
+      manualTournamentDragData = data;
+      manualTournamentSelected = data;
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', JSON.stringify(data));
+      chip.classList.add('is-picked');
+      highlightManualTournamentTarget(data);
+    });
+    chip.addEventListener('dragend', () => {
+      manualTournamentDragData = null;
+      clearManualTournamentHighlights();
+    });
+    chip.addEventListener('click', event => {
+      event.stopPropagation();
+      const data = { player: chip.dataset.mtPlayer, round: chip.dataset.mtRound, match: Number(chip.dataset.mtMatch) };
+      manualTournamentSelected = data;
+      document.querySelectorAll('#manual-tournament-board .mt-player-chip').forEach(el => el.classList.remove('is-picked'));
+      chip.classList.add('is-picked');
+      highlightManualTournamentTarget(data);
+      setManualTournamentStatus('Now drop ' + data.player + ' into the highlighted next-round slot.');
+    });
+  });
+
+  document.querySelectorAll('#manual-tournament-board .mt-drop-slot[data-mt-target-round]').forEach(slot => {
+    slot.addEventListener('dragover', event => {
+      if (!manualTournamentMatchesTarget(manualTournamentDragData, slot)) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+      slot.classList.add('is-over');
+    });
+    slot.addEventListener('dragleave', () => slot.classList.remove('is-over'));
+    slot.addEventListener('drop', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      let data = manualTournamentDragData;
+      try { data = JSON.parse(event.dataTransfer.getData('text/plain')) || data; } catch (e) {}
+      slot.classList.remove('is-over');
+      if (!manualTournamentMatchesTarget(data, slot)) {
+        setManualTournamentStatus('That player belongs in a different connected slot.', 'error');
+        return;
+      }
+      advanceManualTournamentWinner(data);
+    });
+    slot.addEventListener('click', event => {
+      if (event.target.closest('.mt-player-chip')) return;
+      if (!manualTournamentSelected) {
+        setManualTournamentStatus('Select or drag a match winner first.', 'error');
+        return;
+      }
+      if (!manualTournamentMatchesTarget(manualTournamentSelected, slot)) {
+        setManualTournamentStatus('Use the highlighted slot connected to that match.', 'error');
+        return;
+      }
+      advanceManualTournamentWinner(manualTournamentSelected);
+    });
+  });
+}
+
+function manualTournamentMatchesTarget(data, slot) {
+  if (!data || !slot) return false;
+  return data.round === slot.dataset.mtTargetRound && Number(data.match) === Number(slot.dataset.mtTargetMatch);
+}
+
+function highlightManualTournamentTarget(data) {
+  clearManualTournamentHighlights();
+  if (!data) return;
+  const selector = `.mt-drop-slot[data-mt-target-round="${data.round}"][data-mt-target-match="${data.match}"]`;
+  document.querySelector(selector)?.classList.add('is-valid');
+}
+
+function clearManualTournamentHighlights() {
+  document.querySelectorAll('#manual-tournament-board .mt-drop-slot').forEach(slot => slot.classList.remove('is-valid', 'is-over'));
+}
+
+function advanceManualTournamentWinner(data) {
+  if (!data || !data.player) return;
+  const player = data.player;
+  const match = Number(data.match);
+  let currentWinner = null;
+
+  if (data.round === 'qf') {
+    const competitors = manualTournamentState.names.slice(match * 2, match * 2 + 2);
+    if (!competitors.includes(player)) return setManualTournamentStatus('Invalid quarterfinal player.', 'error');
+    currentWinner = manualTournamentState.qf[match];
+    if (currentWinner === player) return setManualTournamentStatus(player + ' is already in the semifinal.');
+    manualTournamentState.history.push(mtSnapshot());
+    manualTournamentState.qf[match] = player;
+    manualTournamentState.sf[Math.floor(match / 2)] = null;
+    manualTournamentState.final = null;
+  } else if (data.round === 'sf') {
+    const competitors = manualTournamentState.qf.slice(match * 2, match * 2 + 2);
+    if (competitors.some(name => !name)) return setManualTournamentStatus('Complete both connected quarterfinals before choosing this semifinal winner.', 'error');
+    if (!competitors.includes(player)) return setManualTournamentStatus('Invalid semifinal player.', 'error');
+    currentWinner = manualTournamentState.sf[match];
+    if (currentWinner === player) return setManualTournamentStatus(player + ' is already in the final.');
+    manualTournamentState.history.push(mtSnapshot());
+    manualTournamentState.sf[match] = player;
+    manualTournamentState.final = null;
+  } else if (data.round === 'final') {
+    const competitors = [...manualTournamentState.sf];
+    if (competitors.some(name => !name)) return setManualTournamentStatus('Complete both semifinals before choosing the champion.', 'error');
+    if (!competitors.includes(player)) return setManualTournamentStatus('Invalid finalist.', 'error');
+    currentWinner = manualTournamentState.final;
+    if (currentWinner === player) return setManualTournamentStatus(player + ' is already the champion.');
+    manualTournamentState.history.push(mtSnapshot());
+    manualTournamentState.final = player;
+  } else {
+    return;
+  }
+
+  manualTournamentSelected = null;
+  manualTournamentDragData = null;
+  renderManualTournament();
+  if (data.round === 'final') {
+    setManualTournamentStatus('🏆 ' + player + ' is the tournament champion!', 'success');
+    spawnManualTournamentConfetti();
+  } else {
+    setManualTournamentStatus(player + ' advances to the next round!', 'success');
+  }
+}
+
+function updateManualTournamentProgress() {
+  const count = getManualTournamentProgressCount();
+  const fill = document.getElementById('manual-tournament-progress');
+  if (fill) fill.style.width = (count / 7 * 100) + '%';
+  if (manualTournamentState.final) setManualTournamentStatus('Tournament complete — ' + manualTournamentState.final + ' is champion.', 'success');
+  else if (manualTournamentState.sf.every(Boolean)) setManualTournamentStatus('Finalists ready. Drag the final winner to the championship trophy.');
+  else if (manualTournamentState.qf.every(Boolean)) setManualTournamentStatus('Semifinals ready. Drag each semifinal winner into the final.');
+  else setManualTournamentStatus('Drag each quarterfinal winner into its connected semifinal slot.');
+}
+
+function setManualTournamentStatus(message, type) {
+  const status = document.getElementById('manual-tournament-status');
+  if (!status) return;
+  status.textContent = message || '';
+  status.className = 'mt-status' + (type ? ' ' + type : '');
+}
+
+function drawManualTournamentLines() {
+  const board = document.getElementById('manual-tournament-board');
+  const svg = document.getElementById('manual-tournament-lines');
+  if (!board || !svg || board.offsetParent === null) return;
+  const boardRect = board.getBoundingClientRect();
+  const links = [];
+  for (let i = 0; i < 4; i++) links.push(['mt-source-qf-' + i, 'mt-target-qf-' + i]);
+  for (let i = 0; i < 2; i++) links.push(['mt-source-sf-' + i, 'mt-target-sf-' + i]);
+  links.push(['mt-source-final-0', 'mt-target-final-0']);
+  svg.setAttribute('width', board.scrollWidth);
+  svg.setAttribute('height', board.scrollHeight);
+  svg.setAttribute('viewBox', `0 0 ${board.scrollWidth} ${board.scrollHeight}`);
+  svg.innerHTML = links.map(([sourceId, targetId]) => {
+    const source = document.getElementById(sourceId);
+    const target = document.getElementById(targetId);
+    if (!source || !target) return '';
+    const a = source.getBoundingClientRect();
+    const b = target.getBoundingClientRect();
+    const x1 = a.right - boardRect.left;
+    const y1 = a.top + a.height / 2 - boardRect.top;
+    const x2 = b.left - boardRect.left;
+    const y2 = b.top + b.height / 2 - boardRect.top;
+    const mid = x1 + (x2 - x1) / 2;
+    const complete = target.classList.contains('is-filled') ? ' is-complete' : '';
+    return `<path class="mt-line${complete}" d="M ${x1} ${y1} H ${mid} V ${y2} H ${x2}"/>`;
+  }).join('');
+}
+
+function spawnManualTournamentConfetti() {
+  const colors = ['#fde047', '#f59e0b', '#53fc18', '#38bdf8', '#f472b6', '#ffffff'];
+  for (let i = 0; i < 60; i++) {
+    const piece = document.createElement('i');
+    piece.className = 'mt-confetti-piece';
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.background = colors[i % colors.length];
+    piece.style.animationDelay = Math.random() * 0.6 + 's';
+    piece.style.setProperty('--drift', ((Math.random() - 0.5) * 260) + 'px');
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), 3600);
+  }
+}
+
+window.addEventListener('resize', () => {
+  if (!document.getElementById('manual-tournament-overlay')?.classList.contains('hidden')) requestAnimationFrame(drawManualTournamentLines);
+});
+</script>
 
 <div id="streamer-start-wrap" class="hidden fixed inset-0 z-[100] flex items-end justify-center pb-14">
   <button id="streamer-start-btn" type="button" onclick="onStreamerStartClick()" class="streamer-start-btn">▶ START GAME</button>
