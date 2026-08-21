@@ -1224,18 +1224,18 @@
 <div id="boxing-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
   <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
     <div class="text-center mb-4"><div class="text-[#ff3366] text-sm font-bold uppercase tracking-widest mb-2">🥊 Boxing Match</div><h1 class="text-4xl md:text-5xl font-black text-white">Championship Fight</h1></div>
-    <div id="boxing-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Fighters entering the ring...</div></div>
+    <div id="boxing-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Two 27-second rounds · points decision only</div><div class="text-sm text-gray-600">No knockdowns, no knockouts — finished in under one minute.</div></div>
     <div id="boxing-phase-fight" class="hidden w-full max-w-4xl">
       <div class="flex justify-between items-end mb-3 px-8">
-        <div class="text-center w-56"><div class="text-3xl font-black text-[#ff3366]" id="boxer-p1-name">RED</div><div class="w-full h-4 bg-white/10 rounded-full mt-2 overflow-hidden"><div id="boxer-p1-hp" class="h-full bg-[#ff3366] transition-all duration-300" style="width:100%"></div></div><div class="text-xs text-gray-500 mt-1" id="boxer-p1-hp-text">100 HP</div><div class="special-meter mt-2"><div id="boxer-p1-special" class="special-fill" style="width:0%"></div></div><div class="text-[10px] text-gray-500 mt-0.5">SPECIAL</div></div>
+        <div class="text-center w-56"><div class="text-3xl font-black text-[#ff3366]" id="boxer-p1-name">RED</div><div class="w-full h-4 bg-white/10 rounded-full mt-2 overflow-hidden"><div id="boxer-p1-hp" class="h-full bg-[#ff3366] transition-all duration-300" style="width:100%"></div></div><div class="text-xs text-gray-500 mt-1" id="boxer-p1-hp-text">100 STAMINA</div><div class="special-meter mt-2"><div id="boxer-p1-special" class="special-fill" style="width:0%"></div></div><div class="text-[10px] text-gray-500 mt-0.5">SPECIAL</div></div>
         <div class="text-4xl font-black text-[#ffd700]">VS</div>
-        <div class="text-center w-56"><div class="text-3xl font-black text-[#00d4ff]" id="boxer-p2-name">BLUE</div><div class="w-full h-4 bg-white/10 rounded-full mt-2 overflow-hidden"><div id="boxer-p2-hp" class="h-full bg-[#00d4ff] transition-all duration-300" style="width:100%"></div></div><div class="text-xs text-gray-500 mt-1" id="boxer-p2-hp-text">100 HP</div><div class="special-meter mt-2"><div id="boxer-p2-special" class="special-fill" style="width:0%"></div></div><div class="text-[10px] text-gray-500 mt-0.5">SPECIAL</div></div>
+        <div class="text-center w-56"><div class="text-3xl font-black text-[#00d4ff]" id="boxer-p2-name">BLUE</div><div class="w-full h-4 bg-white/10 rounded-full mt-2 overflow-hidden"><div id="boxer-p2-hp" class="h-full bg-[#00d4ff] transition-all duration-300" style="width:100%"></div></div><div class="text-xs text-gray-500 mt-1" id="boxer-p2-hp-text">100 STAMINA</div><div class="special-meter mt-2"><div id="boxer-p2-special" class="special-fill" style="width:0%"></div></div><div class="text-[10px] text-gray-500 mt-0.5">SPECIAL</div></div>
       </div>
       <canvas id="boxing-canvas" width="800" height="400" class="mx-auto rounded-2xl border border-white/10"></canvas>
       <div class="text-center mt-4 h-8"><div id="boxing-commentary" class="text-lg font-bold text-[#ffd700]">Round 1 — FIGHT!</div></div>
       <div class="flex justify-center gap-8 mt-2"><div class="text-center"><div class="text-2xl font-black text-[#ff3366]" id="p1-combo">0</div><div class="text-xs text-gray-500">Combo</div></div><div class="text-center"><div class="text-2xl font-black text-[#00d4ff]" id="p2-combo">0</div><div class="text-xs text-gray-500">Combo</div></div></div>
     </div>
-    <div id="boxing-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🥊</div><div class="text-2xl text-[#ffd700] font-bold mb-2">KNOCKOUT!</div><div id="boxing-winner-name" class="text-7xl font-black text-white mb-2"></div><div id="boxing-winner-sub" class="text-xl text-gray-400"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+    <div id="boxing-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🥊</div><div class="text-2xl text-[#ffd700] font-bold mb-2">WINNER BY DECISION</div><div id="boxing-winner-name" class="text-7xl font-black text-white mb-2"></div><div id="boxing-winner-sub" class="text-xl text-gray-400"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
   </div>
 </div>
 
@@ -4870,7 +4870,7 @@ function startHobbyHorse(names) {
   loop();
 }
 
-/* ==================== BOXING MATCH (1v1, ENHANCED — dodges, backflips, special moves, 5 rounds) ==================== */
+/* ==================== BOXING MATCH (1v1 — 2 short rounds, points decision, under 1 minute) ==================== */
 function runBoxingMatch() {
   const names = Array.from(entrants);
   if (names.length < 2) { alert('Need at least 2 entrants!'); return; }
@@ -4887,26 +4887,27 @@ function startBoxing(p1Name, p2Name) {
   showPhase('boxing', 'fight');
   const canvas = document.getElementById('boxing-canvas'); const ctx = canvas.getContext('2d');
   const W = 800, H = 400, groundY = 340;
-  let round = 1, maxRounds = 5, roundTime = 60, roundTimer = null, frame = 0, gameOver = false;
-  let knockdown = false, knockdownCount = 0, knockdownFighter = null, cameraShake = 0, particles = [], hitEffects = [], dustPuffs = [];
-  let p1RoundWins = 0, p2RoundWins = 0, p1RoundKD = 0, p2RoundKD = 0, betweenRounds = false;
+  const maxRounds = 2, secondsPerRound = 27;
+  let round = 1, roundTime = secondsPerRound, roundTimer = null, frame = 0, gameOver = false;
+  let cameraShake = 0, particles = [], hitEffects = [], dustPuffs = [];
+  let p1RoundWins = 0, p2RoundWins = 0, p1JudgePoints = 0, p2JudgePoints = 0, betweenRounds = false;
   const commentary = document.getElementById('boxing-commentary');
-  const p1 = { name:p1Name, x:200, y:groundY, color:'#ff3366', gloveColor:'#ff1133', hp:100, maxHp:100, combo:0, facing:1, state:'idle', stateTimer:0, vy:0, onGround:true, block:false, stun:0, special:0, knockdowns:0, moveDir:1, tauntTimer:0, weavePhase:0 };
-  const p2 = { name:p2Name, x:600, y:groundY, color:'#00d4ff', gloveColor:'#0099cc', hp:100, maxHp:100, combo:0, facing:-1, state:'idle', stateTimer:0, vy:0, onGround:true, block:false, stun:0, special:0, knockdowns:0, moveDir:-1, tauntTimer:0, weavePhase:0 };
+  const p1 = { name:p1Name, x:200, y:groundY, color:'#ff3366', gloveColor:'#ff1133', hp:100, maxHp:100, combo:0, facing:1, state:'idle', stateTimer:0, vy:0, onGround:true, block:false, stun:0, special:0, moveDir:1, tauntTimer:0, weavePhase:0 };
+  const p2 = { name:p2Name, x:600, y:groundY, color:'#00d4ff', gloveColor:'#0099cc', hp:100, maxHp:100, combo:0, facing:-1, state:'idle', stateTimer:0, vy:0, onGround:true, block:false, stun:0, special:0, moveDir:-1, tauntTimer:0, weavePhase:0 };
 
   function roundDifficulty() {
     const t = (round - 1) / (maxRounds - 1);
     return { aiSpeed: 1.2 + t * 1.8, aiAggro: 0.008 + t * 0.022, dmgMult: 0.45 + t * 0.55, recovery: Math.max(8, 18 - round * 2) };
   }
   function updateStats() {
-    document.getElementById('boxer-p1-hp').style.width = Math.max(0,p1.hp)+'%'; document.getElementById('boxer-p1-hp-text').textContent = Math.max(0,Math.round(p1.hp))+' HP';
-    document.getElementById('boxer-p2-hp').style.width = Math.max(0,p2.hp)+'%'; document.getElementById('boxer-p2-hp-text').textContent = Math.max(0,Math.round(p2.hp))+' HP';
+    document.getElementById('boxer-p1-hp').style.width = Math.max(0,p1.hp)+'%'; document.getElementById('boxer-p1-hp-text').textContent = Math.max(0,Math.round(p1.hp))+' STAMINA';
+    document.getElementById('boxer-p2-hp').style.width = Math.max(0,p2.hp)+'%'; document.getElementById('boxer-p2-hp-text').textContent = Math.max(0,Math.round(p2.hp))+' STAMINA';
     document.getElementById('boxer-p1-special').style.width = Math.min(100,p1.special)+'%';
     document.getElementById('boxer-p2-special').style.width = Math.min(100,p2.special)+'%';
     document.getElementById('p1-combo').textContent = p1.combo; document.getElementById('p2-combo').textContent = p2.combo;
   }
   function setCommentary(t) { commentary.textContent = t; }
-  function spawnBlood(x,y,dir) { for (let i=0;i<7;i++) particles.push({x,y,vx:dir*(2+Math.random()*4),vy:-2-Math.random()*3,life:40+Math.random()*20,maxLife:60,size:2+Math.random()*3,color:'#ff0000',type:'blood'}); }
+  function spawnSweat(x,y,dir) { for (let i=0;i<7;i++) particles.push({x,y,vx:dir*(2+Math.random()*4),vy:-2-Math.random()*3,life:30+Math.random()*16,maxLife:46,size:2+Math.random()*3,color:'#7dd3fc',type:'sweat'}); }
   function spawnDust(x,y) { for (let i=0;i<6;i++) particles.push({x,y,vx:(Math.random()-0.5)*3,vy:-0.5-Math.random()*2,life:26,maxLife:26,size:2+Math.random()*3,color:'rgba(150,140,120,0.55)',type:'dust'}); dustPuffs.push({x,y,r:3,life:20,maxLife:20}); }
   function spawnImpact(x,y,big) { for (let i=0;i<(big?14:7);i++) { const a=(Math.PI*2/(big?14:7))*i; particles.push({x,y,vx:Math.cos(a)*(big?6:3),vy:Math.sin(a)*(big?6:3),life:big?26:16,maxLife:big?26:16,size:big?4:3,color:'#ffd700',type:'impact'}); } hitEffects.push({x,y,life:big?32:20,maxLife:big?32:20,big}); }
 
@@ -4982,7 +4983,7 @@ function startBoxing(p1Name, p2Name) {
   }
   function updateParticles() {
     particles = particles.filter(p => { p.x+=p.vx; p.y+=p.vy; p.vy+=0.15; p.life--; if (p.life<=0) return false; const a=p.life/p.maxLife;
-      ctx.fillStyle = p.type==='blood'?`rgba(255,0,0,${a})`: p.type==='impact'?`rgba(255,215,0,${a})`:`rgba(150,140,120,${a*0.5})`;
+      ctx.fillStyle = p.type==='sweat'?`rgba(125,211,252,${a})`: p.type==='impact'?`rgba(255,215,0,${a})`:`rgba(150,140,120,${a*0.5})`;
       ctx.beginPath(); ctx.arc(p.x,p.y,p.size*a,0,Math.PI*2); ctx.fill(); return true; });
   }
   function drawHitEffects() {
@@ -4996,7 +4997,7 @@ function startBoxing(p1Name, p2Name) {
     ctx.fillStyle='#fff'; ctx.font='bold 12px Inter'; ctx.fillText('ROUND '+round+' / '+maxRounds, W/2, 55);
   }
   function doAttack(attacker, defender, type) {
-    if (gameOver || knockdown) return;
+    if (gameOver || betweenRounds) return;
     const diff = roundDifficulty();
     const dist = Math.abs(attacker.x-defender.x);
     const reach = type==='special'?120 : type==='windmill'?100 : type==='kick'?95 : 88;
@@ -5017,24 +5018,15 @@ function startBoxing(p1Name, p2Name) {
     attacker.combo++;
     if (attacker.combo>2) { dmg*=1.25; hitText=attacker.combo+'x COMBO! '+attacker.name+hitText; }
     if (type!=='special') attacker.special = Math.min(100, attacker.special+8);
-    defender.hp -= dmg; defender.state='hurt'; defender.stateTimer=12; defender.stun=10; defender.combo=0;
+    /* Points-only format: stamina can get low, but fighters never fall or get knocked out. */
+    defender.hp = Math.max(1, defender.hp - dmg); defender.state='hurt'; defender.stateTimer=12; defender.stun=10; defender.combo=0;
     spawnImpact(defender.x-attacker.facing*15, defender.y-70, type==='special'||type==='windmill');
-    spawnBlood(defender.x,defender.y-50,-attacker.facing);
-    cameraShake = type==='special'?14 : type==='windmill'?10 : 4;
+    spawnSweat(defender.x,defender.y-50,-attacker.facing);
+    cameraShake = type==='special'?10 : type==='windmill'?8 : 4;
     setCommentary(attacker.name+hitText);
-    const kdChance = type==='uppercut'?0.22 : type==='special'?0.35 : type==='hook'?0.14 : 0.06;
-    const forceKD = defender.hp <= 8 || (defender.hp <= 22 && Math.random() < kdChance + round*0.02);
-    if (forceKD && !knockdown) {
-      defender.hp = Math.max(8, defender.hp);
-      defender.state='kd'; defender.stateTimer=999; defender.vy=-8; defender.onGround=false; defender.knockdowns++;
-      knockdown=true; knockdownCount=0; knockdownFighter=defender;
-      if (defender===p1) p1RoundKD++; else p2RoundKD++;
-      setCommentary('💥 '+defender.name+' goes DOWN! (Knockdown '+((defender===p1)?p1RoundKD:p2RoundKD)+')');
-      cameraShake=14;
-    }
   }
   function aiThink(ai, player) {
-    if (gameOver || knockdown || ai.stun>0) return;
+    if (gameOver || betweenRounds || ai.stun>0) return;
     const diff = roundDifficulty();
     const dist = Math.abs(ai.x-player.x);
     ai.facing = ai.x < player.x ? 1 : -1;
@@ -5062,26 +5054,27 @@ function startBoxing(p1Name, p2Name) {
   }
   function updatePhysics(p) {
     if (p.stun>0) p.stun--;
-    if (p.stateTimer>0) { p.stateTimer--; if (p.stateTimer<=0 && p.state!=='kd') { p.state='idle'; p.block=false; } }
+    if (p.stateTimer>0) { p.stateTimer--; if (p.stateTimer<=0) { p.state='idle'; p.block=false; } }
     if (p.x<80) p.x=80; if (p.x>W-80) p.x=W-80;
-    if (!p.onGround) { p.vy+=0.45; p.y+=p.vy; if (p.y>=groundY) { p.y=groundY; p.vy=0; p.onGround=true; if (p.state==='kd'||p.state==='jump') { spawnDust(p.x,p.y); cameraShake=7; } p.state = p.state==='kd' ? 'kd' : 'idle'; } }
+    if (!p.onGround) { p.vy+=0.45; p.y+=p.vy; if (p.y>=groundY) { p.y=groundY; p.vy=0; p.onGround=true; if (p.state==='jump') { spawnDust(p.x,p.y); cameraShake=7; } p.state='idle'; } }
   }
   function startRound() {
-    betweenRounds=false; roundTime=60;
+    betweenRounds=false; roundTime=secondsPerRound;
     p1.x=200; p1.y=groundY; p1.onGround=true; p1.state='idle'; p1.stun=0; p1.block=false; p1.combo=0; p1.hp=100;
     p2.x=600; p2.y=groundY; p2.onGround=true; p2.state='idle'; p2.stun=0; p2.block=false; p2.combo=0; p2.hp=100;
-    p1RoundKD=0; p2RoundKD=0; knockdown=false; knockdownFighter=null;
-    setCommentary('🥊 Round '+round+' — FIGHT! Score: '+p1RoundWins+'-'+p2RoundWins);
+    setCommentary('🥊 Round '+round+' of '+maxRounds+' — FIGHT! Score: '+p1RoundWins+'-'+p2RoundWins);
     if (roundTimer) clearInterval(roundTimer);
-    roundTimer = setInterval(() => { if (!betweenRounds && !knockdown) { roundTime--; if (roundTime<=0) { clearInterval(roundTimer); finishRoundByTimer(); } } }, 1000);
+    roundTimer = setInterval(() => { if (!betweenRounds) { roundTime--; if (roundTime<=0) { clearInterval(roundTimer); finishRoundByTimer(); } } }, 1000);
   }
   function finishRoundByTimer() {
     if (betweenRounds || gameOver) return;
     betweenRounds=true;
+    p1JudgePoints += p1.hp;
+    p2JudgePoints += p2.hp;
     let roundWinner;
-    if (p1.hp > p2.hp + 5) roundWinner = p1.name;
-    else if (p2.hp > p1.hp + 5) roundWinner = p2.name;
-    else roundWinner = p1.hp >= p2.hp ? p1.name : p2.name;
+    if (p1.hp > p2.hp + 1) roundWinner = p1.name;
+    else if (p2.hp > p1.hp + 1) roundWinner = p2.name;
+    else roundWinner = Math.random() < 0.5 ? p1.name : p2.name;
     awardRound(roundWinner, ' wins Round '+round+' on points!');
   }
   function awardRound(winnerName, reason) {
@@ -5089,22 +5082,27 @@ function startBoxing(p1Name, p2Name) {
     betweenRounds=true;
     if (winnerName===p1.name) p1RoundWins++; else p2RoundWins++;
     setCommentary(winnerName + reason + ' ('+p1RoundWins+'-'+p2RoundWins+')');
-    if (p1RoundWins>=3 || p2RoundWins>=3 || round>=maxRounds) {
-      const champ = p1RoundWins>p2RoundWins ? p1.name : p2RoundWins>p1RoundWins ? p2.name : (p1.hp>=p2.hp?p1.name:p2.name);
-      setTimeout(() => endGame(champ, p1RoundWins+'-'+p2RoundWins+' on the scorecard'), 2200);
+    if (round >= maxRounds) {
+      let champ;
+      if (p1RoundWins > p2RoundWins) champ = p1.name;
+      else if (p2RoundWins > p1RoundWins) champ = p2.name;
+      else if (p1JudgePoints > p2JudgePoints) champ = p1.name;
+      else if (p2JudgePoints > p1JudgePoints) champ = p2.name;
+      else champ = Math.random() < 0.5 ? p1.name : p2.name;
+      const scorecard = p1RoundWins+'-'+p2RoundWins+' rounds · Judges '+Math.round(p1JudgePoints)+'-'+Math.round(p2JudgePoints);
+      setTimeout(() => endGame(champ, scorecard), 700);
       return;
     }
     round++;
-    setTimeout(() => startRound(), 3200);
+    setTimeout(() => startRound(), 1800);
   }
-  function endRound() { finishRoundByTimer(); }
   function endGame(winner, sub) {
     gameOver=true; if (roundTimer) clearInterval(roundTimer);
     setTimeout(() => {
       showPhase('boxing','winner');
       document.getElementById('boxing-winner-name').textContent=winner;
-      document.getElementById('boxing-winner-sub').textContent = sub || ('After '+maxRounds+' rounds');
-    }, 1800);
+      document.getElementById('boxing-winner-sub').textContent = sub || ('Decision after '+maxRounds+' rounds');
+    }, 900);
   }
   let animId;
   function loop() {
@@ -5113,21 +5111,6 @@ function startBoxing(p1Name, p2Name) {
     drawRing();
     if (!gameOver && !betweenRounds) {
       aiThink(p1,p2); aiThink(p2,p1); updatePhysics(p1); updatePhysics(p2);
-      if (knockdown) {
-        knockdownCount++;
-        if (knockdownCount===90) setCommentary('Ref counting... '+Math.floor((knockdownCount-90)/15+1)+'!');
-        if (knockdownCount>200) {
-          const down = knockdownFighter;
-          if (down) {
-            down.state='idle'; down.onGround=true; down.y=groundY;
-            down.hp = Math.min(down.maxHp, 38 + (maxRounds-round)*6);
-          }
-          knockdown=false; knockdownFighter=null;
-          setCommentary((down?down.name:'Fighter')+' beats the count — round continues!');
-          if (p1RoundKD>=3) awardRound(p2.name, ' wins by TKO (3 knockdowns)!');
-          else if (p2RoundKD>=3) awardRound(p1.name, ' wins by TKO (3 knockdowns)!');
-        }
-      }
     }
     drawFighter(p1,true); drawFighter(p2,false); updateParticles(); drawHitEffects(); drawRoundTimer(); drawRoundScore(); updateStats();
     ctx.restore();
@@ -11784,7 +11767,7 @@ const GAME_PREVIEW_META = {
   bomb: { scene: 'bumper', title: '🧨 Bomb Roulette', desc: 'Hot potato bomb jumps between players until BOOM!' },
   chicken: { scene: 'chicken', title: '🐔 Egg Roulette', desc: 'Click the chicken — it lays an egg that cracks open to reveal who got eliminated!' },
   babyoil: { scene: 'babyoil', title: '🧴 Baby Oil Rating', desc: 'Every entrant becomes a baby oil bottle — the host tests each one and crowns the highest rating!' },
-  boxing: { scene: 'boxing', title: '🥊 Boxing Match', desc: '1v1 boxing with combos, blocks, and special moves!' },
+  boxing: { scene: 'boxing', title: '🥊 Boxing Match', desc: 'Two quick rounds, no knockouts — the winner is decided on points in under one minute!' },
   sword: { scene: 'sword', title: '⚔️ Sword Duel', desc: '1v1 fencing duel. Parry, lunge, and strike!' }
 };
 
@@ -12687,5 +12670,5 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2eb148adc707e20',t:'MTc4NzMzMDQzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
