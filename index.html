@@ -1224,7 +1224,7 @@
 <div id="boxing-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
   <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
     <div class="text-center mb-4"><div class="text-[#ff3366] text-sm font-bold uppercase tracking-widest mb-2">🥊 Boxing Match</div><h1 class="text-4xl md:text-5xl font-black text-white">Championship Fight</h1></div>
-    <div id="boxing-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Two 27-second rounds · points decision only</div><div class="text-sm text-gray-600">No knockdowns, no knockouts — finished in under one minute.</div></div>
+    <div id="boxing-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">One 25-second round · points decision only</div><div class="text-sm text-gray-600">No knockdowns, no knockouts — fast winner by decision.</div></div>
     <div id="boxing-phase-fight" class="hidden w-full max-w-4xl">
       <div class="flex justify-between items-end mb-3 px-8">
         <div class="text-center w-56"><div class="text-3xl font-black text-[#ff3366]" id="boxer-p1-name">RED</div><div class="w-full h-4 bg-white/10 rounded-full mt-2 overflow-hidden"><div id="boxer-p1-hp" class="h-full bg-[#ff3366] transition-all duration-300" style="width:100%"></div></div><div class="text-xs text-gray-500 mt-1" id="boxer-p1-hp-text">100 STAMINA</div><div class="special-meter mt-2"><div id="boxer-p1-special" class="special-fill" style="width:0%"></div></div><div class="text-[10px] text-gray-500 mt-0.5">SPECIAL</div></div>
@@ -4870,7 +4870,7 @@ function startHobbyHorse(names) {
   loop();
 }
 
-/* ==================== BOXING MATCH (1v1 — 2 short rounds, points decision, under 1 minute) ==================== */
+/* ==================== BOXING MATCH (1v1 — 1 round, points decision, under 1 minute) ==================== */
 function runBoxingMatch() {
   const names = Array.from(entrants);
   if (names.length < 2) { alert('Need at least 2 entrants!'); return; }
@@ -4887,7 +4887,7 @@ function startBoxing(p1Name, p2Name) {
   showPhase('boxing', 'fight');
   const canvas = document.getElementById('boxing-canvas'); const ctx = canvas.getContext('2d');
   const W = 800, H = 400, groundY = 340;
-  const maxRounds = 2, secondsPerRound = 27;
+  const maxRounds = 1, secondsPerRound = 25;
   let round = 1, roundTime = secondsPerRound, roundTimer = null, frame = 0, gameOver = false;
   let cameraShake = 0, particles = [], hitEffects = [], dustPuffs = [];
   let p1RoundWins = 0, p2RoundWins = 0, p1JudgePoints = 0, p2JudgePoints = 0, betweenRounds = false;
@@ -4896,7 +4896,7 @@ function startBoxing(p1Name, p2Name) {
   const p2 = { name:p2Name, x:600, y:groundY, color:'#00d4ff', gloveColor:'#0099cc', hp:100, maxHp:100, combo:0, facing:-1, state:'idle', stateTimer:0, vy:0, onGround:true, block:false, stun:0, special:0, moveDir:-1, tauntTimer:0, weavePhase:0 };
 
   function roundDifficulty() {
-    const t = (round - 1) / (maxRounds - 1);
+    const t = maxRounds === 1 ? 0.5 : (round - 1) / (maxRounds - 1);
     return { aiSpeed: 1.2 + t * 1.8, aiAggro: 0.008 + t * 0.022, dmgMult: 0.45 + t * 0.55, recovery: Math.max(8, 18 - round * 2) };
   }
   function updateStats() {
@@ -11767,7 +11767,7 @@ const GAME_PREVIEW_META = {
   bomb: { scene: 'bumper', title: '🧨 Bomb Roulette', desc: 'Hot potato bomb jumps between players until BOOM!' },
   chicken: { scene: 'chicken', title: '🐔 Egg Roulette', desc: 'Click the chicken — it lays an egg that cracks open to reveal who got eliminated!' },
   babyoil: { scene: 'babyoil', title: '🧴 Baby Oil Rating', desc: 'Every entrant becomes a baby oil bottle — the host tests each one and crowns the highest rating!' },
-  boxing: { scene: 'boxing', title: '🥊 Boxing Match', desc: 'Two quick rounds, no knockouts — the winner is decided on points in under one minute!' },
+  boxing: { scene: 'boxing', title: '🥊 Boxing Match', desc: 'One fast 25-second round, no knockouts — the winner is decided on points!' },
   sword: { scene: 'sword', title: '⚔️ Sword Duel', desc: '1v1 fencing duel. Parry, lunge, and strike!' }
 };
 
@@ -12670,5 +12670,5 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2eb148adc707e20',t:'MTc4NzMzMDQzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2eb1b00682dd8c3',t:'MTc4NzMzMDY5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
