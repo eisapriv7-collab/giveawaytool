@@ -560,7 +560,10 @@
     <div class="text-center mb-3"><div class="text-[#ff3366] text-sm font-bold uppercase tracking-widest mb-2">🏎️ Grand Prix Racing</div><h1 class="text-4xl md:text-5xl font-black text-white">Turbo Showdown</h1></div>
     <div id="racing-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Loading racers...</div><div class="text-sm text-gray-600" id="racing-intro-count">Every entrant gets a car</div></div>
     <div id="racing-phase-race" class="hidden w-full max-w-6xl">
-      <div class="text-center mb-2"><div class="text-5xl font-black text-[#ffd700]" id="race-countdown">3</div></div>
+      <div class="flex items-center justify-center gap-4 mb-2">
+        <div class="text-5xl font-black text-[#ffd700]" id="race-countdown">3</div>
+        <button id="gp-music-toggle" onclick="toggleGrandPrixMusic()" class="px-4 py-2 rounded-xl text-xs font-black tracking-wider text-white border border-pink-500/40" style="background:linear-gradient(135deg,#ec4899,#7c3aed);">🔊 BANGER ON</button>
+      </div>
       <canvas id="racing-canvas" width="1100" height="560" class="w-full rounded-2xl border border-white/10"></canvas>
       <div id="racing-legend" class="legend-scroll mt-3"></div>
     </div>
@@ -2881,6 +2884,154 @@ function mathReveal() {
 }
 function mathEndGame(winner) { showPhase('math', 'winner'); document.getElementById('math-winner-name').textContent = winner; gameState.active = false; }
 
+/* ==================== GRAND PRIX PROCEDURAL BANGER MUSIC ==================== */
+const GRAND_PRIX_MUSIC = {
+  ctx: null, master: null, compressor: null, noise: null,
+  timer: null, nextTime: 0, step: 0, playing: false, bpm: 150
+};
+
+function gpMusicButtonState(on) {
+  const btn = document.getElementById('gp-music-toggle');
+  if (!btn) return;
+  btn.textContent = on ? '🔊 BANGER ON' : '🔇 BANGER OFF';
+  btn.style.opacity = on ? '1' : '0.65';
+}
+
+function gpMidi(note) { return 440 * Math.pow(2, (note - 69) / 12); }
+
+function gpMakeNoise(ctx) {
+  const buffer = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.42), ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+  return buffer;
+}
+
+function gpKick(t) {
+  const s = GRAND_PRIX_MUSIC, ctx = s.ctx;
+  const osc = ctx.createOscillator(), gain = ctx.createGain();
+  osc.type = 'sine'; osc.frequency.setValueAtTime(165, t); osc.frequency.exponentialRampToValueAtTime(43, t + 0.115);
+  gain.gain.setValueAtTime(0.9, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+  osc.connect(gain); gain.connect(s.master); osc.start(t); osc.stop(t + 0.2);
+}
+
+function gpSnare(t) {
+  const s = GRAND_PRIX_MUSIC, ctx = s.ctx;
+  const noise = ctx.createBufferSource(), hp = ctx.createBiquadFilter(), gain = ctx.createGain();
+  noise.buffer = s.noise; hp.type = 'highpass'; hp.frequency.value = 1050;
+  gain.gain.setValueAtTime(0.38, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+  noise.connect(hp); hp.connect(gain); gain.connect(s.master); noise.start(t); noise.stop(t + 0.18);
+  const crack = ctx.createOscillator(), crackGain = ctx.createGain();
+  crack.type = 'triangle'; crack.frequency.setValueAtTime(210, t); crack.frequency.exponentialRampToValueAtTime(95, t + 0.08);
+  crackGain.gain.setValueAtTime(0.2, t); crackGain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+  crack.connect(crackGain); crackGain.connect(s.master); crack.start(t); crack.stop(t + 0.11);
+}
+
+function gpHat(t, open) {
+  const s = GRAND_PRIX_MUSIC, ctx = s.ctx;
+  const noise = ctx.createBufferSource(), hp = ctx.createBiquadFilter(), gain = ctx.createGain();
+  noise.buffer = s.noise; hp.type = 'highpass'; hp.frequency.value = 6200;
+  const len = open ? 0.16 : 0.045;
+  gain.gain.setValueAtTime(open ? 0.105 : 0.07, t); gain.gain.exponentialRampToValueAtTime(0.001, t + len);
+  noise.connect(hp); hp.connect(gain); gain.connect(s.master); noise.start(t); noise.stop(t + len + 0.01);
+}
+
+function gpBass(t, note, accent) {
+  const s = GRAND_PRIX_MUSIC, ctx = s.ctx;
+  const osc = ctx.createOscillator(), sub = ctx.createOscillator(), filter = ctx.createBiquadFilter(), gain = ctx.createGain();
+  osc.type = 'sawtooth'; sub.type = 'square'; osc.frequency.value = gpMidi(note); sub.frequency.value = gpMidi(note - 12);
+  filter.type = 'lowpass'; filter.Q.value = 7; filter.frequency.setValueAtTime(accent ? 720 : 470, t); filter.frequency.exponentialRampToValueAtTime(180, t + 0.18);
+  gain.gain.setValueAtTime(accent ? 0.19 : 0.14, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.19);
+  osc.connect(filter); sub.connect(filter); filter.connect(gain); gain.connect(s.master);
+  osc.start(t); sub.start(t); osc.stop(t + 0.2); sub.stop(t + 0.2);
+}
+
+function gpLead(t, note, longNote) {
+  const s = GRAND_PRIX_MUSIC, ctx = s.ctx;
+  const osc = ctx.createOscillator(), filter = ctx.createBiquadFilter(), gain = ctx.createGain();
+  const len = longNote ? 0.28 : 0.11;
+  osc.type = 'square'; osc.frequency.value = gpMidi(note);
+  filter.type = 'bandpass'; filter.frequency.value = 1450; filter.Q.value = 2.5;
+  gain.gain.setValueAtTime(0.075, t); gain.gain.exponentialRampToValueAtTime(0.001, t + len);
+  osc.connect(filter); filter.connect(gain); gain.connect(s.master); osc.start(t); osc.stop(t + len + 0.02);
+}
+
+function gpChord(t, notes) {
+  const s = GRAND_PRIX_MUSIC, ctx = s.ctx;
+  notes.forEach((note, i) => {
+    const osc = ctx.createOscillator(), filter = ctx.createBiquadFilter(), gain = ctx.createGain();
+    osc.type = i === 0 ? 'sawtooth' : 'triangle'; osc.frequency.value = gpMidi(note);
+    filter.type = 'lowpass'; filter.frequency.value = 900;
+    gain.gain.setValueAtTime(0.001, t); gain.gain.linearRampToValueAtTime(0.028, t + 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 1.45);
+    osc.connect(filter); filter.connect(gain); gain.connect(s.master); osc.start(t); osc.stop(t + 1.5);
+  });
+}
+
+function gpRiser(t) {
+  const s = GRAND_PRIX_MUSIC, ctx = s.ctx;
+  const osc = ctx.createOscillator(), filter = ctx.createBiquadFilter(), gain = ctx.createGain();
+  osc.type = 'sawtooth'; osc.frequency.setValueAtTime(75, t); osc.frequency.exponentialRampToValueAtTime(880, t + 1.2);
+  filter.type = 'lowpass'; filter.frequency.setValueAtTime(220, t); filter.frequency.exponentialRampToValueAtTime(4200, t + 1.2);
+  gain.gain.setValueAtTime(0.001, t); gain.gain.linearRampToValueAtTime(0.07, t + 0.85); gain.gain.exponentialRampToValueAtTime(0.001, t + 1.25);
+  osc.connect(filter); filter.connect(gain); gain.connect(s.master); osc.start(t); osc.stop(t + 1.28);
+}
+
+function gpScheduleMusicStep(step, t) {
+  const kickSteps = [0, 7, 8, 11, 16, 23, 24, 27, 30];
+  const snareSteps = [4, 12, 20, 28];
+  const bass = [36,36,43,36,39,39,34,36,36,36,43,46,39,34,36,43];
+  const lead = [72,null,75,79,82,null,79,75,72,null,75,77,79,82,84,79];
+  const local = step % 32, half = Math.floor(local / 2) % bass.length;
+  gpHat(t, local % 8 === 6);
+  if (kickSteps.includes(local)) gpKick(t);
+  if (snareSteps.includes(local)) gpSnare(t);
+  if (local % 2 === 0) gpBass(t, bass[half], local % 8 === 0);
+  if (local % 2 === 0 && lead[half] != null) gpLead(t, lead[half], half % 4 === 3);
+  if (local === 0) gpChord(t, [48,51,55]);
+  if (local === 16) gpChord(t, [44,48,51]);
+}
+
+function gpMusicScheduler() {
+  const s = GRAND_PRIX_MUSIC;
+  if (!s.playing || !s.ctx) return;
+  const stepDuration = 60 / s.bpm / 4;
+  while (s.nextTime < s.ctx.currentTime + 0.18) {
+    gpScheduleMusicStep(s.step, s.nextTime);
+    s.nextTime += stepDuration; s.step = (s.step + 1) % 32;
+  }
+}
+
+function startGrandPrixMusic() {
+  const s = GRAND_PRIX_MUSIC;
+  if (s.playing) return;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) { gpMusicButtonState(false); return; }
+  if (!s.ctx) { s.ctx = new AudioCtx(); s.noise = gpMakeNoise(s.ctx); }
+  s.ctx.resume().catch(() => {});
+  s.compressor = s.ctx.createDynamicsCompressor();
+  s.compressor.threshold.value = -14; s.compressor.knee.value = 12; s.compressor.ratio.value = 8;
+  s.master = s.ctx.createGain(); s.master.gain.setValueAtTime(0.001, s.ctx.currentTime); s.master.gain.linearRampToValueAtTime(0.34, s.ctx.currentTime + 0.25);
+  s.master.connect(s.compressor); s.compressor.connect(s.ctx.destination);
+  s.nextTime = s.ctx.currentTime + 0.06; s.step = 0; s.playing = true;
+  gpRiser(s.ctx.currentTime + 0.02); gpMusicScheduler();
+  s.timer = setInterval(gpMusicScheduler, 40); gpMusicButtonState(true);
+}
+
+function stopGrandPrixMusic(fadeSeconds) {
+  const s = GRAND_PRIX_MUSIC, fade = fadeSeconds == null ? 0.18 : fadeSeconds;
+  if (s.timer) clearInterval(s.timer); s.timer = null; s.playing = false;
+  if (s.master && s.ctx) {
+    const now = s.ctx.currentTime;
+    s.master.gain.cancelScheduledValues(now); s.master.gain.setValueAtTime(Math.max(0.001, s.master.gain.value), now);
+    s.master.gain.exponentialRampToValueAtTime(0.001, now + Math.max(0.03, fade));
+  }
+  gpMusicButtonState(false);
+}
+
+function toggleGrandPrixMusic() {
+  if (GRAND_PRIX_MUSIC.playing) stopGrandPrixMusic(0.12); else startGrandPrixMusic();
+}
+
 /* ==================== GRAND PRIX RACING (dynamic — every entrant races) ==================== */
 function runRandomRacing() {
   showOverlay('racing-overlay');
@@ -2888,8 +3039,8 @@ function runRandomRacing() {
   const names = Array.from(entrants);
   if (names.length === 0) { alert('No entrants yet!'); return; }
   armRaceTurbo(names);
-  document.getElementById('racing-intro-count').textContent = names.length + ' racer' + (names.length === 1 ? '' : 's') + ' on the grid';
-  armGameStart(() => racingCountdown(names));
+  document.getElementById('racing-intro-count').textContent = names.length + ' racer' + (names.length === 1 ? '' : 's') + ' on the grid · banger soundtrack armed';
+  armGameStart(() => { startGrandPrixMusic(); racingCountdown(names); });
 }
 function racingCountdown(names) {
   showPhase('racing', 'race');
@@ -2993,7 +3144,7 @@ function startRacing(names) {
     cars.forEach(drawCar); updateParticles(); updateHUD();
     const raceWinner = firstToFinish(cars);
     if (raceWinner) {
-      endRaceTurbo(); cancelAnimationFrame(animId);
+      endRaceTurbo(); stopGrandPrixMusic(0.8); cancelAnimationFrame(animId);
       setTimeout(() => {
         showPhase('racing', 'winner');
         document.getElementById('racing-winner-name').textContent = raceWinner.name;
@@ -17626,5 +17777,5 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2fb957c78adf8cc',t:'MTc4NzUwMzQ4Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2fba2e46d05c6f3',t:'MTc4NzUwNDAzNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
