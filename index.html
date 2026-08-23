@@ -9729,11 +9729,13 @@ function drawOilHost(ctx, x, y, sc, pose) {
 
 /* Diddy 2.0 uses four SFW, fully-clothed cartoon poses so the face and body react during the rating sequence. */
 const DIDDY2_SPRITES = {};
-['neutral', 'thinking', 'pouring', 'surprised'].forEach(mood => {
+const DIDDY2_SPRITES_READY = Promise.all(['neutral', 'thinking', 'pouring', 'surprised'].map(mood => new Promise(resolve => {
   const image = new Image();
-  image.src = 'assets/diddy2/' + mood + '.png';
   DIDDY2_SPRITES[mood] = image;
-});
+  image.addEventListener('load', () => resolve(true), { once: true });
+  image.addEventListener('error', () => resolve(false), { once: true });
+  image.src = 'assets/diddy2/' + mood + '.png';
+})));
 
 function drawDiddy2StageBg(ctx, W, H, frame) {
   const bg = ctx.createLinearGradient(0, 0, 0, H);
@@ -9761,7 +9763,9 @@ function drawDiddy2Host(ctx, x, y, sc, pose) {
   if (isPouring) mood = 'pouring';
   else if (pose.expr === 'wow' || pose.expr === 'excited') mood = 'surprised';
   else if (pose.thought || pose.expr === 'think' || pose.expr === 'sad' || pose.bottleHeld) mood = 'thinking';
-  const image = DIDDY2_SPRITES[mood];
+  const requestedImage = DIDDY2_SPRITES[mood];
+  const neutralImage = DIDDY2_SPRITES.neutral;
+  const image = requestedImage && requestedImage.complete && requestedImage.naturalWidth ? requestedImage : neutralImage;
   const bounce = pose.bounce || 0;
   const lean = Math.max(-0.08, Math.min(0.08, pose.lean || 0));
 
@@ -9780,18 +9784,14 @@ function drawDiddy2Host(ctx, x, y, sc, pose) {
   if (image && image.complete && image.naturalWidth) {
     ctx.shadowColor = mood === 'pouring' ? 'rgba(253,224,71,0.8)' : 'rgba(255,255,255,0.18)';
     ctx.shadowBlur = mood === 'pouring' ? 28 : 12;
+    /* Always render the complete generated character from head to shoes. */
     ctx.drawImage(image, -92, -405, 184, 411);
     ctx.shadowBlur = 0;
   } else {
-    /* Full-body fallback while the sprite loads. */
-    ctx.fillStyle = '#f5f5f4'; ctx.strokeStyle = '#111827'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.roundRect(-35, -260, 70, 155, 20); ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.arc(0, -292, 32, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.lineWidth = 18; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(-18, -112); ctx.lineTo(-30, -5); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(18, -112); ctx.lineTo(30, -5); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(-30, -230); ctx.lineTo(-68, -155); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(30, -230); ctx.lineTo(68, -155); ctx.stroke();
+    /* Never substitute the old white stick figure; wait for the full artwork. */
+    ctx.fillStyle = 'rgba(0,0,0,0.72)'; ctx.beginPath(); ctx.roundRect(-92, -42, 184, 40, 10); ctx.fill();
+    ctx.fillStyle = '#fde047'; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center';
+    ctx.fillText('LOADING FULL CHARACTER…', 0, -17);
   }
 
   if ((pose.oilShine || 0) > 0) {
@@ -9815,8 +9815,15 @@ function runDiddy2() {
   showOverlay('diddy2-overlay'); showPhase('diddy2', 'intro');
   const names = Array.from(entrants);
   if (!names.length) { alert('No entrants yet!'); return; }
-  document.getElementById('diddy2-intro-count').textContent = names.length + ' bottles ready for the Diddy 2.0 rating';
-  armGameStart(() => startDiddy2(names));
+  document.getElementById('diddy2-intro-count').textContent = names.length + ' bottles ready · full character artwork preloading';
+  armGameStart(async () => {
+    const loaded = await DIDDY2_SPRITES_READY;
+    if (!loaded.every(Boolean)) {
+      alert('The full character artwork could not load. Refresh the game window and try again.');
+      return;
+    }
+    startDiddy2(names);
+  });
 }
 
 function runBabyOil() {
@@ -9832,19 +9839,32 @@ function startBabyOil(names) {
 }
 
 function startDiddy2(names) {
-  startOilRatingGame(names, { prefix: 'diddy2', drawHost: drawDiddy2Host, drawBackground: drawDiddy2StageBg });
+  startOilRatingGame(names, {
+    prefix: 'diddy2',
+    drawHost: drawDiddy2Host,
+    drawBackground: drawDiddy2StageBg,
+    fullBodyHost: true,
+    hostScale: 0.76,
+    hostHomeY: 0.86,
+    closeZoom: 1.12,
+    finaleZoom: 1.18
+  });
 }
 
 function startOilRatingGame(names, options) {
   const prefix = options.prefix;
   const drawHostFn = options.drawHost;
   const drawBackgroundFn = options.drawBackground;
+  const fullBodyHost = Boolean(options.fullBodyHost);
+  const hostScale = options.hostScale || 0.95;
+  const closeZoom = options.closeZoom || 1.65;
+  const finaleZoom = options.finaleZoom || 1.85;
   showPhase(prefix, 'play');
   const canvas = document.getElementById(prefix + '-canvas');
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   const feed = document.getElementById(prefix + '-feed');
-  const hostHome = { x: W / 2, y: H * 0.78 };
+  const hostHome = { x: W / 2, y: H * (options.hostHomeY || 0.78) };
   const speed = names.length > 50 ? 0.55 : names.length > 20 ? 0.72 : 1;
   const dur = n => Math.max(8, Math.round(n * speed));
 
@@ -9949,9 +9969,9 @@ function startOilRatingGame(names, options) {
     }
 
     if (stage === 'zoom' && sel) {
-      cam.tx = (W / 2 - sel.x) * 0.85;
-      cam.ty = (H / 2 - sel.y) * 0.55;
-      cam.tz = OIL_EASE.lerp(cam.tz, 1.65, 0.06);
+      cam.tx = fullBodyHost ? 0 : (W / 2 - sel.x) * 0.85;
+      cam.ty = fullBodyHost ? 0 : (H / 2 - sel.y) * 0.55;
+      cam.tz = OIL_EASE.lerp(cam.tz, closeZoom, 0.06);
       sel.wobble = Math.sin(stageT * 0.35) * 0.06;
       host.pose = { expr: 'think', armR: -0.8, armL: 0.1, lean: 0.05 };
       if (stageT > dur(42)) { stage = 'approach'; stageT = 0; }
@@ -9959,7 +9979,9 @@ function startOilRatingGame(names, options) {
     }
 
     if (stage === 'approach' && sel) {
-      const tx = sel.x - 55, ty = sel.y + 70;
+      /* Keep full-body hosts low enough that the head, hands, body and shoes stay on screen. */
+      const tx = fullBodyHost ? Math.max(125, Math.min(W - 125, sel.x - 78)) : sel.x - 55;
+      const ty = fullBodyHost ? Math.max(H * 0.78, sel.y + 70) : sel.y + 70;
       host.x = OIL_EASE.lerp(host.x, tx, 0.07);
       host.y = OIL_EASE.lerp(host.y, ty, 0.07);
       host.pose = { expr: 'neutral', armR: -0.5, armL: 0.4, lean: 0.08 };
@@ -10077,9 +10099,9 @@ function startOilRatingGame(names, options) {
       finale.t++;
       const wb = finale.bottle;
       bottles.forEach(b => { b.dim = b === wb ? 0 : 0.72; b.glow = b === wb ? 1.2 : 0; });
-      cam.tx = OIL_EASE.lerp(cam.tx, (W / 2 - wb.x) * 0.9, 0.04);
-      cam.ty = OIL_EASE.lerp(cam.ty, (H / 2 - wb.y) * 0.65, 0.04);
-      cam.tz = OIL_EASE.lerp(cam.tz, 1.85, 0.035);
+      cam.tx = OIL_EASE.lerp(cam.tx, fullBodyHost ? 0 : (W / 2 - wb.x) * 0.9, 0.04);
+      cam.ty = OIL_EASE.lerp(cam.ty, fullBodyHost ? 0 : (H / 2 - wb.y) * 0.65, 0.04);
+      cam.tz = OIL_EASE.lerp(cam.tz, finaleZoom, 0.035);
       wb.wobble = Math.sin(finale.t * 0.2) * 0.08;
       host.pose = { expr: 'wow', armR: -1.0, pointX: wb.x, pointY: wb.y, lean: 0.1 };
       if (finale.t % 6 === 0) {
@@ -10106,7 +10128,7 @@ function startOilRatingGame(names, options) {
     ctx.translate(-W / 2 + cam.x, -H / 2 + cam.y);
 
     bottles.forEach(b => drawOilBottle(ctx, b, { selected: b === selected && stage !== 'spawn' }));
-    drawHostFn(ctx, host.x, host.y, 0.95, host.pose);
+    drawHostFn(ctx, host.x, host.y, hostScale, host.pose);
 
     oilDrops.forEach(d => {
       d.x += d.vx; d.y += d.vy; d.vy += 0.22;
@@ -12828,5 +12850,5 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2fb551a6fedfd71',t:'MTc4NzUwMDg1MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2fb60259aedfcdf',t:'MTc4NzUwMTMwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
