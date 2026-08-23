@@ -403,6 +403,7 @@
         <button onclick="launchBombRoulette()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#ef4444,#7f1d1d);">🧨 Bomb Roulette</button>
         <button onclick="launchChicken()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#fbbf24,#d97706);color:#1c1917;">🐔 Egg Roulette</button>
         <button onclick="launchBabyOil()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#22c55e,#14532d);">🧴 Baby Oil Rating</button>
+        <button onclick="launchDiddy2()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f8fafc,#d6d3d1);color:#111827;">✨ Diddy 2.0</button>
       </div>
       <!-- Baby Oil Host Image Upload -->
       <div class="glass rounded-xl p-4 bg-white/[0.02] mb-4 border border-[#22c55e]/20">
@@ -1191,6 +1192,32 @@
       <canvas id="babyoil-canvas" width="960" height="600" class="w-full rounded-2xl border border-green-500/30 bg-[#0a1a0a]"></canvas>
     </div>
     <div id="babyoil-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🏆</div><div class="text-2xl text-[#22c55e] font-bold mb-2">HIGHEST RATING WINS</div><div id="babyoil-winner-name" class="text-5xl md:text-7xl font-black text-white mb-2"></div><div id="babyoil-winner-score" class="text-3xl text-[#fde047] font-bold mb-4"></div><div class="mt-6 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
+  </div>
+</div>
+
+<!-- ==================== DIDDY 2.0 (SFW CARTOON PARODY) ==================== -->
+<div id="diddy2-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-4 md:p-6">
+    <div class="text-center mb-2">
+      <div class="text-[#fde047] text-sm font-bold uppercase tracking-widest mb-2">✨ Diddy 2.0 · SFW Cartoon Game</div>
+      <h1 class="text-3xl md:text-5xl font-black text-white">The Ultimate Oil Rating</h1>
+    </div>
+    <div id="diddy2-phase-intro" class="text-center">
+      <div class="text-2xl text-gray-300 mb-2">The host is getting ready...</div>
+      <div class="text-sm text-gray-500" id="diddy2-intro-count"></div>
+      <div class="text-xs text-gray-600 mt-3">Stylized parody artwork · fully clothed · non-explicit</div>
+    </div>
+    <div id="diddy2-phase-play" class="hidden w-full max-w-6xl">
+      <div id="diddy2-feed" class="text-center text-[#fde047] mb-2 text-base md:text-lg font-bold">Inspecting the oil lineup...</div>
+      <canvas id="diddy2-canvas" width="960" height="600" class="w-full rounded-2xl border border-yellow-400/30 bg-[#101014]"></canvas>
+    </div>
+    <div id="diddy2-phase-winner" class="hidden text-center">
+      <div class="text-6xl mb-4">🏆</div>
+      <div class="text-2xl text-[#fde047] font-bold mb-2">DIDDY 2.0 TOP RATING</div>
+      <div id="diddy2-winner-name" class="text-5xl md:text-7xl font-black text-white mb-2"></div>
+      <div id="diddy2-winner-score" class="text-3xl text-[#fde047] font-bold mb-4"></div>
+      <div class="mt-6 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div>
+    </div>
   </div>
 </div>
 
@@ -2180,7 +2207,7 @@ const PREVIEW_LAUNCH_MAP = {
   launchTilt:'tilt', launchBee:'bee', launchSubway:'subway', launchDeal:'deal', launchWheelDoom:'wheel',
   launchCrystal:'crystal', launchWarp:'warp', launchStocks:'stocks', launchSlot:'slot', launchBingo:'bingo',
   launchHighCard:'highcard', launchPlinko:'plinko', launchThunder:'thunder', launchButts:'butts', launchFlush:'flush',
-  launchTwerk:'twerk', launchBombRoulette:'bomb', launchChicken:'chicken', launchBabyOil:'babyoil',
+  launchTwerk:'twerk', launchBombRoulette:'bomb', launchChicken:'chicken', launchBabyOil:'babyoil', launchDiddy2:'diddy2',
   launchBoxingMatch:'boxing', launchSwordDuel:'sword'
 };
 
@@ -2353,6 +2380,7 @@ function launchTwerk() { openGamePopup('twerk'); }
 function launchBombRoulette() { openGamePopup('bomb'); }
 function launchChicken() { openGamePopup('chicken'); }
 function launchBabyOil() { openGamePopup('babyoil'); }
+function launchDiddy2() { openGamePopup('diddy2'); }
 
 
 
@@ -9699,6 +9727,98 @@ function drawOilHost(ctx, x, y, sc, pose) {
   ctx.restore();
 }
 
+/* Diddy 2.0 uses four SFW, fully-clothed cartoon poses so the face and body react during the rating sequence. */
+const DIDDY2_SPRITES = {};
+['neutral', 'thinking', 'pouring', 'surprised'].forEach(mood => {
+  const image = new Image();
+  image.src = 'assets/diddy2/' + mood + '.png';
+  DIDDY2_SPRITES[mood] = image;
+});
+
+function drawDiddy2StageBg(ctx, W, H, frame) {
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#08080c'); bg.addColorStop(0.55, '#18130a'); bg.addColorStop(1, '#08080c');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  const glow = ctx.createRadialGradient(W / 2, H * 0.48, 20, W / 2, H * 0.48, W * 0.48);
+  glow.addColorStop(0, 'rgba(253,224,71,0.16)'); glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = 'rgba(253,224,71,0.08)'; ctx.lineWidth = 1;
+  for (let x = -H; x < W + H; x += 70) {
+    const offset = Math.sin(frame * 0.015 + x * 0.01) * 8;
+    ctx.beginPath(); ctx.moveTo(x + offset, 0); ctx.lineTo(x + H + offset, H); ctx.stroke();
+  }
+  ctx.fillStyle = '#0d0d12'; ctx.fillRect(0, H * 0.76, W, H * 0.24);
+  ctx.strokeStyle = 'rgba(253,224,71,0.24)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(W / 2, H * 0.79, 155, 26, 0, 0, Math.PI * 2); ctx.stroke();
+  ctx.fillStyle = 'rgba(253,224,71,0.65)'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'center';
+  ctx.fillText('DIDDY 2.0 RATING STAGE', W / 2, H - 20);
+}
+
+function drawDiddy2Host(ctx, x, y, sc, pose) {
+  pose = pose || {};
+  let mood = 'neutral';
+  const isPouring = (pose.oilShine || 0) > 0.12 || (pose.bottleHeld && (pose.bottleRot || 0) < -0.72);
+  if (isPouring) mood = 'pouring';
+  else if (pose.expr === 'wow' || pose.expr === 'excited') mood = 'surprised';
+  else if (pose.thought || pose.expr === 'think' || pose.expr === 'sad' || pose.bottleHeld) mood = 'thinking';
+  const image = DIDDY2_SPRITES[mood];
+  const bounce = pose.bounce || 0;
+  const lean = Math.max(-0.08, Math.min(0.08, pose.lean || 0));
+
+  ctx.save();
+  ctx.translate(x, y + bounce);
+  ctx.rotate(lean);
+  ctx.scale(sc, sc);
+  ctx.fillStyle = 'rgba(0,0,0,0.42)';
+  ctx.beginPath(); ctx.ellipse(0, 8, 76, 14, 0, 0, Math.PI * 2); ctx.fill();
+
+  if (pose.pointX != null) {
+    ctx.strokeStyle = 'rgba(253,224,71,0.8)'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(25, -175); ctx.lineTo((pose.pointX - x) / sc, (pose.pointY - y) / sc); ctx.stroke();
+  }
+
+  if (image && image.complete && image.naturalWidth) {
+    ctx.shadowColor = mood === 'pouring' ? 'rgba(253,224,71,0.8)' : 'rgba(255,255,255,0.18)';
+    ctx.shadowBlur = mood === 'pouring' ? 28 : 12;
+    ctx.drawImage(image, -92, -405, 184, 411);
+    ctx.shadowBlur = 0;
+  } else {
+    /* Full-body fallback while the sprite loads. */
+    ctx.fillStyle = '#f5f5f4'; ctx.strokeStyle = '#111827'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.roundRect(-35, -260, 70, 155, 20); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, -292, 32, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.lineWidth = 18; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(-18, -112); ctx.lineTo(-30, -5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(18, -112); ctx.lineTo(30, -5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-30, -230); ctx.lineTo(-68, -155); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(30, -230); ctx.lineTo(68, -155); ctx.stroke();
+  }
+
+  if ((pose.oilShine || 0) > 0) {
+    ctx.globalAlpha = Math.min(0.38, pose.oilShine * 0.38);
+    const shine = ctx.createRadialGradient(0, -210, 10, 0, -210, 100);
+    shine.addColorStop(0, '#fef08a'); shine.addColorStop(1, 'transparent');
+    ctx.fillStyle = shine; ctx.fillRect(-115, -335, 230, 245);
+    ctx.globalAlpha = 1;
+  }
+
+  if (pose.thought) {
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(72, -365, 31, 24, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.font = '22px serif'; ctx.textAlign = 'center'; ctx.fillText('🤔', 72, -357);
+  }
+  ctx.fillStyle = 'rgba(0,0,0,0.72)'; ctx.beginPath(); ctx.roundRect(-58, 14, 116, 24, 8); ctx.fill();
+  ctx.fillStyle = '#fde047'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText('DIDDY 2.0', 0, 30);
+  ctx.restore();
+}
+
+function runDiddy2() {
+  showOverlay('diddy2-overlay'); showPhase('diddy2', 'intro');
+  const names = Array.from(entrants);
+  if (!names.length) { alert('No entrants yet!'); return; }
+  document.getElementById('diddy2-intro-count').textContent = names.length + ' bottles ready for the Diddy 2.0 rating';
+  armGameStart(() => startDiddy2(names));
+}
+
 function runBabyOil() {
   showOverlay('babyoil-overlay'); showPhase('babyoil', 'intro');
   const names = Array.from(entrants);
@@ -9708,11 +9828,22 @@ function runBabyOil() {
 }
 
 function startBabyOil(names) {
-  showPhase('babyoil', 'play');
-  const canvas = document.getElementById('babyoil-canvas');
+  startOilRatingGame(names, { prefix: 'babyoil', drawHost: drawOilHost, drawBackground: drawOilStageBg });
+}
+
+function startDiddy2(names) {
+  startOilRatingGame(names, { prefix: 'diddy2', drawHost: drawDiddy2Host, drawBackground: drawDiddy2StageBg });
+}
+
+function startOilRatingGame(names, options) {
+  const prefix = options.prefix;
+  const drawHostFn = options.drawHost;
+  const drawBackgroundFn = options.drawBackground;
+  showPhase(prefix, 'play');
+  const canvas = document.getElementById(prefix + '-canvas');
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
-  const feed = document.getElementById('babyoil-feed');
+  const feed = document.getElementById(prefix + '-feed');
   const hostHome = { x: W / 2, y: H * 0.78 };
   const speed = names.length > 50 ? 0.55 : names.length > 20 ? 0.72 : 1;
   const dur = n => Math.max(8, Math.round(n * speed));
@@ -9771,9 +9902,9 @@ function startBabyOil(names) {
     });
     const winner = pickSingleWinner(tied, names);
     cancelAnimationFrame(animId);
-    showPhase('babyoil', 'winner');
-    document.getElementById('babyoil-winner-name').textContent = winner;
-    document.getElementById('babyoil-winner-score').textContent = '⭐ ' + (ratings[winner] || best).toFixed(1) + ' / 10';
+    showPhase(prefix, 'winner');
+    document.getElementById(prefix + '-winner-name').textContent = winner;
+    document.getElementById(prefix + '-winner-score').textContent = '⭐ ' + (ratings[winner] || best).toFixed(1) + ' / 10';
   }
 
   function updateStage() {
@@ -9968,14 +10099,14 @@ function startBabyOil(names) {
     cam.y = OIL_EASE.lerp(cam.y, cam.ty, 0.1);
     cam.zoom = OIL_EASE.lerp(cam.zoom, cam.tz, 0.1);
 
-    drawOilStageBg(ctx, W, H, frame);
+    drawBackgroundFn(ctx, W, H, frame);
     ctx.save();
     ctx.translate(W / 2, H / 2);
     ctx.scale(cam.zoom, cam.zoom);
     ctx.translate(-W / 2 + cam.x, -H / 2 + cam.y);
 
     bottles.forEach(b => drawOilBottle(ctx, b, { selected: b === selected && stage !== 'spawn' }));
-    drawOilHost(ctx, host.x, host.y, 0.95, host.pose);
+    drawHostFn(ctx, host.x, host.y, 0.95, host.pose);
 
     oilDrops.forEach(d => {
       d.x += d.vx; d.y += d.vy; d.vy += 0.22;
@@ -11039,6 +11170,7 @@ function launchSwordWith(p1Name, p2Name) {
       else if (game === 'flush') runFlush();
       else if (game === 'chicken') runChicken();
       else if (game === 'babyoil') runBabyOil();
+      else if (game === 'diddy2') runDiddy2();
       else if (game === 'twerk') runTwerk();
       else if (game === 'bomb') runBombRoulette();
       else if (game === 'boxing') runBoxingMatch();
@@ -11347,6 +11479,31 @@ const PV_SCENES = {
       drawOilHost(ctx, st.host.x, st.host.y, 0.85, st.host.pose);
       ctx.fillStyle = '#86efac'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center';
       ctx.fillText('Every entrant becomes a rated baby oil bottle!', W / 2, H - 22);
+    }
+  },
+  diddy2: {
+    gw: 960, gh: 600,
+    init() {
+      const W = 960, H = 600;
+      const bottles = layoutOilBottles(PV_NAMES.slice(0, 8), W, H);
+      bottles.forEach(b => { b.spawn = 1; b.y = b.ty; b.rot = b.targetRot; });
+      return { frame: 0, W, H, bottles, host: { x: W / 2, y: H * 0.79, pose: { expr: 'neutral' } }, t: 0 };
+    },
+    tick(st) {
+      st.frame++; st.t = (st.t + 1) % 280;
+      if (st.t < 70) st.host.pose = { expr: 'neutral' };
+      else if (st.t < 140) st.host.pose = { expr: 'think', thought: true };
+      else if (st.t < 220) st.host.pose = { expr: 'excited', oilShine: Math.min(1, (st.t - 140) / 35), bottleHeld: st.bottles[0], bottleRot: -1.1, bounce: Math.sin(st.t * 0.2) * 2 };
+      else st.host.pose = { expr: 'wow' };
+      const pick = st.bottles[Math.floor(st.t / 70) % st.bottles.length];
+      st.bottles.forEach(b => { b.glow = b === pick ? 1 : 0; b.dim = b === pick ? 0 : 0.3; });
+    },
+    draw(ctx, W, H, st) {
+      drawDiddy2StageBg(ctx, W, H, st.frame);
+      st.bottles.forEach(b => drawOilBottle(ctx, b, { selected: b.glow > 0.5 }));
+      drawDiddy2Host(ctx, st.host.x, st.host.y, 0.82, st.host.pose);
+      ctx.fillStyle = '#fde047'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center';
+      ctx.fillText('Full-body reactions change while every bottle gets rated!', W / 2, H - 22);
     }
   },
   twerk: {
@@ -11767,6 +11924,7 @@ const GAME_PREVIEW_META = {
   bomb: { scene: 'bumper', title: '🧨 Bomb Roulette', desc: 'Hot potato bomb jumps between players until BOOM!' },
   chicken: { scene: 'chicken', title: '🐔 Egg Roulette', desc: 'Click the chicken — it lays an egg that cracks open to reveal who got eliminated!' },
   babyoil: { scene: 'babyoil', title: '🧴 Baby Oil Rating', desc: 'Every entrant becomes a baby oil bottle — the host tests each one and crowns the highest rating!' },
+  diddy2: { scene: 'diddy2', title: '✨ Diddy 2.0', desc: 'A SFW cartoon rating show with full-body host poses, oil-pour animation, and changing facial reactions!' },
   boxing: { scene: 'boxing', title: '🥊 Boxing Match', desc: 'One fast 25-second round, no knockouts — the winner is decided on points!' },
   sword: { scene: 'sword', title: '⚔️ Sword Duel', desc: '1v1 fencing duel. Parry, lunge, and strike!' }
 };
@@ -12670,5 +12828,5 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2eb1b00682dd8c3',t:'MTc4NzMzMDY5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2fb551a6fedfd71',t:'MTc4NzUwMDg1MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
