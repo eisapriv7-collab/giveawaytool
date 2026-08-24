@@ -278,8 +278,21 @@
 </div>
 
 <!-- ==================== DASHBOARD SCREEN ==================== -->
-<div id="dashboard-screen" class="site-layer hidden min-h-screen p-6 md:p-10">
-  <div class="max-w-6xl mx-auto">
+<div id="dashboard-screen" class="site-layer hidden min-h-screen p-4 md:p-6">
+  <div id="dashboard-shell" class="max-w-[1540px] mx-auto grid grid-cols-1 xl:grid-cols-[260px_minmax(0,1fr)_280px] gap-6 items-start">
+    <aside id="entrants-sidebar" class="order-2 xl:order-1 xl:sticky xl:top-6 min-w-0">
+      <section class="glass rounded-3xl p-5 min-h-[430px] xl:h-[calc(100vh-3rem)] xl:max-h-[860px] flex flex-col border border-[#a855f7]/20 overflow-hidden relative" style="background:linear-gradient(160deg,rgba(14,10,24,.95),rgba(5,5,8,.88));box-shadow:0 18px 55px rgba(0,0,0,.28);">
+        <div class="absolute -left-20 -bottom-24 w-64 h-64 rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(168,85,247,.14),transparent 68%);"></div>
+        <div class="relative flex items-center justify-between gap-3 mb-5 pb-4 border-b border-white/[0.06]">
+          <div class="min-w-0"><div class="text-[#a855f7] text-[9px] font-black uppercase tracking-[0.18em] mb-1">Giveaway audience</div><h3 class="text-lg font-black text-white whitespace-nowrap">👥 Live Entrants</h3></div>
+          <span id="entrant-badge" class="px-2.5 py-1.5 rounded-full bg-[#53fc18]/10 text-[#53fc18] text-[10px] font-black shrink-0">0</span>
+        </div>
+        <div id="entrants-grid" class="relative p-grid overflow-y-auto pr-1 flex-1 content-start"><div class="col-span-full text-center py-16 text-gray-600"><div class="text-4xl mb-3">👥</div><p class="text-sm">Waiting for entrants...</p><p class="text-[10px] mt-2 text-gray-700">Viewers appear after using the join keyword.</p></div></div>
+        <div class="relative mt-4 pt-4 border-t border-white/[0.06] flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-gray-600"><span>Auto-updating</span><span class="text-[#a855f7]">AUDIENCE</span></div>
+      </section>
+    </aside>
+
+    <main id="dashboard-main" class="order-1 xl:order-2 min-w-0">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch mb-8">
       <section class="lg:col-span-5 glass rounded-3xl p-6 md:p-7 border border-white/10 flex flex-col justify-between overflow-hidden relative" style="background:linear-gradient(145deg,rgba(83,252,24,.07),rgba(255,255,255,.018) 48%,rgba(255,51,102,.05));">
         <div class="absolute -left-16 -top-16 w-44 h-44 rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(83,252,24,.12),transparent 68%);"></div>
@@ -330,32 +343,6 @@
       <div class="stat-card rounded-2xl p-6"><div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Status</div><div class="text-5xl font-black text-[#00d4ff]">LIVE</div></div>
       <div class="stat-card rounded-2xl p-6"><div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Keyword</div><div id="stat-keyword" class="text-4xl font-black text-[#ff3366]">!join</div></div>
     </div>
-    <!-- Live activity: entrants on the left, realtime Kick chat on the right -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 items-stretch">
-      <section class="glass rounded-3xl p-6 md:p-7 min-h-[430px] flex flex-col border border-white/10 overflow-hidden relative">
-        <div class="absolute -left-20 -bottom-24 w-64 h-64 rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(168,85,247,.1),transparent 68%);"></div>
-        <div class="relative flex items-center justify-between mb-5">
-          <div><div class="text-[#a855f7] text-[10px] font-black uppercase tracking-[0.2em] mb-1">Giveaway audience</div><h3 class="text-xl font-black text-white">👥 Live Entrants</h3></div>
-          <span id="entrant-badge" class="px-3 py-1.5 rounded-full bg-[#53fc18]/10 text-[#53fc18] text-xs font-black">0</span>
-        </div>
-        <div id="entrants-grid" class="relative p-grid max-h-[340px] overflow-y-auto pr-2 flex-1 content-start"><div class="col-span-full text-center py-16 text-gray-600"><div class="text-4xl mb-3">👥</div><p>Waiting for entrants...</p><p class="text-xs mt-2 text-gray-700">Viewers appear here after using the join keyword.</p></div></div>
-      </section>
-
-      <section id="kick-chat-panel" class="glass rounded-3xl p-6 md:p-7 min-h-[430px] flex flex-col border border-[#53fc18]/20 overflow-hidden relative" style="background:linear-gradient(145deg,rgba(5,5,8,.94),rgba(8,26,14,.78));">
-        <div class="absolute -right-20 -top-24 w-64 h-64 rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(83,252,24,.12),transparent 68%);"></div>
-        <div class="relative flex items-center justify-between gap-4 mb-5">
-          <div><div class="text-[#53fc18] text-[10px] font-black uppercase tracking-[0.2em] mb-1">Realtime Kick activity</div><h3 class="text-xl font-black text-white">💬 Live Kick Chat</h3></div>
-          <div class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5"><span id="kick-chat-live-dot" class="w-1.5 h-1.5 rounded-full bg-gray-600"></span><span id="kick-chat-count" class="text-gray-400 text-[10px] font-black">0 MESSAGES</span></div>
-        </div>
-        <div id="kick-chat-feed" class="relative flex-1 h-[340px] max-h-[340px] overflow-y-auto pr-2 space-y-2" role="log" aria-live="polite" aria-label="Realtime Kick chat messages">
-          <div id="kick-chat-empty" class="h-full min-h-[260px] flex flex-col items-center justify-center text-center text-gray-600 px-6">
-            <div class="text-4xl mb-3">💬</div><p class="font-bold text-gray-500">Waiting for Kick chat...</p><p class="text-xs mt-2 text-gray-700">New messages will appear here instantly.</p>
-          </div>
-        </div>
-        <div class="relative mt-4 pt-4 border-t border-white/5 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-gray-600"><span>Newest messages appear at the bottom</span><span id="kick-chat-live-label" class="text-gray-600">OFFLINE</span></div>
-      </section>
-    </div>
-
     <!-- Standalone Tournament Manager (separate from games) -->
     <div class="glass rounded-3xl p-6 md:p-8 mb-8 border border-[#fbbf24]/30" style="background:linear-gradient(135deg,rgba(251,191,36,.09),rgba(255,255,255,.015));">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -405,7 +392,26 @@
         <button onclick="launchSwordDuel()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#64748b,#1e293b);">⚔️ Sword Duel</button>
       </div>
     </div>
+    </main>
 
+    <aside id="kick-chat-sidebar" class="order-3 xl:order-3 xl:sticky xl:top-6 min-w-0">
+      <section id="kick-chat-panel" class="glass rounded-3xl p-5 min-h-[430px] xl:h-[calc(100vh-3rem)] xl:max-h-[860px] flex flex-col border border-[#53fc18]/20 overflow-hidden relative" style="background:linear-gradient(160deg,rgba(5,20,11,.94),rgba(5,5,8,.9));box-shadow:0 18px 55px rgba(0,0,0,.28);">
+        <div class="absolute -right-20 -top-24 w-64 h-64 rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(83,252,24,.14),transparent 68%);"></div>
+        <div class="relative mb-5 pb-4 border-b border-white/[0.06]">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <div class="min-w-0"><div class="text-[#53fc18] text-[9px] font-black uppercase tracking-[0.18em] mb-1">Realtime Kick activity</div><h3 class="text-lg font-black text-white whitespace-nowrap">💬 Live Kick Chat</h3></div>
+            <span id="kick-chat-live-dot" class="w-2 h-2 mt-2 rounded-full bg-gray-600 shrink-0"></span>
+          </div>
+          <div class="flex items-center justify-between"><span id="kick-chat-live-label" class="text-gray-600 text-[9px] font-black uppercase tracking-wider">OFFLINE</span><span id="kick-chat-count" class="text-gray-400 text-[9px] font-black">0 MESSAGES</span></div>
+        </div>
+        <div id="kick-chat-feed" class="relative flex-1 overflow-y-auto pr-1 space-y-2" role="log" aria-live="polite" aria-label="Realtime Kick chat messages">
+          <div id="kick-chat-empty" class="h-full min-h-[260px] flex flex-col items-center justify-center text-center text-gray-600 px-4">
+            <div class="text-4xl mb-3">💬</div><p class="font-bold text-sm text-gray-500">Waiting for Kick chat...</p><p class="text-[10px] mt-2 text-gray-700">New messages appear here instantly.</p>
+          </div>
+        </div>
+        <div class="relative mt-4 pt-4 border-t border-white/[0.06] flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-gray-600"><span>Newest at bottom</span><span class="text-[#53fc18]">CHAT</span></div>
+      </section>
+    </aside>
   </div>
 </div>
 
@@ -17741,5 +17747,5 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a301c102aea1ce55',t:'MTc4NzU2ODE4NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a301c8eeccdf99e3',t:'MTc4NzU2ODUwOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
