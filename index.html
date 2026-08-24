@@ -773,17 +773,58 @@
   </div>
 </div>
 
-<!-- ==================== LASER ARENA (all entrants) ==================== -->
-<div id="laser-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
-  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
-    <div class="text-center mb-3"><div class="text-[#22d3ee] text-sm font-bold uppercase tracking-widest mb-2">⚡ Laser Arena</div><h1 class="text-4xl md:text-5xl font-black text-white">Last One Standing</h1></div>
-    <div id="laser-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Powering up blasters...</div><div class="text-sm text-gray-600" id="laser-intro-count">Everyone fights</div></div>
-    <div id="laser-phase-play" class="hidden w-full max-w-5xl">
-      <div class="flex items-center justify-center gap-3 mb-1"><span id="laser-alive-badge" class="p-count-badge">0 alive</span></div>
-      <div id="laser-commentary" class="text-center text-[#ffd700] font-bold text-lg mb-2 h-6">Blasters armed!</div>
-      <canvas id="laser-canvas" width="900" height="600" class="mx-auto rounded-2xl border border-white/10 bg-[#050810]"></canvas>
+<!-- ==================== PROFESSIONAL LASER ARENA ==================== -->
+<div id="laser-overlay" class="hidden fixed inset-0 bg-[#020509] z-50 overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 18% 24%,rgba(6,182,212,.14),transparent 34%),radial-gradient(circle at 82% 68%,rgba(217,70,239,.12),transparent 38%),linear-gradient(145deg,#03070b,#020407 58%,#080315);"></div>
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-3 md:p-4 overflow-hidden">
+    <div class="w-full max-w-7xl">
+      <header class="flex items-center justify-between gap-4 mb-3 px-1">
+        <div class="min-w-0"><div class="text-cyan-400 text-[10px] font-black uppercase tracking-[0.28em]">Nexus Combat Network</div><h1 class="text-2xl md:text-3xl font-black text-white leading-tight truncate">Laser Arena</h1></div>
+        <div class="hidden sm:flex items-center gap-2 text-[9px] font-black uppercase tracking-wider"><span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300">Projectile Combat</span><span class="px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/20 text-cyan-300">Tactical AI</span><span class="px-3 py-1.5 rounded-full bg-fuchsia-500/10 border border-fuchsia-400/20 text-fuchsia-300">Last Fighter Wins</span></div>
+      </header>
+
+      <div id="laser-phase-intro" class="glass rounded-3xl border border-cyan-500/20 p-8 md:p-12 text-center shadow-[0_30px_100px_rgba(0,0,0,.68)]">
+        <div class="mx-auto mb-5 w-20 h-20 rounded-2xl flex items-center justify-center text-4xl bg-gradient-to-br from-cyan-500/20 to-fuchsia-600/20 border border-cyan-400/20 shadow-[0_0_45px_rgba(6,182,212,.2)]">⚡</div>
+        <div class="text-cyan-400 text-xs font-black uppercase tracking-[0.3em] mb-2">Nexus Arena Online</div>
+        <div class="text-3xl md:text-5xl font-black text-white mb-3">Lock. Fire. Survive.</div>
+        <div id="laser-intro-count" class="text-sm md:text-base text-gray-400 font-bold">Combatants are linking to the arena...</div>
+        <div class="grid grid-cols-3 gap-2 max-w-xl mx-auto mt-7 text-[9px] font-black uppercase tracking-wider"><div class="rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-gray-400">Physical Bolts</div><div class="rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-gray-400">Shield Pickups</div><div class="rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-gray-400">Final Duel</div></div>
+      </div>
+
+      <div id="laser-phase-play" class="hidden w-full">
+        <div class="grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_auto_auto_auto] items-center gap-2 mb-2 rounded-2xl border border-white/10 bg-black/60 px-3 md:px-4 py-2 shadow-xl">
+          <div class="min-w-0"><div class="text-[8px] text-gray-600 font-black uppercase tracking-[0.2em]">Arena Control</div><div id="laser-status" class="text-sm md:text-base text-cyan-300 font-black truncate">SYSTEM LOCKDOWN</div></div>
+          <div class="text-right px-3 border-l border-white/10"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Active</div><div id="laser-active" class="text-lg font-black text-white tabular-nums">0</div></div>
+          <div class="hidden sm:block text-right px-3 border-l border-white/10"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Eliminated</div><div id="laser-eliminated" class="text-lg font-black text-fuchsia-400 tabular-nums">0</div></div>
+          <div class="hidden sm:block text-right pl-3 border-l border-white/10"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Clock</div><div id="laser-clock" class="text-lg font-black text-cyan-300 tabular-nums">0.0s</div></div>
+        </div>
+
+        <div class="relative rounded-2xl overflow-hidden border border-cyan-500/25 shadow-[0_25px_90px_rgba(0,0,0,.76)] bg-[#03080e]">
+          <canvas id="laser-canvas" width="1200" height="560" class="block w-full bg-[#03080e]"></canvas>
+          <div class="absolute top-3 left-3 px-3 py-1.5 rounded-lg bg-black/65 border border-white/10 text-[8px] font-black text-white tracking-[0.18em]">NEXUS CAM 01</div>
+          <div class="absolute top-3 right-3 px-3 py-1.5 rounded-lg bg-black/65 border border-cyan-400/20 text-[8px] font-black text-cyan-300 tracking-[0.18em]"><span id="laser-phase-label">LOCKDOWN</span></div>
+        </div>
+
+        <div class="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_auto_auto] items-center gap-2 mt-2">
+          <div class="min-w-0 rounded-xl border border-cyan-500/15 bg-cyan-950/20 px-4 py-2"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Combat Feed</div><div id="laser-commentary" class="text-sm font-black text-white truncate">Blaster links are synchronizing...</div></div>
+          <div class="rounded-xl border border-white/10 bg-black/50 px-4 py-2 text-right"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Bolts Active</div><div id="laser-bolts" class="text-sm font-black text-cyan-400 tabular-nums">0</div></div>
+          <div class="hidden md:block rounded-xl border border-white/10 bg-black/50 px-4 py-2 text-right"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Direct Hits</div><div id="laser-hits" class="text-sm font-black text-fuchsia-400 tabular-nums">0</div></div>
+          <div class="hidden md:block w-36 rounded-xl border border-white/10 bg-black/50 px-4 py-2"><div class="flex justify-between text-[8px] text-gray-600 font-black uppercase tracking-wider"><span>Overdrive</span><span id="laser-power-text">0%</span></div><div class="h-1.5 bg-white/10 rounded-full mt-1 overflow-hidden"><div id="laser-power" class="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-fuchsia-500" style="width:0%"></div></div></div>
+        </div>
+      </div>
+
+      <div id="laser-phase-winner" class="hidden">
+        <div class="max-w-3xl mx-auto glass rounded-3xl border border-cyan-500/25 p-7 md:p-10 text-center shadow-[0_35px_120px_rgba(0,0,0,.78)]">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-fuchsia-600 text-white text-[10px] font-black uppercase tracking-[0.2em] mb-5">Official Nexus Result</div>
+          <div class="text-cyan-400 text-sm font-black uppercase tracking-[0.28em] mb-2">Last Fighter Online</div>
+          <div id="laser-winner-name" class="text-5xl md:text-7xl font-black text-white mb-2 break-words"></div>
+          <div id="laser-winner-detail" class="text-xl md:text-2xl text-fuchsia-300 font-black mb-1">NEXUS ARENA CHAMPION</div>
+          <div id="laser-winner-sub" class="text-sm text-gray-500 mb-6"></div>
+          <div id="laser-result-cards" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-7"></div>
+          <div class="flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-sm font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-sm font-bold">✕ Close</button></div>
+        </div>
+      </div>
     </div>
-    <div id="laser-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">⚡</div><div class="text-2xl text-[#22d3ee] font-bold mb-2">LAST ONE STANDING</div><div id="laser-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
   </div>
 </div>
 
@@ -4502,114 +4543,31 @@ function startTower(names) {
   loop();
 }
 
-/* ==================== LASER ARENA (every entrant — ranged combat, last one standing) ==================== */
-function runLaser() {
-  showOverlay('laser-overlay'); showPhase('laser', 'intro');
-  const names = Array.from(entrants);
-  if (names.length < 2) { alert('Need at least 2 entrants!'); return; }
-  document.getElementById('laser-intro-count').textContent = names.length + ' fighters powering up';
-  armGameStart(() => startLaser(names));
-}
-function startLaser(names) {
-  showPhase('laser', 'play');
-  const canvas = document.getElementById('laser-canvas'); const ctx = canvas.getContext('2d');
-  const commentary = document.getElementById('laser-commentary');
-  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2+10, arenaR = Math.min(W,H)/2 - 30;
-  const n = names.length;
-  const size = Math.max(9, Math.min(16, 190/Math.sqrt(n)));
-  const fighters = names.map((nm,i) => { const ang=(i/n)*Math.PI*2; return { name:nm, x:cx+Math.cos(ang)*arenaR*0.7, y:cy+Math.sin(ang)*arenaR*0.7, vx:0, vy:0, r:size, color:colorFor(nm), hp:100, alive:true, cooldown:30+Math.random()*40, dodgeTimer:0, hitFlash:0 }; });
-  let beams = [], particles = [], pack = null, nextPackFrame = 260+Math.random()*200, frame=0;
-  function setCommentary(t) { commentary.textContent = t; }
-  function drawArena() {
-    ctx.fillStyle='#050810'; ctx.fillRect(0,0,W,H);
-    const grad = ctx.createRadialGradient(cx,cy,arenaR*0.3,cx,cy,arenaR); grad.addColorStop(0,'#0e1a2e'); grad.addColorStop(1,'#050a14');
-    ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(cx,cy,arenaR,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle='#22d3ee'; ctx.lineWidth=4; ctx.shadowColor='#22d3ee'; ctx.shadowBlur=14; ctx.beginPath(); ctx.arc(cx,cy,arenaR,0,Math.PI*2); ctx.stroke(); ctx.shadowBlur=0;
-    ctx.strokeStyle='rgba(34,211,238,0.08)'; ctx.lineWidth=1;
-    for (let i=0;i<8;i++) { ctx.beginPath(); ctx.arc(cx,cy,arenaR*(i+1)/8,0,Math.PI*2); ctx.stroke(); }
-  }
-  function drawPack() {
-    if (!pack) return;
-    ctx.save(); ctx.translate(pack.x,pack.y); const pulse=1+Math.sin(frame*0.2)*0.15;
-    ctx.shadowColor='#4ade80'; ctx.shadowBlur=16; ctx.fillStyle='#4ade80'; ctx.beginPath(); ctx.roundRect(-8*pulse,-8*pulse,16*pulse,16*pulse,4); ctx.fill();
-    ctx.fillStyle='#fff'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.shadowBlur=0; ctx.fillText('+', 0, 4);
-    ctx.restore();
-  }
-  function drawFighter(f) {
-    if (!f.alive) return;
-    drawMiniCharacter(ctx, f.x, f.y, f.r*1.25, f.color, { flash: f.hitFlash>0, faded: f.dodgeTimer>0, phase: frame*0.15+f.x*0.05, armSwing: Math.sin(frame*0.1+f.x)*f.r*0.1, weapon: true });
-    ctx.fillStyle='#fff'; ctx.font='bold '+Math.max(8,Math.min(11,f.r*0.6))+'px Inter'; ctx.textAlign='center'; ctx.fillText(f.name.substring(0,10), f.x, f.y-f.r*2);
-    ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(f.x-14,f.y+f.r+8,28,4);
-    ctx.fillStyle = f.hp>50?'#4ade80':f.hp>25?'#facc15':'#ef4444'; ctx.fillRect(f.x-14,f.y+f.r+8,28*Math.max(0,f.hp)/100,4);
-    if (f.hitFlash>0) f.hitFlash--;
-  }
-  function drawBeams() {
-    beams = beams.filter(b => { b.life--; if (b.life<=0) return false; const a=b.life/b.maxLife;
-      ctx.strokeStyle = `rgba(${b.r},${b.g},${b.b},${a})`; ctx.lineWidth=2.5; ctx.shadowColor=`rgb(${b.r},${b.g},${b.b})`; ctx.shadowBlur=8;
-      ctx.beginPath(); ctx.moveTo(b.x0,b.y0); ctx.lineTo(b.x1,b.y1); ctx.stroke(); ctx.shadowBlur=0; return true; });
-  }
-  function drawFx() {
-    particles = particles.filter(p => { p.life--; if (p.life<=0) return false; const a=p.life/p.maxLife; ctx.fillStyle=`rgba(255,255,255,${a})`; ctx.beginPath(); ctx.arc(p.x,p.y,3*a+1,0,Math.PI*2); ctx.fill(); return true; });
-  }
-  function hexToRgb(hex) { const c=parseInt(hex.slice(1),16); return [(c>>16)&255,(c>>8)&255,c&255]; }
-  let animId;
-  function loop() {
-    frame++;
-    const alive = fighters.filter(f=>f.alive);
-    const aliveCount = alive.length;
-    // gentle wander so the arena stays alive visually, biased to stay spread
-    alive.forEach(f => {
-      f.vx += (Math.random()-0.5)*0.12; f.vy += (Math.random()-0.5)*0.12;
-      const spd = Math.hypot(f.vx,f.vy), cap=1.4; if (spd>cap) { f.vx=f.vx/spd*cap; f.vy=f.vy/spd*cap; }
-      f.x += f.vx; f.y += f.vy;
-      const d = Math.hypot(f.x-cx,f.y-cy);
-      if (d+f.r > arenaR) { const nx=(f.x-cx)/d, ny=(f.y-cy)/d; f.x=cx+nx*(arenaR-f.r); f.y=cy+ny*(arenaR-f.r); f.vx*=-0.5; f.vy*=-0.5; }
-      if (f.dodgeTimer>0) f.dodgeTimer--;
-      if (f.cooldown>0) f.cooldown--;
-    });
-    // firing
-    alive.forEach(f => {
-      if (f.cooldown > 0) return;
-      const targets = alive.filter(o => o!==f);
-      if (targets.length===0) return;
-      let nearest = targets[0], bestD = Infinity;
-      targets.forEach(o => { const d=Math.hypot(o.x-f.x,o.y-f.y); if (d<bestD) { bestD=d; nearest=o; } });
-      f.cooldown = 45+Math.random()*45;
-      if (Math.random() < 0.08) { f.dodgeTimer = 18; } // occasionally juke instead of firing this beat
-      const [r,g,b] = hexToRgb(f.color);
-      beams.push({ x0:f.x, y0:f.y, x1:nearest.x, y1:nearest.y, life:10, maxLife:10, r,g,b });
-      const hitChance = nearest.dodgeTimer>0 ? 0.35 : 0.72;
-      if (Math.random() < hitChance) {
-        const dmg = 7+Math.random()*8;
-        nearest.hp -= dmg; nearest.hitFlash=8;
-        particles.push({x:nearest.x,y:nearest.y,life:14,maxLife:14});
-        if (nearest.hp<=0 && nearest.alive) { nearest.alive=false; setCommentary(f.name+' eliminated '+nearest.name+'!'); }
-      } else { setCommentary(nearest.name+' dodges '+f.name+"'s shot!"); }
-    });
-    // health pack
-    if (!pack && frame>nextPackFrame) { const a=Math.random()*Math.PI*2, d=Math.random()*arenaR*0.5; pack={x:cx+Math.cos(a)*d,y:cy+Math.sin(a)*d}; nextPackFrame=frame+320+Math.random()*240; }
-    if (pack) {
-      const currentAlive = fighters.filter(f=>f.alive);
-      for (let i=0;i<currentAlive.length;i++) {
-        if (!pack) break;
-        const f = currentAlive[i];
-        if (Math.hypot(f.x-pack.x,f.y-pack.y) < f.r+10) { f.hp = Math.min(100, f.hp+30); setCommentary(f.name+' grabbed a shield pack!'); pack=null; }
-      }
-    }
-    drawArena(); drawPack(); fighters.forEach(drawFighter); drawBeams(); drawFx();
-    document.getElementById('laser-alive-badge').textContent = aliveCount + ' alive';
-    if (aliveCount === 1) {
-      cancelAnimationFrame(animId);
-      const winner = fighters.find(f => f.alive);
-      setCommentary(winner.name + ' wins the arena!');
-      setTimeout(() => { showPhase('laser','winner'); document.getElementById('laser-winner-name').textContent = winner.name; }, 1200);
-    } else if (aliveCount === 0) {
-      cancelAnimationFrame(animId);
-      setTimeout(() => { showPhase('laser','winner'); document.getElementById('laser-winner-name').textContent = pickSingleWinner([], names); }, 1200);
-    } else { animId = requestAnimationFrame(loop); }
-  }
-  loop();
-}
+/* ==================== PROFESSIONAL LASER ARENA ==================== */
+function runLaser(){showOverlay('laser-overlay');showPhase('laser','intro');const names=Array.from(entrants);if(names.length<2){alert('Need at least 2 entrants!');return}document.getElementById('laser-intro-count').textContent=names.length+' fighters are linking to the Nexus Arena. Tactical movement, aim, shields, and physical laser bolts determine the champion.';armGameStart(()=>startLaser(names))}
+function startLaser(names){showPhase('laser','play');const canvas=document.getElementById('laser-canvas'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height,arena={l:44,r:934,t:66,b:506};const startAt=performance.now()+2000;let last=performance.now(),frame=0,phase='SYSTEM LOCKDOWN',power=0,eliminated=0,totalShots=0,totalHits=0,totalDodges=0,nextPickup=startAt+7000,nextRail=startAt+32000,feed='Combatants linked. Arena weapons are charging...',cameraShake=0,flash=0,winner=null,finishAt=0,resultShown=false,finalDuel=false,finalDuelAt=0,finalGraceUntil=0;let bolts=[],particles=[],popups=[],pickups=[],elimHistory=[];const obstacles=[{x:214,y:146,w:92,h:34},{x:452,y:242,w:76,h:92},{x:678,y:138,w:98,h:35},{x:730,y:382,w:94,h:34},{x:262,y:397,w:88,h:34}];const n=names.length,aw=arena.r-arena.l-44,ah=arena.b-arena.t-44,cols=Math.max(1,Math.ceil(Math.sqrt(n*aw/ah))),rows=Math.max(1,Math.ceil(n/cols)),cellW=aw/cols,cellH=ah/rows,fr=Math.max(6,Math.min(14,Math.min(cellW,cellH)*.28));function insideObstacle(x,y,pad){return obstacles.some(o=>x>o.x-pad&&x<o.x+o.w+pad&&y>o.y-pad&&y<o.y+o.h+pad)}const fighters=names.map((name,i)=>{const col=i%cols,row=Math.floor(i/cols);let x=arena.l+22+(col+.5)*cellW,y=arena.t+22+(row+.5)*cellH;if(insideObstacle(x,y,fr+5)){y=Math.min(arena.b-fr-5,y+62);if(insideObstacle(x,y,fr+5))x=Math.min(arena.r-fr-5,x+72)}const aim=.48+Math.random()*.48,agility=.42+Math.random()*.55;return{id:i,name,color:colorFor(name),initials:(typeof initialsFor==='function'?initialsFor(name):name.slice(0,2).toUpperCase()),x,y,vx:0,vy:0,wantX:0,wantY:0,r:fr,hp:100,shield:22+Math.random()*24,maxShield:50,active:true,alive:true,aim,agility,armor:.88+Math.random()*.25,fireRate:620+Math.random()*430,nextFire:startAt+300+Math.random()*700,nextThink:startAt+Math.random()*500,targetId:-1,dodgeUntil:0,dodgeCooldown:0,dodgeVX:0,dodgeVY:0,dodges:0,shots:0,hits:0,kills:0,damage:0,hitFlash:0,shieldFlash:0,angle:Math.random()*6.28,seed:Math.random()*1000,placement:0,eliminatedAt:0}});globalThis.__laserFighters=fighters;
+function activeFighters(){return fighters.filter(f=>f.active)}
+function phaseFor(e,alive){if(e<0)return'SYSTEM LOCKDOWN';if(alive<=2)return'FINAL DUEL';if(e<8)return'TACTICAL SKIRMISH';if(e<16)return'OVERCHARGE';if(e<24)return'BLACKOUT PROTOCOL';return'NEXUS OVERDRIVE'}
+function phasePower(p,e){if(p==='NEXUS OVERDRIVE')return Math.min(1,.82+Math.max(0,e-24)*.025);if(p==='BLACKOUT PROTOCOL')return .66;if(p==='OVERCHARGE')return .46;if(p==='TACTICAL SKIRMISH')return .25;if(p==='FINAL DUEL')return Math.min(1,.72+Math.max(0,e-18)*.035);return .08}
+function chooseTarget(f){const active=activeFighters().filter(o=>o!==f);if(!active.length)return null;const ranked=active.map(o=>({o,s:Math.hypot(o.x-f.x,o.y-f.y)*(Math.random()*.22+.86)+(o.hp+o.shield)*.22-Math.random()*46})).sort((a,b)=>a.s-b.s),pool=ranked.slice(0,Math.min(4,ranked.length));return pool[Math.floor(Math.random()*pool.length)].o}
+function burst(x,y,color,count,big){for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,s=1.5+Math.random()*(big?8:5);particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:1+Math.random()*3.2,life:1,color:i%4?color:'#fff'})}}
+function pop(x,y,text,color,big){popups.push({x,y,text,color,big,life:1})}
+function beginFinalDuel(now){if(finalDuel||activeFighters().length!==2)return;finalDuel=true;finalDuelAt=now;finalGraceUntil=Math.max(now+2600,startAt+18000);bolts=[];const duelists=activeFighters();duelists.forEach(f=>{f.hp=Math.max(f.hp,68);f.shield=Math.max(f.shield,26);f.nextFire=now+500+Math.random()*350;f.targetId=duelists.find(o=>o!==f).id});feed=duelists[0].name+' and '+duelists[1].name+' enter the final laser duel!';cameraShake=12;flash=.35}
+function eliminateFighter(victim,owner,now){if(!victim.active||winner)return;victim.active=false;victim.alive=false;victim.placement=activeFighters().length+1;victim.eliminatedAt=Math.max(0,(now-startAt)/1000);eliminated++;elimHistory.push(victim);if(owner&&owner.active)owner.kills++;burst(victim.x,victim.y,victim.color,34,true);pop(victim.x,victim.y-28,'SYSTEM DOWN','#f472b6',true);cameraShake=11+power*7;flash=.28;const left=activeFighters().length;feed=(owner?owner.name+' disables ': 'Arena rail disables ')+victim.name+' — '+left+' remain!';if(left===2)beginFinalDuel(now);if(left===1){winner=activeFighters()[0];winner.placement=1;finishAt=now+2400;feed=winner.name+' is the last fighter online!';burst(winner.x,winner.y,winner.color,64,true);cameraShake=18}}
+function damageFighter(victim,owner,damage,now,bolt){if(!victim.active||winner)return;let left=damage;if(victim.shield>0){const absorb=Math.min(victim.shield,left);victim.shield-=absorb;left-=absorb;victim.shieldFlash=1}if(left>0){const actual=left/victim.armor;victim.hp-=actual;victim.hitFlash=1;if(owner){owner.damage+=actual;owner.hits++;totalHits++}}cameraShake=Math.max(cameraShake,damage>40?7:3);burst(victim.x,victim.y,bolt?bolt.color:victim.color,damage>40?18:10,damage>40);if(victim.hp<=0){if(activeFighters().length<=2&&now<finalGraceUntil){victim.hp=5;victim.shield=0;pop(victim.x,victim.y-25,'CRITICAL SAVE',victim.color,false)}else eliminateFighter(victim,owner,now)}}
+function fireBolt(f,target,now,rail){if(!target||!target.active)return;let x=f?f.x:target.x-42,y=f?f.y:target.y+(Math.random()-.5)*22;const dx=target.x-x,dy=target.y-y,len=Math.max(1,Math.hypot(dx,dy)),elapsed=Math.max(0,(now-startAt)/1000),err=rail?0:(1-(f?f.aim:.95))*76*(1-power*.48),px=-dy/len,py=dx/len,offset=(Math.random()-.5)*err,speed=(rail?16:9)+power*4+Math.random()*1.8,color=rail?'#f0abfc':(f?f.color:'#22d3ee');bolts.push({x,y,px:x,py:y,vx:(dx+px*offset)/Math.max(1,Math.hypot(dx+px*offset,dy+py*offset))*speed,vy:(dy+py*offset)/Math.max(1,Math.hypot(dx+px*offset,dy+py*offset))*speed,r:rail?5:3.5,color,ownerId:f?f.id:-1,targetId:target.id,damage:(rail?58:24+Math.random()*17)*(phase==='NEXUS OVERDRIVE'?1.35:1),life:0,active:true,homing:rail?.22:(phase==='NEXUS OVERDRIVE'?.045:.008),rail});if(f){f.shots++;totalShots++}else totalShots++}
+function handleObstacle(f){for(const o of obstacles){const pad=f.r+3;if(f.x>o.x-pad&&f.x<o.x+o.w+pad&&f.y>o.y-pad&&f.y<o.y+o.h+pad){const dl=Math.abs(f.x-(o.x-pad)),dr=Math.abs(f.x-(o.x+o.w+pad)),dt=Math.abs(f.y-(o.y-pad)),db=Math.abs(f.y-(o.y+o.h+pad)),m=Math.min(dl,dr,dt,db);if(m===dl){f.x=o.x-pad;f.vx=-Math.abs(f.vx)}else if(m===dr){f.x=o.x+o.w+pad;f.vx=Math.abs(f.vx)}else if(m===dt){f.y=o.y-pad;f.vy=-Math.abs(f.vy)}else{f.y=o.y+o.h+pad;f.vy=Math.abs(f.vy)}}}}
+function updateFighters(now,dtf){const active=activeFighters();for(const f of active){if(f.hitFlash>0)f.hitFlash*=.75;if(f.shieldFlash>0)f.shieldFlash*=.78;if(now>=f.nextThink){let target=fighters[f.targetId];if(!target||!target.active)target=chooseTarget(f);f.targetId=target?target.id:-1;if(target){const dx=target.x-f.x,dy=target.y-f.y,d=Math.max(1,Math.hypot(dx,dy)),ideal=115+f.agility*75,dir=d>ideal?1:d<80?-1:0,strafe=Math.random()<.5?-1:1;f.wantX=dx/d*dir*1.25+-dy/d*strafe*(.65+f.agility*.75);f.wantY=dy/d*dir*1.25+dx/d*strafe*(.65+f.agility*.75);f.angle=Math.atan2(dy,dx)}f.nextThink=now+320+Math.random()*540}let threat=null,best=1e9;for(const b of bolts){if(!b.active||b.ownerId===f.id||b.rail)continue;const dx=f.x-b.x,dy=f.y-b.y,d=Math.hypot(dx,dy);if(b.vx*dx+b.vy*dy>0&&d<best){best=d;threat=b}}if(threat&&best<72+f.agility*70&&now>=f.dodgeCooldown&&Math.random()<(.025+f.agility*.05)*dtf){const s=Math.max(1,Math.hypot(threat.vx,threat.vy)),side=Math.random()<.5?-1:1;f.dodgeVX=-threat.vy/s*side*(4+f.agility*4);f.dodgeVY=threat.vx/s*side*(4+f.agility*4);f.dodgeUntil=now+180+f.agility*170;f.dodgeCooldown=now+520+Math.random()*340;f.dodges++;totalDodges++}if(now<f.dodgeUntil){f.vx+=(f.dodgeVX-f.vx)*.21*dtf;f.vy+=(f.dodgeVY-f.vy)*.21*dtf}else{f.vx+=(f.wantX-f.vx)*.055*dtf;f.vy+=(f.wantY-f.vy)*.055*dtf}const cap=now<f.dodgeUntil?7:2.5,s=Math.hypot(f.vx,f.vy);if(s>cap){f.vx=f.vx/s*cap;f.vy=f.vy/s*cap}f.x+=f.vx*dtf;f.y+=f.vy*dtf;const m=f.r+4;if(f.x<arena.l+m){f.x=arena.l+m;f.vx=Math.abs(f.vx)}if(f.x>arena.r-m){f.x=arena.r-m;f.vx=-Math.abs(f.vx)}if(f.y<arena.t+m){f.y=arena.t+m;f.vy=Math.abs(f.vy)}if(f.y>arena.b-m){f.y=arena.b-m;f.vy=-Math.abs(f.vy)}handleObstacle(f);if(now>=f.nextFire){let target=fighters[f.targetId];if(!target||!target.active)target=chooseTarget(f);if(target){fireBolt(f,target,now,false);const haste=1+power*.65+(active.length>35?.2:0);f.nextFire=now+f.fireRate/haste*(.72+Math.random()*.48)}}}}
+function updateBolts(now,dtf){for(const b of bolts){if(!b.active)continue;b.life+=dtf;b.px=b.x;b.py=b.y;const target=fighters[b.targetId];if(target&&target.active&&b.homing>0){const dx=target.x-b.x,dy=target.y-b.y,len=Math.max(1,Math.hypot(dx,dy)),speed=Math.max(8,Math.hypot(b.vx,b.vy)),turn=b.homing*dtf;b.vx+=(dx/len*speed-b.vx)*turn;b.vy+=(dy/len*speed-b.vy)*turn}b.x+=b.vx*dtf;b.y+=b.vy*dtf;if(b.x<arena.l||b.x>arena.r||b.y<arena.t||b.y>arena.b){b.active=false;continue}let blocked=false;for(const o of obstacles)if(b.x>o.x&&b.x<o.x+o.w&&b.y>o.y&&b.y<o.y+o.h){blocked=true;break}if(blocked&&!b.rail){b.active=false;burst(b.x,b.y,b.color,7,false);continue}for(const f of activeFighters()){if(winner)break;if(f.id===b.ownerId)continue;if(Math.hypot(b.x-f.x,b.y-f.y)<b.r+f.r*.72){const owner=fighters[b.ownerId];damageFighter(f,owner&&owner.active?owner:null,b.damage,now,b);b.active=false;break}}if(b.life>220)b.active=false}bolts=bolts.filter(b=>b.active)}
+function updatePickups(now){if(now>=nextPickup&&activeFighters().length>2){let x,y,tries=0;do{x=arena.l+45+Math.random()*(arena.r-arena.l-90);y=arena.t+45+Math.random()*(arena.b-arena.t-90);tries++}while(insideObstacle(x,y,25)&&tries<20);pickups.push({x,y,life:620,pulse:Math.random()*6.28});nextPickup=now+6500+Math.random()*3000}for(const p of pickups){p.life--;for(const f of activeFighters())if(Math.hypot(f.x-p.x,f.y-p.y)<f.r+15){f.shield=Math.min(f.maxShield,f.shield+34);f.shieldFlash=1;p.life=0;feed=f.name+' captures a shield core!';pop(f.x,f.y-28,'SHIELD +34','#67e8f9',false);break}}pickups=pickups.filter(p=>p.life>0)}
+function update(now,dt){frame++;const dtf=Math.min(2,dt/16.667),elapsed=(now-startAt)/1000;phase=phaseFor(elapsed,activeFighters().length);power=phasePower(phase,elapsed);if(elapsed>=0&&!winner){if(activeFighters().length===2&&!finalDuel)beginFinalDuel(now);updateFighters(now,dtf);updateBolts(now,dtf);updatePickups(now);if(elapsed>31&&activeFighters().length>1&&now>=nextRail){const targets=activeFighters().map(f=>({f,s:(100-f.hp)+(50-f.shield)+f.hits*.4+Math.random()*25})).sort((a,b)=>b.s-a.s);fireBolt(null,targets[0].f,now,true);feed='Nexus rail lock acquired on '+targets[0].f.name+'!';nextRail=now+310}}particles.forEach(p=>{p.x+=p.vx*dtf;p.y+=p.vy*dtf;p.vx*=.98;p.vy*=.98;p.life-=.028*dtf});particles=particles.filter(p=>p.life>0);popups.forEach(p=>{p.y-=.45*dtf;p.life-=.019*dtf});popups=popups.filter(p=>p.life>0);cameraShake*=Math.pow(.86,dtf);flash=Math.max(0,flash-.035*dtf);updateHUD(now)}
+function updateHUD(now){const elapsed=Math.max(0,(now-startAt)/1000),active=activeFighters().length,pct=Math.round(power*100);document.getElementById('laser-status').textContent=winner?'COMBAT COMPLETE':phase;document.getElementById('laser-active').textContent=active+' / '+n;document.getElementById('laser-eliminated').textContent=eliminated;document.getElementById('laser-clock').textContent=elapsed.toFixed(1)+'s';document.getElementById('laser-phase-label').textContent=phase;document.getElementById('laser-commentary').textContent=feed;document.getElementById('laser-bolts').textContent=bolts.length;document.getElementById('laser-hits').textContent=totalHits;document.getElementById('laser-power').style.width=pct+'%';document.getElementById('laser-power-text').textContent=pct+'%'}
+function drawArena(now){const elapsed=(now-startAt)/1000;ctx.save();if(cameraShake>.25)ctx.translate((Math.random()-.5)*cameraShake,(Math.random()-.5)*cameraShake);const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#020812');bg.addColorStop(.55,'#07101c');bg.addColorStop(1,'#020407');ctx.fillStyle=bg;ctx.fillRect(-25,-25,W+50,H+50);ctx.fillStyle='#03060b';ctx.fillRect(0,32,W,104);for(let i=0;i<45;i++){const x=i*28,y=104+(i%4)*7;ctx.fillStyle=i%2?'#0d1520':'#08101a';ctx.beginPath();ctx.arc(x,y-14,7+(i%3),0,Math.PI*2);ctx.fill();ctx.fillRect(x-7,y-8,14,29)}for(let i=0;i<20;i++){ctx.fillStyle=i%2?'rgba(34,211,238,.3)':'rgba(217,70,239,.24)';ctx.fillRect(12+i*60,42,35,3)}const floor=ctx.createLinearGradient(arena.l,arena.t,arena.r,arena.b);floor.addColorStop(0,'#071827');floor.addColorStop(.5,'#091221');floor.addColorStop(1,'#130821');ctx.fillStyle=floor;ctx.fillRect(arena.l,arena.t,arena.r-arena.l,arena.b-arena.t);ctx.strokeStyle='rgba(34,211,238,.65)';ctx.lineWidth=3;ctx.strokeRect(arena.l,arena.t,arena.r-arena.l,arena.b-arena.t);ctx.strokeStyle='rgba(34,211,238,.07)';ctx.lineWidth=1;for(let x=arena.l;x<arena.r;x+=42){ctx.beginPath();ctx.moveTo(x,arena.t);ctx.lineTo(x,arena.b);ctx.stroke()}for(let y=arena.t;y<arena.b;y+=42){ctx.beginPath();ctx.moveTo(arena.l,y);ctx.lineTo(arena.r,y);ctx.stroke()}ctx.strokeStyle='rgba(217,70,239,.18)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo((arena.l+arena.r)/2,arena.t);ctx.lineTo((arena.l+arena.r)/2,arena.b);ctx.stroke();ctx.beginPath();ctx.arc((arena.l+arena.r)/2,(arena.t+arena.b)/2,84,0,Math.PI*2);ctx.stroke();obstacles.forEach((o,i)=>{ctx.shadowColor=i%2?'#22d3ee':'#d946ef';ctx.shadowBlur=8;const g=ctx.createLinearGradient(o.x,o.y,o.x+o.w,o.y+o.h);g.addColorStop(0,'#182235');g.addColorStop(1,'#080d17');ctx.fillStyle=g;ctx.beginPath();ctx.roundRect(o.x,o.y,o.w,o.h,8);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle=i%2?'rgba(34,211,238,.55)':'rgba(217,70,239,.48)';ctx.stroke();ctx.fillStyle='rgba(255,255,255,.08)';ctx.fillRect(o.x+9,o.y+8,o.w-18,3)});pickups.forEach(p=>{const pulse=1+Math.sin(frame*.16+p.pulse)*.12;ctx.save();ctx.translate(p.x,p.y);ctx.scale(pulse,pulse);ctx.shadowColor='#67e8f9';ctx.shadowBlur=18;ctx.fillStyle='rgba(6,182,212,.32)';ctx.beginPath();for(let i=0;i<6;i++){const a=-Math.PI/2+i*Math.PI/3,x=Math.cos(a)*14,y=Math.sin(a)*14;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.closePath();ctx.fill();ctx.strokeStyle='#a5f3fc';ctx.lineWidth=2;ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='#fff';ctx.font='900 13px Inter';ctx.textAlign='center';ctx.fillText('+',0,5);ctx.restore()});bolts.forEach(drawBolt);const active=activeFighters(),compact=active.length>24;fighters.filter(f=>!f.active&&elapsed-f.eliminatedAt<1).forEach(f=>drawFighter(f,true,compact,now));active.forEach(f=>drawFighter(f,false,compact,now));particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;popups.forEach(p=>{ctx.globalAlpha=Math.min(1,p.life*2);ctx.fillStyle='rgba(0,0,0,.76)';ctx.font=`900 ${p.big?14:10}px Inter, sans-serif`;ctx.textAlign='center';const w=ctx.measureText(p.text).width+18;ctx.fillRect(p.x-w/2,p.y-16,w,22);ctx.fillStyle=p.color;ctx.fillText(p.text,p.x,p.y);ctx.globalAlpha=1});drawControlPanel();if(elapsed<0){ctx.fillStyle='rgba(1,3,7,.65)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#fff';ctx.font='900 78px Inter, sans-serif';ctx.textAlign='center';ctx.shadowColor='#22d3ee';ctx.shadowBlur=30;ctx.fillText(Math.max(1,Math.ceil(-elapsed)),W/2,H/2+14);ctx.shadowBlur=0;ctx.fillStyle='#67e8f9';ctx.font='900 12px Inter, sans-serif';ctx.fillText('NEXUS COMBAT LINK',W/2,H/2+48)}if(winner){ctx.fillStyle='rgba(34,211,238,.09)';ctx.beginPath();ctx.moveTo(winner.x-115,arena.t);ctx.lineTo(winner.x-35,winner.y+20);ctx.lineTo(winner.x+35,winner.y+20);ctx.lineTo(winner.x+115,arena.t);ctx.closePath();ctx.fill();ctx.fillStyle='rgba(2,5,9,.9)';ctx.beginPath();ctx.roundRect(210,18,570,56,14);ctx.fill();ctx.strokeStyle='rgba(34,211,238,.48)';ctx.stroke();ctx.fillStyle='#67e8f9';ctx.font='900 10px Inter, sans-serif';ctx.textAlign='center';ctx.fillText('LAST FIGHTER ONLINE',495,40);ctx.fillStyle='#fff';ctx.font='900 24px Inter, sans-serif';ctx.fillText(winner.name.toUpperCase(),495,65)}if(flash>0){ctx.fillStyle=`rgba(255,255,255,${flash*.2})`;ctx.fillRect(0,0,W,H)}ctx.restore()}
+function drawBolt(b){ctx.save();ctx.strokeStyle=b.color;ctx.lineWidth=b.rail?7:3;ctx.shadowColor=b.color;ctx.shadowBlur=b.rail?22:12;ctx.globalAlpha=.32;ctx.beginPath();ctx.moveTo(b.px-b.vx*2.4,b.py-b.vy*2.4);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.globalAlpha=1;ctx.lineWidth=b.rail?3:1.5;ctx.strokeStyle='#fff';ctx.beginPath();ctx.moveTo(b.px,b.py);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.shadowBlur=0;ctx.restore()}
+function drawFighter(f,out,compact,now){const sc=f.r/14,dodging=now<f.dodgeUntil;ctx.save();ctx.globalAlpha=out?.18:1;ctx.translate(f.x,f.y);ctx.rotate(f.angle+(out?.65:0));ctx.scale(sc,sc);if(f.shield>0&&!out){ctx.strokeStyle=`rgba(103,232,249,${.18+Math.min(1,f.shield/50)*.35+f.shieldFlash*.35})`;ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(0,0,21+f.shieldFlash*3,0,Math.PI*2);ctx.stroke()}ctx.fillStyle='rgba(0,0,0,.42)';ctx.beginPath();ctx.ellipse(-3,7,17,6,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#111827';ctx.lineWidth=6;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-8,-2);ctx.lineTo(-13,9);ctx.moveTo(4,2);ctx.lineTo(10,11);ctx.stroke();ctx.fillStyle=f.hitFlash>.05?'#fff':f.color;ctx.beginPath();ctx.roundRect(-14,-14,28,24,7);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=1.5;ctx.stroke();ctx.fillStyle='#cbd5e1';ctx.beginPath();ctx.arc(-3,-22,10,0,Math.PI*2);ctx.fill();ctx.fillStyle='#1e293b';ctx.beginPath();ctx.arc(-3,-25,10,Math.PI,Math.PI*2);ctx.lineTo(7,-21);ctx.lineTo(-13,-21);ctx.fill();ctx.fillStyle='#22d3ee';ctx.fillRect(0,-24,6,2);ctx.strokeStyle='#cbd5e1';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(9,-9);ctx.lineTo(18,-3);ctx.stroke();ctx.fillStyle='#111827';ctx.beginPath();ctx.roundRect(14,-7,18,8,3);ctx.fill();ctx.fillStyle=f.color;ctx.fillRect(27,-5,8,3);ctx.rotate(-f.angle);ctx.fillStyle='#fff';ctx.font='900 7px Inter, sans-serif';ctx.textAlign='center';ctx.fillText(f.initials,0,3);ctx.restore();if(!out&&!compact){const label=f.name.length>12?f.name.slice(0,11)+'…':f.name;ctx.font='900 8px Inter, sans-serif';const w=ctx.measureText(label).width+12;ctx.fillStyle='rgba(2,4,8,.72)';ctx.fillRect(f.x-w/2,f.y-f.r*2.7-18,w,14);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(label,f.x,f.y-f.r*2.7-8);ctx.fillStyle='rgba(0,0,0,.7)';ctx.fillRect(f.x-17,f.y+f.r+7,34,4);ctx.fillStyle='#22d3ee';ctx.fillRect(f.x-17,f.y+f.r+7,34*Math.max(0,f.hp)/100,4);if(f.shield>0){ctx.fillStyle='#d946ef';ctx.fillRect(f.x-17,f.y+f.r+12,34*Math.min(1,f.shield/50),2)}}}
+function drawControlPanel(){ctx.fillStyle='rgba(2,5,10,.9)';ctx.beginPath();ctx.roundRect(956,66,218,440,18);ctx.fill();ctx.strokeStyle='rgba(34,211,238,.18)';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#67e8f9';ctx.font='900 10px Inter, sans-serif';ctx.textAlign='left';ctx.fillText('NEXUS CONTROL DECK',980,97);ctx.fillStyle='rgba(255,255,255,.07)';ctx.fillRect(980,113,170,1);ctx.fillStyle='#fff';ctx.font='900 66px Inter, sans-serif';ctx.textAlign='center';ctx.fillText(String(activeFighters().length).padStart(2,'0'),1065,185);ctx.fillStyle='#94a3b8';ctx.font='900 9px Inter, sans-serif';ctx.fillText('FIGHTERS ONLINE',1065,207);ctx.fillStyle=phase==='NEXUS OVERDRIVE'?'#f0abfc':'#67e8f9';ctx.font='900 13px Inter, sans-serif';ctx.fillText(phase,1065,241);for(let i=0;i<13;i++){const h=12+Math.abs(Math.sin(frame*.12+i*.77))*72*power;ctx.fillStyle=i%2?'rgba(217,70,239,.7)':'rgba(34,211,238,.7)';ctx.fillRect(980+i*13,345-h,7,h)}ctx.fillStyle='#64748b';ctx.font='800 8px Inter, sans-serif';ctx.textAlign='left';ctx.fillText('OVERDRIVE',980,368);ctx.textAlign='right';ctx.fillStyle='#fff';ctx.fillText(Math.round(power*100)+'%',1150,368);ctx.fillStyle='rgba(255,255,255,.07)';ctx.fillRect(980,382,170,1);ctx.fillStyle='#94a3b8';ctx.textAlign='left';ctx.fillText('BOLTS FIRED',980,409);ctx.fillText('DIRECT HITS',980,435);ctx.fillText('EVASIVE MOVES',980,461);ctx.fillStyle='#fff';ctx.textAlign='right';ctx.font='900 12px Inter, sans-serif';ctx.fillText(totalShots,1150,409);ctx.fillText(totalHits,1150,435);ctx.fillText(totalDodges,1150,461)}
+function showResult(now){if(resultShown)return;resultShown=true;showPhase('laser','winner');document.getElementById('laser-winner-name').textContent=winner?winner.name:'No one';document.getElementById('laser-winner-detail').textContent='NEXUS ARENA CHAMPION';const elapsed=Math.max(0,(now-startAt)/1000),accuracy=winner&&winner.shots?Math.round(winner.hits/winner.shots*100):0;document.getElementById('laser-winner-sub').textContent=(winner?winner.kills:0)+' eliminations · '+accuracy+'% accuracy · '+elapsed.toFixed(1)+'s combat survival';const cards=[['Eliminations',String(winner?winner.kills:0),'Champion confirmed'],['Direct Hits',String(winner?winner.hits:0),accuracy+'% weapon accuracy'],['Arena Output',String(totalShots),totalHits+' total hits']];document.getElementById('laser-result-cards').replaceChildren(...cards.map(([label,value,note])=>{const box=document.createElement('div');box.className='rounded-2xl border border-white/10 bg-white/[.035] p-4 text-left';box.innerHTML='<div class="text-[8px] text-cyan-400 font-black uppercase tracking-[0.18em]">'+label+'</div><div class="text-2xl font-black text-white mt-1">'+value+'</div><div class="text-[10px] text-gray-500 mt-2">'+note+'</div>';return box}))}
+function loop(now){const dt=Math.max(1,Math.min(34,now-last));last=now;update(now,dt);drawArena(now);if(finishAt&&now>=finishAt){showResult(now);return}requestAnimationFrame(loop)}updateHUD(performance.now());requestAnimationFrame(loop)}
 
 /* ==================== SNAIL DERBY (every entrant — comedic race, naps & bursts, built for photo finishes) ==================== */
 function runSnail() {
@@ -17038,6 +16996,6 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a303c0409ad381ce',t:'MTc4NzU4OTEyNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a303cdc37826ce57',t:'MTc4NzU4OTY3OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 >
