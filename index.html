@@ -219,6 +219,20 @@
     .p-card.is-leader { border-color:rgba(255,215,0,0.6); box-shadow:0 0 18px rgba(255,215,0,0.2); }
     .p-live-badge { position:absolute; bottom:-4px; right:-4px; width:12px; height:12px; border-radius:50%; background:#53fc18; border:2px solid #050508; }
     .p-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(72px,1fr)); gap:10px; }
+
+    /* Slim themed sidebar scrollbars — removes the bulky native Windows controls. */
+    #entrants-grid, #kick-chat-feed { scrollbar-width:thin; scrollbar-gutter:stable; }
+    #entrants-grid { scrollbar-color:#8b5cf6 rgba(255,255,255,.035); }
+    #kick-chat-feed { scrollbar-color:#53fc18 rgba(255,255,255,.035); }
+    #entrants-grid::-webkit-scrollbar, #kick-chat-feed::-webkit-scrollbar { width:6px; height:6px; }
+    #entrants-grid::-webkit-scrollbar-track, #kick-chat-feed::-webkit-scrollbar-track { background:rgba(255,255,255,.025); border-radius:999px; }
+    #entrants-grid::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#c084fc,#7c3aed); border-radius:999px; border:1px solid rgba(8,8,12,.75); }
+    #kick-chat-feed::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#86efac,#22c55e); border-radius:999px; border:1px solid rgba(8,8,12,.75); }
+    #entrants-grid::-webkit-scrollbar-thumb:hover { background:linear-gradient(180deg,#d8b4fe,#a855f7); }
+    #kick-chat-feed::-webkit-scrollbar-thumb:hover { background:linear-gradient(180deg,#bbf7d0,#53fc18); }
+    #entrants-grid::-webkit-scrollbar-button, #kick-chat-feed::-webkit-scrollbar-button { display:none; width:0; height:0; }
+    #entrants-grid::-webkit-scrollbar-corner, #kick-chat-feed::-webkit-scrollbar-corner { background:transparent; }
+
     .p-count-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(83,252,24,0.1); border:1px solid rgba(83,252,24,0.25); color:#53fc18; font-weight:800; font-size:12px; padding:4px 12px; border-radius:99px; }
     .lane-label { font-size:10px; font-weight:700; color:#9ca3af; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .legend-scroll { max-height:64px; overflow-y:auto; display:flex; flex-wrap:wrap; gap:6px; justify-content:center; }
@@ -17747,5 +17761,5 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a301c8eeccdf99e3',t:'MTc4NzU2ODUwOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a301cd797970678e',t:'MTc4NzU2ODY5NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
