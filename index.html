@@ -557,32 +557,50 @@
   </div>
 </div>
 
-<!-- ==================== F1 DRIFT CIRCUIT (top-down random-winner race) ==================== -->
-<div id="f1drift-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
-  <div class="absolute inset-0 flex flex-col items-center justify-center p-4 md:p-6">
-    <div class="text-center mb-2">
-      <div class="text-[#ef4444] text-sm font-bold uppercase tracking-widest mb-1">🏁 F1 Drift Circuit · Top Camera</div>
-      <h1 class="text-3xl md:text-5xl font-black text-white">Sideways Grand Prix</h1>
-    </div>
-    <div id="f1drift-phase-intro" class="text-center">
-      <div class="text-2xl text-gray-300 mb-2">Heating the tyres...</div>
-      <div class="text-sm text-gray-500" id="f1drift-intro-count">Every entrant gets an F1 car</div>
-      <div class="text-xs text-gray-600 mt-3">A winner is selected randomly before the lights go out</div>
-    </div>
-    <div id="f1drift-phase-race" class="hidden w-full max-w-6xl">
-      <div class="flex items-center justify-center gap-4 mb-2">
-        <span id="f1drift-status" class="text-[#facc15] text-lg font-black">LIGHTS OUT!</span>
-        <span id="f1drift-lap" class="px-3 py-1 rounded-full bg-white/10 text-xs font-bold text-white">LAP 1 / 2</span>
+<!-- ==================== PROFESSIONAL F1 DRIFT CIRCUIT ==================== -->
+<div id="f1drift-overlay" class="hidden fixed inset-0 bg-[#020305] z-50 overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 50% 12%,rgba(239,68,68,.14),transparent 33%),linear-gradient(135deg,rgba(220,38,38,.07),transparent 42%,rgba(14,165,233,.07));"></div>
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-3 md:p-5 overflow-y-auto">
+    <div class="w-full max-w-7xl">
+      <header class="flex items-center justify-between gap-4 mb-3 px-1">
+        <div class="flex items-center gap-3"><span class="px-2.5 py-1 rounded-md bg-red-600 text-white text-[10px] font-black tracking-[0.2em]">LIVE</span><div><div class="text-red-400 text-[10px] font-black uppercase tracking-[0.24em]">Apex Formula Championship</div><h1 class="text-2xl md:text-3xl font-black text-white leading-tight">Night Circuit Grand Prix</h1></div></div>
+        <div class="hidden sm:flex items-center gap-2 text-[10px] font-black uppercase tracking-wider"><span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300">3 Laps</span><span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300">Top Camera</span><span class="px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400">Random Winner</span></div>
+      </header>
+
+      <div id="f1drift-phase-intro" class="text-center glass rounded-3xl p-8 md:p-12 border border-red-500/20">
+        <div class="text-red-400 text-xs font-black uppercase tracking-[0.28em] mb-5">Apex Night Circuit</div>
+        <div class="flex justify-center gap-3 mb-6"><span class="w-7 h-7 rounded-full bg-red-600 shadow-[0_0_18px_rgba(239,68,68,.65)]"></span><span class="w-7 h-7 rounded-full bg-red-600 shadow-[0_0_18px_rgba(239,68,68,.65)]"></span><span class="w-7 h-7 rounded-full bg-red-600 shadow-[0_0_18px_rgba(239,68,68,.65)]"></span><span class="w-7 h-7 rounded-full bg-red-600 shadow-[0_0_18px_rgba(239,68,68,.65)]"></span><span class="w-7 h-7 rounded-full bg-red-600 shadow-[0_0_18px_rgba(239,68,68,.65)]"></span></div>
+        <div id="f1drift-intro-count" class="text-2xl md:text-4xl font-black text-white">Every entrant gets a Formula car</div>
       </div>
-      <canvas id="f1drift-canvas" width="1100" height="620" class="w-full rounded-2xl border border-red-500/30 bg-[#07120b]"></canvas>
-      <div id="f1drift-legend" class="legend-scroll mt-3"></div>
-    </div>
-    <div id="f1drift-phase-winner" class="hidden text-center">
-      <div class="text-7xl mb-3">🏆</div>
-      <div class="text-2xl text-[#ef4444] font-bold mb-2">DRIFT CIRCUIT WINNER</div>
-      <div id="f1drift-winner-name" class="text-5xl md:text-7xl font-black text-white mb-3"></div>
-      <div id="f1drift-winner-detail" class="text-xl text-[#facc15] mb-5">Randomly selected · 2 laps complete</div>
-      <div class="flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div>
+
+      <div id="f1drift-phase-race" class="hidden w-full">
+        <div class="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center gap-3 rounded-2xl border border-white/10 bg-black/70 p-3 md:px-5 mb-3 shadow-2xl">
+          <div class="flex items-center gap-3 min-w-0"><span id="f1drift-status" class="text-red-400 text-sm md:text-lg font-black truncate">FORMATION LAP</span><div id="f1drift-lights" class="hidden sm:flex gap-1.5"><span class="w-3 h-3 rounded-full bg-red-950 border border-red-500/40"></span><span class="w-3 h-3 rounded-full bg-red-950 border border-red-500/40"></span><span class="w-3 h-3 rounded-full bg-red-950 border border-red-500/40"></span><span class="w-3 h-3 rounded-full bg-red-950 border border-red-500/40"></span><span class="w-3 h-3 rounded-full bg-red-950 border border-red-500/40"></span></div></div>
+          <div class="flex items-center gap-3"><span id="f1drift-lap" class="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-black text-white">LAP 1 / 3</span><span id="f1drift-timer" class="px-3 py-1.5 rounded-lg bg-[#fbbf24]/10 text-[#fbbf24] text-xs font-black tabular-nums">00:00.0</span></div>
+          <div class="hidden md:flex justify-end items-center gap-3"><span id="f1drift-camera" class="text-[9px] font-black text-gray-500 uppercase tracking-[0.18em]">OVERHEAD CAM</span><button id="f1drift-audio-toggle" onclick="toggleF1DriftAudio()" class="text-[9px] font-black text-gray-500 hover:text-white uppercase tracking-wider">🔊 Engine Audio</button></div>
+        </div>
+
+        <div class="relative max-w-6xl mx-auto rounded-2xl overflow-hidden border border-red-500/25 shadow-[0_25px_90px_rgba(0,0,0,.7)]">
+          <canvas id="f1drift-canvas" width="1200" height="675" class="block w-full bg-[#07120b]"></canvas>
+          <div class="absolute top-3 left-3 px-3 py-1.5 rounded-lg bg-black/70 border border-white/10 text-[9px] font-black text-white tracking-[0.18em]">TRACK FEED 01</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-2 md:gap-3 mt-3 items-center">
+          <div class="rounded-xl border border-red-500/20 bg-red-950/20 px-4 py-2 flex items-center justify-between"><div><div class="text-[8px] text-gray-600 uppercase font-black tracking-wider">Race leader</div><div id="f1drift-leader" class="text-sm font-black text-white truncate">—</div></div><div class="text-right"><div class="text-[8px] text-gray-600 uppercase font-black tracking-wider">Speed</div><div id="f1drift-speed" class="text-sm font-black text-red-400">0 KM/H</div></div></div>
+          <div class="rounded-xl border border-[#fbbf24]/20 bg-black/60 px-5 py-2 text-center"><div class="text-[8px] text-gray-600 uppercase font-black tracking-wider">Race control</div><div id="f1drift-race-message" class="text-sm font-black text-[#fbbf24]">Cars are forming on the grid</div></div>
+          <div class="rounded-xl border border-sky-500/20 bg-sky-950/20 px-4 py-2 flex items-center justify-between"><div><div class="text-[8px] text-gray-600 uppercase font-black tracking-wider">Gap to P2</div><div id="f1drift-gap" class="text-sm font-black text-white">+0.000</div></div><div class="text-right"><div class="text-[8px] text-gray-600 uppercase font-black tracking-wider">Camera</div><div id="f1drift-camera-mobile" class="text-sm font-black text-sky-400">OVERHEAD</div></div></div>
+        </div>
+        <div id="f1drift-legend" class="legend-scroll mt-3"></div>
+      </div>
+
+      <div id="f1drift-phase-winner" class="hidden">
+        <div class="max-w-3xl mx-auto glass rounded-3xl border border-red-500/25 p-7 md:p-10 text-center shadow-[0_30px_100px_rgba(0,0,0,.72)]">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-600 text-white text-[10px] font-black uppercase tracking-[0.2em] mb-5"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>Official Classification</div>
+          <div class="text-[#fbbf24] text-sm font-black uppercase tracking-[0.25em] mb-2">Race Winner</div><div id="f1drift-winner-name" class="text-5xl md:text-7xl font-black text-white mb-2 break-words"></div><div id="f1drift-winner-detail" class="text-xl md:text-2xl text-red-400 font-black mb-2">APEX NIGHT CIRCUIT CHAMPION</div><div id="f1drift-podium" class="text-sm text-gray-500 mb-6"></div>
+          <div id="f1drift-result-cards" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-7"></div>
+          <div class="flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-sm font-bold">🔄 Race Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-sm font-bold">✕ Close</button></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -3269,194 +3287,67 @@ function startRacing(names) {
   loop();
 }
 
-/* ==================== F1 DRIFT CIRCUIT (top-down, random winner) ==================== */
-function f1DriftPointAt(progress, W, H, laneOffset) {
-  const a = progress - Math.PI / 2;
-  const cx = W / 2, cy = H / 2 + 4;
-  const rx = W * 0.355, ry = H * 0.342;
-  function raw(t) {
-    return {
-      x: cx + Math.cos(t) * (rx + 30 * Math.sin(t * 3)) + 18 * Math.sin(t * 2),
-      y: cy + Math.sin(t) * (ry + 17 * Math.cos(t * 2))
-    };
-  }
-  const p = raw(a), e = 0.006, p0 = raw(a - e), p1 = raw(a + e);
-  const angle = Math.atan2(p1.y - p0.y, p1.x - p0.x);
-  const off = laneOffset || 0;
-  return { x: p.x - Math.sin(angle) * off, y: p.y + Math.cos(angle) * off, angle };
+/* ==================== PROFESSIONAL F1 DRIFT CIRCUIT ==================== */
+let f1DriftAudioEnabled=true;
+let f1DriftAudioCtx=null;
+let f1EngineOscA=null,f1EngineOscB=null,f1EngineGain=null;
+function getF1DriftAudioContext(){if(!f1DriftAudioEnabled)return null;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;if(!f1DriftAudioCtx)f1DriftAudioCtx=new AC();if(f1DriftAudioCtx.state==='suspended')f1DriftAudioCtx.resume().catch(()=>{});return f1DriftAudioCtx;}
+function startF1DriftEngine(){const ac=getF1DriftAudioContext();if(!ac||f1EngineOscA)return;const a=ac.createOscillator(),b=ac.createOscillator(),filter=ac.createBiquadFilter(),gain=ac.createGain();a.type='sawtooth';b.type='square';a.frequency.value=95;b.frequency.value=190;filter.type='lowpass';filter.frequency.value=1400;filter.Q.value=1.2;gain.gain.value=.022;a.connect(filter);b.connect(filter);filter.connect(gain);gain.connect(ac.destination);a.start();b.start();f1EngineOscA=a;f1EngineOscB=b;f1EngineGain=gain;}
+function updateF1DriftEngine(speed,drift){if(!f1EngineOscA||!f1DriftAudioCtx)return;const now=f1DriftAudioCtx.currentTime,f=82+Math.max(0,speed)*11;f1EngineOscA.frequency.setTargetAtTime(f,now,.045);f1EngineOscB.frequency.setTargetAtTime(f*2.01,now,.045);if(f1EngineGain)f1EngineGain.gain.setTargetAtTime(.018+Math.min(.018,Math.abs(drift)*.045),now,.08);}
+function stopF1DriftEngine(){for(const o of [f1EngineOscA,f1EngineOscB])if(o)try{o.stop()}catch(e){}f1EngineOscA=null;f1EngineOscB=null;f1EngineGain=null;}
+function playF1LightBeep(high){const ac=getF1DriftAudioContext();if(!ac)return;const now=ac.currentTime,osc=ac.createOscillator(),gain=ac.createGain();osc.type='square';osc.frequency.value=high?880:510;gain.gain.setValueAtTime(.06,now);gain.gain.exponentialRampToValueAtTime(.0001,now+.13);osc.connect(gain);gain.connect(ac.destination);osc.start();osc.stop(now+.14);}
+function playF1TyreSqueal(amount){const ac=getF1DriftAudioContext();if(!ac||amount<.13)return;const now=ac.currentTime,osc=ac.createOscillator(),gain=ac.createGain();osc.type='sawtooth';osc.frequency.setValueAtTime(580+amount*500,now);osc.frequency.exponentialRampToValueAtTime(270,now+.11);gain.gain.setValueAtTime(.012,now);gain.gain.exponentialRampToValueAtTime(.0001,now+.11);osc.connect(gain);gain.connect(ac.destination);osc.start();osc.stop(now+.12);}
+function toggleF1DriftAudio(){f1DriftAudioEnabled=!f1DriftAudioEnabled;const b=document.getElementById('f1drift-audio-toggle');if(b)b.textContent=f1DriftAudioEnabled?'🔊 Engine Audio':'🔇 Audio Muted';if(f1DriftAudioEnabled)startF1DriftEngine();else stopF1DriftEngine();}
+
+const F1_APEX_POINTS=[[.27,.80],[.50,.83],[.73,.77],[.89,.64],[.84,.46],[.92,.28],[.79,.14],[.59,.19],[.43,.11],[.20,.16],[.10,.32],[.18,.49],[.08,.66],[.17,.79]];
+function f1Catmull(a,b,c,d,t){const t2=t*t,t3=t2*t;return .5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t2+(-a+3*b-3*c+d)*t3);}
+function f1RawPoint(progress,W,H){const n=F1_APEX_POINTS.length,turn=((progress/(Math.PI*2))%1+1)%1*n,i=Math.floor(turn),t=turn-i,p0=F1_APEX_POINTS[(i-1+n)%n],p1=F1_APEX_POINTS[i%n],p2=F1_APEX_POINTS[(i+1)%n],p3=F1_APEX_POINTS[(i+2)%n];return{x:f1Catmull(p0[0],p1[0],p2[0],p3[0],t)*W,y:f1Catmull(p0[1],p1[1],p2[1],p3[1],t)*H};}
+function f1DriftPointAt(progress,W,H,laneOffset){const p=f1RawPoint(progress,W,H),e=.0016,p0=f1RawPoint(progress-e,W,H),p1=f1RawPoint(progress+e,W,H),angle=Math.atan2(p1.y-p0.y,p1.x-p0.x),off=laneOffset||0;return{x:p.x-Math.sin(angle)*off,y:p.y+Math.cos(angle)*off,angle};}
+function traceF1DriftTrack(ctx,W,H){ctx.beginPath();for(let i=0;i<=360;i++){const p=f1DriftPointAt(i/360*Math.PI*2,W,H,0);if(!i)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);}ctx.closePath();}
+function drawF1DriftTrack(ctx,W,H,frame){
+  const grass=ctx.createRadialGradient(W/2,H/2,60,W/2,H/2,W*.68);grass.addColorStop(0,'#164426');grass.addColorStop(.72,'#092b18');grass.addColorStop(1,'#03130b');ctx.fillStyle=grass;ctx.fillRect(-W,-H,W*3,H*3);
+  ctx.globalAlpha=.1;ctx.fillStyle='#6ee7a0';for(let x=-H;x<W+H;x+=42){ctx.save();ctx.translate(x,0);ctx.rotate(.62);ctx.fillRect(0,-H,18,H*2.5);ctx.restore();}ctx.globalAlpha=1;
+  // Gravel traps at the circuit's highest-load corners
+  [[.88,.29,105,52],[.09,.65,115,57],[.79,.14,100,48]].forEach(g=>{ctx.fillStyle='#8c795c';ctx.beginPath();ctx.ellipse(g[0]*W,g[1]*H,g[2],g[3],-.18,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,255,255,.08)';for(let i=0;i<18;i++){ctx.beginPath();ctx.arc(g[0]*W-g[2]+(i*37)%(g[2]*2),g[1]*H-g[3]/2+(i*23)%g[3],2,0,Math.PI*2);ctx.fill();}});
+  // Grandstands, pit buildings, and floodlights
+  ctx.fillStyle='#10141c';[[120,34,230,36],[W-370,36,250,36],[125,H-62,225,32],[W-355,H-62,235,32]].forEach(r=>{ctx.beginPath();ctx.roundRect(r[0],r[1],r[2],r[3],6);ctx.fill();for(let i=10;i<r[2]-8;i+=14){ctx.fillStyle=['#ef4444','#facc15','#38bdf8','#fff'][Math.floor(i/14)%4];ctx.fillRect(r[0]+i,r[1]+9,7,6);ctx.fillStyle='#10141c';}});
+  for(let i=0;i<10;i++){const x=70+i*(W-140)/9;ctx.strokeStyle='#475569';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,75);ctx.lineTo(x,120);ctx.stroke();const glow=ctx.createRadialGradient(x,77,2,x,77,38);glow.addColorStop(0,'rgba(255,255,225,.23)');glow.addColorStop(1,'rgba(255,255,225,0)');ctx.fillStyle=glow;ctx.fillRect(x-40,37,80,80);ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,76,3,0,Math.PI*2);ctx.fill();}
+  // Track foundation, edge paint, and asphalt
+  ctx.lineCap='round';ctx.lineJoin='round';traceF1DriftTrack(ctx,W,H);ctx.strokeStyle='rgba(0,0,0,.62)';ctx.lineWidth=166;ctx.stroke();traceF1DriftTrack(ctx,W,H);ctx.strokeStyle='#e5e7eb';ctx.lineWidth=148;ctx.stroke();traceF1DriftTrack(ctx,W,H);ctx.strokeStyle='#292d34';ctx.lineWidth=134;ctx.stroke();traceF1DriftTrack(ctx,W,H);ctx.strokeStyle='rgba(255,255,255,.055)';ctx.lineWidth=2;ctx.stroke();
+  // Individually painted red/white kerb blocks
+  for(let i=0;i<180;i+=3){const pr=i/180*Math.PI*2,p=f1DriftPointAt(pr,W,H,0),color=(i/3)%2?'#f8fafc':'#dc2626';for(const side of [-1,1]){const x=p.x-Math.sin(p.angle)*side*69,y=p.y+Math.cos(p.angle)*side*69;ctx.save();ctx.translate(x,y);ctx.rotate(p.angle);ctx.fillStyle=color;ctx.fillRect(-8,-5,17,10);ctx.restore();}}
+  // Pit lane and garage boxes beside the main straight
+  ctx.strokeStyle='#4b515b';ctx.lineWidth=34;ctx.beginPath();ctx.moveTo(W*.29,H*.89);ctx.lineTo(W*.67,H*.86);ctx.stroke();ctx.strokeStyle='#f8fafc';ctx.lineWidth=2;ctx.setLineDash([10,10]);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#1f2937';ctx.fillRect(W*.36,H*.9,W*.31,24);for(let i=0;i<8;i++){ctx.fillStyle=i%2?'#991b1b':'#1e3a8a';ctx.fillRect(W*.37+i*W*.037,H*.902,W*.032,18);}
+  // Start/finish line across the main straight
+  const start=f1DriftPointAt(0,W,H,0);ctx.save();ctx.translate(start.x,start.y);ctx.rotate(start.angle);for(let row=0;row<10;row++)for(let col=0;col<2;col++){ctx.fillStyle=(row+col)%2?'#111':'#fff';ctx.fillRect(-9+col*9,-66+row*13.2,9,13.2);}ctx.fillStyle='#ef4444';ctx.fillRect(-25,-74,4,148);ctx.restore();
+  // Sector markers and infield identity
+  [['S1',Math.PI*.56],['S2',Math.PI*1.15],['S3',Math.PI*1.68]].forEach(([label,pr])=>{const p=f1DriftPointAt(pr,W,H,0);ctx.fillStyle='#facc15';ctx.beginPath();ctx.arc(p.x,p.y,7,0,Math.PI*2);ctx.fill();ctx.fillStyle='#111';ctx.font='900 7px Inter';ctx.textAlign='center';ctx.fillText(label,p.x,p.y+2.5);});ctx.fillStyle='rgba(0,0,0,.34)';ctx.beginPath();ctx.roundRect(W/2-127,H/2-32,254,64,14);ctx.fill();ctx.strokeStyle='rgba(239,68,68,.3)';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='rgba(255,255,255,.78)';ctx.font='900 23px Inter';ctx.textAlign='center';ctx.fillText('APEX NIGHT CIRCUIT',W/2,H/2-2);ctx.fillStyle='#ef4444';ctx.font='900 10px Inter';ctx.fillText('FORMULA DRIFT CHAMPIONSHIP',W/2,H/2+18);
 }
+function drawTopDownF1Car(ctx,car,point,drift,scale,showLabel,isLeader){const angle=point.angle+drift;ctx.save();ctx.translate(point.x,point.y);ctx.rotate(angle);ctx.scale(scale,scale);ctx.fillStyle='rgba(0,0,0,.42)';ctx.beginPath();ctx.ellipse(-2,4,30,14,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#08090b';[[-15,-13],[-15,8],[13,-12],[13,7]].forEach(w=>{ctx.beginPath();ctx.roundRect(w[0]-6,w[1]-3,12,7,2);ctx.fill();});if(isLeader){ctx.strokeStyle='#fbbf24';ctx.lineWidth=5;ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;ctx.beginPath();ctx.roundRect(-29,-15,59,30,10);ctx.stroke();ctx.shadowBlur=0;}const body=ctx.createLinearGradient(-24,-9,24,9);body.addColorStop(0,car.color);body.addColorStop(.55,car.color);body.addColorStop(1,car.accent);ctx.fillStyle=body;ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(30,0);ctx.lineTo(18,-6);ctx.lineTo(7,-10);ctx.lineTo(-13,-9);ctx.lineTo(-24,-5);ctx.lineTo(-24,5);ctx.lineTo(-13,9);ctx.lineTo(7,10);ctx.lineTo(18,6);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle=car.accent;ctx.fillRect(-27,-14,6,28);ctx.fillRect(18,-12,5,24);ctx.fillStyle='#0b1220';ctx.beginPath();ctx.ellipse(3,0,9,6,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#e5e7eb';ctx.lineWidth=2;ctx.beginPath();ctx.arc(5,0,7,-1.2,1.2);ctx.stroke();ctx.fillStyle='#f8fafc';ctx.beginPath();ctx.arc(4,0,3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#111';ctx.font='900 7px Inter';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(car.number,4,.5);if(car.burst>0){ctx.fillStyle='#60a5fa';ctx.beginPath();ctx.moveTo(-27,-4);ctx.lineTo(-39,0);ctx.lineTo(-27,4);ctx.fill();}ctx.restore();if(showLabel){ctx.fillStyle='rgba(0,0,0,.76)';ctx.beginPath();ctx.roundRect(point.x-37,point.y-34,74,16,5);ctx.fill();ctx.fillStyle=isLeader?'#fbbf24':'#fff';ctx.font='900 8px Inter';ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText(car.name.substring(0,12),point.x,point.y-22);}}
 
-function traceF1DriftTrack(ctx, W, H) {
-  ctx.beginPath();
-  for (let i = 0; i <= 260; i++) {
-    const p = f1DriftPointAt((i / 260) * Math.PI * 2, W, H, 0);
-    if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
-  }
-  ctx.closePath();
-}
-
-function drawF1DriftTrack(ctx, W, H, frame) {
-  const grass = ctx.createRadialGradient(W / 2, H / 2, 40, W / 2, H / 2, W * 0.62);
-  grass.addColorStop(0, '#153d24'); grass.addColorStop(0.7, '#092b18'); grass.addColorStop(1, '#04150c');
-  ctx.fillStyle = grass; ctx.fillRect(0, 0, W, H);
-
-  ctx.globalAlpha = 0.13;
-  ctx.fillStyle = '#5ee78d';
-  for (let x = -H; x < W + H; x += 44) {
-    ctx.save(); ctx.translate(x, 0); ctx.rotate(0.62); ctx.fillRect(0, -H, 19, H * 2.5); ctx.restore();
-  }
-  ctx.globalAlpha = 1;
-
-  /* Grandstands and trackside lights seen from the overhead camera. */
-  ctx.fillStyle = '#111827';
-  [[95,85,180,32],[W-275,85,180,32],[70,H-92,205,34],[W-295,H-92,205,34]].forEach(r => {
-    ctx.beginPath(); ctx.roundRect(r[0],r[1],r[2],r[3],6); ctx.fill();
-    for (let i=8;i<r[2]-6;i+=13) { ctx.fillStyle = ['#ef4444','#facc15','#38bdf8','#fff'][Math.floor(i/13)%4]; ctx.fillRect(r[0]+i,r[1]+8,6,6); }
-    ctx.fillStyle='#111827';
-  });
-
-  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  traceF1DriftTrack(ctx,W,H); ctx.strokeStyle='rgba(0,0,0,0.55)'; ctx.lineWidth=164; ctx.stroke();
-  traceF1DriftTrack(ctx,W,H); ctx.strokeStyle='#f8fafc'; ctx.lineWidth=150; ctx.stroke();
-  ctx.setLineDash([22,18]);
-  traceF1DriftTrack(ctx,W,H); ctx.strokeStyle='#dc2626'; ctx.lineWidth=150; ctx.stroke();
-  ctx.setLineDash([]);
-  traceF1DriftTrack(ctx,W,H); ctx.strokeStyle='#242831'; ctx.lineWidth=136; ctx.stroke();
-  traceF1DriftTrack(ctx,W,H); ctx.strokeStyle='rgba(255,255,255,0.13)'; ctx.lineWidth=2; ctx.setLineDash([14,20]); ctx.stroke();
-  ctx.setLineDash([]);
-
-  /* Start/finish stripe crosses the racing surface. */
-  const start = f1DriftPointAt(0,W,H,0);
-  ctx.save(); ctx.translate(start.x,start.y); ctx.rotate(start.angle);
-  for (let row=0;row<10;row++) for (let col=0;col<2;col++) {
-    ctx.fillStyle=(row+col)%2?'#111':'#fff'; ctx.fillRect(-9+col*9,-65+row*13,9,13);
-  }
-  ctx.fillStyle='#ef4444'; ctx.fillRect(-26,-74,4,148);
-  ctx.fillStyle='#fff'; ctx.font='bold 11px Inter'; ctx.textAlign='center'; ctx.fillText('START / FINISH',0,-80);
-  ctx.restore();
-
-  ctx.fillStyle='rgba(0,0,0,0.68)'; ctx.beginPath(); ctx.roundRect(W/2-124,H/2-36,248,72,14); ctx.fill();
-  ctx.strokeStyle='rgba(239,68,68,0.45)'; ctx.lineWidth=2; ctx.stroke();
-  ctx.fillStyle='#fff'; ctx.font='900 24px Inter'; ctx.textAlign='center'; ctx.fillText('F1 DRIFT',W/2,H/2-3);
-  ctx.fillStyle='#ef4444'; ctx.font='bold 11px Inter'; ctx.fillText('TOP CAMERA · 2 LAPS',W/2,H/2+19);
-
-  ctx.fillStyle='rgba(0,0,0,0.62)'; ctx.beginPath(); ctx.roundRect(12,H-39,178,27,8); ctx.fill();
-  ctx.fillStyle='#86efac'; ctx.font='bold 11px Inter'; ctx.textAlign='left'; ctx.fillText('📹 OVERHEAD TRACK VIEW',23,H-21);
-}
-
-function drawTopDownF1Car(ctx, car, point, drift, scale, showLabel) {
-  const bodyAngle = point.angle + drift;
-  ctx.save(); ctx.translate(point.x,point.y); ctx.rotate(bodyAngle); ctx.scale(scale,scale);
-  ctx.fillStyle='rgba(0,0,0,0.38)'; ctx.beginPath(); ctx.ellipse(-2,3,25,12,0,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#080808';
-  [[-12,-11],[-12,7],[11,-10],[11,7]].forEach(w => { ctx.beginPath(); ctx.roundRect(w[0]-5,w[1]-3,10,6,2); ctx.fill(); });
-  ctx.fillStyle=car.color; ctx.strokeStyle='rgba(255,255,255,0.55)'; ctx.lineWidth=1;
-  ctx.beginPath(); ctx.moveTo(24,0); ctx.lineTo(14,-6); ctx.lineTo(-10,-7); ctx.lineTo(-22,-4); ctx.lineTo(-22,4); ctx.lineTo(-10,7); ctx.lineTo(14,6); ctx.closePath(); ctx.fill(); ctx.stroke();
-  ctx.fillStyle=car.accent; ctx.fillRect(-22,-11,5,22); ctx.fillRect(14,-10,4,20);
-  ctx.fillStyle='#0b1220'; ctx.beginPath(); ctx.ellipse(1,0,8,5,0,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#f8fafc'; ctx.beginPath(); ctx.arc(3,0,3.1,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#111'; ctx.font='900 7px Inter'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(car.number,3,0.5);
-  ctx.restore();
-  if (showLabel) {
-    ctx.fillStyle='rgba(0,0,0,0.72)'; ctx.beginPath(); ctx.roundRect(point.x-34,point.y-29,68,15,5); ctx.fill();
-    ctx.fillStyle='#fff'; ctx.font='bold 8px Inter'; ctx.textAlign='center'; ctx.textBaseline='alphabetic'; ctx.fillText(car.name.substring(0,11),point.x,point.y-18);
-  }
-}
-
-function runF1Drift() {
-  showOverlay('f1drift-overlay'); showPhase('f1drift','intro');
-  const names=Array.from(entrants);
-  if (!names.length) { alert('No entrants yet!'); return; }
-  document.getElementById('f1drift-intro-count').textContent=names.length+' driver'+(names.length===1?'':'s')+' ready to drift';
-  armGameStart(() => startF1Drift(names));
-}
-
-function startF1Drift(names) {
-  showPhase('f1drift','race');
-  const canvas=document.getElementById('f1drift-canvas'),ctx=canvas.getContext('2d');
-  const W=canvas.width,H=canvas.height,totalLaps=2,totalDistance=Math.PI*2*totalLaps;
-  const status=document.getElementById('f1drift-status'),lapEl=document.getElementById('f1drift-lap');
-  const randomlySelected=names[Math.floor(Math.random()*names.length)];
-  const accents=['#fff','#facc15','#38bdf8','#f472b6'];
-  const cars=names.map((name,i) => ({
-    name,color:colorFor(name),accent:accents[i%accents.length],number:String((i%99)+1),
-    progress:-0.025*i,lane:(i%3-1)*22,baseSpeed:name===randomlySelected?0.0124:0.0095+Math.random()*0.0026,
-    phase:Math.random()*Math.PI*2,burst:0,finished:false
-  }));
-  document.getElementById('f1drift-legend').innerHTML=cars.map(c=>`<div class="legend-chip"><span class="legend-dot" style="background:${c.color}"></span>${escapeHtml(c.name)}</div>`).join('');
-  let frame=0,last=performance.now(),startAt=last+3200,winnerMoment=0,animId=null;
-  let smoke=[],skids=[],confetti=[];
-
-  function drawSkids() {
-    skids.forEach(s => { s.life-=0.0028; ctx.globalAlpha=Math.max(0,s.life)*0.52; ctx.strokeStyle='#090b0d'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(s.x1,s.y1); ctx.lineTo(s.x2,s.y2); ctx.stroke(); });
-    ctx.globalAlpha=1; skids=skids.filter(s=>s.life>0).slice(-900);
-  }
-  function drawSmoke() {
-    smoke.forEach(p => { p.x+=p.vx; p.y+=p.vy; p.r+=0.24; p.life-=0.025; ctx.globalAlpha=Math.max(0,p.life)*0.48; ctx.fillStyle='#d1d5db'; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); });
-    ctx.globalAlpha=1; smoke=smoke.filter(p=>p.life>0).slice(-450);
-  }
-  function drawLeaderboard() {
-    const sorted=[...cars].sort((a,b)=>b.progress-a.progress);
-    const shown=sorted.slice(0,Math.min(7,sorted.length));
-    ctx.fillStyle='rgba(0,0,0,0.72)'; ctx.beginPath(); ctx.roundRect(W-190,12,178,31+shown.length*17,10); ctx.fill();
-    ctx.fillStyle='#ef4444'; ctx.font='900 11px Inter'; ctx.textAlign='left'; ctx.fillText('LIVE ORDER',W-176,31);
-    shown.forEach((c,i)=>{ ctx.fillStyle=c.color; ctx.fillRect(W-176,40+i*17,8,8); ctx.fillStyle='#fff'; ctx.font='bold 9px Inter'; ctx.fillText((i+1)+'. '+c.name.substring(0,15),W-162,48+i*17); });
-  }
-  function drawConfetti() {
-    confetti.forEach(c=>{ c.x+=c.vx;c.y+=c.vy;c.vy+=0.09;c.rot+=c.vr;c.life-=0.011;ctx.save();ctx.globalAlpha=Math.max(0,c.life);ctx.translate(c.x,c.y);ctx.rotate(c.rot);ctx.fillStyle=c.color;ctx.fillRect(-4,-2,8,4);ctx.restore(); });
-    ctx.globalAlpha=1;confetti=confetti.filter(c=>c.life>0);
-  }
-  function updateCars(dt,now) {
-    if (now<startAt || winnerMoment) return;
-    const chosen=cars.find(c=>c.name===randomlySelected);
-    cars.forEach(car=>{
-      if (Math.random()<0.005*dt) car.burst=35+Math.random()*55;
-      if (car.burst>0) car.burst-=dt;
-      let speed=car.baseSpeed*(car.burst>0?1.12:1)*(0.95+Math.sin(frame*0.018+car.phase)*0.05);
-      if (car.name===randomlySelected && car.progress>totalDistance*0.63) speed*=1.12;
-      car.progress+=speed*dt;
-      /* Other cars can lead dramatically, but only the preselected random winner may cross the line first. */
-      if (car.name!==randomlySelected && car.progress>totalDistance-0.17 && chosen.progress<totalDistance) car.progress=totalDistance-0.17;
-      const drift= Math.sin(car.progress*2.35+car.phase)*0.23*(0.55+Math.abs(Math.sin(car.progress*1.18)));
-      const pt=f1DriftPointAt(car.progress,W,H,car.lane);
-      const rearX=pt.x-Math.cos(pt.angle+drift)*19,rearY=pt.y-Math.sin(pt.angle+drift)*19;
-      if (Math.abs(drift)>0.115 && frame%2===0) {
-        smoke.push({x:rearX,y:rearY,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:2+Math.random()*2,life:.75});
-        const prev=f1DriftPointAt(car.progress-speed*dt*1.5,W,H,car.lane);
-        skids.push({x1:prev.x-Math.cos(prev.angle+drift)*13,y1:prev.y-Math.sin(prev.angle+drift)*13,x2:rearX,y2:rearY,life:1});
-      }
-    });
-    if (chosen.progress>=totalDistance) {
-      chosen.progress=totalDistance; chosen.finished=true; winnerMoment=now;
-      status.textContent='🏁 CHECKERED FLAG!';
-      for(let i=0;i<90;i++) confetti.push({x:W/2+(Math.random()-.5)*220,y:40+Math.random()*30,vx:(Math.random()-.5)*4,vy:1+Math.random()*3,rot:Math.random()*6,vr:(Math.random()-.5)*.2,life:1,color:['#ef4444','#fff','#facc15','#38bdf8'][i%4]});
-    }
-  }
-  function loop(now) {
-    const dt=Math.min(2.2,Math.max(.3,(now-last)/16.667));last=now;frame++;
-    if(now<startAt){const count=Math.max(1,Math.ceil((startAt-now)/1000));status.textContent='🔴 '+count;}
-    else if(!winnerMoment) status.textContent='💨 DRIFTING!';
-    updateCars(dt,now);
-    const leader=Math.max(...cars.map(c=>c.progress));
-    const lap=Math.min(totalLaps,Math.max(1,Math.floor(Math.max(0,leader)/(Math.PI*2))+1));
-    lapEl.textContent='LAP '+lap+' / '+totalLaps;
-    drawF1DriftTrack(ctx,W,H,frame);drawSkids();drawSmoke();
-    const order=[...cars].sort((a,b)=>a.progress-b.progress);
-    order.forEach(car=>{
-      const drift=Math.sin(car.progress*2.35+car.phase)*0.23*(0.55+Math.abs(Math.sin(car.progress*1.18)));
-      const pt=f1DriftPointAt(car.progress,W,H,car.lane);
-      drawTopDownF1Car(ctx,car,pt,drift,names.length>28?.72:names.length>16?.84:1,names.length<=18);
-    });
-    drawLeaderboard();drawConfetti();
-    if(winnerMoment && now-winnerMoment>1900){
-      cancelAnimationFrame(animId);showPhase('f1drift','winner');
-      document.getElementById('f1drift-winner-name').textContent=randomlySelected;
-      document.getElementById('f1drift-winner-detail').textContent='🎲 Randomly selected · spectacular two-lap drift';
-      return;
-    }
-    animId=requestAnimationFrame(loop);
-  }
-  animId=requestAnimationFrame(loop);
+function runF1Drift(){showOverlay('f1drift-overlay');showPhase('f1drift','intro');const names=Array.from(entrants);if(!names.length){alert('No entrants yet!');return;}document.getElementById('f1drift-intro-count').textContent=names.length+' DRIVER'+(names.length===1?'':'S')+' ON THE STARTING GRID';armGameStart(()=>startF1Drift(names));}
+function startF1Drift(names){
+  showPhase('f1drift','race');const canvas=document.getElementById('f1drift-canvas'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height,totalLaps=3,totalDistance=Math.PI*2*totalLaps;
+  const trackLayer=document.createElement('canvas');trackLayer.width=W;trackLayer.height=H;drawF1DriftTrack(trackLayer.getContext('2d'),W,H,0);
+  const status=document.getElementById('f1drift-status'),lapEl=document.getElementById('f1drift-lap'),timerEl=document.getElementById('f1drift-timer'),lightsEl=document.getElementById('f1drift-lights'),raceMessage=document.getElementById('f1drift-race-message');
+  const randomlySelected=names[Math.floor(Math.random()*names.length)],accents=['#f8fafc','#facc15','#38bdf8','#f472b6','#a7f3d0'];
+  const cars=names.map((name,i)=>({name,color:colorFor(name),accent:accents[i%accents.length],number:String((i%99)+1).padStart(2,'0'),progress:-.034*i,lane:((i%4)-1.5)*18,baseSpeed:name===randomlySelected?.0142:.0118+Math.random()*.0019,phase:Math.random()*Math.PI*2,burst:0,finished:false,topSpeed:0,startPosition:i+1,overtakes:0}));
+  document.getElementById('f1drift-legend').innerHTML=cars.map(c=>`<div class="legend-chip"><span class="legend-dot" style="background:${c.color}"></span>#${c.number} ${escapeHtml(c.name)}</div>`).join('');
+  const lightNodes=lightsEl?Array.from(lightsEl.children):[];let frame=0,last=performance.now(),startAt=last+5200,winnerMoment=0,winnerFinishMs=0,animId=null,lastLightCount=-1,lastLap=1,classification=[];let smoke=[],skids=[],sparks=[],confetti=[];
+  startF1DriftEngine();document.getElementById('f1drift-audio-toggle').textContent=f1DriftAudioEnabled?'🔊 Engine Audio':'🔇 Audio Muted';
+  function setLights(count,out){lightNodes.forEach((n,i)=>{n.style.background=out?'#19090b':i<count?'#ef4444':'#3b0a0f';n.style.boxShadow=out?'none':i<count?'0 0 12px rgba(239,68,68,.9)':'none';});if(count!==lastLightCount&&count>lastLightCount&&count>0)playF1LightBeep(false);if(out&&lastLightCount!==6)playF1LightBeep(true);lastLightCount=out?6:count;}
+  function drawSkids(){skids.forEach(s=>{s.life-=.0022;ctx.globalAlpha=Math.max(0,s.life)*.52;ctx.strokeStyle='#08090b';ctx.lineWidth=2.3;ctx.beginPath();ctx.moveTo(s.x1,s.y1);ctx.lineTo(s.x2,s.y2);ctx.stroke();});ctx.globalAlpha=1;skids=skids.filter(s=>s.life>0).slice(-1200);}
+  function drawSmoke(){smoke.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.r+=.22;p.life-=.021;ctx.globalAlpha=Math.max(0,p.life)*.42;ctx.fillStyle='#e5e7eb';ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();});ctx.globalAlpha=1;smoke=smoke.filter(p=>p.life>0).slice(-600);sparks.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.life-=.055;ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle='#fbbf24';ctx.fillRect(p.x,p.y,2.5,2.5);});ctx.globalAlpha=1;sparks=sparks.filter(p=>p.life>0);}
+  function drawLeaderboard(){const sorted=[...cars].sort((a,b)=>b.progress-a.progress),shown=sorted.slice(0,Math.min(8,sorted.length));ctx.fillStyle='rgba(3,5,8,.82)';ctx.beginPath();ctx.roundRect(W-229,15,214,42+shown.length*23,12);ctx.fill();ctx.fillStyle='#ef4444';ctx.fillRect(W-229,15,6,42+shown.length*23);ctx.fillStyle='#fff';ctx.font='900 12px Inter';ctx.textAlign='left';ctx.fillText('LIVE CLASSIFICATION',W-210,37);shown.forEach((c,i)=>{const gap=i?Math.max(0,(sorted[0].progress-c.progress)/Math.max(.0001,sorted[0].baseSpeed)/60):0;ctx.fillStyle=i===0?'#fbbf24':'#94a3b8';ctx.font='900 10px Inter';ctx.fillText('P'+(i+1),W-210,59+i*23);ctx.fillStyle=c.color;ctx.fillRect(W-180,51+i*23,9,9);ctx.fillStyle='#fff';ctx.fillText(c.name.substring(0,13),W-164,59+i*23);ctx.textAlign='right';ctx.fillStyle=i?'#94a3b8':'#fbbf24';ctx.fillText(i?'+'+gap.toFixed(1):'LEADER',W-28,59+i*23);ctx.textAlign='left';});}
+  function drawFixedBroadcast(now,cameraName){ctx.fillStyle='rgba(0,0,0,.68)';ctx.beginPath();ctx.roundRect(16,16,190,31,8);ctx.fill();ctx.fillStyle='#fff';ctx.font='900 11px Inter';ctx.textAlign='left';ctx.fillText('●  LIVE  •  '+cameraName,31,37);ctx.fillStyle='#ef4444';ctx.beginPath();ctx.arc(27,33,4,0,Math.PI*2);ctx.fill();if(now<startAt){ctx.fillStyle='rgba(0,0,0,.74)';ctx.beginPath();ctx.roundRect(W/2-145,20,290,68,14);ctx.fill();const remaining=startAt-now,count=Math.max(0,Math.min(5,Math.floor((5200-remaining)/900)+1));for(let i=0;i<5;i++){ctx.fillStyle=i<count?'#ef4444':'#3f0b10';ctx.shadowColor=i<count?'#ef4444':'transparent';ctx.shadowBlur=i<count?15:0;ctx.beginPath();ctx.arc(W/2-80+i*40,54,12,0,Math.PI*2);ctx.fill();}ctx.shadowBlur=0;}}
+  function drawConfetti(){confetti.forEach(c=>{c.x+=c.vx;c.y+=c.vy;c.vy+=.08;c.rot+=c.vr;c.life-=.009;ctx.save();ctx.globalAlpha=Math.max(0,c.life);ctx.translate(c.x,c.y);ctx.rotate(c.rot);ctx.fillStyle=c.color;ctx.fillRect(-5,-2,10,4);ctx.restore();});ctx.globalAlpha=1;confetti=confetti.filter(c=>c.life>0);}
+  function updateCars(dt,now){if(now<startAt)return;const chosen=cars.find(c=>c.name===randomlySelected);cars.forEach(car=>{if(winnerMoment){if(car!==chosen)car.progress+=car.baseSpeed*dt*.22;return;}if(Math.random()<.0045*dt)car.burst=28+Math.random()*60;if(car.burst>0)car.burst-=dt;const sectorPush=.96+Math.sin(car.progress*2.2+car.phase)*.055,speed=car.baseSpeed*(car.burst>0?1.115:1)*sectorPush;car.topSpeed=Math.max(car.topSpeed,278+speed/.0142*76+(car.burst>0?18:0));car.progress+=speed*dt;if(car.name===randomlySelected&&car.progress>totalDistance*.7)car.progress+=speed*dt*.075;if(car.name!==randomlySelected&&car.progress>totalDistance-.12&&chosen.progress<totalDistance)car.progress=totalDistance-.12;const drift=Math.sin(car.progress*2.75+car.phase)*.205*(.52+Math.abs(Math.sin(car.progress*1.4))),pt=f1DriftPointAt(car.progress,W,H,car.lane),rearX=pt.x-Math.cos(pt.angle+drift)*23,rearY=pt.y-Math.sin(pt.angle+drift)*23;if(Math.abs(drift)>.105&&frame%2===0){smoke.push({x:rearX,y:rearY,vx:(Math.random()-.5)*.45,vy:(Math.random()-.5)*.45,r:2+Math.random()*2,life:.78});const prev=f1DriftPointAt(car.progress-speed*dt*1.7,W,H,car.lane);skids.push({x1:prev.x-Math.cos(prev.angle+drift)*15,y1:prev.y-Math.sin(prev.angle+drift)*15,x2:rearX,y2:rearY,life:1});if(Math.random()<.025)playF1TyreSqueal(Math.abs(drift));}if(car.burst>0&&Math.random()<.035)for(let s=0;s<3;s++)sparks.push({x:rearX,y:rearY,vx:-Math.cos(pt.angle)*(1+Math.random()*2)+(Math.random()-.5),vy:-Math.sin(pt.angle)*(1+Math.random()*2)+(Math.random()-.5),life:.8+Math.random()*.2});});if(!winnerMoment&&chosen.progress>=totalDistance){chosen.progress=totalDistance;chosen.finished=true;winnerMoment=now;winnerFinishMs=now-startAt;classification=[chosen,...cars.filter(c=>c!==chosen).sort((a,b)=>b.progress-a.progress)];status.textContent='🏁 CHECKERED FLAG';raceMessage.textContent=randomlySelected+' WINS THE APEX NIGHT CIRCUIT!';for(let i=0;i<140;i++)confetti.push({x:W/2+(Math.random()-.5)*320,y:25+Math.random()*65,vx:(Math.random()-.5)*5,vy:1+Math.random()*3.5,rot:Math.random()*6,vr:(Math.random()-.5)*.25,life:1,color:['#ef4444','#fff','#facc15','#38bdf8'][i%4]});playF1LightBeep(true);}}
+  function cameraState(now,sorted){if(now<startAt||!sorted.length)return{name:'OVERHEAD CAM',short:'OVERHEAD',zoom:1,focus:{x:W/2,y:H/2}};const elapsed=(now-startAt)/1000;if(winnerMoment){const p=f1DriftPointAt(sorted[0].progress,W,H,sorted[0].lane);return{name:'WINNER CAM',short:'WINNER',zoom:1.34,focus:p};}const cycle=elapsed%14;if(cycle<5)return{name:'OVERHEAD CAM',short:'OVERHEAD',zoom:1,focus:{x:W/2,y:H/2}};if(cycle<9){const p=f1DriftPointAt(sorted[0].progress,W,H,sorted[0].lane);return{name:'LEADER CAM',short:'LEADER',zoom:1.42,focus:p};}const a=f1DriftPointAt(sorted[0].progress,W,H,sorted[0].lane),b=sorted[1]?f1DriftPointAt(sorted[1].progress,W,H,sorted[1].lane):a;return{name:'BATTLE CAM',short:'BATTLE',zoom:1.27,focus:{x:(a.x+b.x)/2,y:(a.y+b.y)/2}};}
+  function addResultCard(container,label,value,note){const box=document.createElement('div');box.className='rounded-xl border border-white/10 bg-black/45 p-3';const l=document.createElement('div');l.className='text-[9px] text-gray-500 font-black uppercase tracking-wider mb-2';l.textContent=label;const v=document.createElement('div');v.className='text-xl font-black text-white';v.textContent=value;const n=document.createElement('div');n.className='text-[8px] text-gray-600 mt-1 truncate';n.textContent=note;box.append(l,v,n);container.appendChild(box);}
+  function showResult(){const winner=classification[0],second=classification[1],third=classification[2],time=(winnerFinishMs/1000).toFixed(2);document.getElementById('f1drift-winner-name').textContent=winner.name;document.getElementById('f1drift-winner-detail').textContent='APEX NIGHT CIRCUIT CHAMPION';document.getElementById('f1drift-podium').textContent='P1 '+winner.name+(second?'  •  P2 '+second.name:'')+(third?'  •  P3 '+third.name:'');const c=document.getElementById('f1drift-result-cards');c.replaceChildren();addResultCard(c,'Race Time',time+'s','Three-lap Grand Prix');addResultCard(c,'Top Speed',Math.round(winner.topSpeed)+' KM/H','Fastest recorded speed');addResultCard(c,'Winning Margin',second?Math.max(.08,(winner.progress-second.progress)/winner.baseSpeed/60).toFixed(2)+'s':'—',second?'Ahead of '+second.name:'Solo victory');stopF1DriftEngine();showPhase('f1drift','winner');}
+  function loop(now){const dt=Math.min(2.2,Math.max(.25,(now-last)/16.667));last=now;frame++;if(now<startAt){const remain=startAt-now,count=Math.max(0,Math.min(5,Math.floor((5200-remain)/900)+1));setLights(count,false);status.textContent='STARTING LIGHTS '+count+'/5';raceMessage.textContent='Five red lights — hold position';}else if(!winnerMoment){setLights(0,true);status.textContent='LIGHTS OUT — RACING';}updateCars(dt,now);const sorted=[...cars].sort((a,b)=>b.progress-a.progress),leader=sorted[0],leaderProgress=Math.max(0,leader.progress),lap=Math.min(totalLaps,Math.max(1,Math.floor(leaderProgress/(Math.PI*2))+1));if(lap!==lastLap){lastLap=lap;raceMessage.textContent=lap===3?'FINAL LAP — EVERYTHING TO PLAY FOR':'LAP 2 — DRS ENABLED';}lapEl.textContent='LAP '+lap+' / '+totalLaps;const elapsed=Math.max(0,(winnerMoment?winnerMoment:now)-startAt);timerEl.textContent=String(Math.floor(elapsed/60000)).padStart(2,'0')+':'+String(Math.floor(elapsed/1000)%60).padStart(2,'0')+'.'+Math.floor(elapsed%1000/100);const gap=sorted[1]?Math.max(0,(leader.progress-sorted[1].progress)/Math.max(.0001,leader.baseSpeed)/60):0;document.getElementById('f1drift-leader').textContent='#'+leader.number+' '+leader.name;document.getElementById('f1drift-speed').textContent=Math.round(278+leader.baseSpeed/.0142*76+(leader.burst>0?18:0))+' KM/H';document.getElementById('f1drift-gap').textContent=sorted[1]?'+'+gap.toFixed(3):'—';const cam=cameraState(now,sorted);document.getElementById('f1drift-camera').textContent=cam.name;document.getElementById('f1drift-camera-mobile').textContent=cam.short;updateF1DriftEngine(leader.baseSpeed/.0013,Math.sin(leader.progress*2.75+leader.phase)*.2);
+    ctx.save();if(cam.zoom!==1){const fx=Math.max(W*.28,Math.min(W*.72,cam.focus.x)),fy=Math.max(H*.25,Math.min(H*.75,cam.focus.y));ctx.translate(W/2,H/2);ctx.scale(cam.zoom,cam.zoom);ctx.translate(-fx,-fy);}ctx.drawImage(trackLayer,0,0);drawSkids();drawSmoke();const drawOrder=[...cars].sort((a,b)=>a.progress-b.progress);drawOrder.forEach(car=>{const drift=Math.sin(car.progress*2.75+car.phase)*.205*(.52+Math.abs(Math.sin(car.progress*1.4))),pt=f1DriftPointAt(car.progress,W,H,car.lane),scale=names.length>35?.67:names.length>22?.78:names.length>12?.9:1;drawTopDownF1Car(ctx,car,pt,drift,scale,names.length<=16,car===leader);});ctx.restore();drawLeaderboard();drawConfetti();drawFixedBroadcast(now,cam.name);
+    if(winnerMoment&&now-winnerMoment>2800){cancelAnimationFrame(animId);showResult();return;}animId=requestAnimationFrame(loop);}animId=requestAnimationFrame(loop);
 }
 
 /* ==================== SWIMMING RACE (dynamic — every entrant gets a lane) ==================== */
@@ -18059,6 +17950,6 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3023015dd8f80f7',t:'MTc4NzU3MjczNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a302b8976c849d05',t:'MTc4NzU3ODMyNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 >
