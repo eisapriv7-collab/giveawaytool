@@ -919,16 +919,58 @@
   </div>
 </div>
 
-<!-- ==================== DODGEBALL PANIC ==================== -->
-<div id="dodgeball-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
-  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
-    <div class="text-center mb-3"><div class="text-[#fb7185] text-sm font-bold uppercase tracking-widest mb-2">🏐 Dodgeball Panic</div><h1 class="text-4xl md:text-5xl font-black text-white">Last One Standing</h1></div>
-    <div id="dodgeball-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Entering the arena...</div><div class="text-sm text-gray-600" id="dodgeball-intro-count">Dodge or get bonked</div></div>
-    <div id="dodgeball-phase-play" class="hidden w-full max-w-6xl">
-      <canvas id="dodgeball-canvas" width="1100" height="520" class="w-full rounded-2xl border border-white/10"></canvas>
-      <div id="dodgeball-legend" class="legend-scroll mt-3"></div>
+<!-- ==================== PROFESSIONAL DODGEBALL PANIC ==================== -->
+<div id="dodgeball-overlay" class="hidden fixed inset-0 bg-[#040508] z-50 overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 18% 20%,rgba(244,63,94,.13),transparent 34%),radial-gradient(circle at 83% 66%,rgba(37,99,235,.13),transparent 37%),linear-gradient(145deg,#07080d,#030407 58%,#070916);"></div>
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-3 md:p-4 overflow-hidden">
+    <div class="w-full max-w-7xl">
+      <header class="flex items-center justify-between gap-4 mb-3 px-1">
+        <div class="min-w-0"><div class="text-rose-400 text-[10px] font-black uppercase tracking-[0.28em]">National Panic League</div><h1 class="text-2xl md:text-3xl font-black text-white leading-tight truncate">Dodgeball Panic</h1></div>
+        <div class="hidden sm:flex items-center gap-2 text-[9px] font-black uppercase tracking-wider"><span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300">AI Dodge Movement</span><span class="px-3 py-1.5 rounded-full bg-rose-500/10 border border-rose-400/20 text-rose-300">Escalating Multi-Ball</span><span class="px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/20 text-blue-300">Last Player Wins</span></div>
+      </header>
+
+      <div id="dodgeball-phase-intro" class="glass rounded-3xl border border-rose-500/20 p-8 md:p-12 text-center shadow-[0_30px_100px_rgba(0,0,0,.68)]">
+        <div class="mx-auto mb-5 w-20 h-20 rounded-2xl flex items-center justify-center text-4xl bg-gradient-to-br from-rose-500/20 to-blue-600/20 border border-rose-400/20 shadow-[0_0_45px_rgba(244,63,94,.18)]">🏐</div>
+        <div class="text-rose-400 text-xs font-black uppercase tracking-[0.3em] mb-2">The Panic Court Is Armed</div>
+        <div class="text-3xl md:text-5xl font-black text-white mb-3">Dodge Everything. Trust No One.</div>
+        <div id="dodgeball-intro-count" class="text-sm md:text-base text-gray-400 font-bold">The opening volley is loading...</div>
+        <div class="grid grid-cols-3 gap-2 max-w-xl mx-auto mt-7 text-[9px] font-black uppercase tracking-wider"><div class="rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-gray-400">Reaction AI</div><div class="rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-gray-400">Physical Hits</div><div class="rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-gray-400">One Survivor</div></div>
+      </div>
+
+      <div id="dodgeball-phase-play" class="hidden w-full">
+        <div class="grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_auto_auto_auto] items-center gap-2 mb-2 rounded-2xl border border-white/10 bg-black/60 px-3 md:px-4 py-2 shadow-xl">
+          <div class="min-w-0"><div class="text-[8px] text-gray-600 font-black uppercase tracking-[0.2em]">Match Control</div><div id="dodgeball-status" class="text-sm md:text-base text-rose-300 font-black truncate">COURT LOCKDOWN</div></div>
+          <div class="text-right px-3 border-l border-white/10"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Standing</div><div id="dodgeball-alive" class="text-lg font-black text-white tabular-nums">0</div></div>
+          <div class="hidden sm:block text-right px-3 border-l border-white/10"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Eliminated</div><div id="dodgeball-out" class="text-lg font-black text-rose-400 tabular-nums">0</div></div>
+          <div class="hidden sm:block text-right pl-3 border-l border-white/10"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Clock</div><div id="dodgeball-clock" class="text-lg font-black text-blue-300 tabular-nums">0.0s</div></div>
+        </div>
+
+        <div class="relative rounded-2xl overflow-hidden border border-rose-500/25 shadow-[0_25px_90px_rgba(0,0,0,.72)] bg-[#080a10]">
+          <canvas id="dodgeball-canvas" width="1200" height="560" class="block w-full bg-[#080a10]"></canvas>
+          <div class="absolute top-3 left-3 px-3 py-1.5 rounded-lg bg-black/65 border border-white/10 text-[8px] font-black text-white tracking-[0.18em]">PANIC COURT CAM 01</div>
+          <div class="absolute top-3 right-3 px-3 py-1.5 rounded-lg bg-black/65 border border-rose-400/20 text-[8px] font-black text-rose-300 tracking-[0.18em]"><span id="dodgeball-phase-label">LOCKDOWN</span></div>
+        </div>
+
+        <div class="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_auto_auto] items-center gap-2 mt-2">
+          <div class="min-w-0 rounded-xl border border-rose-500/15 bg-rose-950/20 px-4 py-2"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Commentary</div><div id="dodgeball-feed" class="text-sm font-black text-white truncate">Players are taking their marks...</div></div>
+          <div class="rounded-xl border border-white/10 bg-black/50 px-4 py-2 text-right"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Balls Active</div><div id="dodgeball-balls" class="text-sm font-black text-rose-400 tabular-nums">0</div></div>
+          <div class="hidden md:block rounded-xl border border-white/10 bg-black/50 px-4 py-2 text-right"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Dodges</div><div id="dodgeball-dodges" class="text-sm font-black text-blue-400 tabular-nums">0</div></div>
+          <div class="hidden md:block w-36 rounded-xl border border-white/10 bg-black/50 px-4 py-2"><div class="flex justify-between text-[8px] text-gray-600 font-black uppercase tracking-wider"><span>Panic</span><span id="dodgeball-panic-text">0%</span></div><div class="h-1.5 bg-white/10 rounded-full mt-1 overflow-hidden"><div id="dodgeball-panic" class="h-full bg-gradient-to-r from-blue-500 via-rose-500 to-fuchsia-500" style="width:0%"></div></div></div>
+        </div>
+      </div>
+
+      <div id="dodgeball-phase-winner" class="hidden">
+        <div class="max-w-3xl mx-auto glass rounded-3xl border border-rose-500/25 p-7 md:p-10 text-center shadow-[0_35px_120px_rgba(0,0,0,.75)]">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] mb-5">Official Panic League Result</div>
+          <div class="text-rose-400 text-sm font-black uppercase tracking-[0.28em] mb-2">Last Player Standing</div>
+          <div id="dodgeball-winner-name" class="text-5xl md:text-7xl font-black text-white mb-2 break-words"></div>
+          <div id="dodgeball-winner-detail" class="text-xl md:text-2xl text-blue-300 font-black mb-1">PANIC COURT SURVIVOR</div>
+          <div id="dodgeball-winner-sub" class="text-sm text-gray-500 mb-6"></div>
+          <div id="dodgeball-result-cards" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-7"></div>
+          <div class="flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-sm font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-sm font-bold">✕ Close</button></div>
+        </div>
+      </div>
     </div>
-    <div id="dodgeball-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">🏐</div><div class="text-2xl text-[#fb7185] font-bold mb-2">DODGEBALL SURVIVOR</div><div id="dodgeball-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
   </div>
 </div>
 
@@ -6078,193 +6120,27 @@ function startPenguinWaddle(names) {
   loop();
 }
 
-/* ==================== DODGEBALL PANIC ==================== */
-function runDodgeball() {
-  showOverlay('dodgeball-overlay'); showPhase('dodgeball', 'intro');
-  const names = Array.from(entrants);
-  if (names.length === 0) { alert('No entrants yet!'); return; }
-  document.getElementById('dodgeball-intro-count').textContent = names.length + ' player' + (names.length===1?'':'s') + ' enter the arena';
-  armGameStart(() => startDodgeball(names));
-}
-function startDodgeball(names) {
-  showPhase('dodgeball', 'play');
-  document.getElementById('dodgeball-legend').innerHTML = names.map(n => `<div class="legend-chip"><span class="legend-dot" style="background:${colorFor(n)}"></span>${escapeHtml(n)}</div>`).join('');
-  const canvas = document.getElementById('dodgeball-canvas'); const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2;
-  const pad = 55, arenaL = pad, arenaR = W - pad, arenaT = pad, arenaB = H - pad;
-  const comments = ['BONK!','HEADSHOT!','RIGHT IN THE FACE!','ELIMINATED!','OUCH MY NOSE!','NOT THE GUT!'];
-  const n = names.length;
-  let players = names.map((nm, i) => {
-    const ang = (i / n) * Math.PI * 2 - Math.PI / 2;
-    const dist = Math.min(arenaR - arenaL, arenaB - arenaT) * 0.32;
-    return {
-      name: nm, color: colorFor(nm), alive: true,
-      x: cx + Math.cos(ang) * dist, y: cy + Math.sin(ang) * dist,
-      vx: (Math.random() - 0.5) * 1.4, vy: (Math.random() - 0.5) * 1.4,
-      dodge: 40 + i * 5, invuln: 120 + i * 8, gag: '', gagTimer: 0,
-      panic: Math.random() * Math.PI * 2, elimX: 0, elimY: 0
-    };
-  });
-  let balls = [], frame = 0, feed = '🏐 DODGE! Last one standing wins!', spawnTimer = 0, winner = null, startTime = Date.now();
-  let particles = [], elimFlash = [];
-
-  function spawnBall() {
-    const side = Math.floor(Math.random() * 4);
-    let x, y, vx, vy;
-    const spd = 1.6 + Math.random() * 1.4 + Math.min(1.2, frame / 1400);
-    if (side === 0) { x = arenaL; y = arenaT + Math.random() * (arenaB - arenaT); vx = spd; vy = (Math.random() - 0.5) * spd * 0.7; }
-    else if (side === 1) { x = arenaR; y = arenaT + Math.random() * (arenaB - arenaT); vx = -spd; vy = (Math.random() - 0.5) * spd * 0.7; }
-    else if (side === 2) { x = arenaL + Math.random() * (arenaR - arenaL); y = arenaT; vx = (Math.random() - 0.5) * spd * 0.7; vy = spd; }
-    else { x = arenaL + Math.random() * (arenaR - arenaL); y = arenaB; vx = (Math.random() - 0.5) * spd * 0.7; vy = -spd; }
-    const hues = ['#ef4444', '#f97316', '#eab308', '#ec4899'];
-    balls.push({ x, y, vx, vy, r: 13, hue: hues[Math.floor(Math.random() * hues.length)], trail: [] });
-  }
-
-  function drawArena() {
-    const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, '#1e1b4b'); g.addColorStop(1, '#312e81');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = '#4338ca'; ctx.fillRect(arenaL, arenaT, arenaR - arenaL, arenaB - arenaT);
-    ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 4;
-    ctx.strokeRect(arenaL, arenaT, arenaR - arenaL, arenaB - arenaT);
-    ctx.setLineDash([18, 14]); ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(cx, arenaT); ctx.lineTo(cx, arenaB); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(arenaL, cy); ctx.lineTo(arenaR, cy); ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.beginPath(); ctx.arc(cx, cy, 70, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = 'rgba(251,113,133,0.4)'; ctx.lineWidth = 2; ctx.stroke();
-    ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center';
-    ctx.fillText('CENTER LINE — NO ESCAPE', cx, cy + 4);
-  }
-
-  function drawBall(b) {
-    b.trail.push({ x: b.x, y: b.y }); b.trail = b.trail.slice(-8);
-    b.trail.forEach((t, i) => {
-      const a = (i + 1) / b.trail.length * 0.4;
-      ctx.globalAlpha = a; ctx.fillStyle = b.hue;
-      ctx.beginPath(); ctx.arc(t.x, t.y, b.r * 0.55, 0, Math.PI * 2); ctx.fill();
-    });
-    ctx.globalAlpha = 1;
-    ctx.save(); ctx.translate(b.x, b.y);
-    const grad = ctx.createRadialGradient(-3, -3, 1, 0, 0, b.r);
-    grad.addColorStop(0, '#fff'); grad.addColorStop(0.35, b.hue); grad.addColorStop(1, '#7f1d1d');
-    ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(0, 0, b.r, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5; ctx.stroke();
-    ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.arc(-4, -4, 3, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
-  }
-
-  function drawHUD() {
-    const alive = players.filter(p => p.alive).length;
-    ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.beginPath(); ctx.roundRect(10, 10, 220, 36, 8); ctx.fill();
-    ctx.fillStyle = '#fb7185'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'left';
-    ctx.fillText('🏐 ALIVE: ' + alive + ' / ' + players.length, 20, 32);
-    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(10, H - 42, W - 20, 32, 8); ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center';
-    ctx.fillText(feed, W / 2, H - 20);
-  }
-
-  function drawParticles() {
-    particles = particles.filter(p => {
-      p.x += p.vx; p.y += p.vy; p.life--;
-      if (p.life <= 0) return false;
-      const a = p.life / p.maxLife;
-      ctx.fillStyle = `rgba(255,200,80,${a})`; ctx.beginPath(); ctx.arc(p.x, p.y, 4 * a, 0, Math.PI * 2); ctx.fill();
-      return true;
-    });
-    elimFlash = elimFlash.filter(e => {
-      e.life--; if (e.life <= 0) return false;
-      const a = e.life / e.maxLife;
-      ctx.strokeStyle = `rgba(255,51,102,${a})`; ctx.lineWidth = 4;
-      ctx.beginPath(); ctx.arc(e.x, e.y, 20 + (1 - a) * 30, 0, Math.PI * 2); ctx.stroke();
-      return true;
-    });
-  }
-
-  let animId;
-  function loop() {
-    frame++; spawnTimer++;
-    if (balls.length === 0 && spawnTimer > 140) { spawnBall(); spawnTimer = 0; }
-
-    ctx.clearRect(0, 0, W, H);
-    drawArena();
-
-    balls.forEach(b => {
-      b.x += b.vx; b.y += b.vy;
-      if (b.x < arenaL + b.r) { b.x = arenaL + b.r; b.vx = Math.abs(b.vx) * 1.02; }
-      if (b.x > arenaR - b.r) { b.x = arenaR - b.r; b.vx = -Math.abs(b.vx) * 1.02; }
-      if (b.y < arenaT + b.r) { b.y = arenaT + b.r; b.vy = Math.abs(b.vy) * 1.02; }
-      if (b.y > arenaB - b.r) { b.y = arenaB - b.r; b.vy = -Math.abs(b.vy) * 1.02; }
-      drawBall(b);
-    });
-
-    players.forEach(p => {
-      if (p.gagTimer > 0) p.gagTimer--;
-      if (!p.alive) {
-        ctx.globalAlpha = 0.35;
-        drawMiniCharacter(ctx, p.elimX, p.elimY, 12, p.color, { faded: true, phase: 0 });
-        ctx.globalAlpha = 1;
-        drawGagText(ctx, p.elimX, p.elimY - 24, 'OUT!', '#94a3b8', 11);
-        return;
-      }
-      if (p.invuln > 0) p.invuln--;
-      if (p.dodge > 0) p.dodge--;
-      else {
-        p.panic += 0.08;
-        p.x += p.vx + Math.sin(p.panic) * 0.6;
-        p.y += p.vy + Math.cos(p.panic * 1.3) * 0.6;
-        if (p.x < arenaL + 20) { p.x = arenaL + 20; p.vx = Math.abs(p.vx); }
-        if (p.x > arenaR - 20) { p.x = arenaR - 20; p.vx = -Math.abs(p.vx); }
-        if (p.y < arenaT + 20) { p.y = arenaT + 20; p.vy = Math.abs(p.vy); }
-        if (p.y > arenaB - 20) { p.y = arenaB - 20; p.vy = -Math.abs(p.vy); }
-        if (Math.random() < 0.01) {
-          p.vx = (Math.random() - 0.5) * 3.2; p.vy = (Math.random() - 0.5) * 3.2;
-          p.dodge = 18; p.gag = 'NICE DODGE!'; p.gagTimer = 40;
-          feed = p.name + ' matrix-dodges a ball!';
-        }
-      }
-      if (p.invuln <= 0) {
-        balls.forEach(b => {
-          if (Math.hypot(b.x - p.x, b.y - p.y) < b.r + 16) {
-            p.alive = false; p.elimX = p.x; p.elimY = p.y;
-            p.gag = comments[Math.floor(Math.random() * comments.length)]; p.gagTimer = 60;
-            feed = '💥 ' + p.name + ' was ELIMINATED! ' + p.gag;
-            elimFlash.push({ x: p.x, y: p.y, life: 22, maxLife: 22 });
-            for (let i = 0; i < 10; i++) particles.push({ x: p.x, y: p.y, vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6, life: 20, maxLife: 20 });
-            b.vx *= -1.15; b.vy *= -1.1;
-          }
-        });
-      }
-      const flash = p.invuln > 0 && Math.floor(frame / 4) % 2 === 0;
-      drawMiniCharacter(ctx, p.x, p.y, 16, p.color, {
-        phase: frame * 0.12, armSwing: Math.sin(frame * 0.25) * 10,
-        flash: flash || p.dodge > 0, rotate: p.dodge > 0 ? Math.sin(frame * 0.4) * 0.3 : 0
-      });
-      if (p.gagTimer > 0) drawGagText(ctx, p.x, p.y - 34, p.gag, p.alive ? '#fbbf24' : '#ef4444', 13);
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center';
-      ctx.fillText(p.name.substring(0, 12), p.x, p.y - 44);
-    });
-
-    drawParticles(); drawHUD();
-    const alive = players.filter(p => p.alive);
-    if (alive.length === 1) {
-      cancelAnimationFrame(animId);
-      winner = alive[0];
-      feed = '🏆 ' + winner.name + ' survives the dodgeball chaos!';
-      ctx.clearRect(0, 0, W, H); drawArena();
-      drawMiniCharacter(ctx, cx, cy, 22, winner.color, { crown: true, phase: frame * 0.1 });
-      drawGagText(ctx, cx, cy - 50, 'WINNER!', '#ffd700', 18);
-      drawHUD();
-      setTimeout(() => { showPhase('dodgeball', 'winner'); document.getElementById('dodgeball-winner-name').textContent = winner.name; }, 1800);
-    } else if (alive.length === 0) {
-      cancelAnimationFrame(animId);
-      const w = pickSingleWinner([], names);
-      setTimeout(() => { showPhase('dodgeball', 'winner'); document.getElementById('dodgeball-winner-name').textContent = w; }, 1200);
-    } else animId = requestAnimationFrame(loop);
-  }
-  spawnBall();
-  loop();
-}
+/* ==================== PROFESSIONAL DODGEBALL PANIC ==================== */
+function runDodgeball(){showOverlay('dodgeball-overlay');showPhase('dodgeball','intro');const names=Array.from(entrants);if(!names.length){alert('No entrants yet!');return}document.getElementById('dodgeball-intro-count').textContent=names.length+' player'+(names.length===1?' is':'s are')+' entering the Panic Court. Every throw, dodge, and elimination happens live — no preselected winner.';armGameStart(()=>startDodgeball(names))}
+function startDodgeball(names){showPhase('dodgeball','play');const canvas=document.getElementById('dodgeball-canvas'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height,court={l:48,r:930,t:70,b:502};const startAt=performance.now()+2000;let last=performance.now(),frame=0,nextSpawn=startAt+480,nextPointBlank=startAt+30000,phase='COURT LOCKDOWN',panic=0,eliminated=0,totalDodges=0,totalThrows=0,cameraShake=0,flash=0,feed='Players are taking their marks. The opening volley is armed...',winner=null,finishAt=0,resultShown=false;let balls=[],particles=[],popups=[],elimHistory=[];const n=names.length,courtW=court.r-court.l-50,courtH=court.b-court.t-54,cols=Math.max(1,Math.ceil(Math.sqrt(n*courtW/courtH))),rows=Math.max(1,Math.ceil(n/cols)),cellW=courtW/cols,cellH=courtH/rows,pr=Math.max(6,Math.min(16,Math.min(cellW,cellH)*.28));const players=names.map((name,i)=>{const col=i%cols,row=Math.floor(i/cols),x=court.l+25+(col+.5)*cellW+(Math.random()-.5)*Math.min(12,cellW*.16),y=court.t+27+(row+.5)*cellH+(Math.random()-.5)*Math.min(12,cellH*.16),skill=.38+Math.random()*.58;return{id:i,name,color:colorFor(name),initials:(typeof initialsFor==='function'?initialsFor(name):name.slice(0,2).toUpperCase()),x,y,vx:0,vy:0,wantX:(Math.random()-.5)*1.6,wantY:(Math.random()-.5)*1.6,r:pr,active:true,alive:true,skill,stamina:72+Math.random()*28,reaction:88+skill*82+Math.random()*24,nextMove:startAt+Math.random()*900,dodgeUntil:0,dodgeCooldown:0,dodgeVX:0,dodgeVY:0,dodges:0,nearMisses:0,throwsFaced:0,exposure:Math.random()*5,eliminatedAt:0,placement:0,hitFlash:0,lean:0,seed:Math.random()*1000}});globalThis.__dodgeballPlayers=players;
+function activePlayers(){return players.filter(p=>p.active)}
+function phaseFor(e,alive){if(e<0)return'COURT LOCKDOWN';if(alive<=2)return'FINAL DUEL';if(e<7)return'OPENING VOLLEY';if(e<14)return'CROSSFIRE';if(e<21)return'MULTI-BALL';return'PANIC BARRAGE'}
+function phasePanic(p,e){if(p==='PANIC BARRAGE')return Math.min(1,.82+Math.max(0,e-21)*.025);if(p==='MULTI-BALL')return .68;if(p==='CROSSFIRE')return .45;if(p==='OPENING VOLLEY')return .25;if(p==='FINAL DUEL')return Math.min(1,.72+Math.max(0,e-18)*.035);return .08}
+function pickTarget(){const active=activePlayers();if(!active.length)return null;const scored=active.map(p=>({p,s:p.exposure+(100-p.stamina)*.08+(1-p.skill)*11+Math.random()*18})).sort((a,b)=>b.s-a.s),pool=scored.slice(0,Math.min(5,scored.length));return pool[Math.floor(Math.random()*pool.length)].p}
+function spawnBall(now,precision){const target=pickTarget();if(!target)return;const elapsed=Math.max(0,(now-startAt)/1000),power=phasePanic(phase,elapsed),r=9+Math.random()*4;let x,y;if(precision){const a=Math.random()*Math.PI*2,dist=48+Math.random()*45;x=Math.max(court.l+r,Math.min(court.r-r,target.x+Math.cos(a)*dist));y=Math.max(court.t+r,Math.min(court.b-r,target.y+Math.sin(a)*dist))}else{const side=Math.floor(Math.random()*4);if(side===0){x=court.l+r;y=court.t+20+Math.random()*(court.b-court.t-40)}else if(side===1){x=court.r-r;y=court.t+20+Math.random()*(court.b-court.t-40)}else if(side===2){x=court.l+20+Math.random()*(court.r-court.l-40);y=court.t+r}else{x=court.l+20+Math.random()*(court.r-court.l-40);y=court.b-r}}const error=(precision?4:28)*(1-power*.7),aimX=target.x+(Math.random()-.5)*error,aimY=target.y+(Math.random()-.5)*error,dx=aimX-x,dy=aimY-y,len=Math.max(1,Math.hypot(dx,dy)),speed=(precision?9.8:5.5)+power*5+Math.random()*1.7,hue=['#e11d48','#f97316','#db2777','#2563eb'][totalThrows%4];balls.push({x,y,vx:dx/len*speed,vy:dy/len*speed,r,hue,targetId:target.id,active:true,life:0,bounces:0,trail:[],homing:precision?.16:.015+power*.045,unstoppable:elapsed>31||(activePlayers().length<=2&&elapsed>22),near:{}});target.throwsFaced++;target.exposure+=1.4;totalThrows++}
+function burst(x,y,color,count,power){for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,s=1.5+Math.random()*(power?8:5);particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-1.5,r:1.5+Math.random()*3.5,life:1,color:i%4?color:'#fff'})}}
+function pop(x,y,text,color,big){popups.push({x,y,text,color,big,life:1})}
+function hitPlayer(p,b,now){if(!p.active||winner)return;const elapsed=(now-startAt)/1000,alive=activePlayers();if(alive.length<=2&&elapsed<18){b.vx*=-1;b.vy*=-1;b.active=false;p.dodges++;p.nearMisses++;totalDodges++;p.exposure+=2;pop(p.x,p.y-30,'LAST-SECOND DODGE',p.color,false);return}p.active=false;p.alive=false;p.eliminatedAt=Math.max(0,elapsed);p.placement=alive.length;eliminated++;elimHistory.push(p);b.active=false;p.hitFlash=1;cameraShake=10+panic*9;flash=.38;burst(p.x,p.y,b.hue,28,true);pop(p.x,p.y-30,'ELIMINATED',b.hue,true);feed=p.name+' takes a direct hit — '+(alive.length-1)+' still standing!';const left=alive.length-1;if(left===1){winner=players.find(q=>q.active);winner.placement=1;finishAt=now+2300;feed=winner.name+' survives the final Panic Court volley!';burst(winner.x,winner.y,winner.color,60,true);cameraShake=18}}
+function updatePlayers(now,dtf){const active=activePlayers();for(const p of active){if(p.hitFlash>0)p.hitFlash*=.78;p.stamina=Math.min(100,p.stamina+.055*dtf);if(now>=p.nextMove&&now>p.dodgeUntil){const ang=Math.random()*Math.PI*2,s=.45+Math.random()*1.35;p.wantX=Math.cos(ang)*s;p.wantY=Math.sin(ang)*s;p.nextMove=now+420+Math.random()*900}let threat=null,best=1e9;for(const b of balls){if(!b.active||b.unstoppable)continue;const dx=p.x-b.x,dy=p.y-b.y,d=Math.hypot(dx,dy),closing=b.vx*dx+b.vy*dy;if(closing>0&&d<best){best=d;threat=b}}if(threat&&best<p.reaction&&now>=p.dodgeCooldown&&p.stamina>13){const chance=.035+p.skill*.055+(threat.targetId===p.id?.045:0);if(Math.random()<chance*dtf){const speed=Math.hypot(threat.vx,threat.vy)||1,side=((p.x-court.l)<(court.r-p.x)?1:-1)*(Math.random()<.72?1:-1);p.dodgeVX=-threat.vy/speed*side*(4+p.skill*3.8);p.dodgeVY=threat.vx/speed*side*(4+p.skill*3.8);p.dodgeUntil=now+210+p.skill*170;p.dodgeCooldown=now+520+Math.random()*350;p.stamina-=13+Math.random()*9;p.dodges++;totalDodges++;p.exposure=Math.max(0,p.exposure-1.2);feed=p.name+' reads the throw and dives clear!'}}if(now<p.dodgeUntil){p.vx+=(p.dodgeVX-p.vx)*.2*dtf;p.vy+=(p.dodgeVY-p.vy)*.2*dtf;p.lean=p.vx*.045}else{p.vx+=(p.wantX-p.vx)*.055*dtf;p.vy+=(p.wantY-p.vy)*.055*dtf;p.lean*=.88}p.x+=p.vx*dtf;p.y+=p.vy*dtf;const m=p.r+6;if(p.x<court.l+m){p.x=court.l+m;p.vx=Math.abs(p.vx)}if(p.x>court.r-m){p.x=court.r-m;p.vx=-Math.abs(p.vx)}if(p.y<court.t+m){p.y=court.t+m;p.vy=Math.abs(p.vy)}if(p.y>court.b-m){p.y=court.b-m;p.vy=-Math.abs(p.vy)}p.exposure+=.0025*dtf+(100-p.stamina)*.00008*dtf}}
+function updateBalls(now,dtf){for(const b of balls){if(!b.active)continue;b.life+=dtf;const target=players[b.targetId];if(target&&target.active&&b.homing>0){const dx=target.x-b.x,dy=target.y-b.y,len=Math.max(1,Math.hypot(dx,dy)),speed=Math.max(5,Math.hypot(b.vx,b.vy)),turn=b.homing*dtf;b.vx+=(dx/len*speed-b.vx)*turn;b.vy+=(dy/len*speed-b.vy)*turn}b.x+=b.vx*dtf;b.y+=b.vy*dtf;b.trail.unshift({x:b.x,y:b.y});if(b.trail.length>8)b.trail.pop();if(b.x-b.r<court.l){b.x=court.l+b.r;b.vx=Math.abs(b.vx);b.bounces++}if(b.x+b.r>court.r){b.x=court.r-b.r;b.vx=-Math.abs(b.vx);b.bounces++}if(b.y-b.r<court.t){b.y=court.t+b.r;b.vy=Math.abs(b.vy);b.bounces++}if(b.y+b.r>court.b){b.y=court.b-b.r;b.vy=-Math.abs(b.vy);b.bounces++}for(const p of activePlayers()){if(winner)break;const d=Math.hypot(b.x-p.x,b.y-p.y),hitR=b.r+p.r*.63;if(d<hitR){hitPlayer(p,b,now);break}else if(d<hitR+22&&!b.near[p.id]){b.near[p.id]=1;p.nearMisses++;p.exposure+=.12}}if(b.bounces>3||b.life>560)b.active=false}balls=balls.filter(b=>b.active)}
+function spawnVolley(now,elapsed){if(winner||elapsed<0||now<nextSpawn)return;const alive=activePlayers().length;let count=1,interval=650;if(phase==='CROSSFIRE'){count=alive>24?2:1;interval=360}else if(phase==='MULTI-BALL'){count=alive>28?3:2;interval=225}else if(phase==='PANIC BARRAGE'){count=alive>40?5:alive>18?4:alive>6?3:2;interval=125}else if(phase==='FINAL DUEL'){count=1;interval=500}const precision=elapsed>24||(phase==='FINAL DUEL'&&elapsed>18);for(let i=0;i<count;i++)spawnBall(now,precision);nextSpawn=now+interval;if(elapsed>29&&alive>1&&now>=nextPointBlank){spawnBall(now,true);nextPointBlank=now+260}}
+function update(now,dt){frame++;const dtf=Math.min(2,dt/16.667),elapsed=(now-startAt)/1000;phase=phaseFor(elapsed,activePlayers().length);panic=phasePanic(phase,elapsed);if(elapsed>=0&&!winner){updatePlayers(now,dtf);spawnVolley(now,elapsed);updateBalls(now,dtf)}particles.forEach(p=>{p.x+=p.vx*dtf;p.y+=p.vy*dtf;p.vy+=.16*dtf;p.life-=.026*dtf});particles=particles.filter(p=>p.life>0);popups.forEach(p=>{p.y-=.45*dtf;p.life-=.018*dtf});popups=popups.filter(p=>p.life>0);cameraShake*=Math.pow(.86,dtf);flash=Math.max(0,flash-.035*dtf);if(n===1&&!winner&&elapsed>=2){winner=players[0];winner.placement=1;finishAt=now+1800;feed=winner.name+' owns the empty Panic Court!'}updateHUD(now)}
+function updateHUD(now){const elapsed=Math.max(0,(now-startAt)/1000),alive=activePlayers().length,pct=Math.round(panic*100);document.getElementById('dodgeball-status').textContent=winner?'FINAL VOLLEY COMPLETE':phase;document.getElementById('dodgeball-alive').textContent=alive+' / '+n;document.getElementById('dodgeball-out').textContent=eliminated;document.getElementById('dodgeball-clock').textContent=elapsed.toFixed(1)+'s';document.getElementById('dodgeball-phase-label').textContent=phase;document.getElementById('dodgeball-feed').textContent=feed;document.getElementById('dodgeball-balls').textContent=balls.length;document.getElementById('dodgeball-dodges').textContent=totalDodges;document.getElementById('dodgeball-panic').style.width=pct+'%';document.getElementById('dodgeball-panic-text').textContent=pct+'%'}
+function drawCourt(now){const elapsed=(now-startAt)/1000;ctx.save();if(cameraShake>.25)ctx.translate((Math.random()-.5)*cameraShake,(Math.random()-.5)*cameraShake);const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#090d18');bg.addColorStop(.5,'#111827');bg.addColorStop(1,'#05070b');ctx.fillStyle=bg;ctx.fillRect(-25,-25,W+50,H+50);ctx.fillStyle='#0a0c13';ctx.fillRect(0,36,W,104);for(let i=0;i<49;i++){const x=i*25,y=105+(i%3)*9;ctx.fillStyle=i%2?'#171923':'#10121a';ctx.beginPath();ctx.arc(x,y-15,7+(i%3),0,Math.PI*2);ctx.fill();ctx.fillRect(x-7,y-8,14,28)}for(let i=0;i<22;i++){ctx.fillStyle=i%4===frame%4?'rgba(244,63,94,.4)':'rgba(37,99,235,.22)';ctx.fillRect(8+i*55,45,34,4)}const floor=ctx.createLinearGradient(0,court.t,0,court.b);floor.addColorStop(0,'#23304b');floor.addColorStop(.5,'#18243b');floor.addColorStop(1,'#111a2d');ctx.fillStyle=floor;ctx.fillRect(court.l,court.t,court.r-court.l,court.b-court.t);ctx.strokeStyle='rgba(255,255,255,.32)';ctx.lineWidth=3;ctx.strokeRect(court.l,court.t,court.r-court.l,court.b-court.t);ctx.strokeStyle='rgba(244,63,94,.5)';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo((court.l+court.r)/2,court.t);ctx.lineTo((court.l+court.r)/2,court.b);ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.14)';ctx.lineWidth=2;ctx.beginPath();ctx.arc((court.l+court.r)/2,(court.t+court.b)/2,74,0,Math.PI*2);ctx.stroke();ctx.setLineDash([12,12]);ctx.strokeStyle='rgba(59,130,246,.23)';ctx.beginPath();ctx.moveTo(court.l+170,court.t);ctx.lineTo(court.l+170,court.b);ctx.moveTo(court.r-170,court.t);ctx.lineTo(court.r-170,court.b);ctx.stroke();ctx.setLineDash([]);for(let y=court.t;y<court.b;y+=54){ctx.strokeStyle='rgba(255,255,255,.035)';ctx.beginPath();ctx.moveTo(court.l,y);ctx.lineTo(court.r,y);ctx.stroke()}ctx.fillStyle='rgba(5,7,12,.88)';ctx.beginPath();ctx.roundRect(952,70,220,432,18);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.1)';ctx.stroke();ctx.fillStyle='#fb7185';ctx.font='900 10px Inter, sans-serif';ctx.textAlign='left';ctx.fillText('PANIC LEAGUE CONTROL',976,100);ctx.fillStyle='rgba(255,255,255,.08)';ctx.fillRect(976,116,172,1);ctx.fillStyle='#fff';ctx.font='900 67px Inter, sans-serif';ctx.textAlign='center';ctx.fillText(String(activePlayers().length).padStart(2,'0'),1062,188);ctx.fillStyle='#94a3b8';ctx.font='900 9px Inter, sans-serif';ctx.fillText('PLAYERS STANDING',1062,210);ctx.fillStyle=phase==='PANIC BARRAGE'?'#fb7185':'#60a5fa';ctx.font='900 14px Inter, sans-serif';ctx.fillText(phase,1062,245);for(let i=0;i<12;i++){const barH=10+Math.abs(Math.sin(frame*.11+i*.71))*62*panic;ctx.fillStyle=i%2?'rgba(244,63,94,.72)':'rgba(37,99,235,.72)';ctx.fillRect(976+i*14,343-barH,8,barH)}ctx.fillStyle='#64748b';ctx.font='800 8px Inter, sans-serif';ctx.textAlign='left';ctx.fillText('COURT PANIC',976,365);ctx.textAlign='right';ctx.fillStyle='#fff';ctx.fillText(Math.round(panic*100)+'%',1148,365);ctx.fillStyle='rgba(255,255,255,.07)';ctx.fillRect(976,378,172,1);ctx.fillStyle='#94a3b8';ctx.textAlign='left';ctx.fillText('THROWS',976,405);ctx.fillText('ELIMINATIONS',976,431);ctx.fillText('DODGES',976,457);ctx.fillStyle='#fff';ctx.textAlign='right';ctx.font='900 12px Inter, sans-serif';ctx.fillText(totalThrows,1148,405);ctx.fillText(eliminated,1148,431);ctx.fillText(totalDodges,1148,457);balls.forEach(b=>drawBall(b));const active=activePlayers(),compact=active.length>24;players.filter(p=>!p.active&&now-p.eliminatedAt*1000-startAt<1200).forEach(p=>drawPlayer(p,true,compact,now));active.forEach(p=>drawPlayer(p,false,compact,now));particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;popups.forEach(p=>{ctx.globalAlpha=Math.min(1,p.life*2);ctx.fillStyle='rgba(0,0,0,.76)';ctx.font=`900 ${p.big?15:11}px Inter, sans-serif`;ctx.textAlign='center';const w=ctx.measureText(p.text).width+20;ctx.fillRect(p.x-w/2,p.y-17,w,23);ctx.fillStyle=p.color;ctx.fillText(p.text,p.x,p.y);ctx.globalAlpha=1});if(elapsed<0){ctx.fillStyle='rgba(3,4,8,.62)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#fff';ctx.font='900 78px Inter, sans-serif';ctx.textAlign='center';ctx.shadowColor='#f43f5e';ctx.shadowBlur=30;ctx.fillText(Math.max(1,Math.ceil(-elapsed)),W/2,H/2+15);ctx.shadowBlur=0;ctx.fillStyle='#fb7185';ctx.font='900 12px Inter, sans-serif';ctx.fillText('PANIC COURT LOCKDOWN',W/2,H/2+48)}if(winner){const pulse=1+Math.sin(frame*.16)*.025;ctx.save();ctx.translate(winner.x,winner.y);ctx.scale(pulse,pulse);ctx.fillStyle='rgba(244,63,94,.12)';ctx.beginPath();ctx.moveTo(-110,-245);ctx.lineTo(-45,-30);ctx.lineTo(45,-30);ctx.lineTo(110,-245);ctx.closePath();ctx.fill();ctx.restore();ctx.fillStyle='rgba(4,5,9,.88)';ctx.beginPath();ctx.roundRect(210,20,570,54,14);ctx.fill();ctx.strokeStyle='rgba(244,63,94,.4)';ctx.stroke();ctx.fillStyle='#fb7185';ctx.font='900 10px Inter, sans-serif';ctx.textAlign='center';ctx.fillText('FINAL PLAYER STANDING',495,41);ctx.fillStyle='#fff';ctx.font='900 23px Inter, sans-serif';ctx.fillText(winner.name.toUpperCase(),495,64)}if(flash>0){ctx.fillStyle=`rgba(255,255,255,${flash*.22})`;ctx.fillRect(0,0,W,H)}ctx.restore()}
+function drawBall(b){for(let i=b.trail.length-1;i>=0;i--){const t=b.trail[i],a=(1-i/b.trail.length)*.17;ctx.globalAlpha=a;ctx.fillStyle=b.hue;ctx.beginPath();ctx.arc(t.x,t.y,b.r*(.35+(b.trail.length-i)*.04),0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;ctx.save();ctx.translate(b.x,b.y);ctx.rotate(frame*.11*(b.vx>=0?1:-1));ctx.shadowColor=b.hue;ctx.shadowBlur=12;const g=ctx.createRadialGradient(-b.r*.32,-b.r*.38,1,0,0,b.r);g.addColorStop(0,'#fff');g.addColorStop(.2,b.hue);g.addColorStop(1,'#4c0519');ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,b.r,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=1.6;ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.42)';ctx.beginPath();ctx.arc(0,0,b.r*.55,-1.1,1.1);ctx.moveTo(-b.r*.7,-b.r*.55);ctx.quadraticCurveTo(0,0,b.r*.7,b.r*.55);ctx.stroke();ctx.restore()}
+function drawPlayer(p,out,compact,now){const sc=p.r/16,dodging=now<p.dodgeUntil;ctx.save();ctx.globalAlpha=out?.2:1;ctx.translate(p.x,p.y);ctx.rotate(out?.7:p.lean);ctx.scale(sc,sc);ctx.fillStyle='rgba(0,0,0,.4)';ctx.beginPath();ctx.ellipse(0,9,18,5,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#172033';ctx.lineWidth=7;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-7,-8);ctx.lineTo(-11,7);ctx.moveTo(7,-8);ctx.lineTo(13,7);ctx.stroke();ctx.strokeStyle='#f8fafc';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-14,8);ctx.lineTo(-7,8);ctx.moveTo(11,8);ctx.lineTo(18,8);ctx.stroke();ctx.fillStyle=p.hitFlash>.05?'#fff':p.color;ctx.beginPath();ctx.roundRect(-15,-36,30,29,8);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.42)';ctx.lineWidth=1.5;ctx.stroke();ctx.strokeStyle='#d6a47c';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(-12,-30);ctx.lineTo(dodging?-25:-19,dodging?-16:-25);ctx.moveTo(12,-30);ctx.lineTo(dodging?25:20,dodging?-34:-20);ctx.stroke();ctx.fillStyle='#d6a47c';ctx.beginPath();ctx.arc(0,-49,13,0,Math.PI*2);ctx.fill();ctx.fillStyle='#1f2937';ctx.beginPath();ctx.arc(0,-53,13,Math.PI,Math.PI*2);ctx.lineTo(13,-48);ctx.lineTo(-13,-48);ctx.fill();ctx.fillStyle='#111827';ctx.beginPath();ctx.arc(-4,-49,1.3,0,Math.PI*2);ctx.arc(5,-49,1.3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='900 8px Inter, sans-serif';ctx.textAlign='center';ctx.fillText(p.initials,0,-18);ctx.restore();if(!out&&!compact){ctx.fillStyle='rgba(3,4,8,.72)';ctx.font='900 9px Inter, sans-serif';ctx.textAlign='center';const label=p.name.length>13?p.name.slice(0,12)+'…':p.name,w=ctx.measureText(label).width+12;ctx.fillRect(p.x-w/2,p.y-p.r*3.7-13,w,15);ctx.fillStyle='#fff';ctx.fillText(label,p.x,p.y-p.r*3.7-2)}}
+function showResult(now){if(resultShown)return;resultShown=true;showPhase('dodgeball','winner');document.getElementById('dodgeball-winner-name').textContent=winner?winner.name:'No one';document.getElementById('dodgeball-winner-detail').textContent='PANIC COURT SURVIVOR';const elapsed=Math.max(0,(now-startAt)/1000);document.getElementById('dodgeball-winner-sub').textContent=(winner?winner.dodges:0)+' evasive dives · '+(winner?winner.nearMisses:0)+' near misses · '+elapsed.toFixed(1)+'s survived';const cards=[['Evasive Moves',String(winner?winner.dodges:0),'Champion dodges'],['Opening Field',String(n),eliminated+' players eliminated'],['Panic Volley',String(totalThrows),totalDodges+' total dodges']];document.getElementById('dodgeball-result-cards').replaceChildren(...cards.map(([label,value,note])=>{const box=document.createElement('div');box.className='rounded-2xl border border-white/10 bg-white/[.035] p-4 text-left';box.innerHTML='<div class="text-[8px] text-rose-400 font-black uppercase tracking-[0.18em]">'+label+'</div><div class="text-2xl font-black text-white mt-1">'+value+'</div><div class="text-[10px] text-gray-500 mt-2">'+note+'</div>';return box}))}
+function loop(now){const dt=Math.max(1,Math.min(34,now-last));last=now;update(now,dt);drawCourt(now);if(finishAt&&now>=finishAt){showResult(now);return}requestAnimationFrame(loop)}updateHUD(performance.now());requestAnimationFrame(loop)}
 
 /* ==================== SLIPPERY MOP SPRINT ==================== */
 function runMopSprint() {
@@ -17162,6 +17038,6 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a303b5099b79f8e6',t:'MTc4NzU4ODY2NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a303c0409ad381ce',t:'MTc4NzU4OTEyNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 >
