@@ -1335,21 +1335,63 @@
   </div>
 </div>
 
-<!-- ==================== SWORD DUEL (1v1) ==================== -->
-<div id="sword-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
-  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
-    <div class="text-center mb-4"><div class="text-[#94a3b8] text-sm font-bold uppercase tracking-widest mb-2">⚔️ Sword Duel</div><h1 class="text-4xl md:text-5xl font-black text-white">Trial by Blade</h1></div>
-    <div id="sword-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Duelists draw their blades...</div></div>
-    <div id="sword-phase-fight" class="hidden w-full max-w-4xl">
-      <div class="flex justify-between items-end mb-3 px-8">
-        <div class="text-center w-56"><div class="text-3xl font-black text-[#f97316]" id="sword-p1-name">P1</div><div class="w-full h-4 bg-white/10 rounded-full mt-2 overflow-hidden"><div id="sword-p1-hp" class="h-full bg-[#f97316] transition-all duration-300" style="width:100%"></div></div><div class="text-xs text-gray-500 mt-1" id="sword-p1-hp-text">100 HP</div></div>
-        <div class="text-4xl font-black text-[#ffd700]">⚔️</div>
-        <div class="text-center w-56"><div class="text-3xl font-black text-[#38bdf8]" id="sword-p2-name">P2</div><div class="w-full h-4 bg-white/10 rounded-full mt-2 overflow-hidden"><div id="sword-p2-hp" class="h-full bg-[#38bdf8] transition-all duration-300" style="width:100%"></div></div><div class="text-xs text-gray-500 mt-1" id="sword-p2-hp-text">100 HP</div></div>
+<!-- ==================== PROFESSIONAL SWORD DUEL ==================== -->
+<div id="sword-overlay" class="hidden fixed inset-0 bg-[#020305] z-50 overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 50% 18%,rgba(251,191,36,.12),transparent 34%),linear-gradient(135deg,rgba(185,28,28,.08),transparent 42%,rgba(2,132,199,.08));"></div>
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-3 md:p-5 overflow-y-auto">
+    <div class="w-full max-w-6xl">
+      <header class="flex items-center justify-between gap-4 mb-3 px-1">
+        <div class="flex items-center gap-3"><span class="px-2.5 py-1 rounded-md bg-red-600 text-white text-[10px] font-black tracking-[0.2em]">LIVE</span><div><div class="text-[#fbbf24] text-[10px] font-black uppercase tracking-[0.24em]">Iron Crown Championship</div><h1 class="text-2xl md:text-3xl font-black text-white leading-tight">Duel of Blades</h1></div></div>
+        <div class="hidden sm:flex items-center gap-2 text-[10px] font-black uppercase tracking-wider"><span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300">Single Duel</span><span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300">30 Seconds</span><span class="px-3 py-1.5 rounded-full bg-[#fbbf24]/10 border border-[#fbbf24]/20 text-[#fbbf24]">Decisive Disarm</span></div>
+      </header>
+
+      <div id="sword-phase-intro" class="text-center glass rounded-3xl p-8 md:p-12 border border-[#fbbf24]/20">
+        <div class="text-[#fbbf24] text-xs font-black uppercase tracking-[0.28em] mb-5">The Main Event</div>
+        <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-4 max-w-3xl mx-auto">
+          <div><div class="text-[10px] text-red-400 font-black uppercase tracking-widest mb-2">Crimson Knight</div><div id="sword-intro-p1" class="text-2xl md:text-4xl font-black text-white break-words">DUELIST 1</div></div>
+          <div class="w-16 h-16 rounded-full flex items-center justify-center bg-gradient-to-br from-[#fbbf24] to-[#b45309] text-black font-black text-2xl shadow-[0_0_35px_rgba(251,191,36,.35)]">⚔</div>
+          <div><div class="text-[10px] text-sky-400 font-black uppercase tracking-widest mb-2">Azure Knight</div><div id="sword-intro-p2" class="text-2xl md:text-4xl font-black text-white break-words">DUELIST 2</div></div>
+        </div>
       </div>
-      <canvas id="sword-canvas" width="800" height="400" class="mx-auto rounded-2xl border border-white/10"></canvas>
-      <div class="text-center mt-4 h-8"><div id="sword-commentary" class="text-lg font-bold text-[#ffd700]">En garde!</div></div>
+
+      <div id="sword-phase-fight" class="hidden w-full">
+        <div class="grid grid-cols-[1fr_96px_1fr] sm:grid-cols-[1fr_150px_1fr] md:grid-cols-[1fr_180px_1fr] items-stretch rounded-2xl overflow-hidden border border-white/10 bg-black/70 mb-3 shadow-2xl">
+          <div class="relative p-3 md:px-5 md:py-3 border-r border-white/10" style="background:linear-gradient(90deg,rgba(185,28,28,.24),transparent);">
+            <div class="text-[9px] text-red-400 font-black uppercase tracking-[0.2em]">Crimson Knight</div><div class="flex items-end justify-between gap-2"><div id="sword-p1-name" class="text-lg md:text-2xl font-black text-white truncate">CRIMSON</div><div id="sword-p1-score" class="text-2xl font-black text-red-400">0</div></div>
+            <div class="h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden"><div id="sword-p1-hp" class="h-full bg-gradient-to-r from-red-800 to-amber-400 transition-all duration-150" style="width:100%"></div></div>
+            <div class="flex justify-between mt-1 text-[8px] font-black uppercase tracking-wider text-gray-600"><span id="sword-p1-hp-text">100 GUARD</span><span>Clean strikes</span></div>
+          </div>
+          <div class="flex flex-col items-center justify-center px-2 bg-[#08080b]">
+            <div class="text-[9px] font-black text-gray-500 uppercase tracking-[0.22em]">Final Duel</div><div id="sword-clock" class="text-3xl md:text-4xl font-black tabular-nums text-[#fbbf24] leading-none my-1">0:30</div><button id="sword-audio-toggle" onclick="toggleSwordAudio()" class="text-[8px] font-black uppercase tracking-wider text-gray-500 hover:text-white">🔊 Steel Audio</button>
+          </div>
+          <div class="relative p-3 md:px-5 md:py-3 border-l border-white/10 text-right" style="background:linear-gradient(270deg,rgba(2,132,199,.24),transparent);">
+            <div class="text-[9px] text-sky-400 font-black uppercase tracking-[0.2em]">Azure Knight</div><div class="flex flex-row-reverse items-end justify-between gap-2"><div id="sword-p2-name" class="text-lg md:text-2xl font-black text-white truncate">AZURE</div><div id="sword-p2-score" class="text-2xl font-black text-sky-400">0</div></div>
+            <div class="h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden"><div id="sword-p2-hp" class="h-full ml-auto bg-gradient-to-l from-sky-800 to-amber-400 transition-all duration-150" style="width:100%"></div></div>
+            <div class="flex justify-between mt-1 text-[8px] font-black uppercase tracking-wider text-gray-600"><span>Clean strikes</span><span id="sword-p2-hp-text">100 GUARD</span></div>
+          </div>
+        </div>
+
+        <div class="relative max-w-5xl mx-auto rounded-2xl overflow-hidden border border-[#fbbf24]/25 shadow-[0_25px_80px_rgba(0,0,0,.65)]">
+          <canvas id="sword-canvas" width="1000" height="500" class="block w-full bg-[#030406]"></canvas>
+          <div class="absolute top-3 left-3 px-3 py-1.5 rounded-lg bg-black/70 border border-white/10 text-[9px] font-black text-white tracking-[0.18em]">COURTYARD CAM 01</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-[1fr_minmax(280px,1.5fr)_1fr] gap-2 md:gap-3 mt-3 items-stretch">
+          <div class="rounded-xl border border-red-500/20 bg-red-950/20 px-4 py-2 flex items-center justify-between"><div><div class="text-[8px] text-gray-600 uppercase font-black tracking-wider">Blade work</div><div class="text-sm font-black text-white"><span id="sword-p1-landed">0</span>/<span id="sword-p1-thrown">0</span></div></div><div class="text-right"><div class="text-[8px] text-gray-600 uppercase font-black tracking-wider">Parries</div><div id="sword-p1-parries" class="text-sm font-black text-red-400">0</div></div></div>
+          <div class="rounded-xl border border-[#fbbf24]/20 bg-black/60 px-4 py-2 flex items-center justify-center text-center"><div id="sword-commentary" class="text-sm md:text-base font-black text-[#fbbf24] truncate">The duelists await the marshal's signal...</div></div>
+          <div class="rounded-xl border border-sky-500/20 bg-sky-950/20 px-4 py-2 flex items-center justify-between"><div><div class="text-[8px] text-gray-600 uppercase font-black tracking-wider">Blade work</div><div class="text-sm font-black text-white"><span id="sword-p2-landed">0</span>/<span id="sword-p2-thrown">0</span></div></div><div class="text-right"><div class="text-[8px] text-gray-600 uppercase font-black tracking-wider">Parries</div><div id="sword-p2-parries" class="text-sm font-black text-sky-400">0</div></div></div>
+        </div>
+      </div>
+
+      <div id="sword-phase-winner" class="hidden">
+        <div class="max-w-3xl mx-auto glass rounded-3xl border border-[#fbbf24]/25 p-7 md:p-10 text-center shadow-[0_30px_100px_rgba(0,0,0,.7)]">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#b45309] text-white text-[10px] font-black uppercase tracking-[0.2em] mb-5"><span class="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse"></span>Official Result</div>
+          <div class="text-[#fbbf24] text-sm font-black uppercase tracking-[0.25em] mb-2">Champion</div><div id="sword-winner-name" class="text-5xl md:text-7xl font-black text-white mb-2 break-words"></div><div id="sword-winner-method" class="text-xl md:text-2xl text-[#fbbf24] font-black mb-2">VICTORY BY DISARM</div><div id="sword-winner-sub" class="text-sm text-gray-500 mb-6"></div>
+          <div id="sword-result-cards" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-7"></div>
+          <div class="flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-sm font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-sm font-bold">✕ Close</button></div>
+        </div>
+      </div>
     </div>
-    <div id="sword-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">⚔️</div><div class="text-2xl text-[#ffd700] font-bold mb-2">VICTORIOUS</div><div id="sword-winner-name" class="text-7xl font-black text-white mb-2"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
   </div>
 </div>
 
@@ -5853,159 +5895,101 @@ function startBoxing(p1Name, p2Name) {
   requestAnimationFrame(loop);
 }
 
-function startSwordDuel(p1Name, p2Name) {
-  showPhase('sword', 'fight');
-  const canvas = document.getElementById('sword-canvas'); const ctx = canvas.getContext('2d');
-  const W = 800, H = 400, groundY = 330;
-  let frame = 0, gameOver = false, cameraShake = 0, particles = [], hitEffects = [], popups = [], clashSparks = [];
-  let roundNum = 1, maxRounds = 3, p1RoundWins = 0, p2RoundWins = 0, roundOver = false, roundPaused = false;
-  const commentary = document.getElementById('sword-commentary');
-  const p1 = { name:p1Name, x:220, y:groundY, color:'#f97316', hp:100, facing:1, state:'idle', stateTimer:0, stun:0, special:0, bounce:0, footPhase:0, enGarde:true };
-  const p2 = { name:p2Name, x:580, y:groundY, color:'#38bdf8', hp:100, facing:-1, state:'idle', stateTimer:0, stun:0, special:0, bounce:0, footPhase:0, enGarde:true };
+/* ==================== PROFESSIONAL SWORD DUEL — CINEMATIC SINGLE BOUT ==================== */
+let swordAudioEnabled=true;
+let swordAudioCtx=null;
+let swordAmbienceSource=null;
+let swordAmbienceGain=null;
+function getSwordAudioContext(){
+  if(!swordAudioEnabled)return null;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
+  if(!swordAudioCtx)swordAudioCtx=new AC();if(swordAudioCtx.state==='suspended')swordAudioCtx.resume().catch(()=>{});return swordAudioCtx;
+}
+function startSwordAmbience(){
+  const ac=getSwordAudioContext();if(!ac||swordAmbienceSource)return;const buffer=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate),data=buffer.getChannelData(0);
+  for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(.3+Math.sin(i*.0004)*.12);
+  const source=ac.createBufferSource(),filter=ac.createBiquadFilter(),gain=ac.createGain();source.buffer=buffer;source.loop=true;filter.type='lowpass';filter.frequency.value=460;gain.gain.value=.018;source.connect(filter);filter.connect(gain);gain.connect(ac.destination);source.start();swordAmbienceSource=source;swordAmbienceGain=gain;
+}
+function stopSwordAmbience(){if(swordAmbienceSource){try{swordAmbienceSource.stop()}catch(e){}swordAmbienceSource=null}swordAmbienceGain=null;}
+function playSwordWhoosh(power){
+  const ac=getSwordAudioContext();if(!ac)return;const now=ac.currentTime,buffer=ac.createBuffer(1,ac.sampleRate*.16,ac.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);const source=ac.createBufferSource(),filter=ac.createBiquadFilter(),gain=ac.createGain();source.buffer=buffer;filter.type='bandpass';filter.frequency.setValueAtTime(power?900:1250,now);filter.frequency.exponentialRampToValueAtTime(280,now+.16);gain.gain.setValueAtTime(power?.055:.035,now);gain.gain.exponentialRampToValueAtTime(.0001,now+.16);source.connect(filter);filter.connect(gain);gain.connect(ac.destination);source.start();
+}
+function playSwordClang(power){
+  const ac=getSwordAudioContext();if(!ac)return;const now=ac.currentTime;[760,1180,1760].forEach((freq,i)=>{const osc=ac.createOscillator(),gain=ac.createGain();osc.type=i?'sine':'triangle';osc.frequency.setValueAtTime(freq,now);osc.frequency.exponentialRampToValueAtTime(freq*.72,now+(power?.65:.38));gain.gain.setValueAtTime((power?.1:.06)/(i+1),now);gain.gain.exponentialRampToValueAtTime(.0001,now+(power?.7:.42));osc.connect(gain);gain.connect(ac.destination);osc.start();osc.stop(now+(power?.72:.45));});
+}
+function toggleSwordAudio(){swordAudioEnabled=!swordAudioEnabled;const b=document.getElementById('sword-audio-toggle');if(b)b.textContent=swordAudioEnabled?'🔊 Steel Audio':'🔇 Audio Muted';if(swordAudioEnabled)startSwordAmbience();else stopSwordAmbience();}
 
-  function roundDifficulty() { const t = (roundNum-1)/2; return { aiSpeed: 2+ t*1.8, aiAggro: 0.022+t*0.025, dmgMult: 1+t*0.4 }; }
-  function updateStats() {
-    document.getElementById('sword-p1-hp').style.width = Math.max(0,p1.hp)+'%'; document.getElementById('sword-p1-hp-text').textContent = Math.max(0,Math.round(p1.hp))+' HP · '+p1RoundWins+' rounds';
-    document.getElementById('sword-p2-hp').style.width = Math.max(0,p2.hp)+'%'; document.getElementById('sword-p2-hp-text').textContent = Math.max(0,Math.round(p2.hp))+' HP · '+p2RoundWins+' rounds';
+function startSwordDuel(p1Name,p2Name){
+  showPhase('sword','fight');
+  const canvas=document.getElementById('sword-canvas'),ctx=canvas.getContext('2d');
+  const W=1000,H=500,groundY=424,secondsPerDuel=30,preBellDelay=2200;
+  const duelStartAt=performance.now()+preBellDelay,duelEndAt=duelStartAt+secondsPerDuel*1000,guaranteedFinaleAt=duelStartAt+22500+Math.random()*2500;
+  let frame=0,bellRung=false,gameOver=false,resultShown=false,fightStoppedAt=0,cameraShake=0,strikeZoom=0,flashAlpha=0,finale=null;
+  let particles=[],rings=[],popups=[],torchSparks=[];
+  const commentary=document.getElementById('sword-commentary');
+  const skinTones=['#8b542f','#b86f43','#d18b5b','#e0a272','#f0bd8e','#6f4028'];
+  const stars=Array.from({length:80},(_,i)=>({x:(i*113)%W,y:18+(i*47)%155,r:.6+(i%3)*.45,a:.28+(i%5)*.1}));
+  function hash(name){let h=0;for(const c of String(name))h=((h<<5)-h)+c.charCodeAt(0);return Math.abs(h)}
+  function makeDuelist(name,corner){const red=corner==='red';return{name,corner,x:red?300:700,y:groundY,facing:red?1:-1,color:red?'#b91c1c':'#0369a1',accent:red?'#fb7185':'#38bdf8',metal:red?'#d6b06d':'#b6d8e9',skin:skinTones[hash(name)%skinTones.length],hair:hash(name)%3,guard:100,score:0,thrown:0,landed:0,parries:0,attack:null,state:'guard',stateTimer:0,stateTotal:0,nextAction:duelStartAt+300+Math.random()*400,comboQueue:[],stun:0,dodgeTimer:0,parryTimer:0,moveDir:0,bob:Math.random()*6.28,hitFlash:0,disarmed:false,victoryLift:0};}
+  const p1=makeDuelist(p1Name,'red'),p2=makeDuelist(p2Name,'blue');
+  function setCommentary(t){commentary.textContent=t;}
+  function config(type){return({thrust:{duration:11,hitAt:5,reach:150,accuracy:.67,guard:7,points:1,power:false},slash:{duration:14,hitAt:7,reach:126,accuracy:.59,guard:10,points:1.5,power:false},overhead:{duration:17,hitAt:9,reach:117,accuracy:.48,guard:16,points:2.5,power:true},lowcut:{duration:13,hitAt:7,reach:126,accuracy:.6,guard:9,points:1.4,power:false},lunge:{duration:15,hitAt:8,reach:169,accuracy:.54,guard:14,points:2.1,power:true},crosscut:{duration:16,hitAt:8,reach:132,accuracy:.52,guard:13,points:2,power:true}})[type];}
+  function moveLabel(type){return({thrust:'straight thrust',slash:'diagonal cut',overhead:'overhead strike',lowcut:'low cut',lunge:'driving lunge',crosscut:'cross-cut'})[type]||'strike';}
+  function startAttack(a,d,type,now){if(gameOver||finale||a.attack||a.stun>0)return;const c=config(type);a.attack={type,c,defender:d};a.state=type;a.stateTimer=c.duration;a.stateTotal=c.duration;a.thrown++;const comboGap=a.comboQueue.length?65+Math.random()*65:180+Math.random()*220;a.nextAction=now+c.duration*(a.comboQueue.length?13:17)+comboGap;playSwordWhoosh(c.power);}
+  function sparkBurst(x,y,big,color){const count=big?32:18;for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,s=(big?3.5:2)+Math.random()*(big?8:5);particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:18+Math.random()*22,maxLife:40,size:1+Math.random()*2.6,color:color||'#fbbf24'});}rings.push({x,y,life:big?25:17,maxLife:big?25:17,big});}
+  function popup(x,y,text,color,big){popups.push({x,y,text,color,big,life:48,maxLife:48});}
+  function resolveAttack(a,d){const c=a.attack.c,type=a.attack.type,dist=Math.abs(a.x-d.x);if(d.parryTimer>0){d.parries++;d.score+=.6;a.stun=c.power?12:8;a.comboQueue=[];sparkBurst((a.x+d.x)/2,d.y-92,true,'#fff7c2');cameraShake=8;strikeZoom=.055;playSwordClang(true);popup((a.x+d.x)/2,d.y-140,'PERFECT PARRY','#fbbf24',true);setCommentary(d.name+' catches the blade and turns it away!');return;}if(d.dodgeTimer>0){d.score+=.15;a.comboQueue=[];setCommentary(d.name+' slips outside the '+moveLabel(type)+'.');return;}let chance=c.accuracy-Math.max(0,dist-c.reach+18)*.009;if(dist>c.reach||Math.random()>Math.max(.08,chance)){a.comboQueue=[];if(Math.random()<.5)setCommentary(a.name+' narrowly misses the '+moveLabel(type)+'.');return;}a.landed++;a.score+=c.points*(1+Math.random()*.22);d.guard=Math.max(10,d.guard-c.guard);d.stun=c.power?10:6;d.hitFlash=1;sparkBurst(d.x-a.facing*25,d.y-98,c.power,a.accent);popup(d.x,d.y-148,'CLEAN '+moveLabel(type).toUpperCase(),a.accent,c.power);cameraShake=c.power?9:5;strikeZoom=c.power?.07:.04;flashAlpha=c.power?.16:.07;playSwordClang(c.power);setCommentary(a.name+' lands a clean '+moveLabel(type)+'!');}
+  function chooseAction(f,opp,now){if(now<f.nextAction||f.attack||f.stun>0||f.parryTimer>0||f.dodgeTimer>0)return;const dist=Math.abs(f.x-opp.x),r=Math.random();if(f.comboQueue.length&&dist<175){startAttack(f,opp,f.comboQueue.shift(),now);return;}if(opp.attack&&r<.46){if(Math.random()<.68){f.parryTimer=11+Math.floor(Math.random()*7);f.state='parry';}else{f.dodgeTimer=12+Math.floor(Math.random()*7);f.state='dodge';f.moveDir=-f.facing;}f.nextAction=now+150+Math.random()*150;return;}if(dist>145){f.state='advance';f.stateTimer=13+Math.floor(Math.random()*11);f.moveDir=f.facing;f.nextAction=now+160+Math.random()*120;return;}if(dist<82&&r<.2){f.state='retreat';f.stateTimer=10;f.moveDir=-f.facing;f.nextAction=now+180;return;}if(Math.random()<.52){const combos=[['thrust','slash'],['lowcut','overhead'],['slash','crosscut'],['thrust','lowcut','lunge']];const combo=combos[Math.floor(Math.random()*combos.length)];f.comboQueue=combo.slice(1);startAttack(f,opp,combo[0],now);return;}const moves=['thrust','slash','overhead','lowcut','lunge','crosscut'];startAttack(f,opp,moves[Math.floor(Math.random()*moves.length)],now);}
+  function updateDuelist(f,opp,now){f.facing=f.x<opp.x?1:-1;if(f.stun>0)f.stun--;if(f.hitFlash>0)f.hitFlash*=.8;if(f.parryTimer>0){f.parryTimer--;f.state='parry';}if(f.dodgeTimer>0){f.dodgeTimer--;f.x+=f.moveDir*2.15;f.state='dodge';}if(f.attack){if(!f.attack.resolved&&f.stateTimer<=f.attack.c.hitAt){f.attack.resolved=true;resolveAttack(f,f.attack.defender);}f.stateTimer--;if(f.stateTimer<=0){f.attack=null;f.state='guard';}}else if(f.stateTimer>0){const speed=f.state==='advance'?2.55:f.state==='retreat'?2.25:1;f.x+=f.moveDir*speed;f.stateTimer--;if(f.stateTimer<=0)f.state='guard';}f.x=Math.max(155,Math.min(845,f.x));chooseAction(f,opp,now);}
+  function spacing(){const gap=p2.x-p1.x;if(gap<76){const n=(76-gap)/2;p1.x-=n;p2.x+=n;}}
+  function updateHUD(){function one(p,n){document.getElementById('sword-p'+n+'-hp').style.width=Math.round(p.guard)+'%';document.getElementById('sword-p'+n+'-hp-text').textContent=Math.round(p.guard)+' GUARD';document.getElementById('sword-p'+n+'-score').textContent=p.landed;document.getElementById('sword-p'+n+'-landed').textContent=p.landed;document.getElementById('sword-p'+n+'-thrown').textContent=p.thrown;document.getElementById('sword-p'+n+'-parries').textContent=p.parries;}one(p1,1);one(p2,2);}
+
+  function drawArena(now){const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#02040b');sky.addColorStop(.48,'#10182a');sky.addColorStop(1,'#15100c');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);stars.forEach(s=>{ctx.globalAlpha=s.a+Math.sin(frame*.025+s.x)*.14;ctx.fillStyle='#dbeafe';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();});ctx.globalAlpha=1;const moon=ctx.createRadialGradient(820,90,4,820,90,58);moon.addColorStop(0,'rgba(255,248,210,.95)');moon.addColorStop(.45,'rgba(253,230,138,.35)');moon.addColorStop(1,'rgba(253,230,138,0)');ctx.fillStyle=moon;ctx.beginPath();ctx.arc(820,90,58,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e8dfbd';ctx.beginPath();ctx.arc(820,90,27,0,Math.PI*2);ctx.fill();
+    // Castle walls, towers and battlements
+    ctx.fillStyle='#17191f';ctx.fillRect(0,150,W,170);for(let x=0;x<W;x+=54){ctx.fillRect(x,132,34,28);}ctx.fillStyle='#101218';ctx.fillRect(35,88,120,235);ctx.fillRect(845,88,120,235);for(const x of [35,65,95,125,845,875,905,935])ctx.fillRect(x,68,23,35);
+    ctx.strokeStyle='rgba(255,255,255,.045)';ctx.lineWidth=2;for(let y=175;y<320;y+=31){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}for(let x=20;x<W;x+=65){ctx.beginPath();ctx.moveTo(x,150);ctx.lineTo(x,320);ctx.stroke();}
+    // Hanging heraldic banners
+    [['#7f1d1d',195],['#075985',735]].forEach(([c,x])=>{ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(x,145);ctx.lineTo(x+72,145);ctx.lineTo(x+72,245);ctx.lineTo(x+36,223);ctx.lineTo(x,245);ctx.closePath();ctx.fill();ctx.strokeStyle='#d6b06d';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='rgba(255,255,255,.65)';ctx.font='900 27px serif';ctx.textAlign='center';ctx.fillText('⚔',x+36,194);});
+    // Torch pools and flames
+    [178,500,822].forEach((x,i)=>{const flicker=Math.sin(now*.015+i)*4;const glow=ctx.createRadialGradient(x,264,2,x,264,78+flicker);glow.addColorStop(0,'rgba(251,146,60,.34)');glow.addColorStop(1,'rgba(251,146,60,0)');ctx.fillStyle=glow;ctx.fillRect(x-90,174,180,180);ctx.fillStyle='#5b4633';ctx.fillRect(x-3,250,6,45);ctx.fillStyle='#fb923c';ctx.beginPath();ctx.moveTo(x,254);ctx.quadraticCurveTo(x-12,239+flicker,x,224);ctx.quadraticCurveTo(x+13,240-flicker,x,254);ctx.fill();ctx.fillStyle='#fde68a';ctx.beginPath();ctx.moveTo(x,251);ctx.quadraticCurveTo(x-6,242,x,233);ctx.quadraticCurveTo(x+6,243,x,251);ctx.fill();});
+    // Spectators in silhouette
+    for(let i=0;i<42;i++){const x=(i*83)%W,y=285+(i%3)*8;ctx.fillStyle=i%2?'#08090c':'#0d0f14';ctx.beginPath();ctx.arc(x,y-15,7+(i%3),0,Math.PI*2);ctx.fill();ctx.fillRect(x-7,y-9,14,34);}
+    // Stone dueling floor
+    const floor=ctx.createLinearGradient(0,315,0,H);floor.addColorStop(0,'#34363d');floor.addColorStop(1,'#15171c');ctx.fillStyle=floor;ctx.fillRect(0,315,W,H-315);ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=2;for(let y=345;y<H;y+=38){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}for(let x=-80;x<W+80;x+=90){ctx.beginPath();ctx.moveTo(x,315);ctx.lineTo(x+70,H);ctx.stroke();}
+    ctx.strokeStyle='rgba(251,191,36,.22)';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(W/2,402,150,48,0,0,Math.PI*2);ctx.stroke();
   }
-  function setCommentary(t) { commentary.textContent = t; }
-  function spawnSpark(x,y,big) {
-    for (let i=0;i<(big?18:10);i++) { const a=(Math.PI*2/(big?18:10))*i+Math.random()*0.3; particles.push({x,y,vx:Math.cos(a)*(big?7:5),vy:Math.sin(a)*(big?7:5),life:big?26:18,maxLife:big?26:18,size:big?3:2}); }
-    hitEffects.push({x,y,life:big?28:18,maxLife:big?28:18,big});
-    clashSparks.push({x,y,life:20,maxLife:20,lines:6});
-  }
-  function spawnPopup(x,y,text,color) { popups.push({x,y,text,color,life:45,maxLife:45}); }
-  function drawArena() {
-    const grad = ctx.createRadialGradient(W/2,H/2,50,W/2,H/2,400); grad.addColorStop(0,'#241a10'); grad.addColorStop(1,'#0f0a08'); ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
-    ctx.fillStyle='#3a2a1a'; ctx.fillRect(0,groundY,W,H-groundY);
-    ctx.strokeStyle='rgba(255,255,255,0.04)'; for (let x=0;x<W;x+=40) { ctx.beginPath(); ctx.moveTo(x,groundY); ctx.lineTo(x,H); ctx.stroke(); }
-    ctx.fillStyle='rgba(0,0,0,0.7)'; ctx.beginPath(); ctx.roundRect(W/2-70,10,140,32,8); ctx.fill();
-    ctx.fillStyle='#ffd700'; ctx.font='bold 16px "Space Grotesk", Inter'; ctx.textAlign='center'; ctx.fillText('ROUND '+roundNum+' / '+maxRounds, W/2, 32);
-  }
-  function drawSwordArc(x,y,angle,len,alpha,color) {
-    ctx.save(); ctx.translate(x,y); ctx.rotate(angle); ctx.strokeStyle=color||'#fff'; ctx.globalAlpha=alpha||0.35; ctx.lineWidth=3;
-    ctx.beginPath(); ctx.arc(0,0,len,-0.8,0.8); ctx.stroke(); ctx.globalAlpha=1; ctx.restore();
-  }
-  function drawFighter(p) {
-    const f=p.facing, breathe=Math.sin(frame*0.08+p.footPhase)*2;
-    p.bounce = p.enGarde ? Math.sin(frame*0.14+p.footPhase)*3 : 0;
-    const sx = p.x+(cameraShake?(Math.random()-0.5)*cameraShake:0), sy = p.y - p.bounce;
-    ctx.save(); ctx.translate(sx,sy); if (f===-1) ctx.scale(-1,1);
-    ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(0,5,26,6,0,0,Math.PI*2); ctx.fill();
-    if (p.stun>0) { ctx.fillStyle=`rgba(255,255,0,${p.stun/20*0.3})`; ctx.beginPath(); ctx.arc(0,-50,42,0,Math.PI*2); ctx.fill(); }
-    ctx.strokeStyle=p.color; ctx.lineWidth=7; ctx.lineCap='round';
-    let stance = p.state==='advance'||p.state==='lunge'||p.state==='flurry' ? 24 : p.state==='retreat' ? 14 : p.state==='feint' ? 20 : 12;
-    ctx.beginPath(); ctx.moveTo(-stance,-28); ctx.lineTo(-stance-4,0); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(stance,-28); ctx.lineTo(stance+4,0); ctx.stroke();
-    ctx.fillStyle=p.color; ctx.beginPath(); ctx.moveTo(-16,-68); ctx.lineTo(16,-68); ctx.lineTo(15,-40); ctx.lineTo(-15,-40); ctx.closePath(); ctx.fill();
-    const headY=-80+breathe; ctx.fillStyle='#e8c8a0'; ctx.beginPath(); ctx.arc(0,headY,13,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#2a2a2a'; ctx.beginPath(); ctx.arc(0,headY-4,13,Math.PI,0); ctx.fill();
-    let armX=20, armY=-62, swordAngle=0.15, bladeLen=42;
-    if (p.state==='advance') { armX=24; swordAngle=0.1+Math.sin(frame*0.2)*0.1; }
-    else if (p.state==='retreat') { armX=12; swordAngle=0.5; }
-    else if (p.state==='lunge') { const lr=1-(p.stateTimer/18); armX=20+lr*50; swordAngle=0.15-lr*1.3; bladeLen=48; drawSwordArc(armX,armY,swordAngle+f,38,0.5,'#fff'); }
-    else if (p.state==='feint') { const fr=Math.sin(frame*0.5)*0.4; armX=22+fr*15; swordAngle=0.2-fr; drawSwordArc(armX,armY,swordAngle+f,30,0.25,'#94a3b8'); }
-    else if (p.state==='flurry') { const fr=(Math.sin(frame*1.6)+1)/2; armX=20+fr*55; armY=-62-fr*12; swordAngle=0.15-fr*1.7; bladeLen=50; drawSwordArc(armX,armY,swordAngle+f,40,0.6,'#ffd700'); }
-    else if (p.state==='parry'||p.state==='riposte') { armX=14; armY=-70; swordAngle=-0.9; }
-    else if (p.state==='dodge') { armX=8; armY=-55; swordAngle=0.6; }
-    else if (p.enGarde) { swordAngle=0.15+Math.sin(frame*0.12+p.footPhase)*0.08; }
-    ctx.strokeStyle='#e8c8a0'; ctx.lineWidth=6; ctx.beginPath(); ctx.moveTo(14,-64); ctx.lineTo(armX,armY); ctx.stroke();
-    ctx.save(); ctx.translate(armX,armY); ctx.rotate(swordAngle);
-    ctx.strokeStyle= p.state==='parry'||p.state==='riposte' ? '#fff' : p.state==='flurry' ? '#ffd700' : '#e2e8f0';
-    ctx.lineWidth = (p.state==='lunge'||p.state==='flurry'||p.state==='riposte')?5:4;
-    ctx.shadowColor = (p.state==='lunge'||p.state==='flurry'||p.state==='riposte') ? '#fff' : 'transparent'; ctx.shadowBlur = (p.state==='lunge'||p.state==='flurry')?14:0;
-    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(bladeLen,0); ctx.stroke();
-    ctx.strokeStyle='#94a3b8'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(-4,-5); ctx.lineTo(-4,5); ctx.stroke();
-    ctx.shadowBlur=0; ctx.restore();
-    ctx.strokeStyle='#e8c8a0'; ctx.lineWidth=6; ctx.beginPath(); ctx.moveTo(-14,-64); ctx.lineTo(-20,-45); ctx.stroke();
-    ctx.fillStyle='#fff'; ctx.font='bold 10px Inter'; ctx.textAlign='center'; ctx.fillText(p.name.substring(0,10), 0, headY-18);
-    ctx.restore();
-  }
-  function updateParticles() {
-    particles = particles.filter(pt => { pt.x+=pt.vx; pt.y+=pt.vy; pt.vy+=0.08; pt.life--; if (pt.life<=0) return false; const a=pt.life/pt.maxLife; ctx.fillStyle=`rgba(255,220,150,${a})`; ctx.beginPath(); ctx.arc(pt.x,pt.y,pt.size,0,Math.PI*2); ctx.fill(); return true; });
-  }
-  function drawClashSparks() {
-    clashSparks = clashSparks.filter(c => { c.life--; if (c.life<=0) return false; const a=c.life/c.maxLife;
-      for (let i=0;i<c.lines;i++) { const ang=(Math.PI*2/c.lines)*i; ctx.strokeStyle=`rgba(255,255,200,${a})`; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(c.x,c.y); ctx.lineTo(c.x+Math.cos(ang)*18*a,c.y+Math.sin(ang)*18*a); ctx.stroke(); }
-      return true; });
-  }
-  function drawHitEffects() {
-    hitEffects = hitEffects.filter(h => { h.life--; if (h.life<=0) return false; const a=h.life/h.maxLife, r=(h.maxLife-h.life)*(h.big?5:3); ctx.strokeStyle=`rgba(255,255,255,${a})`; ctx.lineWidth=h.big?3:2; ctx.beginPath(); ctx.arc(h.x,h.y,r,0,Math.PI*2); ctx.stroke(); return true; });
-  }
-  function drawPopups() {
-    popups = popups.filter(p => { p.life--; if (p.life<=0) return false; const a=Math.min(1,p.life/20); p.y -= 0.6;
-      ctx.fillStyle = p.color; ctx.globalAlpha = a; ctx.font='bold 15px Inter'; ctx.textAlign='center'; ctx.fillText(p.text, p.x, p.y); ctx.globalAlpha = 1; return true; });
-  }
-  function attack(attacker, defender, type) {
-    if (gameOver || roundOver) return;
-    const diff = roundDifficulty();
-    const dist = Math.abs(attacker.x-defender.x);
-    attacker.state = type || 'lunge'; attacker.stateTimer = type==='flurry' ? 28 : type==='feint' ? 12 : 18;
-    if (type==='feint') { setCommentary(attacker.name+' feints!'); return; }
-    if (dist > 92) { setCommentary(attacker.name+' advances...'); return; }
-    if (defender.state==='parry'||defender.state==='riposte') {
-      setCommentary(defender.name+' parries — counter-riposte!'); spawnSpark((attacker.x+defender.x)/2, defender.y-55, true);
-      cameraShake=6; attacker.stun=16; defender.state='riposte'; defender.stateTimer=14;
-      const riposte = (6+Math.random()*5)*diff.dmgMult; attacker.hp -= riposte; spawnPopup(attacker.x, attacker.y-90, '-'+Math.round(riposte), '#ffd700');
-      if (attacker.hp<=0) { attacker.hp=0; roundOver=true; endRound(defender); }
-      return;
-    }
-    if (defender.state==='dodge'||defender.state==='retreat') { setCommentary(defender.name+' retreats from the strike!'); return; }
-    const dmg = (type==='flurry' ? (16+Math.random()*12) : (5+Math.random()*7)) * diff.dmgMult;
-    defender.hp -= dmg; defender.state='hurt'; defender.stateTimer=12; defender.stun=10;
-    if (type!=='flurry') attacker.special = Math.min(100, attacker.special+14); else attacker.special = 0;
-    spawnSpark(defender.x-attacker.facing*10, defender.y-55, type==='flurry'); spawnPopup(defender.x, defender.y-95, '-'+Math.round(dmg), type==='flurry'?'#ffd700':'#fbbf24');
-    cameraShake = type==='flurry'?10:6;
-    setCommentary(type==='flurry' ? attacker.name+' unleashes a FLURRY!' : attacker.name+' lands a clean hit!');
-    if (defender.hp<=0) { defender.hp=0; roundOver=true; endRound(attacker); }
-  }
-  function aiThink(ai, opp) {
-    if (gameOver || roundOver || roundPaused || ai.stun>0) return;
-    const diff = roundDifficulty();
-    const dist = Math.abs(ai.x-opp.x);
-    ai.facing = ai.x < opp.x ? 1 : -1;
-    ai.footPhase += 0.04;
-    ai.enGarde = ai.state==='idle'||ai.state==='advance'||ai.state==='retreat';
-    const r = Math.random();
-    if (ai.special >= 100 && r < 0.03) { attack(ai, opp, 'flurry'); return; }
-    if (dist > 62) { ai.state='advance'; ai.x += ai.facing*diff.aiSpeed; }
-    else if (dist < 32) { ai.state='retreat'; ai.x -= ai.facing*(1.6+diff.aiSpeed*0.4); }
-    if (r < diff.aiAggro) attack(ai, opp, 'lunge');
-    else if (r < diff.aiAggro+0.012) attack(ai, opp, 'feint');
-    else if (r < diff.aiAggro+0.022) { ai.state='parry'; ai.stateTimer=18; }
-    else if (r < diff.aiAggro+0.032) { ai.state='dodge'; ai.stateTimer=14; }
-    else if (r < diff.aiAggro+0.038) { ai.state='advance'; ai.x += ai.facing*1.5; }
-  }
-  function updatePhysics(p) {
-    if (p.stun>0) p.stun--;
-    if (p.stateTimer>0) { p.stateTimer--; if (p.stateTimer<=0) p.state='idle'; }
-    if (p.x<90) p.x=90; if (p.x>W-90) p.x=W-90;
-  }
-  function endRound(winner) {
-    if (winner === p1) p1RoundWins++; else p2RoundWins++;
-    setCommentary(winner.name+' takes round '+roundNum+'!');
-    roundPaused = true;
-    setTimeout(() => {
-      if (p1RoundWins >= 2 || p2RoundWins >= 2) { endMatch(p1RoundWins>p2RoundWins ? p1.name : p2.name); return; }
-      roundNum++; p1.hp=100; p2.hp=100; p1.special=0; p2.special=0; p1.x=220; p2.x=580; p1.state='idle'; p2.state='idle';
-      roundOver=false; roundPaused=false; setCommentary('Round '+roundNum+' — En garde!');
-    }, 2600);
-  }
-  function endMatch(winner) {
-    gameOver=true; setCommentary(winner+' wins the duel!');
-    setTimeout(() => { showPhase('sword','winner'); document.getElementById('sword-winner-name').textContent = winner; }, 1500);
-  }
-  let animId;
-  function loop() {
-    frame++; ctx.save();
-    if (cameraShake>0) { ctx.translate((Math.random()-0.5)*cameraShake,(Math.random()-0.5)*cameraShake); cameraShake*=0.85; if (cameraShake<0.4) cameraShake=0; }
-    drawArena();
-    if (!gameOver && !roundPaused) { aiThink(p1,p2); aiThink(p2,p1); updatePhysics(p1); updatePhysics(p2); }
-    drawFighter(p1); drawFighter(p2); updateParticles(); drawClashSparks(); drawHitEffects(); drawPopups(); updateStats();
-    ctx.restore();
-    if (!gameOver || particles.length>0 || popups.length>0) animId = requestAnimationFrame(loop);
-  }
-  loop();
+  function drawBlade(handX,handY,angle,length,glow,alpha){ctx.save();ctx.translate(handX,handY);ctx.rotate(angle);ctx.globalAlpha=alpha==null?1:alpha;const blade=ctx.createLinearGradient(0,-4,length,4);blade.addColorStop(0,'#64748b');blade.addColorStop(.45,'#f8fafc');blade.addColorStop(.72,'#94a3b8');blade.addColorStop(1,'#fff');ctx.strokeStyle=blade;ctx.lineWidth=6;ctx.shadowColor=glow||'#e2e8f0';ctx.shadowBlur=glow?12:4;ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(length,0);ctx.stroke();ctx.strokeStyle='#fbbf24';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(4,-10);ctx.lineTo(4,10);ctx.stroke();ctx.strokeStyle='#7c2d12';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(-10,0);ctx.lineTo(4,0);ctx.stroke();ctx.shadowBlur=0;ctx.globalAlpha=1;ctx.restore();}
+  function drawDuelist(p){const f=p.facing,progress=p.attack?1-p.stateTimer/p.stateTotal:0,swing=p.attack?Math.sin(Math.min(1,progress)*Math.PI):0,bob=p.state==='kneel'?20:Math.sin(frame*.11+p.bob)*2;ctx.save();ctx.translate(p.x,p.y+bob);if(f<0)ctx.scale(-1,1);ctx.fillStyle='rgba(0,0,0,.45)';ctx.beginPath();ctx.ellipse(0,7,48,10,0,0,Math.PI*2);ctx.fill();
+    // Cape behind the armor
+    ctx.fillStyle=p.corner==='red'?'rgba(127,29,29,.9)':'rgba(7,89,133,.9)';ctx.beginPath();ctx.moveTo(-24,-112);ctx.quadraticCurveTo(-54,-78+Math.sin(frame*.08)*5,-38,-18);ctx.lineTo(8,-28);ctx.lineTo(18,-102);ctx.closePath();ctx.fill();
+    // Boots and armored legs
+    ctx.strokeStyle='#20242b';ctx.lineWidth=18;ctx.lineCap='round';const knee=p.state==='kneel'?[-23,-10]:[-20,-31];ctx.beginPath();ctx.moveTo(-17,-48);ctx.lineTo(knee[0],knee[1]);ctx.lineTo(-38,0);ctx.stroke();ctx.beginPath();ctx.moveTo(17,-48);ctx.lineTo(24,-24);ctx.lineTo(38,0);ctx.stroke();ctx.strokeStyle=p.metal;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-36,-2);ctx.lineTo(-18,-8);ctx.stroke();ctx.beginPath();ctx.moveTo(36,-2);ctx.lineTo(21,-7);ctx.stroke();
+    // Tunic and breastplate
+    ctx.fillStyle=p.color;ctx.beginPath();ctx.moveTo(-35,-112);ctx.lineTo(35,-112);ctx.lineTo(32,-48);ctx.lineTo(0,-39);ctx.lineTo(-32,-48);ctx.closePath();ctx.fill();const plate=ctx.createLinearGradient(-28,-105,28,-58);plate.addColorStop(0,'#6b7280');plate.addColorStop(.48,'#d1d5db');plate.addColorStop(1,'#4b5563');ctx.fillStyle=plate;ctx.beginPath();ctx.moveTo(-27,-108);ctx.lineTo(27,-108);ctx.lineTo(23,-63);ctx.lineTo(0,-53);ctx.lineTo(-23,-63);ctx.closePath();ctx.fill();ctx.strokeStyle=p.metal;ctx.lineWidth=3;ctx.stroke();ctx.fillStyle=p.color;ctx.fillRect(-7,-104,14,44);
+    // Shoulder armor
+    ctx.fillStyle=p.metal;ctx.beginPath();ctx.ellipse(-31,-105,17,11,-.3,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(31,-105,17,11,.3,0,Math.PI*2);ctx.fill();
+    // Head and helmet
+    ctx.fillStyle=p.skin;ctx.beginPath();ctx.ellipse(1,-139,22,26,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#333840';ctx.beginPath();ctx.arc(0,-148,24,Math.PI,Math.PI*2);ctx.lineTo(24,-139);ctx.lineTo(-23,-139);ctx.closePath();ctx.fill();ctx.fillRect(-24,-142,48,7);ctx.fillStyle=p.metal;ctx.fillRect(-3,-161,6,24);ctx.strokeStyle='#1f2937';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(8,-141);ctx.lineTo(18,-140);ctx.stroke();ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(14,-137,4,2,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#111';ctx.beginPath();ctx.arc(16,-137,1.4,0,Math.PI*2);ctx.fill();
+    // Sword arm pose
+    let handX=33,handY=-99,angle=-.18;const type=p.attack&&p.attack.type;if(type==='thrust'){handX=34+swing*82;handY=-96;angle=0;}else if(type==='slash'){handX=35+swing*47;handY=-105+swing*15;angle=-1.1+swing*1.85;}else if(type==='overhead'){handX=25+swing*35;handY=-121-swing*22;angle=-1.35+swing*1.55;}else if(type==='lowcut'){handX=32+swing*58;handY=-75;angle=.65-swing*.9;}else if(type==='lunge'){handX=38+swing*92;handY=-92;angle=-.08;}else if(type==='crosscut'){handX=30+swing*65;handY=-112+swing*28;angle=1.0-swing*1.7;}if(p.state==='parry'){handX=39;handY=-112;angle=-.88;}if(p.state==='dodge'){handX=18;handY=-91;angle=.38;}if(p.state==='finalAttack'){handX=75;handY=-100;angle=.08;}if(p.state==='finalParry'){handX=48;handY=-112;angle=-.86;}if(p.state==='riposte'){handX=90;handY=-88;angle=-.06;}if(p.state==='victory'){handX=20;handY=-118-p.victoryLift*60;angle=-1.45;}if(p.state==='kneel'){handX=13;handY=-74;angle=.42;}
+    ctx.strokeStyle='#c98d61';ctx.lineWidth=14;ctx.beginPath();ctx.moveTo(27,-103);ctx.quadraticCurveTo(40,-90,handX,handY);ctx.stroke();ctx.fillStyle='#3f2b22';ctx.beginPath();ctx.arc(handX,handY,9,0,Math.PI*2);ctx.fill();
+    // Off-hand guard
+    let offX=-18,offY=-99;if(p.state==='kneel'){offX=-28;offY=-56;}ctx.strokeStyle='#c98d61';ctx.lineWidth=12;ctx.beginPath();ctx.moveTo(-28,-102);ctx.lineTo(offX,offY);ctx.stroke();ctx.fillStyle='#3f2b22';ctx.beginPath();ctx.arc(offX,offY,8,0,Math.PI*2);ctx.fill();
+    if(!p.disarmed){if(p.attack&&swing>.25){ctx.strokeStyle=p.corner==='red'?'rgba(251,113,133,.27)':'rgba(56,189,248,.27)';ctx.lineWidth=12;ctx.beginPath();ctx.arc(handX,handY,80,angle-.45,angle+.45);ctx.stroke();}drawBlade(handX,handY,angle,88,(p.state==='victory'||p.state==='riposte')?p.accent:null);}
+    ctx.fillStyle='#111';ctx.font='900 8px Inter';ctx.textAlign='center';ctx.fillText(p.name.substring(0,10).toUpperCase(),0,-72);ctx.restore();}
+  function drawEffects(){particles=particles.filter(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.13;p.vx*=.98;p.life--;if(p.life<=0)return false;const a=p.life/p.maxLife;ctx.globalAlpha=a;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size*(.5+a),0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;return true;});rings=rings.filter(r=>{r.life--;if(r.life<=0)return false;const q=1-r.life/r.maxLife,rad=12+q*(r.big?68:40);ctx.strokeStyle=`rgba(255,245,190,${r.life/r.maxLife})`;ctx.lineWidth=r.big?5:3;ctx.beginPath();ctx.arc(r.x,r.y,rad,0,Math.PI*2);ctx.stroke();return true;});popups=popups.filter(p=>{p.life--;if(p.life<=0)return false;p.y-=.6;ctx.globalAlpha=Math.min(1,p.life/14);ctx.fillStyle='rgba(0,0,0,.75)';ctx.font=`900 ${p.big?18:14}px Inter`;ctx.textAlign='center';const w=ctx.measureText(p.text).width+24;ctx.fillRect(p.x-w/2,p.y-21,w,28);ctx.fillStyle=p.color;ctx.fillText(p.text,p.x,p.y);ctx.globalAlpha=1;return true;});}
+  function drawCanvasHUD(now){ctx.fillStyle='rgba(0,0,0,.62)';ctx.beginPath();ctx.roundRect(18,16,172,30,8);ctx.fill();ctx.fillStyle='#fff';ctx.font='900 11px Inter';ctx.textAlign='left';ctx.fillText('●  LIVE  •  COURTYARD',31,36);ctx.fillStyle='#ef4444';ctx.beginPath();ctx.arc(27,32,4,0,Math.PI*2);ctx.fill();if(now<duelStartAt){const n=Math.max(1,Math.ceil((duelStartAt-now)/1000));ctx.fillStyle='rgba(0,0,0,.48)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#fbbf24';ctx.font='900 92px Inter';ctx.textAlign='center';ctx.shadowColor='#fbbf24';ctx.shadowBlur=25;ctx.fillText(n,W/2,H/2+18);ctx.shadowBlur=0;ctx.fillStyle='#fff';ctx.font='900 15px Inter';ctx.fillText('AWAIT THE MARSHAL’S SIGNAL',W/2,H/2+55);}}
+  function drawAirborneSword(seq,elapsed){const t=Math.max(0,Math.min(1,(elapsed-2850)/1250));if(t<=0)return;const startX=seq.loser.x,startY=seq.loser.y-105,x=startX+seq.loser.facing*170*t,y=startY-Math.sin(t*Math.PI)*155+t*85;ctx.save();ctx.translate(x,y);ctx.rotate(t*10*seq.loser.facing);drawBlade(0,0,0,92,'#fbbf24');ctx.restore();}
+  function drawMarshal(x,raise,winnerX){ctx.save();ctx.translate(x,groundY);ctx.fillStyle='rgba(0,0,0,.4)';ctx.beginPath();ctx.ellipse(0,6,37,8,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#16181d';ctx.lineWidth=15;ctx.beginPath();ctx.moveTo(-12,-36);ctx.lineTo(-20,0);ctx.stroke();ctx.beginPath();ctx.moveTo(12,-36);ctx.lineTo(20,0);ctx.stroke();ctx.fillStyle='#111827';ctx.beginPath();ctx.moveTo(-31,-111);ctx.lineTo(31,-111);ctx.lineTo(27,-38);ctx.lineTo(-27,-38);ctx.closePath();ctx.fill();ctx.fillStyle='#d6b06d';ctx.fillRect(-5,-108,10,69);ctx.fillStyle='#d89a6a';ctx.beginPath();ctx.arc(0,-135,20,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e5e7eb';ctx.beginPath();ctx.arc(0,-142,20,Math.PI,Math.PI*2);ctx.fill();ctx.strokeStyle='#d89a6a';ctx.lineWidth=11;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-25,-99);ctx.lineTo(winnerX-x+21,-118-raise*60);ctx.stroke();ctx.beginPath();ctx.moveTo(25,-99);ctx.lineTo(57,-123);ctx.stroke();ctx.restore();}
+  function smooth(t){t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);}
+  function drawFinale(now){const seq=finale,e=now-seq.start;if(e<5200){const zoom=1+smooth(e/1600)*.23;ctx.save();ctx.translate(W/2,H/2);ctx.scale(zoom,zoom);ctx.translate(-W/2,-H/2);drawArena(now);seq.winner.x=425;seq.loser.x=575;seq.winner.y=groundY;seq.loser.y=groundY;seq.winner.facing=1;seq.loser.facing=-1;if(e<900){seq.winner.state='guard';seq.loser.state='guard';}else if(e<1900){seq.winner.state='finalParry';seq.loser.state='finalAttack';}else if(e<2850){seq.winner.state='finalParry';seq.loser.state='finalAttack';}else if(e<4200){seq.winner.state='riposte';seq.loser.state='dodge';seq.loser.disarmed=true;drawAirborneSword(seq,e);}else{seq.winner.state='guard';seq.loser.state='kneel';seq.loser.disarmed=true;drawAirborneSword(seq,e);}drawDuelist(seq.winner);drawDuelist(seq.loser);drawEffects();ctx.restore();const vignette=ctx.createRadialGradient(W/2,H/2,160,W/2,H/2,560);vignette.addColorStop(0,'rgba(0,0,0,0)');vignette.addColorStop(1,'rgba(0,0,0,.68)');ctx.fillStyle=vignette;ctx.fillRect(0,0,W,H);ctx.fillStyle='rgba(0,0,0,.76)';ctx.beginPath();ctx.roundRect(24,18,245,34,8);ctx.fill();ctx.fillStyle='#fbbf24';ctx.font='900 12px Inter';ctx.textAlign='left';ctx.fillText(e<900?'◉ CAMERA PUSH-IN  •  LIVE':e<1900?'◉ FINAL EXCHANGE  •  LIVE':e<2850?'◉ SLOW MOTION  •  PARRY':e<4200?'◉ DISARM  •  DECISIVE':'◉ DUEL ENDED  •  YIELD',39,40);ctx.fillStyle=e<2850?'#fff':'#fbbf24';ctx.font='900 22px Inter';ctx.textAlign='center';ctx.fillText(e<900?'ONE FINAL EXCHANGE':e<1900?'THE BLADES MEET':e<2850?'PERFECT PARRY':e<4200?'THE SWORD IS GONE!':seq.loser.name.toUpperCase()+' YIELDS',W/2,78);}else{const raise=smooth((e-5450)/1150);drawArena(now);seq.winner.x=390;seq.winner.facing=1;seq.winner.state='victory';seq.winner.disarmed=false;seq.winner.victoryLift=raise;seq.loser.x=690;seq.loser.facing=-1;seq.loser.state='kneel';seq.loser.disarmed=true;drawDuelist(seq.winner);drawMarshal(500,raise,seq.winner.x);drawDuelist(seq.loser);ctx.fillStyle='rgba(0,0,0,.84)';ctx.fillRect(155,359,690,68);ctx.fillStyle='#b45309';ctx.fillRect(155,359,9,68);ctx.fillStyle='#fbbf24';ctx.font='900 12px Inter';ctx.textAlign='left';ctx.fillText('OFFICIAL RESULT',185,382);ctx.fillStyle='#fff';ctx.font='900 25px Inter';ctx.fillText(seq.winner.name.toUpperCase()+'  •  VICTORY BY DISARM',185,413);}}
+  function addResultCard(container,label,value,note){const box=document.createElement('div');box.className='rounded-xl border border-white/10 bg-black/45 p-3';const l=document.createElement('div');l.className='text-[9px] text-gray-500 font-black uppercase tracking-wider mb-2';l.textContent=label;const v=document.createElement('div');v.className='text-xl font-black text-white';v.textContent=value;const n=document.createElement('div');n.className='text-[8px] text-gray-600 mt-1 truncate';n.textContent=note;box.append(l,v,n);container.appendChild(box);}
+  function renderResult(seq){const c=document.getElementById('sword-result-cards');c.replaceChildren();const elapsed=Math.max(0,fightStoppedAt-duelStartAt),whole=Math.min(secondsPerDuel,Math.floor(elapsed/1000)),time='0:'+(whole<10?'0':'')+whole;addResultCard(c,'Clean Strikes',seq.winner.landed+' – '+seq.loser.landed,seq.winner.name+' / '+seq.loser.name);addResultCard(c,'Parries',seq.winner.parries+' – '+seq.loser.parries,'Defensive blade work');addResultCard(c,'Finish',time,'Single decisive duel');document.getElementById('sword-winner-name').textContent=seq.winner.name;document.getElementById('sword-winner-method').textContent='VICTORY BY DISARM';document.getElementById('sword-winner-sub').textContent=seq.winner.name+' parried the final strike, disarmed '+seq.loser.name+', and claimed the Iron Crown.';}
+  function startFinale(now){if(finale)return;const m1=p1.score+p1.parries*.55+p1.guard*.012,m2=p2.score+p2.parries*.55+p2.guard*.012;let winner;if(Math.abs(m1-m2)<.3)winner=Math.random()<.5?p1:p2;else winner=m1>m2?p1:p2;const loser=winner===p1?p2:p1;p1.attack=null;p2.attack=null;p1.comboQueue=[];p2.comboQueue=[];finale={winner,loser,start:now,disarmAt:now+3300,ceremonyAt:now+5200,endAt:now+9000,lastPhase:-1,rendered:false};setCommentary(winner.name+' steadies their stance as the camera closes in...');}
+  function updateFinale(now){if(!finale)return;const e=now-finale.start,phase=e<900?0:e<1900?1:e<2850?2:e<4200?3:e<5200?4:5;if(phase!==finale.lastPhase){finale.lastPhase=phase;const w=finale.winner.name,l=finale.loser.name,calls=[w+' waits for one final opening...',l+' commits to the final strike!',w+' meets the blade with a perfect parry!',w+' snaps the sword free — disarmed!',l+' drops to one knee and yields.','The marshal raises the champion’s sword arm!'];setCommentary(calls[phase]);if(phase===1)playSwordWhoosh(true);if(phase===2){sparkBurst(500,groundY-104,true,'#fff7c2');playSwordClang(true);cameraShake=9;flashAlpha=.2;}if(phase===3){playSwordClang(true);cameraShake=11;flashAlpha=.24;}}
+    if(!finale.rendered&&now>=finale.disarmAt){finale.rendered=true;gameOver=true;fightStoppedAt=now;renderResult(finale);}if(!resultShown&&now>=finale.endAt){resultShown=true;stopSwordAmbience();showPhase('sword','winner');}}
+
+  startSwordAmbience();document.getElementById('sword-audio-toggle').textContent=swordAudioEnabled?'🔊 Steel Audio':'🔇 Audio Muted';setCommentary('The duelists await the marshal’s signal...');
+  function loop(now){frame++;if(!bellRung&&now>=duelStartAt){bellRung=true;playSwordClang(true);setCommentary('Steel is drawn — begin!');p1.nextAction=now+180;p2.nextAction=now+330;}if(bellRung&&!finale&&now>=guaranteedFinaleAt)startFinale(now);if(bellRung){const clockNow=gameOver&&fightStoppedAt?fightStoppedAt:now,left=Math.max(0,duelEndAt-clockNow),secs=Math.ceil(left/1000);document.getElementById('sword-clock').textContent='0:'+(secs<10?'0':'')+secs;if(left<=0&&!finale)startFinale(now);}else document.getElementById('sword-clock').textContent='0:30';if(bellRung&&!gameOver&&!finale){updateDuelist(p1,p2,now);updateDuelist(p2,p1,now);spacing();}updateFinale(now);updateHUD();ctx.save();if(cameraShake>.2){ctx.translate((Math.random()-.5)*cameraShake,(Math.random()-.5)*cameraShake);cameraShake*=.83;}if(finale)drawFinale(now);else{if(strikeZoom>.002){ctx.translate(W/2,H/2);ctx.scale(1+strikeZoom,1+strikeZoom);ctx.translate(-W/2,-H/2);strikeZoom*=.7;}drawArena(now);drawDuelist(p1);drawDuelist(p2);drawEffects();drawCanvasHUD(now);}ctx.restore();if(flashAlpha>.005){ctx.fillStyle=`rgba(255,255,255,${flashAlpha})`;ctx.fillRect(0,0,W,H);flashAlpha*=.7;}if(!resultShown)requestAnimationFrame(loop);}requestAnimationFrame(loop);
 }
 
 /* ==================== SACK HOP DERBY ==================== */
@@ -16321,8 +16305,8 @@ function runSwordDuel() {
 }
 function launchSwordWith(p1Name, p2Name) {
   showOverlay('sword-overlay'); showPhase('sword', 'intro');
-  document.getElementById('sword-p1-name').textContent = p1Name;
-  document.getElementById('sword-p2-name').textContent = p2Name;
+  ['sword-p1-name','sword-intro-p1'].forEach(id => document.getElementById(id).textContent = p1Name);
+  ['sword-p2-name','sword-intro-p2'].forEach(id => document.getElementById(id).textContent = p2Name);
   armGameStart(() => startSwordDuel(p1Name, p2Name));
 }
 
@@ -18075,6 +18059,6 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3021a393e4244c9',t:'MTc4NzU3MTgzOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3023015dd8f80f7',t:'MTc4NzU3MjczNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 >
