@@ -653,17 +653,58 @@
   </div>
 </div>
 
-<!-- ==================== BUMPER ARENA (all entrants, battle-royale physics) ==================== -->
-<div id="bumper-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
-  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
-    <div class="text-center mb-3"><div class="text-[#a855f7] text-sm font-bold uppercase tracking-widest mb-2">💥 Bumper Arena</div><h1 class="text-4xl md:text-5xl font-black text-white">Last Ball Standing</h1></div>
-    <div id="bumper-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Entering the arena...</div><div class="text-sm text-gray-600" id="bumper-intro-count">Everyone bumps in</div></div>
-    <div id="bumper-phase-play" class="hidden w-full max-w-5xl">
-      <div class="flex items-center justify-center gap-3 mb-1"><span id="bumper-alive-badge" class="p-count-badge">0 alive</span><span class="text-gray-500 text-xs font-bold uppercase">The ring is shrinking — stay inside!</span></div>
-      <div id="bumper-commentary" class="text-center text-[#ffd700] font-bold text-lg mb-2 h-6">Brawl begins!</div>
-      <canvas id="bumper-canvas" width="900" height="620" class="mx-auto rounded-2xl border border-white/10 bg-[#0a0a14]"></canvas>
+<!-- ==================== PROFESSIONAL BUMPER ARENA ==================== -->
+<div id="bumper-overlay" class="hidden fixed inset-0 bg-[#050208] z-50 overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 17% 24%,rgba(168,85,247,.16),transparent 34%),radial-gradient(circle at 82% 69%,rgba(6,182,212,.12),transparent 38%),linear-gradient(145deg,#07030c,#040407 58%,#060313);"></div>
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-3 md:p-4 overflow-hidden">
+    <div class="w-full max-w-7xl">
+      <header class="flex items-center justify-between gap-4 mb-3 px-1">
+        <div class="min-w-0"><div class="text-violet-400 text-[10px] font-black uppercase tracking-[0.28em]">Hyperdome Collision League</div><h1 class="text-2xl md:text-3xl font-black text-white leading-tight truncate">Bumper Arena</h1></div>
+        <div class="hidden sm:flex items-center gap-2 text-[9px] font-black uppercase tracking-wider"><span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300">Momentum Physics</span><span class="px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-400/20 text-violet-300">Collapsing Dome</span><span class="px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/20 text-cyan-300">Last Vehicle Wins</span></div>
+      </header>
+
+      <div id="bumper-phase-intro" class="glass rounded-3xl border border-violet-500/20 p-8 md:p-12 text-center shadow-[0_30px_100px_rgba(0,0,0,.68)]">
+        <div class="mx-auto mb-5 w-20 h-20 rounded-2xl flex items-center justify-center text-4xl bg-gradient-to-br from-violet-500/20 to-cyan-600/20 border border-violet-400/20 shadow-[0_0_45px_rgba(168,85,247,.2)]">💥</div>
+        <div class="text-violet-400 text-xs font-black uppercase tracking-[0.3em] mb-2">The Hyperdome Is Armed</div>
+        <div class="text-3xl md:text-5xl font-black text-white mb-3">Ram Hard. Stay Inside.</div>
+        <div id="bumper-intro-count" class="text-sm md:text-base text-gray-400 font-bold">Vehicles are entering the collision grid...</div>
+        <div class="grid grid-cols-3 gap-2 max-w-xl mx-auto mt-7 text-[9px] font-black uppercase tracking-wider"><div class="rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-gray-400">True Collisions</div><div class="rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-gray-400">Boost Cores</div><div class="rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-gray-400">One Survivor</div></div>
+      </div>
+
+      <div id="bumper-phase-play" class="hidden w-full">
+        <div class="grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_auto_auto_auto] items-center gap-2 mb-2 rounded-2xl border border-white/10 bg-black/60 px-3 md:px-4 py-2 shadow-xl">
+          <div class="min-w-0"><div class="text-[8px] text-gray-600 font-black uppercase tracking-[0.2em]">Dome Control</div><div id="bumper-status" class="text-sm md:text-base text-violet-300 font-black truncate">GRID IGNITION</div></div>
+          <div class="text-right px-3 border-l border-white/10"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Running</div><div id="bumper-active" class="text-lg font-black text-white tabular-nums">0</div></div>
+          <div class="hidden sm:block text-right px-3 border-l border-white/10"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Wrecked</div><div id="bumper-out" class="text-lg font-black text-violet-400 tabular-nums">0</div></div>
+          <div class="hidden sm:block text-right pl-3 border-l border-white/10"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Clock</div><div id="bumper-clock" class="text-lg font-black text-cyan-300 tabular-nums">0.0s</div></div>
+        </div>
+
+        <div class="relative rounded-2xl overflow-hidden border border-violet-500/25 shadow-[0_25px_90px_rgba(0,0,0,.76)] bg-[#08050d]">
+          <canvas id="bumper-canvas" width="1200" height="560" class="block w-full bg-[#08050d]"></canvas>
+          <div class="absolute top-3 left-3 px-3 py-1.5 rounded-lg bg-black/65 border border-white/10 text-[8px] font-black text-white tracking-[0.18em]">HYPERDOME CAM 01</div>
+          <div class="absolute top-3 right-3 px-3 py-1.5 rounded-lg bg-black/65 border border-violet-400/20 text-[8px] font-black text-violet-300 tracking-[0.18em]"><span id="bumper-phase-label">IGNITION</span></div>
+        </div>
+
+        <div class="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_auto_auto] items-center gap-2 mt-2">
+          <div class="min-w-0 rounded-xl border border-violet-500/15 bg-violet-950/20 px-4 py-2"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Arena Feed</div><div id="bumper-commentary" class="text-sm font-black text-white truncate">The collision grid is powering up...</div></div>
+          <div class="rounded-xl border border-white/10 bg-black/50 px-4 py-2 text-right"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Impacts</div><div id="bumper-impacts" class="text-sm font-black text-violet-400 tabular-nums">0</div></div>
+          <div class="hidden md:block rounded-xl border border-white/10 bg-black/50 px-4 py-2 text-right"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Ring Outs</div><div id="bumper-ringouts" class="text-sm font-black text-cyan-400 tabular-nums">0</div></div>
+          <div class="hidden md:block w-36 rounded-xl border border-white/10 bg-black/50 px-4 py-2"><div class="flex justify-between text-[8px] text-gray-600 font-black uppercase tracking-wider"><span>Compression</span><span id="bumper-compression-text">0%</span></div><div class="h-1.5 bg-white/10 rounded-full mt-1 overflow-hidden"><div id="bumper-compression" class="h-full bg-gradient-to-r from-cyan-500 via-violet-500 to-fuchsia-500" style="width:0%"></div></div></div>
+        </div>
+      </div>
+
+      <div id="bumper-phase-winner" class="hidden">
+        <div class="max-w-3xl mx-auto glass rounded-3xl border border-violet-500/25 p-7 md:p-10 text-center shadow-[0_35px_120px_rgba(0,0,0,.78)]">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-violet-600 to-cyan-600 text-white text-[10px] font-black uppercase tracking-[0.2em] mb-5">Official Hyperdome Result</div>
+          <div class="text-violet-400 text-sm font-black uppercase tracking-[0.28em] mb-2">Last Vehicle Running</div>
+          <div id="bumper-winner-name" class="text-5xl md:text-7xl font-black text-white mb-2 break-words"></div>
+          <div id="bumper-winner-detail" class="text-xl md:text-2xl text-cyan-300 font-black mb-1">HYPERDOME CHAMPION</div>
+          <div id="bumper-winner-sub" class="text-sm text-gray-500 mb-6"></div>
+          <div id="bumper-result-cards" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-7"></div>
+          <div class="flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-sm font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-sm font-bold">✕ Close</button></div>
+        </div>
+      </div>
     </div>
-    <div id="bumper-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">💥</div><div class="text-2xl text-[#a855f7] font-bold mb-2">LAST ONE STANDING</div><div id="bumper-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
   </div>
 </div>
 
@@ -3519,128 +3560,29 @@ function startSwimming(names){showPhase('swim','race');const canvas=document.get
   function loop(now){const dt=Math.min(2.2,Math.max(.25,(now-last)/16.667));last=now;frame++;if(now<startAt){const n=Math.max(1,Math.ceil((startAt-now)/1000));countdown.textContent=n;status.textContent='TAKE YOUR MARKS';message.textContent='Swimmers are set on the starting blocks';}else if(!winnerMoment){countdown.textContent='GO';status.textContent='100M FREESTYLE — RACING';}updateSwimmers(dt,now);const sorted=[...swimmers].sort((a,b)=>b.x-a.x),leader=sorted[0],distance=Math.min(100,Math.max(0,(leader.x-startX)/trackLength*100)),elapsed=Math.max(0,(winnerMoment?winnerMoment:now)-startAt),gap=sorted[1]?Math.max(0,(leader.x-sorted[1].x)/Math.max(.001,leader.speed)/60):0;timer.textContent=String(Math.floor(elapsed/60000)).padStart(2,'0')+':'+String(Math.floor(elapsed/1000)%60).padStart(2,'0')+'.'+Math.floor(elapsed%1000/100);distanceEl.textContent=Math.floor(distance)+' / 100M';document.getElementById('swim-leader').textContent=leader.name;document.getElementById('swim-stroke-rate').textContent=leader.topRate+' SPM';document.getElementById('swim-gap').textContent=sorted[1]?'+'+gap.toFixed(3):'—';document.getElementById('swim-lead-changes').textContent=leadChanges;const target=Math.max(0,Math.min(finishX-W*.72,leader.x-W*.31));cameraX+=(target-cameraX)*.075;drawChampionshipPool(ctx,W,H,cameraX,swimmers,poolTop,poolBottom,laneH,startX,finishX,trackLength,frame);swimmers.forEach(s=>drawProSwimmer(ctx,s,cameraX,laneH,frame,s===leader,startAt,now));drawSwimOverlay(ctx,W,swimmers,sorted,poolTop,laneH,trackLength,startX);drawConfetti();if(winnerMoment&&now-winnerMoment>2500){cancelAnimationFrame(animId);showResult();return;}animId=requestAnimationFrame(loop);}animId=requestAnimationFrame(loop);
 }
 
-/* ==================== BUMPER ARENA (every entrant, battle-royale physics — paced for a proper watch) ==================== */
-function runBumperArena() {
-  showOverlay('bumper-overlay'); showPhase('bumper', 'intro');
-  const names = Array.from(entrants);
-  if (names.length < 2) { alert('Need at least 2 entrants!'); return; }
-  document.getElementById('bumper-intro-count').textContent = names.length + ' balls entering the ring';
-  armGameStart(() => startBumperArena(names));
-}
-function startBumperArena(names) {
-  showPhase('bumper', 'play');
-  const canvas = document.getElementById('bumper-canvas'); const ctx = canvas.getContext('2d');
-  const commentary = document.getElementById('bumper-commentary');
-  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2 + 10;
-  const startR = Math.min(W,H)/2 - 20;
-  let ringR = startR;
-  const minRingR = Math.max(70, 40 + Math.sqrt(names.length) * 12);
-  const n = names.length;
-  const r = Math.max(11, Math.min(24, 260 / Math.sqrt(n)));
-  const balls = names.map((nm,i) => {
-    const ang = (i / n) * Math.PI * 2, dist = ringR * 0.5;
-    return { name: nm, x: cx + Math.cos(ang)*dist, y: cy + Math.sin(ang)*dist, vx: (Math.random()-0.5)*1.2, vy: (Math.random()-0.5)*1.2, r, color: colorFor(nm), alive: true, hitFlash: 0, koStreak:0 };
-  });
-  // pace the shrink to a target watch-time: bigger lobbies get a little more runway, capped sensibly
-  const targetSeconds = Math.min(85, 42 + n * 1.6);
-  const graceFrames = 150; // 2.5s of chaos-free setup before the ring starts closing
-  const baseShrinkPerFrame = (startR - minRingR) / (targetSeconds*60 - graceFrames);
-  let frame = 0, particles = [], orb = null, nextOrbFrame = 240 + Math.random()*180;
-  function setCommentary(t) { commentary.textContent = t; }
-  function drawRing() {
-    ctx.fillStyle = '#0a0a14'; ctx.fillRect(0,0,W,H);
-    ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,ringR+40,0,Math.PI*2); ctx.strokeStyle='rgba(168,85,247,0.15)'; ctx.lineWidth=80; ctx.stroke(); ctx.restore();
-    const grad = ctx.createRadialGradient(cx,cy,ringR*0.3,cx,cy,ringR); grad.addColorStop(0,'#1a1a2e'); grad.addColorStop(1,'#12121f');
-    ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(cx,cy,ringR,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 5; ctx.shadowColor='#a855f7'; ctx.shadowBlur=18; ctx.beginPath(); ctx.arc(cx,cy,ringR,0,Math.PI*2); ctx.stroke(); ctx.shadowBlur=0;
-    for (let i=0;i<12;i++) { const a=(i/12)*Math.PI*2+frame*0.005; ctx.beginPath(); ctx.arc(cx+Math.cos(a)*ringR, cy+Math.sin(a)*ringR, 4, 0, Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.15)'; ctx.fill(); }
-  }
-  function drawOrb() {
-    if (!orb) return;
-    ctx.save(); ctx.translate(orb.x,orb.y);
-    const pulse = 1+Math.sin(frame*0.2)*0.15;
-    ctx.shadowColor='#ffd700'; ctx.shadowBlur=20; ctx.fillStyle='#ffd700'; ctx.beginPath(); ctx.arc(0,0,10*pulse,0,Math.PI*2); ctx.fill();
-    ctx.shadowBlur=0; ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.font='bold 9px Inter'; ctx.textAlign='center'; ctx.fillText('BOOST', 0, -16);
-    ctx.restore();
-  }
-  function drawBall(b) {
-    if (!b.alive) return;
-    drawMiniCharacter(ctx, b.x, b.y, b.r*1.25, b.color, { flash: b.hitFlash>0, phase: frame*0.2, armSwing: Math.sin(frame*0.15)*b.r*0.15, rotate: Math.atan2(b.vy,b.vx)*0.15 });
-    ctx.fillStyle='#fff'; ctx.font='bold '+Math.max(8,Math.min(11,b.r*0.55))+'px Inter'; ctx.textAlign='center'; ctx.fillText(b.name.substring(0,10), b.x, b.y-b.r*1.9);
-    if (b.hitFlash>0) b.hitFlash--;
-  }
-  function updatePhysics() {
-    const alive = balls.filter(b => b.alive);
-    const speedCap = 4.2 + Math.min(2.5, frame/2400); // arena gets a little wilder the longer it runs
-    alive.forEach(b => {
-      b.vx += (Math.random()-0.5)*0.1; b.vy += (Math.random()-0.5)*0.1;
-      if (orb) { const dx=orb.x-b.x, dy=orb.y-b.y, d=Math.hypot(dx,dy); if (d < 260 && d>1) { b.vx += (dx/d)*0.05; b.vy += (dy/d)*0.05; } }
-      const spd = Math.hypot(b.vx,b.vy);
-      if (spd > speedCap) { b.vx = b.vx/spd*speedCap; b.vy = b.vy/spd*speedCap; }
-      b.x += b.vx; b.y += b.vy;
-    });
-    for (let i=0;i<alive.length;i++) for (let j=i+1;j<alive.length;j++) {
-      const a=alive[i], b=alive[j], dx=b.x-a.x, dy=b.y-a.y, dist=Math.hypot(dx,dy), minDist=a.r+b.r;
-      if (dist < minDist && dist > 0) {
-        const nx=dx/dist, ny=dy/dist, overlap=(minDist-dist)/2;
-        a.x -= nx*overlap; a.y -= ny*overlap; b.x += nx*overlap; b.y += ny*overlap;
-        const relVx=b.vx-a.vx, relVy=b.vy-a.vy, velAlong=relVx*nx+relVy*ny;
-        if (velAlong < 0) { const impulse = -velAlong*1.05; a.vx -= impulse*nx*0.5; a.vy -= impulse*ny*0.5; b.vx += impulse*nx*0.5; b.vy += impulse*ny*0.5; a.hitFlash=6; b.hitFlash=6;
-          particles.push({x:(a.x+b.x)/2,y:(a.y+b.y)/2,life:14,maxLife:14}); }
-      }
-    }
-    if (orb) { const d = Math.hypot(orb.x-cx, orb.y-cy); if (d > ringR-10) orb=null; }
-    if (orb) {
-      for (let i=0;i<alive.length;i++) {
-        if (!orb) break;
-        const b = alive[i];
-        if (Math.hypot(b.x-orb.x,b.y-orb.y) < b.r+12) { const spd=Math.hypot(b.vx,b.vy)||1; b.vx = b.vx/spd*8; b.vy = b.vy/spd*8; setCommentary(b.name+' grabbed the boost!'); orb=null; }
-      }
-    }
-    alive.forEach(b => {
-      const d = Math.hypot(b.x-cx, b.y-cy);
-      if (d + b.r > ringR) { b.alive = false; particles.push({x:b.x,y:b.y,life:26,maxLife:26,burst:true,color:b.color});
-        const stillAlive = balls.filter(x=>x.alive).length;
-        if (stillAlive > 1) setCommentary(b.name+' got knocked out! '+stillAlive+' left');
-      }
-    });
-  }
-  function drawParticles() {
-    particles = particles.filter(p => { p.life--; if (p.life<=0) return false; const a=p.life/p.maxLife;
-      if (p.burst) { ctx.beginPath(); ctx.arc(p.x,p.y,18*(1-a)+4,0,Math.PI*2); ctx.strokeStyle=`rgba(255,255,255,${a})`; ctx.lineWidth=3; ctx.stroke(); }
-      else { ctx.fillStyle=`rgba(255,255,255,${a*0.6})`; ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2); ctx.fill(); }
-      return true; });
-  }
-  let animId, warned70=false, warned40=false;
-  function loop() {
-    frame++;
-    const aliveCountNow = balls.filter(b=>b.alive).length;
-    if (frame > graceFrames) {
-      // shrink faster once we're down to a handful, so the finale doesn't drag
-      const climaxMult = aliveCountNow <= 3 ? 3 : aliveCountNow <= 6 ? 1.6 : 1;
-      ringR = Math.max(minRingR, ringR - baseShrinkPerFrame*climaxMult);
-    }
-    if (!orb && frame > nextOrbFrame && ringR > minRingR*1.6) {
-      const a = Math.random()*Math.PI*2, d = Math.random()*ringR*0.5;
-      orb = { x: cx+Math.cos(a)*d, y: cy+Math.sin(a)*d };
-      nextOrbFrame = frame + 300 + Math.random()*240;
-    }
-    if (ringR/startR < 0.55 && !warned70) { warned70=true; setCommentary('⚠️ The ring is closing in!'); }
-    if (ringR/startR < 0.25 && !warned40) { warned40=true; setCommentary('🔥 Final showdown!'); }
-    updatePhysics();
-    drawRing(); drawOrb(); balls.forEach(drawBall); drawParticles();
-    document.getElementById('bumper-alive-badge').textContent = aliveCountNow + ' alive';
-    if (aliveCountNow === 1) {
-      const winner = balls.find(b => b.alive);
-      setCommentary(winner.name + ' wins it!');
-      setTimeout(() => { showPhase('bumper','winner'); document.getElementById('bumper-winner-name').textContent = winner.name; }, 1200);
-    } else if (aliveCountNow === 0) {
-      setCommentary('Ring out — sudden death pick!');
-      setTimeout(() => { showPhase('bumper','winner'); document.getElementById('bumper-winner-name').textContent = pickSingleWinner([], names); }, 1200);
-    } else { animId = requestAnimationFrame(loop); }
-  }
-  loop();
-}
+/* ==================== PROFESSIONAL BUMPER ARENA ==================== */
+function runBumperArena(){showOverlay('bumper-overlay');showPhase('bumper','intro');const names=Array.from(entrants);if(names.length<2){alert('Need at least 2 entrants!');return}document.getElementById('bumper-intro-count').textContent=names.length+' vehicles are entering the Hyperdome. Momentum, armor, boost timing, and ring position determine the champion.';armGameStart(()=>startBumperArena(names))}
+function startBumperArena(names){showPhase('bumper','play');const canvas=document.getElementById('bumper-canvas'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height,cx=480,cy=289,startR=225,minR=62,startAt=performance.now()+2000;let last=performance.now(),frame=0,ringR=startR,phase='GRID IGNITION',compression=0,impacts=0,ringOuts=0,eliminated=0,feed='Vehicles locked. The Hyperdome barrier is charging...',cameraShake=0,flash=0,nextCore=startAt+6000,nextShock=startAt+30000,winner=null,finishAt=0,resultShown=false,finalShowdown=false,finalGraceUntil=0;let particles=[],popups=[],cores=[],elimHistory=[];const n=names.length,vr=Math.max(6,Math.min(14,125/Math.sqrt(n))),golden=Math.PI*(3-Math.sqrt(5));const vehicles=names.map((name,i)=>{const a=i*golden,d=Math.sqrt((i+.7)/n)*startR*.76,x=cx+Math.cos(a)*d,y=cy+Math.sin(a)*d,ang=a+Math.PI/2,powerDrive=.78+Math.random()*.44,stability=.76+Math.random()*.5;return{id:i,name,color:colorFor(name),initials:(typeof initialsFor==='function'?initialsFor(name):name.slice(0,2).toUpperCase()),x,y,vx:Math.cos(ang)*.35,vy:Math.sin(ang)*.35,r:vr,angle:ang,active:true,alive:true,armor:100,mass:.8+Math.random()*.48,powerDrive,stability,aggression:.35+Math.random()*.63,targetId:-1,nextThink:startAt+Math.random()*500,nextBoost:startAt+800+Math.random()*1800,boostUntil:0,boostVX:0,boostVY:0,outsideMs:0,collisions:0,damageDone:0,knockouts:0,cores:0,danger:Math.random()*4,lastHitBy:-1,hitFlash:0,placement:0,eliminatedAt:0,wantX:0,wantY:0,seed:Math.random()*1000}});globalThis.__bumperVehicles=vehicles;
+function activeVehicles(){return vehicles.filter(v=>v.active)}
+function phaseFor(e,alive){if(e<0)return'GRID IGNITION';if(alive<=2)return'FINAL SHOWDOWN';if(e<7)return'OPENING IMPACTS';if(e<15)return'DOME COMPRESSION';if(e<23)return'VELOCITY OVERDRIVE';return'FINAL CRUSH'}
+function phaseCompression(e){return Math.max(0,Math.min(1,e/29))}
+function burst(x,y,color,count,big){for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,s=1.2+Math.random()*(big?8:5);particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:1+Math.random()*3.5,life:1,color:i%4?color:'#fff'})}}
+function pop(x,y,text,color,big){popups.push({x,y,text,color,big,life:1})}
+function chooseTarget(v){const active=activeVehicles().filter(o=>o!==v);if(!active.length)return null;const ranked=active.map(o=>({o,s:Math.hypot(o.x-v.x,o.y-v.y)-o.danger*2-Math.random()*65})).sort((a,b)=>a.s-b.s),pool=ranked.slice(0,Math.min(4,ranked.length));return pool[Math.floor(Math.random()*pool.length)].o}
+function beginFinal(now){if(finalShowdown||activeVehicles().length!==2)return;finalShowdown=true;finalGraceUntil=Math.max(now+2400,startAt+18000);const pair=activeVehicles();pair.forEach(v=>{v.armor=Math.max(v.armor,58);v.nextBoost=now+450+Math.random()*500;v.targetId=pair.find(o=>o!==v).id;v.outsideMs=0});cores=[];feed=pair[0].name+' and '+pair[1].name+' enter the final collision showdown!';cameraShake=12;flash=.32}
+function wreck(v,reason,now,attacker){if(!v.active||winner||activeVehicles().length<=1)return;if(activeVehicles().length===2&&now<finalGraceUntil){v.armor=Math.max(5,v.armor);v.outsideMs=0;const dx=cx-v.x,dy=cy-v.y,d=Math.max(1,Math.hypot(dx,dy));v.vx=dx/d*5;v.vy=dy/d*5;pop(v.x,v.y-24,'FINAL SAVE',v.color,false);return}v.active=false;v.alive=false;v.placement=activeVehicles().length+1;v.eliminatedAt=Math.max(0,(now-startAt)/1000);eliminated++;elimHistory.push(v);if(reason==='RING OUT')ringOuts++;if(attacker&&attacker.active){attacker.knockouts++;attacker.damageDone+=12}burst(v.x,v.y,v.color,34,true);pop(v.x,v.y-27,reason,reason==='RING OUT'?'#67e8f9':'#e879f9',true);cameraShake=12+compression*7;flash=.3;const left=activeVehicles().length;feed=v.name+' is '+(reason==='RING OUT'?'launched from the dome':'wrecked')+' — '+left+' remain!';if(left===2)beginFinal(now);if(left===1){winner=activeVehicles()[0];winner.placement=1;finishAt=now+2400;feed=winner.name+' is the last vehicle running!';burst(winner.x,winner.y,winner.color,64,true);cameraShake=19}}
+function handleCollisions(now){const active=activeVehicles();for(let i=0;i<active.length;i++)for(let j=i+1;j<active.length;j++){const a=active[i],b=active[j],dx=b.x-a.x,dy=b.y-a.y,min=a.r+b.r,d2=dx*dx+dy*dy;if(d2<=0||d2>=min*min)continue;const d=Math.sqrt(d2),nx=dx/d,ny=dy/d,over=min-d,invA=1/a.mass,invB=1/b.mass,sum=invA+invB;a.x-=nx*over*invA/sum;a.y-=ny*over*invA/sum;b.x+=nx*over*invB/sum;b.y+=ny*over*invB/sum;const rvx=b.vx-a.vx,rvy=b.vy-a.vy,along=rvx*nx+rvy*ny;if(along<0){const restitution=1.06+compression*.12,impulse=-(1+restitution)*along/sum;a.vx-=impulse*nx*invA;a.vy-=impulse*ny*invA;b.vx+=impulse*nx*invB;b.vy+=impulse*ny*invB;const force=Math.abs(along),damage=Math.max(0,(force-1.15)*(.85+compression*1.35));if(damage>0){a.armor-=damage/b.stability;b.armor-=damage/a.stability;a.damageDone+=damage;b.damageDone+=damage;a.lastHitBy=b.id;b.lastHitBy=a.id;a.danger+=damage*.16;b.danger+=damage*.16;a.hitFlash=1;b.hitFlash=1}a.collisions++;b.collisions++;impacts++;if(force>2.2){cameraShake=Math.max(cameraShake,Math.min(10,force*1.35));burst((a.x+b.x)/2,(a.y+b.y)/2,force>4?'#e879f9':'#c4b5fd',force>4?17:9,force>4);if(force>4.5)feed=a.name+' and '+b.name+' collide at full power!'}}}const wrecked=activeVehicles().filter(v=>v.armor<=0).sort((a,b)=>a.armor-b.armor);for(const v of wrecked){if(activeVehicles().length<=1)break;wreck(v,'VEHICLE DOWN',now,vehicles[v.lastHitBy])}}
+function updateVehicles(now,dtf){const active=activeVehicles();for(const v of active){if(v.hitFlash>0)v.hitFlash*=.76;if(now>=v.nextThink){let target=vehicles[v.targetId];if(!target||!target.active)target=chooseTarget(v);v.targetId=target?target.id:-1;const toCenterX=cx-v.x,toCenterY=cy-v.y,centerD=Math.max(1,Math.hypot(toCenterX,toCenterY));if(target){const dx=target.x-v.x,dy=target.y-v.y,d=Math.max(1,Math.hypot(dx,dy)),tangent=(v.id%2?1:-1);v.wantX=dx/d*v.aggression+toCenterX/centerD*(.35+compression*.8)+-dy/d*tangent*.26;v.wantY=dy/d*v.aggression+toCenterY/centerD*(.35+compression*.8)+dx/d*tangent*.26}v.nextThink=now+280+Math.random()*520}const drive=.045*v.powerDrive*(1+compression*.45);v.vx+=v.wantX*drive*dtf;v.vy+=v.wantY*drive*dtf;let target=vehicles[v.targetId];if(target&&target.active&&now>=v.nextBoost){const dx=target.x-v.x,dy=target.y-v.y,d=Math.max(1,Math.hypot(dx,dy));if(d<155||compression>.7){v.boostVX=dx/d*(6.5+v.powerDrive*2.8);v.boostVY=dy/d*(6.5+v.powerDrive*2.8);v.boostUntil=now+210+Math.random()*140;v.nextBoost=now+1450+Math.random()*1800;feed=v.name+' engages the impact boost!'}}if(now<v.boostUntil){v.vx+=(v.boostVX-v.vx)*.13*dtf;v.vy+=(v.boostVY-v.vy)*.13*dtf}const drag=Math.pow(now<v.boostUntil?.988:.974,dtf);v.vx*=drag;v.vy*=drag;const cap=(now<v.boostUntil?10:4.2)+compression*1.6,s=Math.hypot(v.vx,v.vy);if(s>cap){v.vx=v.vx/s*cap;v.vy=v.vy/s*cap}v.x+=v.vx*dtf;v.y+=v.vy*dtf;if(Math.hypot(v.vx,v.vy)>.25)v.angle=Math.atan2(v.vy,v.vx);v.danger*=.9994}}
+function handleBoundary(now,dt){const active=[...activeVehicles()].sort((a,b)=>Math.hypot(b.x-cx,b.y-cy)-Math.hypot(a.x-cx,a.y-cy));for(const v of active){if(winner||!v.active)continue;const dx=v.x-cx,dy=v.y-cy,d=Math.max(1,Math.hypot(dx,dy)),outside=d+v.r-ringR;if(outside>0){v.outsideMs+=dt;v.danger+=outside*.025;v.vx-=dx/d*(.08+outside*.012);v.vy-=dy/d*(.08+outside*.012);if(outside>v.r*.9||v.outsideMs>430)wreck(v,'RING OUT',now,vehicles[v.lastHitBy])}else v.outsideMs=Math.max(0,v.outsideMs-dt*1.8)}}
+function updateCores(now){if(now>=nextCore&&activeVehicles().length>2&&compression<.82){const a=Math.random()*Math.PI*2,d=Math.random()*ringR*.48;cores.push({x:cx+Math.cos(a)*d,y:cy+Math.sin(a)*d,life:600,pulse:Math.random()*6.28});nextCore=now+5500+Math.random()*2600}for(const c of cores){c.life--;for(const v of activeVehicles())if(Math.hypot(v.x-c.x,v.y-c.y)<v.r+15){v.armor=Math.min(100,v.armor+18);const s=Math.max(1,Math.hypot(v.vx,v.vy));v.vx=v.vx/s*8;v.vy=v.vy/s*8;v.cores++;c.life=0;feed=v.name+' captures a Hyper Core — armor and boost restored!';pop(v.x,v.y-26,'HYPER CORE','#67e8f9',false);break}}cores=cores.filter(c=>c.life>0&&Math.hypot(c.x-cx,c.y-cy)<ringR-8)}
+function arenaShock(now){if(now<nextShock||activeVehicles().length<=1)return;const ranked=activeVehicles().map(v=>({v,s:(100-v.armor)+v.danger+Math.hypot(v.x-cx,v.y-cy)*.08+Math.random()*28})).sort((a,b)=>b.s-a.s),victim=ranked[0].v,dx=victim.x-cx,dy=victim.y-cy,d=Math.max(1,Math.hypot(dx,dy));victim.armor-=34;victim.vx+=dx/d*7;victim.vy+=dy/d*7;victim.danger+=12;victim.hitFlash=1;burst(victim.x,victim.y,'#e879f9',24,true);pop(victim.x,victim.y-27,'DOME SHOCK','#e879f9',true);cameraShake=13;feed='Hyperdome shock targets '+victim.name+'!';nextShock=now+430;if(victim.armor<=0)wreck(victim,'CORE OVERLOAD',now,null)}
+function update(now,dt){frame++;const dtf=Math.min(2,dt/16.667),elapsed=(now-startAt)/1000;phase=phaseFor(elapsed,activeVehicles().length);compression=phaseCompression(elapsed);const targetR=startR-(startR-minR)*compression;ringR+=(targetR-ringR)*Math.min(.08,.018*dtf);if(elapsed>=0&&!winner){if(activeVehicles().length===2&&!finalShowdown)beginFinal(now);updateVehicles(now,dtf);handleCollisions(now);handleBoundary(now,dt);updateCores(now);if(elapsed>29)arenaShock(now)}particles.forEach(p=>{p.x+=p.vx*dtf;p.y+=p.vy*dtf;p.vx*=.98;p.vy*=.98;p.life-=.028*dtf});particles=particles.filter(p=>p.life>0);popups.forEach(p=>{p.y-=.45*dtf;p.life-=.019*dtf});popups=popups.filter(p=>p.life>0);cameraShake*=Math.pow(.86,dtf);flash=Math.max(0,flash-.035*dtf);updateHUD(now)}
+function updateHUD(now){const elapsed=Math.max(0,(now-startAt)/1000),active=activeVehicles().length,pct=Math.round(compression*100);document.getElementById('bumper-status').textContent=winner?'DOME COMPLETE':phase;document.getElementById('bumper-active').textContent=active+' / '+n;document.getElementById('bumper-out').textContent=eliminated;document.getElementById('bumper-clock').textContent=elapsed.toFixed(1)+'s';document.getElementById('bumper-phase-label').textContent=phase;document.getElementById('bumper-commentary').textContent=feed;document.getElementById('bumper-impacts').textContent=impacts;document.getElementById('bumper-ringouts').textContent=ringOuts;document.getElementById('bumper-compression').style.width=pct+'%';document.getElementById('bumper-compression-text').textContent=pct+'%'}
+function drawArena(now){const elapsed=(now-startAt)/1000;ctx.save();if(cameraShake>.25)ctx.translate((Math.random()-.5)*cameraShake,(Math.random()-.5)*cameraShake);const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#0b0613');bg.addColorStop(.55,'#09070f');bg.addColorStop(1,'#030407');ctx.fillStyle=bg;ctx.fillRect(-25,-25,W+50,H+50);ctx.fillStyle='#08060d';ctx.fillRect(0,28,W,112);for(let i=0;i<48;i++){const x=i*25,y=105+(i%4)*7;ctx.fillStyle=i%2?'#14101a':'#0c0a10';ctx.beginPath();ctx.arc(x,y-13,7+(i%3),0,Math.PI*2);ctx.fill();ctx.fillRect(x-7,y-7,14,27)}for(let i=0;i<20;i++){ctx.fillStyle=i%2?'rgba(168,85,247,.32)':'rgba(34,211,238,.23)';ctx.fillRect(9+i*60,38,38,4)}ctx.strokeStyle='rgba(168,85,247,.11)';ctx.lineWidth=68;ctx.beginPath();ctx.arc(cx,cy,ringR+34,0,Math.PI*2);ctx.stroke();ctx.save();ctx.beginPath();ctx.arc(cx,cy,ringR,0,Math.PI*2);ctx.clip();const floor=ctx.createRadialGradient(cx,cy,20,cx,cy,startR);floor.addColorStop(0,'#161224');floor.addColorStop(.68,'#100d1b');floor.addColorStop(1,'#090711');ctx.fillStyle=floor;ctx.fillRect(cx-startR,cy-startR,startR*2,startR*2);ctx.strokeStyle='rgba(168,85,247,.09)';ctx.lineWidth=1;for(let x=cx-startR;x<cx+startR;x+=34){ctx.beginPath();ctx.moveTo(x,cy-startR);ctx.lineTo(x,cy+startR);ctx.stroke()}for(let y=cy-startR;y<cy+startR;y+=34){ctx.beginPath();ctx.moveTo(cx-startR,y);ctx.lineTo(cx+startR,y);ctx.stroke()}ctx.strokeStyle='rgba(34,211,238,.16)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,74,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(cx-startR,cy);ctx.lineTo(cx+startR,cy);ctx.moveTo(cx,cy-startR);ctx.lineTo(cx,cy+startR);ctx.stroke();ctx.restore();ctx.shadowColor='#a855f7';ctx.shadowBlur=18;ctx.strokeStyle='#a855f7';ctx.lineWidth=5;ctx.beginPath();ctx.arc(cx,cy,ringR,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;for(let i=0;i<20;i++){const a=i*Math.PI*2/20+frame*.002,px=cx+Math.cos(a)*ringR,py=cy+Math.sin(a)*ringR;ctx.fillStyle=i%2?'#22d3ee':'#c084fc';ctx.save();ctx.translate(px,py);ctx.rotate(a);ctx.fillRect(-8,-3,16,6);ctx.restore()}cores.forEach(c=>{const pulse=1+Math.sin(frame*.16+c.pulse)*.13;ctx.save();ctx.translate(c.x,c.y);ctx.scale(pulse,pulse);ctx.shadowColor='#67e8f9';ctx.shadowBlur=18;ctx.fillStyle='rgba(34,211,238,.38)';ctx.rotate(Math.PI/4);ctx.fillRect(-10,-10,20,20);ctx.strokeStyle='#cffafe';ctx.lineWidth=2;ctx.strokeRect(-10,-10,20,20);ctx.rotate(-Math.PI/4);ctx.shadowBlur=0;ctx.fillStyle='#fff';ctx.font='900 8px Inter, sans-serif';ctx.textAlign='center';ctx.fillText('H',0,3);ctx.restore()});const active=activeVehicles(),compact=active.length>22;vehicles.filter(v=>!v.active&&elapsed-v.eliminatedAt<1).forEach(v=>drawVehicle(v,true,compact));active.forEach(v=>drawVehicle(v,false,compact));particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;popups.forEach(p=>{ctx.globalAlpha=Math.min(1,p.life*2);ctx.fillStyle='rgba(0,0,0,.78)';ctx.font=`900 ${p.big?14:10}px Inter, sans-serif`;ctx.textAlign='center';const w=ctx.measureText(p.text).width+18;ctx.fillRect(p.x-w/2,p.y-16,w,22);ctx.fillStyle=p.color;ctx.fillText(p.text,p.x,p.y);ctx.globalAlpha=1});drawControlPanel();if(elapsed<0){ctx.fillStyle='rgba(3,2,6,.66)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#fff';ctx.font='900 78px Inter, sans-serif';ctx.textAlign='center';ctx.shadowColor='#a855f7';ctx.shadowBlur=30;ctx.fillText(Math.max(1,Math.ceil(-elapsed)),W/2,H/2+14);ctx.shadowBlur=0;ctx.fillStyle='#c4b5fd';ctx.font='900 12px Inter, sans-serif';ctx.fillText('HYPERDOME GRID IGNITION',W/2,H/2+48)}if(winner){ctx.fillStyle='rgba(168,85,247,.1)';ctx.beginPath();ctx.moveTo(winner.x-110,55);ctx.lineTo(winner.x-34,winner.y+22);ctx.lineTo(winner.x+34,winner.y+22);ctx.lineTo(winner.x+110,55);ctx.closePath();ctx.fill();ctx.fillStyle='rgba(4,3,8,.9)';ctx.beginPath();ctx.roundRect(195,18,570,56,14);ctx.fill();ctx.strokeStyle='rgba(168,85,247,.5)';ctx.stroke();ctx.fillStyle='#c4b5fd';ctx.font='900 10px Inter, sans-serif';ctx.textAlign='center';ctx.fillText('LAST VEHICLE RUNNING',480,40);ctx.fillStyle='#fff';ctx.font='900 24px Inter, sans-serif';ctx.fillText(winner.name.toUpperCase(),480,65)}if(flash>0){ctx.fillStyle=`rgba(255,255,255,${flash*.2})`;ctx.fillRect(0,0,W,H)}ctx.restore()}
+function drawVehicle(v,out,compact){const sc=v.r/14,boosting=performance.now()<v.boostUntil;ctx.save();ctx.globalAlpha=out?.18:1;ctx.translate(v.x,v.y);ctx.rotate(v.angle+(out?.6:0));ctx.scale(sc,sc);ctx.fillStyle='rgba(0,0,0,.44)';ctx.beginPath();ctx.ellipse(-3,7,23,10,0,0,Math.PI*2);ctx.fill();if(boosting&&!out){ctx.fillStyle='rgba(34,211,238,.42)';ctx.beginPath();ctx.moveTo(-22,-7);ctx.lineTo(-39,0);ctx.lineTo(-22,7);ctx.closePath();ctx.fill()}ctx.fillStyle=v.hitFlash>.05?'#fff':v.color;ctx.beginPath();ctx.roundRect(-22,-15,44,30,12);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.52)';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#111827';ctx.beginPath();ctx.roundRect(-12,-10,23,20,8);ctx.fill();ctx.fillStyle='#94a3b8';ctx.beginPath();ctx.ellipse(3,-2,9,7,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#0f172a';ctx.beginPath();ctx.arc(4,-4,7,Math.PI,Math.PI*2);ctx.fill();ctx.fillStyle='#67e8f9';ctx.fillRect(6,-5,5,2);ctx.fillStyle='rgba(255,255,255,.22)';ctx.fillRect(-18,-11,7,22);ctx.fillStyle='#fff';ctx.font='900 7px Inter, sans-serif';ctx.textAlign='center';ctx.fillText(v.initials,-3,3);ctx.fillStyle='#111827';ctx.fillRect(17,-9,8,18);ctx.fillRect(-25,-9,8,18);ctx.restore();if(!out&&!compact){const label=v.name.length>12?v.name.slice(0,11)+'…':v.name;ctx.font='900 8px Inter, sans-serif';const w=ctx.measureText(label).width+12;ctx.fillStyle='rgba(3,2,7,.74)';ctx.fillRect(v.x-w/2,v.y-v.r*2.1-18,w,14);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(label,v.x,v.y-v.r*2.1-8);ctx.fillStyle='rgba(0,0,0,.72)';ctx.fillRect(v.x-17,v.y+v.r+7,34,4);ctx.fillStyle=v.armor>45?'#22d3ee':v.armor>20?'#a855f7':'#f43f5e';ctx.fillRect(v.x-17,v.y+v.r+7,34*Math.max(0,v.armor)/100,4)}}
+function drawControlPanel(){ctx.fillStyle='rgba(4,2,8,.91)';ctx.beginPath();ctx.roundRect(956,66,218,440,18);ctx.fill();ctx.strokeStyle='rgba(168,85,247,.2)';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#c4b5fd';ctx.font='900 10px Inter, sans-serif';ctx.textAlign='left';ctx.fillText('HYPERDOME CONTROL',980,97);ctx.fillStyle='rgba(255,255,255,.07)';ctx.fillRect(980,113,170,1);ctx.fillStyle='#fff';ctx.font='900 66px Inter, sans-serif';ctx.textAlign='center';ctx.fillText(String(activeVehicles().length).padStart(2,'0'),1065,185);ctx.fillStyle='#94a3b8';ctx.font='900 9px Inter, sans-serif';ctx.fillText('VEHICLES RUNNING',1065,207);ctx.fillStyle=phase==='FINAL CRUSH'?'#e879f9':'#67e8f9';ctx.font='900 13px Inter, sans-serif';ctx.fillText(phase,1065,241);ctx.strokeStyle='rgba(255,255,255,.1)';ctx.lineWidth=8;ctx.beginPath();ctx.arc(1065,307,45,-Math.PI*.85,Math.PI*.85);ctx.stroke();ctx.strokeStyle='#a855f7';ctx.beginPath();ctx.arc(1065,307,45,-Math.PI*.85,-Math.PI*.85+Math.PI*1.7*compression);ctx.stroke();ctx.fillStyle='#fff';ctx.font='900 20px Inter, sans-serif';ctx.fillText(Math.round(compression*100)+'%',1065,314);ctx.fillStyle='#64748b';ctx.font='800 8px Inter, sans-serif';ctx.fillText('DOME COMPRESSION',1065,371);ctx.fillStyle='rgba(255,255,255,.07)';ctx.fillRect(980,385,170,1);ctx.fillStyle='#94a3b8';ctx.textAlign='left';ctx.fillText('IMPACTS',980,412);ctx.fillText('RING OUTS',980,438);ctx.fillText('WRECKED',980,464);ctx.fillStyle='#fff';ctx.textAlign='right';ctx.font='900 12px Inter, sans-serif';ctx.fillText(impacts,1150,412);ctx.fillText(ringOuts,1150,438);ctx.fillText(eliminated,1150,464)}
+function showResult(now){if(resultShown)return;resultShown=true;showPhase('bumper','winner');document.getElementById('bumper-winner-name').textContent=winner?winner.name:'No one';document.getElementById('bumper-winner-detail').textContent='HYPERDOME CHAMPION';const elapsed=Math.max(0,(now-startAt)/1000);document.getElementById('bumper-winner-sub').textContent=(winner?winner.collisions:0)+' impacts survived · '+(winner?winner.knockouts:0)+' knockouts · '+elapsed.toFixed(1)+'s in the dome';const cards=[['Impact Count',String(winner?winner.collisions:0),'Champion collisions'],['Knockouts',String(winner?winner.knockouts:0),ringOuts+' arena ring outs'],['Dome Chaos',String(impacts),eliminated+' vehicles wrecked']];document.getElementById('bumper-result-cards').replaceChildren(...cards.map(([label,value,note])=>{const box=document.createElement('div');box.className='rounded-2xl border border-white/10 bg-white/[.035] p-4 text-left';box.innerHTML='<div class="text-[8px] text-violet-400 font-black uppercase tracking-[0.18em]">'+label+'</div><div class="text-2xl font-black text-white mt-1">'+value+'</div><div class="text-[10px] text-gray-500 mt-2">'+note+'</div>';return box}))}
+function loop(now){const dt=Math.max(1,Math.min(34,now-last));last=now;update(now,dt);drawArena(now);if(finishAt&&now>=finishAt){showResult(now);return}requestAnimationFrame(loop)}updateHUD(performance.now());requestAnimationFrame(loop)}
 
 /* ==================== BALLOON SKY RACE (every entrant, scrolling altitude race with thermals & birds) ==================== */
 function runBalloonRace() {
@@ -16996,6 +16938,6 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a303cdc37826ce57',t:'MTc4NzU4OTY3OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a303e4a12a8dfe8b',t:'MTc4NzU5MDYxNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 >
