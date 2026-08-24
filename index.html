@@ -1329,15 +1329,58 @@
   </div>
 </div>
 
-<div id="twerk-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
-  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
-    <div class="text-center mb-3"><div class="text-[#ec4899] text-sm font-bold uppercase tracking-widest mb-2">🍑 Twerk Shake Royale</div><h1 class="text-4xl md:text-5xl font-black text-white">Last Ball In The Box Wins</h1></div>
-    <div id="twerk-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Loading the twerk machine...</div><div class="text-sm text-gray-600" id="twerk-intro-count"></div></div>
-    <div id="twerk-phase-play" class="hidden w-full max-w-5xl">
-      <div id="twerk-feed" class="text-center text-gray-300 mb-3 text-lg font-bold">Shake incoming...</div>
-      <canvas id="twerk-canvas" width="900" height="580" class="w-full rounded-2xl border border-pink-500/30 bg-[#050508]"></canvas>
+<!-- ==================== PROFESSIONAL TWERK SHAKE ROYALE ==================== -->
+<div id="twerk-overlay" class="hidden fixed inset-0 bg-[#050208] z-50 overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 24% 28%,rgba(236,72,153,.18),transparent 33%),radial-gradient(circle at 82% 65%,rgba(124,58,237,.16),transparent 36%),linear-gradient(145deg,#07020a,#050508 52%,#090313);"></div>
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-3 md:p-4 overflow-hidden">
+    <div class="w-full max-w-7xl">
+      <header class="flex items-center justify-between gap-4 mb-3 px-1">
+        <div class="min-w-0"><div class="text-pink-400 text-[10px] font-black uppercase tracking-[0.28em]">Bassquake Entertainment</div><h1 class="text-2xl md:text-3xl font-black text-white leading-tight truncate">Twerk Shake Royale</h1></div>
+        <div class="hidden sm:flex items-center gap-2 text-[9px] font-black uppercase tracking-wider"><span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300">Kinetic Survival</span><span class="px-3 py-1.5 rounded-full bg-fuchsia-500/10 border border-fuchsia-400/20 text-fuchsia-300">Last Capsule Wins</span><span class="px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-400/20 text-violet-300">Fixed Arena</span></div>
+      </header>
+
+      <div id="twerk-phase-intro" class="glass rounded-3xl border border-pink-500/20 p-8 md:p-12 text-center shadow-[0_30px_100px_rgba(0,0,0,.65)]">
+        <div class="mx-auto mb-5 w-20 h-20 rounded-2xl flex items-center justify-center text-4xl bg-gradient-to-br from-pink-500/20 to-violet-600/20 border border-pink-400/20 shadow-[0_0_45px_rgba(236,72,153,.2)]">🍑</div>
+        <div class="text-pink-400 text-xs font-black uppercase tracking-[0.3em] mb-2">The Bass Chamber Is Armed</div>
+        <div class="text-3xl md:text-5xl font-black text-white mb-3">Hold On Through The Drop</div>
+        <div id="twerk-intro-count" class="text-sm md:text-base text-gray-400 font-bold"></div>
+        <div class="grid grid-cols-3 gap-2 max-w-xl mx-auto mt-7 text-[9px] font-black uppercase tracking-wider"><div class="rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-gray-400">Dynamic Physics</div><div class="rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-gray-400">Escalating Bass</div><div class="rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-gray-400">One Survivor</div></div>
+      </div>
+
+      <div id="twerk-phase-play" class="hidden w-full">
+        <div class="grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_auto_auto_auto] items-center gap-2 mb-2 rounded-2xl border border-white/10 bg-black/60 px-3 md:px-4 py-2 shadow-xl">
+          <div class="min-w-0"><div class="text-[8px] text-gray-600 font-black uppercase tracking-[0.2em]">Arena Control</div><div id="twerk-status" class="text-sm md:text-base text-pink-300 font-black truncate">CHAMBER CALIBRATING</div></div>
+          <div class="text-right px-3 border-l border-white/10"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Remaining</div><div id="twerk-remaining" class="text-lg font-black text-white tabular-nums">0</div></div>
+          <div class="hidden sm:block text-right px-3 border-l border-white/10"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Bass Level</div><div id="twerk-level" class="text-lg font-black text-fuchsia-400 tabular-nums">01</div></div>
+          <div class="hidden sm:block text-right pl-3 border-l border-white/10"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Clock</div><div id="twerk-clock" class="text-lg font-black text-violet-300 tabular-nums">0.0s</div></div>
+        </div>
+
+        <div class="relative rounded-2xl overflow-hidden border border-pink-500/25 shadow-[0_25px_90px_rgba(0,0,0,.72)] bg-[#08020d]">
+          <canvas id="twerk-canvas" width="1200" height="560" class="block w-full bg-[#08020d]"></canvas>
+          <div class="absolute top-3 left-3 px-3 py-1.5 rounded-lg bg-black/65 border border-white/10 text-[8px] font-black text-white tracking-[0.18em]">BASSQUAKE CAM 01</div>
+          <div class="absolute top-3 right-3 px-3 py-1.5 rounded-lg bg-black/65 border border-pink-400/20 text-[8px] font-black text-pink-300 tracking-[0.18em]"><span id="twerk-phase-label">WARMUP</span></div>
+        </div>
+
+        <div class="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_auto_auto] items-center gap-2 mt-2">
+          <div class="min-w-0 rounded-xl border border-pink-500/15 bg-pink-950/20 px-4 py-2"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Commentary</div><div id="twerk-feed" class="text-sm font-black text-white truncate">The chamber is locking every capsule into position...</div></div>
+          <div class="rounded-xl border border-white/10 bg-black/50 px-4 py-2 text-right"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Shook Out</div><div id="twerk-out" class="text-sm font-black text-pink-400 tabular-nums">0</div></div>
+          <div class="hidden md:block rounded-xl border border-white/10 bg-black/50 px-4 py-2 text-right"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Wall Impacts</div><div id="twerk-impacts" class="text-sm font-black text-fuchsia-400 tabular-nums">0</div></div>
+          <div class="hidden md:block w-36 rounded-xl border border-white/10 bg-black/50 px-4 py-2"><div class="flex justify-between text-[8px] text-gray-600 font-black uppercase tracking-wider"><span>Intensity</span><span id="twerk-intensity-text">0%</span></div><div class="h-1.5 bg-white/10 rounded-full mt-1 overflow-hidden"><div id="twerk-intensity" class="h-full bg-gradient-to-r from-pink-500 to-violet-500" style="width:0%"></div></div></div>
+        </div>
+      </div>
+
+      <div id="twerk-phase-winner" class="hidden">
+        <div class="max-w-3xl mx-auto glass rounded-3xl border border-pink-500/25 p-7 md:p-10 text-center shadow-[0_35px_120px_rgba(0,0,0,.75)]">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-pink-600 to-violet-600 text-white text-[10px] font-black uppercase tracking-[0.2em] mb-5">Official Bassquake Result</div>
+          <div class="text-pink-400 text-sm font-black uppercase tracking-[0.28em] mb-2">Last Capsule Standing</div>
+          <div id="twerk-winner-name" class="text-5xl md:text-7xl font-black text-white mb-2 break-words"></div>
+          <div id="twerk-winner-detail" class="text-xl md:text-2xl text-fuchsia-300 font-black mb-1">BASS CHAMBER CHAMPION</div>
+          <div id="twerk-winner-sub" class="text-sm text-gray-500 mb-6"></div>
+          <div id="twerk-result-cards" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-7"></div>
+          <div class="flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-sm font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-sm font-bold">✕ Close</button></div>
+        </div>
+      </div>
     </div>
-    <div id="twerk-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">👑</div><div class="text-2xl text-[#ec4899] font-bold mb-2">LAST BALL STANDING</div><div id="twerk-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
   </div>
 </div>
 
@@ -15112,689 +15155,24 @@ function startOilRatingGame(names, options) {
   loop();
 }
 
-/* ==================== TWERK SHAKE ROYALE ==================== */
-function drawTwerkBox(ctx, bx, by, bw, bh, opts) {
-  opts = opts || {};
-  const glow = opts.glow || 0;
-  const ultra = opts.ultra || false;
-  ctx.save();
-  ctx.translate(bx, by);
-  if (opts.shakeRot) ctx.rotate(opts.shakeRot);
-  ctx.shadowColor = ultra ? '#ff0066' : '#ec4899';
-  ctx.shadowBlur = (8 + glow * 18) * (ultra ? 2.2 : 1);
-  ctx.fillStyle = ultra ? 'rgba(255,0,102,0.14)' : 'rgba(236,72,153,0.08)';
-  ctx.strokeStyle = ultra ? '#ff0066' : 'rgba(236,72,153,0.85)';
-  ctx.lineWidth = ultra ? 4 : 3;
-  ctx.beginPath();
-  ctx.roundRect(-bw / 2, -bh, bw, bh, 8);
-  ctx.fill();
-  ctx.stroke();
-  if (ultra) {
-    ctx.strokeStyle = `rgba(255,215,0,${0.35 + glow * 0.45})`;
-    ctx.lineWidth = 2;
-    ctx.setLineDash([5, 4]);
-    ctx.strokeRect(-bw / 2 - 3, -bh - 3, bw + 6, bh + 6);
-    ctx.setLineDash([]);
-  }
-  ctx.shadowBlur = 0;
-  ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(-bw / 2 + 6, -bh + 6);
-  ctx.lineTo(-bw / 2 + 6, -6);
-  ctx.stroke();
-  ctx.fillStyle = 'rgba(255,255,255,0.12)';
-  ctx.beginPath();
-  ctx.moveTo(-bw / 2 + 4, -bh + 4);
-  ctx.lineTo(bw / 2 - 10, -bh + 4);
-  ctx.lineTo(bw / 2 - 18, -bh + 14);
-  ctx.lineTo(-bw / 2 + 4, -bh + 14);
-  ctx.closePath();
-  ctx.fill();
-  ctx.fillStyle = ultra ? '#ff0066' : '#ec4899';
-  ctx.font = 'bold 11px Inter';
-  ctx.textAlign = 'center';
-  ctx.fillText(ultra ? '⚡ ULTRA BOX ⚡' : 'SHAKE BOX', 0, -bh - 8);
-  ctx.restore();
-}
-
-function drawTwerkBall(ctx, b) {
-  if (!b.alive && !b.ejecting) return;
-  ctx.save();
-  ctx.translate(b.x, b.y);
-  ctx.rotate(b.angle || 0);
-  const r = b.r;
-  const g = ctx.createRadialGradient(-r * 0.3, -r * 0.35, r * 0.1, 0, 0, r);
-  g.addColorStop(0, lightenHex(b.color, 55));
-  g.addColorStop(0.45, b.color);
-  g.addColorStop(1, b.color);
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.arc(0, 0, r, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-  ctx.fillStyle = 'rgba(255,255,255,0.35)';
-  ctx.beginPath();
-  ctx.arc(-r * 0.28, -r * 0.32, r * 0.22, 0, Math.PI * 2);
-  ctx.fill();
-  const label = b.revealName ? b.name : b.shortName;
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold ' + Math.max(8, Math.min(11, r * 0.85)) + 'px Inter';
-  ctx.textAlign = 'center';
-  ctx.fillText(label, 0, r * 0.25);
-  ctx.restore();
-}
-
-function drawTwerkStreamer(ctx, cx, cy, sc, opts) {
-  opts = opts || {};
-  const ultra = opts.ultra || false;
-  const shakeX = opts.shakeX || 0;
-  const shakeY = opts.shakeY || 0;
-  const shakeRot = opts.shakeRot || 0;
-  const phase = opts.phase || 0;
-  const faceImg = opts.faceImg;
-  const clapSpd = ultra ? 5.2 : 2.2;
-  const clapAmp = ultra ? 0.22 : 0.08;
-  const clap = Math.abs(Math.sin(phase * clapSpd)) * clapAmp;
-
-  if (ultra && opts.trail) {
-    opts.trail.forEach((t, i) => {
-      ctx.save();
-      ctx.globalAlpha = t.alpha;
-      ctx.translate(cx + t.sx, cy + t.sy);
-      ctx.scale(sc * 0.98, sc * 0.98);
-      ctx.rotate(t.sr);
-      ctx.fillStyle = '#f59e0b';
-      ctx.beginPath();
-      ctx.ellipse(0, 28, 48 + t.clap * 24, 34 + t.clap * 14, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    });
-  }
-
-  ctx.save();
-  ctx.translate(cx + shakeX, cy + shakeY);
-  ctx.scale(sc, sc);
-  ctx.rotate(shakeRot);
-
-  ctx.fillStyle = 'rgba(0,0,0,0.35)';
-  ctx.beginPath();
-  ctx.ellipse(0, 95, 70, 12, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.strokeStyle = '#1e293b';
-  ctx.lineWidth = 14;
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(-38, 72);
-  ctx.lineTo(-52, 38);
-  ctx.lineTo(-48, 8);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(38, 72);
-  ctx.lineTo(52, 38);
-  ctx.lineTo(48, 8);
-  ctx.stroke();
-
-  ctx.fillStyle = '#111827';
-  ctx.beginPath();
-  ctx.ellipse(-46, 74, 16, 9, 0.2, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(46, 74, 16, 9, -0.2, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#2563eb';
-  ctx.beginPath();
-  ctx.roundRect(-34, -8, 68, 52, 10);
-  ctx.fill();
-  ctx.fillStyle = '#1d4ed8';
-  ctx.fillRect(-34, 30, 68, 14);
-
-  if (ultra) {
-    ctx.shadowColor = '#ff0066';
-    ctx.shadowBlur = 22 + clap * 30;
-  }
-  ctx.fillStyle = ultra ? '#fcd34d' : '#fbbf24';
-  ctx.beginPath();
-  ctx.ellipse(0, 28, 52 + clap * 30, 38 + clap * 18, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = ultra ? '#f97316' : '#f59e0b';
-  ctx.beginPath();
-  ctx.ellipse(-18 + clap * 8, 26, 28, 22, -0.15, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(18 - clap * 8, 26, 28, 22, 0.15, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.shadowBlur = 0;
-  ctx.strokeStyle = 'rgba(120,53,15,0.35)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(0, 8);
-  ctx.quadraticCurveTo(2, 28, 0, 48);
-  ctx.stroke();
-
-  ctx.strokeStyle = '#2563eb';
-  ctx.lineWidth = 12;
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.lineTo(-20, -42);
-  ctx.lineTo(-28, -78);
-  ctx.stroke();
-
-  const headX = -34;
-  const headY = -92;
-  const headWobble = ultra ? Math.sin(phase * 8) * 4 : 0;
-  ctx.fillStyle = '#111827';
-  ctx.beginPath();
-  ctx.arc(headX - 18, headY - 4 + headWobble, 14, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = '#374151';
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.arc(headX - 18, headY - 4 + headWobble, 14, 0, Math.PI * 2);
-  ctx.stroke();
-
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(headX, headY + headWobble, 30, 0, Math.PI * 2);
-  ctx.clip();
-  if (faceImg && faceImg.complete && faceImg.naturalWidth) {
-    ctx.drawImage(faceImg, headX - 30, headY - 30 + headWobble, 60, 60);
-  } else {
-    ctx.fillStyle = '#d4a574';
-    ctx.fillRect(headX - 30, headY - 30 + headWobble, 60, 60);
-    ctx.fillStyle = '#1f2937';
-    ctx.font = 'bold 20px Inter';
-    ctx.textAlign = 'center';
-    ctx.fillText('😆', headX, headY + 8 + headWobble);
-  }
-  ctx.restore();
-  ctx.strokeStyle = '#78350f';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(headX, headY + headWobble, 30, 0, Math.PI * 2);
-  ctx.stroke();
-
-  ctx.strokeStyle = '#2563eb';
-  ctx.lineWidth = 8;
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(-20, -42);
-  ctx.lineTo(-48, -28);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(-20, -42);
-  ctx.lineTo(8, -34);
-  ctx.stroke();
-
-  if (opts.sweat || ultra) {
-    ctx.fillStyle = ultra ? 'rgba(56,189,248,0.95)' : 'rgba(56,189,248,0.75)';
-    const sweatPts = ultra
-      ? [['-62', '-22'], ['58', '-12'], ['-16', '-112'], ['40', '-60'], ['-44', '10'], ['50', '20']]
-      : [['-58', '-18'], ['52', '-8'], ['-12', '-108']];
-    sweatPts.forEach(([sx, sy], i) => {
-      const px = parseFloat(sx) + Math.sin(phase * (ultra ? 6 : 3) + i) * (ultra ? 5 : 3);
-      const py = parseFloat(sy) + Math.cos(phase * (ultra ? 5 : 2) + i) * (ultra ? 4 : 2);
-      ctx.beginPath();
-      ctx.ellipse(px, py, ultra ? 4 : 3, ultra ? 7 : 5, 0.3, 0, Math.PI * 2);
-      ctx.fill();
-    });
-  }
-
-  ctx.restore();
-}
-
-function runTwerk() {
-  showOverlay('twerk-overlay');
-  showPhase('twerk', 'intro');
-  const names = Array.from(entrants);
-  if (!names.length) { alert('No entrants yet!'); return; }
-  document.getElementById('twerk-intro-count').textContent = names.length + ' balls locked in the shake box — last one wins!';
-  armGameStart(() => startTwerk(names));
-}
-
-function startTwerk(names) {
-  showPhase('twerk', 'play');
-  let remaining = [...names].sort(() => Math.random() - 0.5);
-  const canvas = document.getElementById('twerk-canvas');
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  const feed = document.getElementById('twerk-feed');
-  const charX = W * 0.46, charY = H * 0.58, charSc = 1.15;
-  const boxW = 150, boxH = 105;
-  const ULTRA_AFTER_SEC = 30;
-  const MAX_GAME_SEC = 60;
-  let frame = 0, animId = null, shakeIntensity = 1, round = 0;
-  let balls = [], ejecting = null, particles = [], notes = [], screenShake = 0;
-  let ejectCooldown = 0, bassPulse = 0, ultraShake = false, ultraAnnounce = 0, ultraFlash = 0;
-  let speedLines = [], buttTrail = [];
-
-  function elapsedSec() { return frame / 60; }
-
-  function boxAnchor() {
-    const freq = ultraShake ? 2.6 : 1;
-    const amp = ultraShake ? 2.4 : 1;
-    const sx = (Math.sin(frame * 0.22 * freq) * 14 + Math.sin(frame * 0.71) * (ultraShake ? 10 : 0)) * shakeIntensity * amp;
-    const sy = (Math.sin(frame * 0.31 * freq) * 8 + Math.cos(frame * 0.58) * (ultraShake ? 7 : 0)) * shakeIntensity * amp;
-    const sr = (Math.sin(frame * 0.18 * freq) * 0.06 + Math.sin(frame * 0.93) * (ultraShake ? 0.05 : 0)) * shakeIntensity;
-    const bx = charX + sx + 8 * charSc;
-    const by = charY - 58 * charSc + sy;
-    return { bx, by, sx, sy, sr, left: bx - boxW / 2, right: bx + boxW / 2, top: by - boxH, bottom: by };
-  }
-
-  function spawnBalls() {
-    const box = boxAnchor();
-    const n = remaining.length;
-    balls = remaining.map((name, i) => {
-      const cols = Math.ceil(Math.sqrt(n));
-      const rows = Math.ceil(n / cols);
-      const col = i % cols, row = Math.floor(i / cols);
-      const pad = 14;
-      const cellW = (boxW - pad * 2) / cols;
-      const cellH = (boxH - pad * 2) / rows;
-      const r = Math.min(16, Math.min(cellW, cellH) * 0.38);
-      return {
-        name,
-        shortName: name.length > 8 ? name.substring(0, 7) + '…' : name,
-        color: colorFor(name),
-        x: box.left + pad + cellW * col + cellW / 2,
-        y: box.top + pad + cellH * row + cellH / 2,
-        vx: (Math.random() - 0.5) * 2,
-        vy: (Math.random() - 0.5) * 2,
-        r,
-        angle: Math.random() * Math.PI * 2,
-        alive: true,
-        revealName: false
-      };
-    });
-  }
-  spawnBalls();
-
-  function spawnPopFX(x, y, color) {
-    for (let i = 0; i < 28; i++) {
-      particles.push({
-        x, y,
-        vx: (Math.random() - 0.5) * 10,
-        vy: -4 - Math.random() * 8,
-        r: 2 + Math.random() * 5,
-        life: 1,
-        color: i % 3 === 0 ? color : ['#ec4899', '#a855f7', '#fff'][i % 3]
-      });
-    }
-    for (let i = 0; i < 6; i++) {
-      notes.push({
-        x, y: y - 20,
-        vx: (Math.random() - 0.5) * 3,
-        vy: -2 - Math.random() * 2,
-        life: 1,
-        emoji: ['💥', '🔥', '🍑', '✨', '💃', '🎵'][i]
-      });
-    }
-    screenShake = 10;
-  }
-
-  function beginEject(idx) {
-    if (ejecting || ejectCooldown > 0) return;
-    const b = balls[idx];
-    if (!b || !b.alive) return;
-    round++;
-    ejectCooldown = ultraShake ? Math.max(12, 28 - round) : 90;
-    b.alive = false;
-    b.revealName = true;
-    const box = boxAnchor();
-    const launch = ultraShake ? 1.8 : 1;
-    ejecting = {
-      ...b,
-      t: 0,
-      vx: (b.x - box.bx) * 0.08 + (Math.random() > 0.5 ? 1 : -1) * (6 + shakeIntensity) * launch,
-      vy: (-8 - shakeIntensity * 2) * launch,
-      alpha: 1
-    };
-    spawnPopFX(b.x, b.y, b.color);
-    if (ultraShake) {
-      screenShake = 18;
-      ultraFlash = 0.7;
-      for (let i = 0; i < 8; i++) {
-        speedLines.push({
-          x: box.bx + (Math.random() - 0.5) * boxW,
-          y: box.by - boxH / 2,
-          len: 40 + Math.random() * 80,
-          ang: -Math.PI / 2 + (Math.random() - 0.5) * 0.8,
-          life: 1
-        });
-      }
-    }
-    feed.textContent = (ultraShake ? '⚡💥 ' : '💥 ') + b.name + ' — SHOOK OUT!';
-  }
-
-  function activateUltraShake() {
-    if (ultraShake) return;
-    ultraShake = true;
-    ultraAnnounce = 150;
-    ultraFlash = 1;
-    screenShake = 24;
-    feed.textContent = '🔥 ULTRA SHAKE ACTIVATED! 🔥';
-    document.getElementById('twerk-feed').textContent = feed.textContent;
-    for (let i = 0; i < 40; i++) {
-      particles.push({
-        x: charX + (Math.random() - 0.5) * 200,
-        y: charY - 80 + Math.random() * 60,
-        vx: (Math.random() - 0.5) * 14,
-        vy: -6 - Math.random() * 10,
-        r: 3 + Math.random() * 6,
-        life: 1,
-        color: ['#ff0066', '#ffd700', '#a855f7', '#fff'][i % 4]
-      });
-    }
-  }
-
-  function updatePhysics() {
-    frame++;
-    const elapsed = elapsedSec();
-    if (elapsed >= ULTRA_AFTER_SEC && remaining.length > 1) activateUltraShake();
-    if (ultraShake) {
-      const ultraT = Math.min(1, (elapsed - ULTRA_AFTER_SEC) / (MAX_GAME_SEC - ULTRA_AFTER_SEC));
-      shakeIntensity = 4 + ultraT * 4.5;
-      bassPulse = Math.abs(Math.sin(frame * 0.55)) * 0.85 + 0.15;
-      screenShake = Math.max(screenShake, 4 + ultraT * 10);
-    } else {
-      shakeIntensity = Math.min(3.2, 1 + elapsed * 0.08);
-      bassPulse = Math.sin(frame * 0.35) * 0.5 + 0.5;
-    }
-    if (ultraAnnounce > 0) ultraAnnounce--;
-    if (ultraFlash > 0) ultraFlash -= 0.03;
-
-    const clap = Math.abs(Math.sin(frame * 0.08 * (ultraShake ? 5.2 : 2.2))) * (ultraShake ? 0.22 : 0.08);
-    const box = boxAnchor();
-    buttTrail.unshift({ sx: box.sx, sy: box.sy, sr: box.sr, clap, alpha: ultraShake ? 0.35 : 0.2 });
-    if (buttTrail.length > (ultraShake ? 6 : 3)) buttTrail.pop();
-    buttTrail.forEach((t, i) => { t.alpha *= 0.82; });
-
-    if (ejectCooldown > 0) ejectCooldown--;
-    const ax = (Math.sin(frame * 0.22) * 0.85 + Math.sin(frame * 0.67) * (ultraShake ? 1.2 : 0)) * shakeIntensity;
-    const ay = (Math.cos(frame * 0.31) * 0.55 + Math.cos(frame * 0.58) * (ultraShake ? 0.9 : 0)) * shakeIntensity;
-    const jitter = ultraShake ? 0.45 : 0.15;
-
-    balls.forEach(b => {
-      if (!b.alive) return;
-      b.vx += ax + (Math.random() - 0.5) * jitter;
-      b.vy += ay + 0.12 + (Math.random() - 0.5) * jitter;
-      b.vx *= ultraShake ? 0.978 : 0.985;
-      b.vy *= ultraShake ? 0.978 : 0.985;
-      b.x += b.vx;
-      b.y += b.vy;
-      b.angle += (b.vx + b.vy) * (ultraShake ? 0.04 : 0.02);
-
-      if (b.x - b.r < box.left + 4) { b.x = box.left + 4 + b.r; b.vx = Math.abs(b.vx) * (ultraShake ? 0.85 : 0.72); }
-      if (b.x + b.r > box.right - 4) { b.x = box.right - 4 - b.r; b.vx = -Math.abs(b.vx) * (ultraShake ? 0.85 : 0.72); }
-      if (b.y - b.r < box.top + 4) { b.y = box.top + 4 + b.r; b.vy = Math.abs(b.vy) * (ultraShake ? 0.85 : 0.72); }
-      if (b.y + b.r > box.bottom - 4) { b.y = box.bottom - 4 - b.r; b.vy = -Math.abs(b.vy) * (ultraShake ? 0.85 : 0.72); }
-    });
-
-    if (ejecting) {
-      ejecting.t++;
-      ejecting.x += ejecting.vx;
-      ejecting.y += ejecting.vy;
-      ejecting.vy += 0.35;
-      ejecting.vx *= 0.99;
-      ejecting.alpha = Math.max(0, 1 - ejecting.t * (ultraShake ? 0.028 : 0.018));
-      const ejectDone = ultraShake ? 32 : 55;
-      if (ejecting.t > ejectDone) {
-        remaining = remaining.filter(n => n !== ejecting.name);
-        ejecting = null;
-        if (remaining.length <= 1) {
-          cancelAnimationFrame(animId);
-          showPhase('twerk', 'winner');
-          document.getElementById('twerk-winner-name').textContent = pickSingleWinner(remaining, names);
-          return;
-        }
-        spawnBalls();
-        feed.textContent = ultraShake
-          ? '⚡ ULTRA SHAKE! (' + remaining.length + ' left)'
-          : '🍑 KEEP SHAKING! (' + remaining.length + ' balls left)';
-      }
-    } else if (remaining.length > 1 && ejectCooldown <= 0) {
-      const alive = balls.filter(b => b.alive);
-      if (ultraShake) {
-        const ultraElapsed = elapsed - ULTRA_AFTER_SEC;
-        const panic = elapsed >= MAX_GAME_SEC - 10;
-        const interval = panic ? 8 : Math.max(14, 38 - round * 1.5 - ultraElapsed * 0.4);
-        const shouldEject = panic || frame % Math.floor(interval) < 2;
-        if (shouldEject && alive.length) {
-          let pick = 0, best = -1;
-          alive.forEach(b => {
-            const energy = b.vx * b.vx + b.vy * b.vy + (box.bottom - b.y) * 0.08;
-            if (energy > best) { best = energy; pick = balls.indexOf(b); }
-          });
-          beginEject(pick);
-        }
-      } else {
-        const peak = Math.abs(Math.sin(frame * 0.22)) > 0.92 && Math.abs(Math.cos(frame * 0.31)) > 0.75;
-        const interval = Math.max(70, 130 - round * 4);
-        if (peak && frame % interval < 2 && alive.length) {
-          let pick = 0, best = -1;
-          alive.forEach(b => {
-            const energy = b.vx * b.vx + b.vy * b.vy + (box.bottom - b.y) * 0.05;
-            if (energy > best) { best = energy; pick = balls.indexOf(b); }
-          });
-          beginEject(pick);
-        }
-      }
-    }
-
-    if (ultraShake && frame % 6 === 0) {
-      speedLines.push({
-        x: charX + (Math.random() - 0.5) * 160,
-        y: charY - 40 + Math.random() * 80,
-        len: 30 + Math.random() * 70,
-        ang: Math.random() * Math.PI * 2,
-        life: 0.6 + Math.random() * 0.4
-      });
-    }
-    speedLines.forEach(l => { l.life -= 0.06; });
-    speedLines = speedLines.filter(l => l.life > 0);
-
-    particles.forEach(p => { p.x += p.vx; p.y += p.vy; p.vy += 0.15; p.life -= 0.025; });
-    particles = particles.filter(p => p.life > 0);
-    notes.forEach(n => { n.x += n.vx; n.y += n.vy; n.vy -= 0.04; n.life -= 0.018; });
-    notes = notes.filter(n => n.life > 0);
-    screenShake *= ultraShake ? 0.92 : 0.88;
-  }
-
-  function drawScene() {
-    const box = boxAnchor();
-    const ss = screenShake;
-    const elapsed = elapsedSec();
-
-    const bg = ctx.createLinearGradient(0, 0, W, H);
-    if (ultraShake) {
-      bg.addColorStop(0, '#2a0010');
-      bg.addColorStop(0.5, '#4a0028');
-      bg.addColorStop(1, '#1a0008');
-    } else {
-      bg.addColorStop(0, '#1a0520');
-      bg.addColorStop(0.5, '#2d0a3e');
-      bg.addColorStop(1, '#0f0518');
-    }
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, W, H);
-
-    for (let i = 0; i < (ultraShake ? 12 : 8); i++) {
-      const lx = (W / (ultraShake ? 12 : 8)) * i + Math.sin(frame * (ultraShake ? 0.09 : 0.04) + i) * (ultraShake ? 50 : 30);
-      const g = ctx.createRadialGradient(lx, 0, 0, lx, 0, ultraShake ? 220 : 180);
-      const hue = ultraShake ? (frame * 4 + i * 30) % 360 : (frame * 2 + i * 45) % 360;
-      g.addColorStop(0, `hsla(${hue},90%,55%,${(ultraShake ? 0.14 : 0.08) + bassPulse * 0.08})`);
-      g.addColorStop(1, 'transparent');
-      ctx.fillStyle = g;
-      ctx.fillRect(lx - (ultraShake ? 220 : 180), 0, (ultraShake ? 440 : 360), H * 0.55);
-    }
-
-    if (ultraShake) {
-      speedLines.forEach(l => {
-        ctx.save();
-        ctx.globalAlpha = l.life * 0.55;
-        ctx.strokeStyle = '#ffd700';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(l.x, l.y);
-        ctx.lineTo(l.x + Math.cos(l.ang) * l.len, l.y + Math.sin(l.ang) * l.len);
-        ctx.stroke();
-        ctx.restore();
-      });
-    }
-
-    ctx.fillStyle = '#12081a';
-    ctx.fillRect(0, H - 120, W, 120);
-    ctx.strokeStyle = ultraShake ? 'rgba(255,0,102,0.45)' : 'rgba(236,72,153,0.25)';
-    ctx.lineWidth = 2;
-    for (let x = 0; x < W; x += 40) {
-      ctx.beginPath();
-      ctx.moveTo(x, H - 120);
-      ctx.lineTo(x + 20, H);
-      ctx.stroke();
-    }
-
-    ctx.save();
-    if (ss > 0.3) ctx.translate((Math.random() - 0.5) * ss, (Math.random() - 0.5) * ss);
-
-    drawTwerkStreamer(ctx, charX, charY, charSc, {
-      shakeX: box.sx,
-      shakeY: box.sy,
-      shakeRot: box.sr,
-      phase: frame * (ultraShake ? 0.14 : 0.08),
-      faceImg: twerkFaceImg,
-      sweat: shakeIntensity > 1.5,
-      ultra: ultraShake,
-      trail: buttTrail
-    });
-
-    drawTwerkBox(ctx, box.bx, box.by, boxW, boxH, { shakeRot: box.sr * 0.5, glow: bassPulse, ultra: ultraShake });
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(box.left + 2, box.top + 2, boxW - 4, boxH - 4);
-    ctx.clip();
-    balls.forEach(b => drawTwerkBall(ctx, b));
-    ctx.restore();
-
-    if (ejecting) {
-      ctx.globalAlpha = ejecting.alpha;
-      drawTwerkBall(ctx, ejecting);
-      ctx.globalAlpha = 1;
-      ctx.font = 'bold 26px Inter';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#ec4899';
-      ctx.fillText('SHOOK OUT!', ejecting.x, ejecting.y - ejecting.r - 16);
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 18px Inter';
-      ctx.fillText(ejecting.name, ejecting.x, ejecting.y - ejecting.r - 38);
-    }
-
-    particles.forEach(p => {
-      ctx.globalAlpha = Math.max(0, p.life);
-      ctx.fillStyle = p.color;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fill();
-    });
-    notes.forEach(n => {
-      ctx.globalAlpha = Math.max(0, n.life);
-      ctx.font = '22px Inter';
-      ctx.textAlign = 'center';
-      ctx.fillText(n.emoji, n.x, n.y);
-    });
-    ctx.globalAlpha = 1;
-    ctx.restore();
-
-    ctx.fillStyle = 'rgba(0,0,0,0.55)';
-    ctx.beginPath();
-    ctx.roundRect(10, 10, 240, 30, 8);
-    ctx.fill();
-    ctx.fillStyle = '#ec4899';
-    ctx.font = 'bold 12px Inter';
-    ctx.textAlign = 'left';
-    ctx.fillText('🎱 BALLS LEFT: ' + remaining.length, 20, 30);
-
-    ctx.fillStyle = 'rgba(0,0,0,0.55)';
-    ctx.beginPath();
-    ctx.roundRect(W - 190, 10, 180, 30, 8);
-    ctx.fill();
-    ctx.fillStyle = '#a855f7';
-    ctx.textAlign = 'right';
-    ctx.fillText(ultraShake ? '⚡ ULTRA ' + shakeIntensity.toFixed(1) : 'SHAKE LVL ' + shakeIntensity.toFixed(1), W - 20, 30);
-
-    const timerW = W - 220;
-    ctx.fillStyle = 'rgba(0,0,0,0.55)';
-    ctx.beginPath();
-    ctx.roundRect(W / 2 - timerW / 2, 10, timerW, 12, 6);
-    ctx.fill();
-    const timerPct = Math.min(1, elapsed / MAX_GAME_SEC);
-    const tg = ctx.createLinearGradient(W / 2 - timerW / 2, 0, W / 2 + timerW / 2, 0);
-    tg.addColorStop(0, elapsed >= ULTRA_AFTER_SEC ? '#ff0066' : '#ec4899');
-    tg.addColorStop(1, elapsed >= ULTRA_AFTER_SEC ? '#ffd700' : '#a855f7');
-    ctx.fillStyle = tg;
-    ctx.beginPath();
-    ctx.roundRect(W / 2 - timerW / 2 + 2, 12, (timerW - 4) * timerPct, 8, 4);
-    ctx.fill();
-    ctx.fillStyle = elapsed >= ULTRA_AFTER_SEC ? '#ffd700' : '#94a3b8';
-    ctx.font = 'bold 9px Inter';
-    ctx.textAlign = 'center';
-    ctx.fillText(Math.floor(elapsed) + 's / ' + MAX_GAME_SEC + 's' + (ultraShake ? ' — ULTRA' : ''), W / 2, 8);
-
-    ctx.fillStyle = 'rgba(0,0,0,0.55)';
-    ctx.beginPath();
-    ctx.roundRect(10, H - 34, W - 20, 26, 8);
-    ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 12px Inter';
-    ctx.textAlign = 'center';
-    ctx.fillText(feed.textContent, W / 2, H - 16);
-
-    if (ultraAnnounce > 0) {
-      const pulse = 1 + Math.sin(frame * 0.25) * 0.12;
-      ctx.save();
-      ctx.translate(W / 2, H * 0.14);
-      ctx.scale(pulse, pulse);
-      ctx.fillStyle = `rgba(255,0,102,${0.15 + (ultraAnnounce / 150) * 0.25})`;
-      ctx.fillRect(-W * 0.42, -28, W * 0.84, 56);
-      ctx.fillStyle = '#ffd700';
-      ctx.font = 'bold 38px Inter';
-      ctx.textAlign = 'center';
-      ctx.shadowColor = '#ff0066';
-      ctx.shadowBlur = 24;
-      ctx.fillText('⚡ ULTRA SHAKE ⚡', 0, 10);
-      ctx.shadowBlur = 0;
-      ctx.restore();
-    } else if (ultraShake) {
-      ctx.fillStyle = `rgba(255,0,102,${0.12 + bassPulse * 0.2})`;
-      ctx.font = 'bold 34px Inter';
-      ctx.textAlign = 'center';
-      ctx.fillText('🔥 ULTRA SHAKE 🔥', W / 2, 52);
-    } else if (bassPulse > 0.85) {
-      ctx.fillStyle = `rgba(236,72,153,${(bassPulse - 0.85) * 0.35})`;
-      ctx.font = 'bold 36px Inter';
-      ctx.textAlign = 'center';
-      ctx.fillText('🍑 SHAKE!', W / 2, 52);
-    }
-
-    if (ultraFlash > 0) {
-      ctx.fillStyle = `rgba(255,0,102,${ultraFlash * 0.25})`;
-      ctx.fillRect(0, 0, W, H);
-    }
-  }
-
-  function loop() {
-    updatePhysics();
-    drawScene();
-    animId = requestAnimationFrame(loop);
-  }
-
-  feed.textContent = '🍑 SHAKE IN PROGRESS — balls getting eliminated!';
-  loop();
-}
+/* ==================== PROFESSIONAL TWERK SHAKE ROYALE ==================== */
+function drawTwerkBox(ctx,bx,by,bw,bh,opts){opts=opts||{};const ultra=!!opts.ultra,pulse=opts.glow||0;ctx.save();ctx.translate(bx,by);ctx.rotate(opts.shakeRot||0);ctx.shadowColor=ultra?'#d946ef':'#ec4899';ctx.shadowBlur=16+pulse*24;const g=ctx.createLinearGradient(-bw/2,-bh,bw/2,0);g.addColorStop(0,ultra?'rgba(217,70,239,.20)':'rgba(236,72,153,.12)');g.addColorStop(.5,'rgba(255,255,255,.035)');g.addColorStop(1,ultra?'rgba(124,58,237,.20)':'rgba(124,58,237,.10)');ctx.fillStyle=g;ctx.strokeStyle=ultra?'rgba(232,121,249,.92)':'rgba(244,114,182,.78)';ctx.lineWidth=3;ctx.beginPath();ctx.roundRect(-bw/2,-bh,bw,bh,18);ctx.fill();ctx.stroke();ctx.shadowBlur=0;ctx.strokeStyle='rgba(255,255,255,.22)';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(-bw/2+8,-bh+8,bw-16,bh-16,12);ctx.stroke();for(let x=-bw/2+34;x<bw/2;x+=54){ctx.fillStyle=ultra?'rgba(232,121,249,.55)':'rgba(244,114,182,.42)';ctx.fillRect(x,-bh-7,26,4)}ctx.fillStyle='#09030e';ctx.strokeStyle='rgba(255,255,255,.14)';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(-bw/2-12,-9,bw+24,18,8);ctx.fill();ctx.stroke();ctx.fillStyle=ultra?'#d946ef':'#ec4899';for(let x=-bw/2+8;x<bw/2;x+=38){ctx.globalAlpha=.45+.5*Math.abs(Math.sin(pulse*4+x));ctx.fillRect(x,-5,22,4)}ctx.globalAlpha=1;ctx.fillStyle='rgba(5,2,8,.82)';ctx.beginPath();ctx.roundRect(-82,-bh-20,164,27,8);ctx.fill();ctx.strokeStyle=ultra?'rgba(232,121,249,.45)':'rgba(244,114,182,.3)';ctx.stroke();ctx.fillStyle=ultra?'#f0abfc':'#f9a8d4';ctx.font='900 11px Inter, sans-serif';ctx.textAlign='center';ctx.fillText(ultra?'ULTRA BASS CHAMBER':'KINETIC BASS CHAMBER',0,-bh-3);ctx.restore()}
+function drawTwerkBall(ctx,b){if(b.alive===false&&!b.ejecting&&!b.active)return;const r=b.r||12,a=b.alpha==null?1:b.alpha;ctx.save();ctx.globalAlpha=a;ctx.translate(b.x,b.y);ctx.rotate(b.angle||0);ctx.shadowColor=b.color||'#ec4899';ctx.shadowBlur=b.active===false?18:8;const g=ctx.createRadialGradient(-r*.35,-r*.4,1,0,0,r);g.addColorStop(0,'#fff');g.addColorStop(.18,b.color||'#ec4899');g.addColorStop(1,'rgba(20,6,28,.96)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='rgba(255,255,255,.42)';ctx.lineWidth=Math.max(1,r*.1);ctx.stroke();ctx.fillStyle='rgba(255,255,255,.42)';ctx.beginPath();ctx.arc(-r*.28,-r*.3,Math.max(1.5,r*.16),0,Math.PI*2);ctx.fill();if(r>=8){const label=b.initials||String(b.name||'?').replace(/[^a-z0-9]/gi,'').slice(0,2).toUpperCase()||'?';ctx.rotate(-(b.angle||0));ctx.fillStyle='#fff';ctx.font='900 '+Math.max(6,Math.min(10,r*.72))+'px Inter, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,0,r*.12)}ctx.restore()}
+function drawTwerkStreamer(ctx,cx,cy,sc,opts){opts=opts||{};const phase=opts.phase||0,ultra=!!opts.ultra;const hip=Math.sin(phase*2.25)*(ultra?15:9)+(opts.shakeX||0)*.12;const squat=Math.abs(Math.sin(phase*1.12))*(ultra?10:6)+(opts.shakeY||0)*.08;const arm=Math.sin(phase*1.3)*9;ctx.save();ctx.translate(cx,cy+squat);ctx.scale(sc,sc);ctx.rotate((opts.shakeRot||0)*.12);ctx.fillStyle='rgba(0,0,0,.42)';ctx.beginPath();ctx.ellipse(2,12,96,17,0,0,Math.PI*2);ctx.fill();ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#542844';ctx.lineWidth=26;ctx.beginPath();ctx.moveTo(-24,-76);ctx.lineTo(-51,-27);ctx.lineTo(-61,1);ctx.stroke();ctx.beginPath();ctx.moveTo(22+hip*.25,-74);ctx.lineTo(51+hip*.1,-30);ctx.lineTo(61,-1);ctx.stroke();ctx.strokeStyle='#f8fafc';ctx.lineWidth=12;ctx.beginPath();ctx.moveTo(-64,0);ctx.lineTo(-42,3);ctx.stroke();ctx.beginPath();ctx.moveTo(58,-1);ctx.lineTo(79,2);ctx.stroke();ctx.fillStyle='#831843';ctx.beginPath();ctx.roundRect(-48+hip*.45,-128,96,61,22);ctx.fill();ctx.strokeStyle='#f472b6';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#ec4899';ctx.beginPath();ctx.roundRect(-44+hip*.45,-119,88,43,18);ctx.fill();ctx.fillStyle='rgba(255,255,255,.16)';ctx.beginPath();ctx.ellipse(-18+hip*.45,-109,18,7,-.25,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#e4a88b';ctx.lineWidth=38;ctx.beginPath();ctx.moveTo(-2+hip*.22,-125);ctx.lineTo(-28,-183);ctx.lineTo(-62-arm*.2,-213);ctx.stroke();ctx.strokeStyle='#7c3aed';ctx.lineWidth=42;ctx.beginPath();ctx.moveTo(-5+hip*.2,-131);ctx.lineTo(-30,-181);ctx.stroke();ctx.fillStyle='#a855f7';ctx.beginPath();ctx.moveTo(-48,-177);ctx.lineTo(0,-196);ctx.lineTo(17,-142);ctx.lineTo(-13,-121);ctx.closePath();ctx.fill();ctx.strokeStyle='rgba(255,255,255,.14)';ctx.lineWidth=2;ctx.stroke();ctx.strokeStyle='#e4a88b';ctx.lineWidth=13;ctx.beginPath();ctx.moveTo(-27,-175);ctx.lineTo(17+arm*.22,-149);ctx.lineTo(46+arm,-161);ctx.stroke();ctx.beginPath();ctx.moveTo(-43,-177);ctx.lineTo(-77-arm*.4,-154);ctx.lineTo(-104-arm,-173);ctx.stroke();ctx.fillStyle='#e4a88b';ctx.beginPath();ctx.arc(-54,-211,31,0,Math.PI*2);ctx.fill();ctx.fillStyle='#21101f';ctx.beginPath();ctx.arc(-60,-218,34,Math.PI*.72,Math.PI*2.03);ctx.lineTo(-30,-204);ctx.quadraticCurveTo(-52,-244,-83,-227);ctx.fill();ctx.fillStyle='#0b0710';ctx.beginPath();ctx.arc(-65,-213,3,0,Math.PI*2);ctx.arc(-45,-211,3,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#7f1d1d';ctx.lineWidth=2;ctx.beginPath();ctx.arc(-54,-201,9,.08,Math.PI-.08);ctx.stroke();ctx.fillStyle='#c084fc';ctx.beginPath();ctx.roundRect(-85,-249,53,16,8);ctx.fill();ctx.fillStyle='#fff';ctx.font='900 7px Inter, sans-serif';ctx.textAlign='center';ctx.fillText('BASSQUAKE',-58,-238);if(opts.sweat||ultra){ctx.fillStyle='rgba(56,189,248,.8)';for(let i=0;i<(ultra?5:3);i++){const x=-102+i*34+Math.sin(phase*2+i)*4,y=-214+i%2*38;ctx.beginPath();ctx.ellipse(x,y,3,6,.2,0,Math.PI*2);ctx.fill()}}ctx.restore()}
+function runTwerk(){showOverlay('twerk-overlay');showPhase('twerk','intro');const names=Array.from(entrants);if(!names.length){alert('No entrants yet!');return}document.getElementById('twerk-intro-count').textContent=names.length+' contender'+(names.length===1?' is':'s are')+' sealed inside the kinetic chamber. No preselected winner — last capsule standing takes it.';armGameStart(()=>startTwerk(names))}
+function startTwerk(names){showPhase('twerk','play');const canvas=document.getElementById('twerk-canvas'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;const chamber={cx:830,bottom:455,w:590,h:322};const startAt=performance.now()+1800;let last=performance.now(),frame=0,nextElim=startAt+(names.length===2?19000:4000),phase='CALIBRATING',intensity=0,impacts=0,eliminated=0,screenShake=0,flash=0,feed='Every capsule is locked in. The first bass drop is coming...',finishAt=0,resultShown=false,winner=null;let particles=[],ejections=[],elimHistory=[];const n=names.length,area=(chamber.w-42)*(chamber.h-42),radius=Math.max(6,Math.min(20,Math.sqrt(area/(Math.max(1,n)*Math.PI))*.42)),cols=Math.max(1,Math.floor((chamber.w-42)/(radius*2.45))),rows=Math.ceil(n/cols),cellW=(chamber.w-42)/cols,cellH=(chamber.h-42)/Math.max(1,rows);const balls=names.map((name,i)=>{const c=i%cols,r=Math.floor(i/cols);return{name,color:colorFor(name),initials:(typeof initialsFor==='function'?initialsFor(name):name.slice(0,2).toUpperCase()),x:chamber.cx-chamber.w/2+21+(c+.5)*cellW,y:chamber.bottom-chamber.h+21+(r+.5)*cellH,vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2,r:radius,angle:Math.random()*6.28,spin:(Math.random()-.5)*.08,active:true,alive:true,ejecting:false,alpha:1,risk:Math.random()*4,peak:0,grip:.78+Math.random()*.48,balance:.75+Math.random()*.5,seed:Math.random()*1000,bounces:0,placement:0,eliminatedAt:0}});globalThis.__twerkPlayers=balls;
+function anchor(now){const e=Math.max(0,(now-startAt)/1000),beat=phase==='ULTRA DROP'?9:phase==='TURBO SHAKE'?6.5:phase==='BASS BOOST'?4.2:2.3,p=frame*.105;return{cx:chamber.cx+Math.sin(p*1.73)*beat+Math.sin(p*.51)*beat*.45,bottom:chamber.bottom+Math.cos(p*2.09)*beat*.55,w:chamber.w,h:chamber.h,rot:Math.sin(p*.81)*beat*.0017}}
+function phaseFor(e){if(e<0)return'CALIBRATING';if(e<6)return'RHYTHM ROUND';if(e<13)return'BASS BOOST';if(e<19)return'TURBO SHAKE';return'ULTRA DROP'}
+function phasePower(p){return p==='ULTRA DROP'?1:p==='TURBO SHAKE'?.78:p==='BASS BOOST'?.56:p==='RHYTHM ROUND'?.34:.12}
+function gapFor(alive,now){if(alive>30)return 180;if(alive>18)return 260;if(alive>10)return 400;if(alive>5)return 650;if(alive>2)return 1000;if(alive===2)return Math.max(700,startAt+19000-now);return 99999}
+function burst(x,y,color,count){for(let i=0;i<count;i++){const a=Math.random()*6.28,s=2+Math.random()*7;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-2,r:1.5+Math.random()*4,life:1,color:i%4?color:'#fff'})}}
+function eliminate(now){const active=balls.filter(b=>b.active);if(active.length<=1)return;active.forEach(b=>{const a=anchor(now),edge=Math.max(0,1-Math.min(b.x-(a.cx-a.w/2),a.cx+a.w/2-b.x,b.y-(a.bottom-a.h),a.bottom-b.y)/70);b.contestScore=b.risk+edge*18+(b.vx*b.vx+b.vy*b.vy)*.14+Math.random()*14});active.sort((a,b)=>b.contestScore-a.contestScore);const pool=active.slice(0,Math.min(3,active.length)),loser=pool[Math.floor(Math.random()*pool.length)],before=active.length;loser.active=false;loser.alive=false;loser.ejecting=true;loser.placement=before;loser.eliminatedAt=Math.max(0,(now-startAt)/1000);const a=anchor(now),side=loser.x<a.cx?-1:1;loser.vx=side*(9+intensity*9)+(Math.random()-.5)*5;loser.vy=-13-Math.random()*7-intensity*5;loser.alpha=1;ejections.push(loser);elimHistory.push(loser);eliminated++;screenShake=10+intensity*13;flash=.45;burst(loser.x,loser.y,loser.color,26);feed=loser.name+' gets launched from the chamber — '+(before-1)+' remain!';const left=before-1;if(left===1){winner=balls.find(b=>b.active);winner.placement=1;finishAt=now+2400;feed=winner.name+' survives the final bass drop!';burst(winner.x,winner.y,winner.color,58);screenShake=18}else nextElim=now+gapFor(left,now)}
+function collide(active){if(active.length>65)return;for(let i=0;i<active.length;i++)for(let j=i+1;j<active.length;j++){const a=active[i],b=active[j],dx=b.x-a.x,dy=b.y-a.y,min=a.r+b.r,d2=dx*dx+dy*dy;if(d2>0&&d2<min*min){const d=Math.sqrt(d2),nx=dx/d,ny=dy/d,over=(min-d)*.5;a.x-=nx*over;b.x+=nx*over;a.y-=ny*over;b.y+=ny*over;const rel=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;if(rel<0){const kick=rel*.82;a.vx+=nx*kick;b.vx-=nx*kick;a.vy+=ny*kick;b.vy-=ny*kick;a.risk+=Math.abs(rel)*.16;b.risk+=Math.abs(rel)*.16}}}}
+function update(now,dt){frame++;const elapsed=(now-startAt)/1000;phase=phaseFor(elapsed);intensity=phasePower(phase);if(elapsed>0)intensity=Math.min(1,intensity+Math.min(.14,elapsed*.004));const a=anchor(now),active=balls.filter(b=>b.active),step=Math.min(2,dt/16.667),p=frame*.105,power=2.2+intensity*8.8;active.forEach(b=>{const noise=Math.sin(p*2.1+b.seed)*.95+Math.cos(p*1.37+b.seed*.7)*.65;b.vx+=(Math.sin(p*1.7)*power+noise*power*.5)/b.grip*step;b.vy+=(Math.cos(p*2.13)*power*.72+Math.sin(p*.73+b.seed)*power*.48+.15)*step;b.vx*=Math.pow(.968-intensity*.006,step);b.vy*=Math.pow(.968-intensity*.006,step);const cap=12+intensity*15,spd=Math.hypot(b.vx,b.vy);if(spd>cap){b.vx=b.vx/spd*cap;b.vy=b.vy/spd*cap}b.x+=b.vx*step;b.y+=b.vy*step;b.angle+=b.spin*step+(b.vx+b.vy)*.003;const L=a.cx-a.w/2+13,R=a.cx+a.w/2-13,T=a.bottom-a.h+13,B=a.bottom-13;let hit=0;if(b.x-b.r<L){b.x=L+b.r;b.vx=Math.abs(b.vx)*(.72+b.balance*.08);hit=Math.abs(b.vx)}if(b.x+b.r>R){b.x=R-b.r;b.vx=-Math.abs(b.vx)*(.72+b.balance*.08);hit=Math.abs(b.vx)}if(b.y-b.r<T){b.y=T+b.r;b.vy=Math.abs(b.vy)*(.72+b.balance*.08);hit=Math.abs(b.vy)}if(b.y+b.r>B){b.y=B-b.r;b.vy=-Math.abs(b.vy)*(.72+b.balance*.08);hit=Math.abs(b.vy)}if(hit){b.bounces++;impacts++;b.risk+=hit*(1.35-b.grip)*.8+intensity*1.4;if(hit>17)screenShake=Math.max(screenShake,3)}b.risk+=Math.hypot(b.vx,b.vy)*.0025*(1.4-b.balance)*step;b.risk*=.9994;b.peak=Math.max(b.peak,b.risk)});collide(active);ejections.forEach(b=>{b.x+=b.vx*step;b.y+=b.vy*step;b.vy+=.5*step;b.angle+=.18*step;b.alpha-=.022*step});ejections=ejections.filter(b=>{if(b.alpha<=0){b.ejecting=false;return false}return true});particles.forEach(p=>{p.x+=p.vx*step;p.y+=p.vy*step;p.vy+=.16*step;p.life-=.025*step});particles=particles.filter(p=>p.life>0);screenShake*=Math.pow(.88,step);flash=Math.max(0,flash-.035*step);if(elapsed>=0&&active.length>1&&now>=nextElim)eliminate(now);if(balls.length===1&&!winner&&elapsed>=2.5){winner=balls[0];winner.placement=1;finishAt=now+1800;feed=winner.name+' holds the chamber alone!'}updateHud(now)}
+function updateHud(now){const elapsed=Math.max(0,(now-startAt)/1000),remaining=balls.filter(b=>b.active).length;document.getElementById('twerk-status').textContent=elapsed<0?'CHAMBER CALIBRATING':winner?'FINAL DROP COMPLETE':phase;document.getElementById('twerk-remaining').textContent=remaining;document.getElementById('twerk-level').textContent=String(Math.max(1,Math.round(intensity*10))).padStart(2,'0');document.getElementById('twerk-clock').textContent=elapsed.toFixed(1)+'s';document.getElementById('twerk-phase-label').textContent=phase;document.getElementById('twerk-feed').textContent=feed;document.getElementById('twerk-out').textContent=eliminated;document.getElementById('twerk-impacts').textContent=impacts;const pct=Math.round(intensity*100);document.getElementById('twerk-intensity').style.width=pct+'%';document.getElementById('twerk-intensity-text').textContent=pct+'%'}
+function drawStage(now){const elapsed=(now-startAt)/1000,a=anchor(now),ultra=phase==='ULTRA DROP',bass=.5+.5*Math.sin(frame*.21);ctx.save();if(screenShake>.25)ctx.translate((Math.random()-.5)*screenShake,(Math.random()-.5)*screenShake);const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,ultra?'#200022':'#100516');bg.addColorStop(.48,'#09030f');bg.addColorStop(1,ultra?'#18003c':'#100724');ctx.fillStyle=bg;ctx.fillRect(-25,-25,W+50,H+50);for(let i=0;i<7;i++){const x=90+i*178+Math.sin(frame*.012+i)*38,g=ctx.createRadialGradient(x,35,2,x,35,205);g.addColorStop(0,`rgba(${i%2?168:236},${i%2?85:72},${i%2?247:153},${.09+bass*.06})`);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fillRect(x-210,0,420,420)}ctx.fillStyle='#08040d';ctx.fillRect(0,468,W,92);ctx.strokeStyle=ultra?'rgba(217,70,239,.34)':'rgba(236,72,153,.2)';ctx.lineWidth=2;for(let x=-50;x<W+80;x+=55){ctx.beginPath();ctx.moveTo(W/2,468);ctx.lineTo(x,560);ctx.stroke()}for(let y=485;y<560;y+=23){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}for(let i=0;i<36;i++){const x=i*36+Math.sin(i*8)*8,h=12+(i%5)*5;ctx.fillStyle=i%3?'#0d0713':'#16091c';ctx.beginPath();ctx.arc(x,483-h,8+(i%3),Math.PI,0);ctx.fill();ctx.fillRect(x-8,483-h,16,h+18)}ctx.fillStyle='rgba(3,2,6,.78)';ctx.beginPath();ctx.roundRect(28,84,194,112,16);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.1)';ctx.stroke();for(let s=0;s<2;s++){const sy=112+s*55,g=ctx.createRadialGradient(82,sy,4,82,sy,33);g.addColorStop(0,ultra?'#d946ef':'#ec4899');g.addColorStop(.18,'#1f1029');g.addColorStop(1,'#050307');ctx.fillStyle=g;ctx.beginPath();ctx.arc(82,sy,32,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.13)';ctx.stroke()}ctx.fillStyle='#f9a8d4';ctx.font='900 10px Inter, sans-serif';ctx.textAlign='center';ctx.fillText('BASS ARRAY',154,105);for(let i=0;i<7;i++){ctx.fillStyle=i/7<intensity?(i>4?'#d946ef':'#ec4899'):'rgba(255,255,255,.1)';ctx.fillRect(120+i*11,176-(i%3)*4,7,8+(i%3)*4)}drawTwerkStreamer(ctx,292,451,1.05,{phase:frame*.065,ultra,sweat:intensity>.5,shakeX:Math.sin(frame*.3)*intensity*5,shakeY:0,shakeRot:0});drawTwerkBox(ctx,a.cx,a.bottom,a.w,a.h,{shakeRot:a.rot,glow:bass,ultra});ctx.save();ctx.beginPath();ctx.roundRect(a.cx-a.w/2+5,a.bottom-a.h+5,a.w-10,a.h-10,14);ctx.clip();balls.filter(b=>b.active).forEach(b=>drawTwerkBall(ctx,b));ctx.restore();ejections.forEach(b=>drawTwerkBall(ctx,b));particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;ctx.fillStyle='rgba(2,2,5,.72)';ctx.beginPath();ctx.roundRect(478,488,686,42,12);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.08)';ctx.stroke();ctx.fillStyle=ultra?'#f0abfc':'#f9a8d4';ctx.font='900 11px Inter, sans-serif';ctx.textAlign='left';ctx.fillText('BASSQUAKE SURVIVAL CHAMBER',497,506);ctx.fillStyle='#fff';ctx.font='800 13px Inter, sans-serif';ctx.fillText(feed.length>74?feed.slice(0,71)+'…':feed,497,522);const rem=balls.filter(b=>b.active).length;ctx.textAlign='right';ctx.fillStyle='#c084fc';ctx.font='900 24px Inter, sans-serif';ctx.fillText(String(rem).padStart(2,'0'),1142,517);if(elapsed<0){ctx.fillStyle='rgba(3,2,6,.58)';ctx.fillRect(0,0,W,H);const count=Math.max(1,Math.ceil(-elapsed));ctx.fillStyle='#fff';ctx.font='900 78px Inter, sans-serif';ctx.textAlign='center';ctx.shadowColor='#ec4899';ctx.shadowBlur=30;ctx.fillText(count,W/2,H/2+20);ctx.shadowBlur=0;ctx.fillStyle='#f9a8d4';ctx.font='900 12px Inter, sans-serif';ctx.fillText('CHAMBER LOCK SEQUENCE',W/2,H/2+51)}if(ultra&&!winner){ctx.save();ctx.globalAlpha=.2+.12*bass;ctx.fillStyle='#d946ef';ctx.fillRect(0,0,W,8);ctx.fillRect(0,H-8,W,8);ctx.restore()}if(winner){const pulse=1+Math.sin(frame*.18)*.045;ctx.save();ctx.translate(825,280);ctx.scale(pulse,pulse);ctx.fillStyle='rgba(12,3,18,.82)';ctx.beginPath();ctx.roundRect(-255,-64,510,128,20);ctx.fill();ctx.strokeStyle='rgba(244,114,182,.5)';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#f9a8d4';ctx.font='900 12px Inter, sans-serif';ctx.textAlign='center';ctx.fillText('FINAL CAPSULE STANDING',0,-29);ctx.fillStyle='#fff';ctx.font='900 42px Inter, sans-serif';ctx.fillText(winner.name.length>22?winner.name.slice(0,21)+'…':winner.name,0,20);ctx.fillStyle='#d8b4fe';ctx.font='800 11px Inter, sans-serif';ctx.fillText('BASS CHAMBER CHAMPION',0,47);ctx.restore()}if(flash>0){ctx.fillStyle=`rgba(236,72,153,${flash*.22})`;ctx.fillRect(0,0,W,H)}ctx.restore()}
+function showResult(now){if(resultShown)return;resultShown=true;showPhase('twerk','winner');document.getElementById('twerk-winner-name').textContent=winner?winner.name:'No one';document.getElementById('twerk-winner-detail').textContent='BASS CHAMBER CHAMPION';document.getElementById('twerk-winner-sub').textContent=(winner?winner.bounces:0)+' wall saves · '+eliminated+' rivals shook out · '+Math.max(0,(now-startAt)/1000).toFixed(1)+'s survival';const podium=[winner,...elimHistory.slice(-2).reverse()].filter(Boolean);const labels=['CHAMPION','RUNNER-UP','THIRD PLACE'];document.getElementById('twerk-result-cards').replaceChildren(...podium.map((b,i)=>{const card=document.createElement('div');card.className='rounded-2xl border border-white/10 bg-white/[.035] p-4 text-left';card.innerHTML='<div class="text-[8px] text-pink-400 font-black uppercase tracking-[0.18em]">'+labels[i]+'</div><div class="text-lg font-black text-white truncate mt-1">'+escapeHtml(b.name)+'</div><div class="text-[10px] text-gray-500 mt-2">'+b.bounces+' wall saves · Peak '+b.peak.toFixed(0)+'</div>';return card}))}
+function loop(now){const dt=Math.max(1,Math.min(34,now-last));last=now;update(now,dt);drawStage(now);if(finishAt&&now>=finishAt){showResult(now);return}requestAnimationFrame(loop)}updateHud(performance.now());requestAnimationFrame(loop)}
 
 /* ==================== BOMB ROULETTE (60s auto-watch) ==================== */
 const SIM60 = 60;
@@ -17783,6 +17161,6 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a30393bb4dde938e',t:'MTc4NzU4NzMwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a303a52a5e7e8234',t:'MTc4NzU4ODAxNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 >
