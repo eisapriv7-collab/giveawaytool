@@ -748,17 +748,58 @@
   </div>
 </div>
 
-<!-- ==================== KING OF THE HILL (all entrants) ==================== -->
-<div id="hill-overlay" class="hidden fixed inset-0 bg-[#050508] z-50">
-  <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
-    <div class="text-center mb-3"><div class="text-[#eab308] text-sm font-bold uppercase tracking-widest mb-2">⛰️ King of the Hill</div><h1 class="text-4xl md:text-5xl font-black text-white">Hold the Crown</h1></div>
-    <div id="hill-phase-intro" class="text-center"><div class="text-2xl text-gray-400 mb-2">Climbing to the hill...</div><div class="text-sm text-gray-600" id="hill-intro-count">Everyone fights for the crown</div></div>
-    <div id="hill-phase-play" class="hidden w-full max-w-5xl">
-      <div class="flex items-center justify-center gap-3 mb-1"><span id="hill-leader-badge" class="p-count-badge">Contested</span></div>
-      <div id="hill-commentary" class="text-center text-[#ffd700] font-bold text-lg mb-2 h-6">The hill is up for grabs!</div>
-      <canvas id="hill-canvas" width="900" height="620" class="mx-auto rounded-2xl border border-white/10 bg-[#0a0a14]"></canvas>
+<!-- ==================== PROFESSIONAL KING OF THE HILL ==================== -->
+<div id="hill-overlay" class="hidden fixed inset-0 bg-[#030508] z-50 overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 18% 24%,rgba(99,102,241,.15),transparent 34%),radial-gradient(circle at 82% 69%,rgba(6,182,212,.11),transparent 38%),linear-gradient(145deg,#060710,#030407 58%,#080514);"></div>
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-3 md:p-4 overflow-hidden">
+    <div class="w-full max-w-7xl">
+      <header class="flex items-center justify-between gap-4 mb-3 px-1">
+        <div class="min-w-0"><div class="text-indigo-400 text-[10px] font-black uppercase tracking-[0.28em]">Citadel Control Championship</div><h1 class="text-2xl md:text-3xl font-black text-white leading-tight truncate">King of the Hill</h1></div>
+        <div class="hidden sm:flex items-center gap-2 text-[9px] font-black uppercase tracking-wider"><span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300">Objective Control</span><span class="px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-400/20 text-indigo-300">Shoves &amp; Respawns</span><span class="px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/20 text-cyan-300">Highest Score Wins</span></div>
+      </header>
+
+      <div id="hill-phase-intro" class="glass rounded-3xl border border-indigo-500/20 p-8 md:p-12 text-center shadow-[0_30px_100px_rgba(0,0,0,.68)]">
+        <div class="mx-auto mb-5 w-20 h-20 rounded-2xl flex items-center justify-center text-4xl bg-gradient-to-br from-indigo-500/20 to-cyan-600/20 border border-indigo-400/20 shadow-[0_0_45px_rgba(99,102,241,.2)]">⛰️</div>
+        <div class="text-indigo-400 text-xs font-black uppercase tracking-[0.3em] mb-2">The Citadel Is Open</div>
+        <div class="text-3xl md:text-5xl font-black text-white mb-3">Take The Summit. Hold Your Ground.</div>
+        <div id="hill-intro-count" class="text-sm md:text-base text-gray-400 font-bold">Contenders are climbing toward the control platform...</div>
+        <div class="grid grid-cols-3 gap-2 max-w-xl mx-auto mt-7 text-[9px] font-black uppercase tracking-wider"><div class="rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-gray-400">Control Points</div><div class="rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-gray-400">Tactical Shoves</div><div class="rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-gray-400">Overtime Finish</div></div>
+      </div>
+
+      <div id="hill-phase-play" class="hidden w-full">
+        <div class="grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_auto_auto_auto] items-center gap-2 mb-2 rounded-2xl border border-white/10 bg-black/60 px-3 md:px-4 py-2 shadow-xl">
+          <div class="min-w-0"><div class="text-[8px] text-gray-600 font-black uppercase tracking-[0.2em]">Citadel Control</div><div id="hill-status" class="text-sm md:text-base text-indigo-300 font-black truncate">ASCENT LOCKDOWN</div></div>
+          <div class="text-right px-3 border-l border-white/10"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">On Summit</div><div id="hill-on-zone" class="text-lg font-black text-white tabular-nums">0</div></div>
+          <div class="hidden sm:block text-right px-3 border-l border-white/10"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Top Score</div><div id="hill-top-score" class="text-lg font-black text-cyan-300 tabular-nums">0</div></div>
+          <div class="hidden sm:block text-right pl-3 border-l border-white/10"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Clock</div><div id="hill-clock" class="text-lg font-black text-indigo-300 tabular-nums">0.0s</div></div>
+        </div>
+
+        <div class="relative rounded-2xl overflow-hidden border border-indigo-500/25 shadow-[0_25px_90px_rgba(0,0,0,.76)] bg-[#070912]">
+          <canvas id="hill-canvas" width="1200" height="560" class="block w-full bg-[#070912]"></canvas>
+          <div class="absolute top-3 left-3 px-3 py-1.5 rounded-lg bg-black/65 border border-white/10 text-[8px] font-black text-white tracking-[0.18em]">CITADEL CAM 01</div>
+          <div class="absolute top-3 right-3 px-3 py-1.5 rounded-lg bg-black/65 border border-indigo-400/20 text-[8px] font-black text-indigo-300 tracking-[0.18em]"><span id="hill-phase-label">ASCENT</span></div>
+        </div>
+
+        <div class="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_auto_auto] items-center gap-2 mt-2">
+          <div class="min-w-0 rounded-xl border border-indigo-500/15 bg-indigo-950/20 px-4 py-2"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Arena Feed</div><div id="hill-commentary" class="text-sm font-black text-white truncate">The summit is waiting for its first controller...</div></div>
+          <div class="rounded-xl border border-white/10 bg-black/50 px-4 py-2 text-right"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Controller</div><div id="hill-controller" class="text-sm font-black text-white max-w-28 truncate">CONTESTED</div></div>
+          <div class="hidden md:block rounded-xl border border-white/10 bg-black/50 px-4 py-2 text-right"><div class="text-[8px] text-gray-600 font-black uppercase tracking-wider">Falls</div><div id="hill-falls" class="text-sm font-black text-cyan-400 tabular-nums">0</div></div>
+          <div class="hidden md:block w-36 rounded-xl border border-white/10 bg-black/50 px-4 py-2"><div class="flex justify-between text-[8px] text-gray-600 font-black uppercase tracking-wider"><span>Match</span><span id="hill-progress-text">0%</span></div><div class="h-1.5 bg-white/10 rounded-full mt-1 overflow-hidden"><div id="hill-progress" class="h-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-fuchsia-500" style="width:0%"></div></div></div>
+        </div>
+      </div>
+
+      <div id="hill-phase-winner" class="hidden">
+        <div class="max-w-3xl mx-auto glass rounded-3xl border border-indigo-500/25 p-7 md:p-10 text-center shadow-[0_35px_120px_rgba(0,0,0,.78)]">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-cyan-600 text-white text-[10px] font-black uppercase tracking-[0.2em] mb-5">Official Citadel Result</div>
+          <div class="text-indigo-400 text-sm font-black uppercase tracking-[0.28em] mb-2">Summit Champion</div>
+          <div id="hill-winner-name" class="text-5xl md:text-7xl font-black text-white mb-2 break-words"></div>
+          <div id="hill-winner-detail" class="text-xl md:text-2xl text-cyan-300 font-black mb-1">KING OF THE HILL</div>
+          <div id="hill-winner-sub" class="text-sm text-gray-500 mb-6"></div>
+          <div id="hill-result-cards" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-7"></div>
+          <div class="flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-sm font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-sm font-bold">✕ Close</button></div>
+        </div>
+      </div>
     </div>
-    <div id="hill-phase-winner" class="hidden text-center"><div class="text-6xl mb-4">👑</div><div class="text-2xl text-[#eab308] font-bold mb-2">HELD THE HILL</div><div id="hill-winner-name" class="text-7xl font-black text-white mb-4"></div><div class="mt-8 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div></div>
   </div>
 </div>
 
@@ -3949,125 +3990,28 @@ function startDerby(names) {
   loop();
 }
 
-/* ==================== KING OF THE HILL (every entrant — hold the zone to fill your crown meter) ==================== */
-function runHillKing() {
-  showOverlay('hill-overlay'); showPhase('hill', 'intro');
-  const names = Array.from(entrants);
-  if (names.length < 2) { alert('Need at least 2 entrants!'); return; }
-  document.getElementById('hill-intro-count').textContent = names.length + ' climbers heading up';
-  armGameStart(() => startHillKing(names));
-}
-function startHillKing(names) {
-  showPhase('hill', 'play');
-  const canvas = document.getElementById('hill-canvas'); const ctx = canvas.getContext('2d');
-  const commentary = document.getElementById('hill-commentary');
-  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2+10, arenaR = Math.min(W,H)/2 - 30;
-  const n = names.length;
-  const hillR = Math.max(50, Math.min(110, arenaR*0.32 + n*1.5));
-  const size = Math.max(9, Math.min(17, 190/Math.sqrt(n)));
-  const goalScore = 100 + n * 6; // more players → a bit more contested, so it takes a little longer
-  const players = names.map((nm,i) => {
-    const ang = (i/n)*Math.PI*2;
-    return { name:nm, x:cx+Math.cos(ang)*arenaR*0.6, y:cy+Math.sin(ang)*arenaR*0.6, vx:0, vy:0, r:size, color:colorFor(nm), score:0, alive:true, shoveCooldown: 60+Math.random()*60, tossFlash:0, knockTimer:0 };
-  });
-  let frame=0, particles=[];
-  function setCommentary(t) { commentary.textContent = t; }
-  function drawArena() {
-    ctx.fillStyle='#100c16'; ctx.fillRect(0,0,W,H);
-    const grad = ctx.createRadialGradient(cx,cy,arenaR*0.3,cx,cy,arenaR); grad.addColorStop(0,'#221a2c'); grad.addColorStop(1,'#140f1a');
-    ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(cx,cy,arenaR,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle='#ef4444'; ctx.lineWidth=4; ctx.shadowColor='#ef4444'; ctx.shadowBlur=12; ctx.beginPath(); ctx.arc(cx,cy,arenaR,0,Math.PI*2); ctx.stroke(); ctx.shadowBlur=0;
-    // the hill itself
-    const pulse = 1+Math.sin(frame*0.05)*0.03;
-    const hg = ctx.createRadialGradient(cx,cy,0,cx,cy,hillR*pulse); hg.addColorStop(0,'rgba(234,179,8,0.35)'); hg.addColorStop(1,'rgba(234,179,8,0.05)');
-    ctx.fillStyle=hg; ctx.beginPath(); ctx.arc(cx,cy,hillR*pulse,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle='#eab308'; ctx.lineWidth=3; ctx.setLineDash([10,6]); ctx.beginPath(); ctx.arc(cx,cy,hillR,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
-  }
-  function drawPlayer(p, leaderName) {
-    if (!p.alive) return;
-    const isLeader = p.name === leaderName;
-    drawMiniCharacter(ctx, p.x, p.y, p.r*1.2, p.color, { flash: p.tossFlash>0, phase: frame*0.18+p.x*0.05, armSwing: Math.sin(frame*0.12+p.x)*p.r*0.12, crown: isLeader });
-    ctx.fillStyle='#fff'; ctx.font='bold '+Math.max(8,Math.min(11,p.r*0.6))+'px Inter'; ctx.textAlign='center'; ctx.fillText(p.name.substring(0,10), p.x, p.y-p.r*1.9-(isLeader?14:0));
-    ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(p.x-14,p.y+p.r+8,28,4);
-    ctx.fillStyle='#eab308'; ctx.fillRect(p.x-14,p.y+p.r+8,28*Math.min(1,p.score/goalScore),4);
-    if (p.tossFlash>0) p.tossFlash--;
-  }
-  function drawFx() {
-    particles = particles.filter(pt => { pt.life--; if (pt.life<=0) return false; const a=pt.life/pt.maxLife;
-      if (pt.burst) { ctx.strokeStyle=`rgba(255,255,255,${a})`; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(pt.x,pt.y,18*(1-a)+4,0,Math.PI*2); ctx.stroke(); }
-      else { ctx.fillStyle=`rgba(255,215,0,${a*0.6})`; ctx.beginPath(); ctx.arc(pt.x,pt.y,2.5,0,Math.PI*2); ctx.fill(); }
-      return true; });
-  }
-  function updatePhysics() {
-    const alive = players.filter(p => p.alive);
-    alive.forEach(p => {
-      if (p.knockTimer > 0) {
-        // mid-throw — let momentum carry them, just bleed off speed gradually (no steering, no speed cap)
-        p.knockTimer--; p.vx *= 0.97; p.vy *= 0.97;
-      } else {
-        const dx = cx-p.x, dy = cy-p.y, d = Math.hypot(dx,dy)||1;
-        // everyone is drawn toward the hill, with some noise so it's not a straight beeline
-        p.vx += (dx/d)*0.06 + (Math.random()-0.5)*0.1;
-        p.vy += (dy/d)*0.06 + (Math.random()-0.5)*0.1;
-        const spd = Math.hypot(p.vx,p.vy), cap=2.6;
-        if (spd>cap) { p.vx=p.vx/spd*cap; p.vy=p.vy/spd*cap; }
-      }
-      p.x += p.vx; p.y += p.vy;
-      if (p.shoveCooldown>0) p.shoveCooldown--;
-    });
-    // collisions — a real shove, not a gentle nudge, so getting caught near the edge is genuinely dangerous
-    for (let i=0;i<alive.length;i++) for (let j=i+1;j<alive.length;j++) {
-      const a=alive[i], b=alive[j], dx=b.x-a.x, dy=b.y-a.y, dist=Math.hypot(dx,dy), minDist=a.r+b.r;
-      if (dist<minDist && dist>0) { const nx=dx/dist, ny=dy/dist, overlap=(minDist-dist)/2; a.x-=nx*overlap; a.y-=ny*overlap; b.x+=nx*overlap; b.y+=ny*overlap;
-        const relVx=b.vx-a.vx, relVy=b.vy-a.vy, velAlong=relVx*nx+relVy*ny; if (velAlong<0) { const imp=-velAlong*1.5; a.vx-=imp*nx*0.5; a.vy-=imp*ny*0.5; b.vx+=imp*nx*0.5; b.vy+=imp*ny*0.5;
-          if (imp>1.8) { a.knockTimer=Math.max(a.knockTimer,18); b.knockTimer=Math.max(b.knockTimer,18); } } }
-    }
-    // active shoves — players deliberately try to throw whoever's nearest toward the wall
-    alive.forEach(p => {
-      if (p.shoveCooldown > 0) return;
-      let target=null, bestD=Infinity;
-      alive.forEach(o => { if (o===p) return; const d=Math.hypot(o.x-p.x,o.y-p.y); if (d<bestD) { bestD=d; target=o; } });
-      if (target && bestD < (p.r+target.r)*2.4 && Math.random() < 0.5) {
-        const dx=target.x-p.x, dy=target.y-p.y, d=Math.hypot(dx,dy)||1;
-        const force = 3.5+Math.random()*2.5;
-        target.vx += (dx/d)*force; target.vy += (dy/d)*force;
-        target.knockTimer = 32;
-        target.tossFlash = 8;
-        p.shoveCooldown = 100+Math.random()*90;
-        if (Math.random()<0.5) setCommentary(p.name+' shoves '+target.name+' toward the edge!');
-      }
-    });
-    // ring-out — getting knocked past the boundary eliminates you, just like a real sumo ring
-    alive.forEach(p => {
-      const dist = Math.hypot(p.x-cx,p.y-cy);
-      if (dist > arenaR + p.r*0.4) {
-        p.alive = false;
-        particles.push({x:p.x,y:p.y,life:26,maxLife:26,burst:true});
-        const stillAlive = players.filter(x=>x.alive).length;
-        setCommentary(p.name+' got thrown out of the ring!'+(stillAlive>1?' '+stillAlive+' left':''));
-      }
-    });
-    const inHill = alive.filter(p => p.alive && Math.hypot(p.x-cx,p.y-cy) < hillR);
-    inHill.forEach(p => { const bonus = inHill.length===1 ? 0.12 : 0.12/inHill.length + 0.02; p.score += bonus; if (Math.random()<0.3) particles.push({x:p.x+(Math.random()-0.5)*20,y:p.y+(Math.random()-0.5)*20,life:20,maxLife:20}); });
-  }
-  let animId, lastLeader=null;
-  function loop() {
-    frame++;
-    updatePhysics();
-    const alive = players.filter(p=>p.alive);
-    const leader = alive.length ? alive.reduce((a,b) => b.score>a.score?b:a, alive[0]) : null;
-    if (leader && leader.name !== lastLeader && leader.score>2) { lastLeader = leader.name; setCommentary(leader.name+' takes the crown!'); }
-    drawArena(); players.forEach(p => drawPlayer(p, leader?leader.name:null)); drawFx();
-    document.getElementById('hill-leader-badge').textContent = (leader && leader.score>2 ? '👑 '+leader.name+' — '+Math.round(leader.score)+'/'+goalScore : 'Contested') + ' · ' + alive.length + ' in the ring';
-    if (alive.length === 1) {
-      setCommentary(alive[0].name + ' is the last one in the ring!');
-      setTimeout(() => { showPhase('hill','winner'); document.getElementById('hill-winner-name').textContent = alive[0].name; }, 1200);
-    } else if (alive.length === 0) {
-      setTimeout(() => { showPhase('hill','winner'); document.getElementById('hill-winner-name').textContent = pickSingleWinner([], names); }, 1200);
-    } else { animId = requestAnimationFrame(loop); }
-  }
-  loop();
-}
+/* ==================== PROFESSIONAL KING OF THE HILL ==================== */
+function runHillKing(){showOverlay('hill-overlay');showPhase('hill','intro');const names=Array.from(entrants);if(names.length<2){alert('Need at least 2 entrants!');return}document.getElementById('hill-intro-count').textContent=names.length+' contenders are climbing toward the Citadel summit. Control time, positioning, and successful shoves decide the champion.';armGameStart(()=>startHillKing(names))}
+function startHillKing(names){showPhase('hill','play');const canvas=document.getElementById('hill-canvas'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height,cx=470,cy=289,outerR=224,zoneR=76,startAt=performance.now()+2000,regulationMs=28000,maxMatchMs=35000;let last=performance.now(),frame=0,phase='ASCENT LOCKDOWN',matchProgress=0,totalFalls=0,totalShoves=0,currentController=null,lastController=null,lastControlChange=0,nextSurge=startAt+7000,overtime=false,winner=null,finishAt=0,resultShown=false,feed='Contenders are taking the lower ramp. The summit opens on the signal...',cameraShake=0,flash=0;let particles=[],popups=[],shockwaves=[];const n=names.length,pr=Math.max(6,Math.min(14,120/Math.sqrt(n))),golden=Math.PI*(3-Math.sqrt(5)),stats={controllerChanges:0};const players=names.map((name,i)=>{const a=i*golden,d=outerR*(.58+.2*((i%5)/4)),x=cx+Math.cos(a)*d,y=cy+Math.sin(a)*d,grit=.72+Math.random()*.55,agility=.72+Math.random()*.55;return{id:i,name,color:colorFor(name),initials:(typeof initialsFor==='function'?initialsFor(name):name.slice(0,2).toUpperCase()),x,y,vx:0,vy:0,r:pr,grit,agility,power:.75+Math.random()*.5,tactics:.35+Math.random()*.63,score:0,controlMs:0,inPlay:true,respawnAt:0,invulnUntil:startAt+600,knockUntil:0,braceUntil:0,nextBrace:startAt+800+Math.random()*1400,nextShove:startAt+600+Math.random()*1200,nextThink:startAt+Math.random()*500,targetId:-1,wantX:0,wantY:0,shoves:0,falls:0,centerClaims:0,hitFlash:0,angle:a+Math.PI,seed:Math.random()*1000}});globalThis.__hillPlayers=players;globalThis.__hillStats=stats;
+function inPlay(){return players.filter(p=>p.inPlay)}
+function phaseFor(e){if(e<0)return'ASCENT LOCKDOWN';if(overtime)return'SUDDEN-CLAIM OVERTIME';if(e<7)return'SUMMIT ASCENT';if(e<16)return'CONTROL FIGHT';if(e<24)return'CITADEL SURGE';return'FINAL CLAIM'}
+function burst(x,y,color,count,big){for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,s=1.2+Math.random()*(big?7:4.5);particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-1,r:1+Math.random()*3,life:1,color:i%4?color:'#fff'})}}
+function pop(x,y,text,color,big){popups.push({x,y,text,color,big,life:1})}
+function spawnPlayer(p,now){const a=Math.random()*Math.PI*2,d=outerR*.78;p.x=cx+Math.cos(a)*d;p.y=cy+Math.sin(a)*d;p.vx=-Math.cos(a)*(1.2+Math.random());p.vy=-Math.sin(a)*(1.2+Math.random());p.inPlay=true;p.invulnUntil=now+650;p.knockUntil=0;p.braceUntil=0;p.nextShove=now+700+Math.random()*500;pop(p.x,p.y-22,'BACK IN','#67e8f9',false)}
+function fallOff(p,now){if(!p.inPlay)return;p.inPlay=false;p.falls++;totalFalls++;p.score=Math.max(0,p.score-1.25);p.respawnAt=now+1050+Math.random()*420;burst(p.x,p.y,p.color,24,true);pop(p.x,p.y-24,'FALL','#c4b5fd',true);cameraShake=8;feed=p.name+' is thrown from the summit — respawn incoming!'}
+function chooseTarget(p){const active=inPlay().filter(o=>o!==p);if(!active.length)return null;const on=active.filter(o=>Math.hypot(o.x-cx,o.y-cy)<zoneR+24),pool=on.length?on:active;const ranked=pool.map(o=>({o,s:Math.hypot(o.x-p.x,o.y-p.y)-o.score*.2-Math.random()*50})).sort((a,b)=>a.s-b.s);return ranked[Math.floor(Math.random()*Math.min(4,ranked.length))].o}
+function updatePlayers(now,dtf){for(const p of players){if(!p.inPlay){if(now>=p.respawnAt)spawnPlayer(p,now);continue}if(p.hitFlash>0)p.hitFlash*=.77;const dxC=cx-p.x,dyC=cy-p.y,dC=Math.max(1,Math.hypot(dxC,dyC));if(now>=p.nextThink){let target=players[p.targetId];if(!target||!target.inPlay)target=chooseTarget(p);p.targetId=target?target.id:-1;const tangent=p.id%2?1:-1;if(dC>zoneR*.62){p.wantX=dxC/dC*(1.05+p.tactics*.5)+-dyC/dC*tangent*.18;p.wantY=dyC/dC*(1.05+p.tactics*.5)+dxC/dC*tangent*.18}else if(target){const dx=target.x-p.x,dy=target.y-p.y,d=Math.max(1,Math.hypot(dx,dy));p.wantX=dx/d*p.tactics+dxC/dC*.22+-dy/d*tangent*.3;p.wantY=dy/d*p.tactics+dyC/dC*.22+dx/d*tangent*.3}else{p.wantX=dxC/dC*.4;p.wantY=dyC/dC*.4}p.nextThink=now+300+Math.random()*520}if(dC<zoneR&&now>=p.nextBrace&&now>p.knockUntil){p.braceUntil=now+420+Math.random()*360;p.nextBrace=now+1300+Math.random()*1700}if(now<p.knockUntil){p.vx*=Math.pow(.982,dtf);p.vy*=Math.pow(.982,dtf)}else{const bracing=now<p.braceUntil,accel=(bracing?.018:.052)*p.agility;p.vx+=p.wantX*accel*dtf;p.vy+=p.wantY*accel*dtf;p.vx*=Math.pow(bracing?.91:.972,dtf);p.vy*=Math.pow(bracing?.91:.972,dtf)}const cap=now<p.knockUntil?7.5:now<p.braceUntil?1.15:3.15,s=Math.hypot(p.vx,p.vy);if(s>cap){p.vx=p.vx/s*cap;p.vy=p.vy/s*cap}p.x+=p.vx*dtf;p.y+=p.vy*dtf;if(Math.hypot(p.vx,p.vy)>.2)p.angle=Math.atan2(p.vy,p.vx);if(dC>outerR+p.r*.9&&now>p.invulnUntil)fallOff(p,now)}}
+function collideAndShove(now){const active=inPlay();for(let i=0;i<active.length;i++)for(let j=i+1;j<active.length;j++){const a=active[i],b=active[j],dx=b.x-a.x,dy=b.y-a.y,min=a.r+b.r,d2=dx*dx+dy*dy;if(d2<=0||d2>=min*min)continue;const d=Math.sqrt(d2),nx=dx/d,ny=dy/d,over=(min-d)*.5,braceA=now<a.braceUntil?2.1:1,braceB=now<b.braceUntil?2.1:1;a.x-=nx*over/braceA;a.y-=ny*over/braceA;b.x+=nx*over/braceB;b.y+=ny*over/braceB;const rvx=b.vx-a.vx,rvy=b.vy-a.vy,along=rvx*nx+rvy*ny;if(along<0){const imp=-along*1.08;a.vx-=imp*nx*.5/braceA;a.vy-=imp*ny*.5/braceA;b.vx+=imp*nx*.5/braceB;b.vy+=imp*ny*.5/braceB;if(imp>1.5){a.hitFlash=1;b.hitFlash=1;burst((a.x+b.x)/2,(a.y+b.y)/2,'#c4b5fd',7,false)}}}for(const p of active){if(now<p.nextShove||now<p.knockUntil)continue;let target=null,best=1e9;for(const o of active){if(o===p||now<o.invulnUntil)continue;const d=Math.hypot(o.x-p.x,o.y-p.y);if(d<best){best=d;target=o}}if(target&&best<(p.r+target.r)*2.45){const dx=target.x-p.x,dy=target.y-p.y,d=Math.max(1,Math.hypot(dx,dy)),outX=target.x-cx,outY=target.y-cy,outD=Math.max(1,Math.hypot(outX,outY)),blend=.58+p.tactics*.22,dirX=dx/d*(1-blend)+outX/outD*blend,dirY=dy/d*(1-blend)+outY/outD*blend,brace=now<target.braceUntil?2.15:1,force=(3.8+p.power*2.7)*(overtime?1.2:1)/brace;target.vx+=dirX*force;target.vy+=dirY*force;target.knockUntil=now+260+Math.random()*180;target.hitFlash=1;p.shoves++;totalShoves++;p.nextShove=now+820+Math.random()*1050;burst(target.x,target.y,target.color,12,false);if(Math.random()<.42)feed=p.name+' drives '+target.name+' away from the control point!'}}}
+function citadelSurge(now){if(now<nextSurge)return;shockwaves.push({r:18,life:1});for(const p of inPlay()){const dx=p.x-cx,dy=p.y-cy,d=Math.max(1,Math.hypot(dx,dy)),force=d<zoneR*1.25?(2.2+Math.random()*2.1):.6;p.vx+=dx/d*force;p.vy+=dy/d*force;p.knockUntil=Math.max(p.knockUntil,now+180)}feed='Citadel surge! The summit throws everyone outward!';cameraShake=10;flash=.2;nextSurge=now+(overtime?3800:6900)}
+function scoreControl(now,dt){const contenders=inPlay().filter(p=>Math.hypot(p.x-cx,p.y-cy)<zoneR&&now>=p.invulnUntil);let controller=null;if(contenders.length){const ranked=contenders.map(p=>{const d=Math.hypot(p.x-cx,p.y-cy),brace=now<p.braceUntil?10:0,momentum=Math.max(0,3-Math.hypot(p.vx,p.vy))*1.3;return{p,s:(zoneR-d)+brace+momentum+p.grit*2+Math.sin(frame*.023+p.seed)*1.8}}).sort((a,b)=>b.s-a.s);controller=ranked[0].p;const rate=(contenders.length===1?8.5:4.4/(1+(contenders.length-1)*.055))*(overtime?1.75:1);controller.score+=rate*dt/1000;controller.controlMs+=dt;if(controller!==currentController&&now-lastControlChange>360){lastController=currentController;currentController=controller;lastControlChange=now;stats.controllerChanges++;controller.centerClaims++;feed=controller.name+' takes control of the summit!'}}else currentController=null;return{controller,count:contenders.length}}
+function finishMatch(now){if(winner)return;const ranked=[...players].sort((a,b)=>b.score-a.score||b.controlMs-a.controlMs||b.shoves-a.shoves||a.falls-b.falls||Math.random()-.5);winner=ranked[0];finishAt=now+2300;feed=winner.name+' secures the Citadel with '+winner.score.toFixed(1)+' control points!';burst(winner.x,winner.y,winner.color,62,true);cameraShake=16;flash=.32}
+function update(now,dt){frame++;const dtf=Math.min(2,dt/16.667),elapsed=(now-startAt)/1000;phase=phaseFor(elapsed);matchProgress=Math.max(0,Math.min(1,elapsed/(regulationMs/1000)));let control={controller:null,count:0};if(elapsed>=0&&!winner){updatePlayers(now,dtf);collideAndShove(now);citadelSurge(now);control=scoreControl(now,dt);if(elapsed*1000>=regulationMs){const ranked=[...players].sort((a,b)=>b.score-a.score||b.controlMs-a.controlMs),gap=(ranked[0]?.score||0)-(ranked[1]?.score||0);if(gap>=2.25||elapsed*1000>=maxMatchMs)finishMatch(now);else if(!overtime){overtime=true;feed='Scores are too close — Sudden-Claim Overtime!';cameraShake=12;flash=.28}}}particles.forEach(p=>{p.x+=p.vx*dtf;p.y+=p.vy*dtf;p.vx*=.98;p.vy*=.98;p.life-=.028*dtf});particles=particles.filter(p=>p.life>0);popups.forEach(p=>{p.y-=.45*dtf;p.life-=.019*dtf});popups=popups.filter(p=>p.life>0);shockwaves.forEach(s=>{s.r+=5*dtf;s.life-=.025*dtf});shockwaves=shockwaves.filter(s=>s.life>0);cameraShake*=Math.pow(.86,dtf);flash=Math.max(0,flash-.035*dtf);updateHUD(now,control)}
+function updateHUD(now,control){const elapsed=Math.max(0,(now-startAt)/1000),ranked=[...players].sort((a,b)=>b.score-a.score),pct=Math.round(Math.min(1,elapsed/(regulationMs/1000))*100);document.getElementById('hill-status').textContent=winner?'CITADEL SECURED':phase;document.getElementById('hill-on-zone').textContent=control.count;document.getElementById('hill-top-score').textContent=(ranked[0]?.score||0).toFixed(1);document.getElementById('hill-clock').textContent=(overtime?'OT ':'')+elapsed.toFixed(1)+'s';document.getElementById('hill-phase-label').textContent=phase;document.getElementById('hill-commentary').textContent=feed;document.getElementById('hill-controller').textContent=control.controller?control.controller.name:'CONTESTED';document.getElementById('hill-falls').textContent=totalFalls;document.getElementById('hill-progress').style.width=pct+'%';document.getElementById('hill-progress-text').textContent=pct+'%'}
+function drawArena(now){const elapsed=(now-startAt)/1000;ctx.save();if(cameraShake>.25)ctx.translate((Math.random()-.5)*cameraShake,(Math.random()-.5)*cameraShake);const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#080b18');bg.addColorStop(.55,'#0b0e18');bg.addColorStop(1,'#030508');ctx.fillStyle=bg;ctx.fillRect(-25,-25,W+50,H+50);ctx.fillStyle='#070911';ctx.fillRect(0,28,W,112);for(let i=0;i<48;i++){const x=i*25,y=105+(i%4)*7;ctx.fillStyle=i%2?'#121522':'#0a0d16';ctx.beginPath();ctx.arc(x,y-13,7+(i%3),0,Math.PI*2);ctx.fill();ctx.fillRect(x-7,y-7,14,27)}for(let i=0;i<20;i++){ctx.fillStyle=i%2?'rgba(99,102,241,.3)':'rgba(34,211,238,.22)';ctx.fillRect(9+i*60,38,38,4)}for(let i=0;i<8;i++){const a=i*Math.PI/4+frame*.0005,x=cx+Math.cos(a)*(outerR+36),y=cy+Math.sin(a)*(outerR+36);ctx.fillStyle='rgba(8,10,18,.8)';ctx.beginPath();ctx.arc(x,y,25,0,Math.PI*2);ctx.fill();ctx.strokeStyle=i%2?'rgba(99,102,241,.35)':'rgba(34,211,238,.3)';ctx.lineWidth=3;ctx.stroke()}ctx.shadowColor='#6366f1';ctx.shadowBlur=16;const platform=ctx.createRadialGradient(cx,cy,15,cx,cy,outerR);platform.addColorStop(0,'#252943');platform.addColorStop(.48,'#191d31');platform.addColorStop(1,'#0c1020');ctx.fillStyle=platform;ctx.beginPath();ctx.arc(cx,cy,outerR,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='rgba(129,140,248,.55)';ctx.lineWidth=4;ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.055)';ctx.lineWidth=1;for(let r=42;r<outerR;r+=38){ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke()}for(let i=0;i<12;i++){const a=i*Math.PI/6;ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*32,cy+Math.sin(a)*32);ctx.lineTo(cx+Math.cos(a)*outerR,cy+Math.sin(a)*outerR);ctx.stroke()}const zone=ctx.createRadialGradient(cx,cy,8,cx,cy,zoneR);zone.addColorStop(0,'rgba(34,211,238,.2)');zone.addColorStop(.72,'rgba(99,102,241,.15)');zone.addColorStop(1,'rgba(99,102,241,.04)');ctx.fillStyle=zone;ctx.beginPath();ctx.arc(cx,cy,zoneR,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(103,232,249,.72)';ctx.lineWidth=3;ctx.setLineDash([10,7]);ctx.lineDashOffset=-frame*.18;ctx.beginPath();ctx.arc(cx,cy,zoneR,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(2,5,10,.64)';ctx.beginPath();ctx.roundRect(cx-77,cy-16,154,32,9);ctx.fill();ctx.fillStyle='#a5f3fc';ctx.font='900 9px Inter, sans-serif';ctx.textAlign='center';ctx.fillText(currentController?'CONTROL: '+currentController.name.substring(0,14).toUpperCase():'SUMMIT CONTESTED',cx,cy+4);shockwaves.forEach(s=>{ctx.strokeStyle=`rgba(103,232,249,${s.life*.65})`;ctx.lineWidth=4;ctx.beginPath();ctx.arc(cx,cy,s.r,0,Math.PI*2);ctx.stroke()});const active=inPlay(),compact=active.length>22;active.forEach(p=>drawPlayer(p,compact,now));particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;popups.forEach(p=>{ctx.globalAlpha=Math.min(1,p.life*2);ctx.fillStyle='rgba(0,0,0,.78)';ctx.font=`900 ${p.big?14:10}px Inter, sans-serif`;ctx.textAlign='center';const w=ctx.measureText(p.text).width+18;ctx.fillRect(p.x-w/2,p.y-16,w,22);ctx.fillStyle=p.color;ctx.fillText(p.text,p.x,p.y);ctx.globalAlpha=1});drawControlPanel();if(elapsed<0){ctx.fillStyle='rgba(2,4,8,.66)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#fff';ctx.font='900 78px Inter, sans-serif';ctx.textAlign='center';ctx.shadowColor='#6366f1';ctx.shadowBlur=30;ctx.fillText(Math.max(1,Math.ceil(-elapsed)),W/2,H/2+14);ctx.shadowBlur=0;ctx.fillStyle='#a5b4fc';ctx.font='900 12px Inter, sans-serif';ctx.fillText('CITADEL ASCENT LOCKDOWN',W/2,H/2+48)}if(winner){ctx.fillStyle='rgba(99,102,241,.1)';ctx.beginPath();ctx.moveTo(winner.x-110,55);ctx.lineTo(winner.x-34,winner.y+20);ctx.lineTo(winner.x+34,winner.y+20);ctx.lineTo(winner.x+110,55);ctx.closePath();ctx.fill();ctx.fillStyle='rgba(3,5,10,.9)';ctx.beginPath();ctx.roundRect(185,18,570,56,14);ctx.fill();ctx.strokeStyle='rgba(99,102,241,.52)';ctx.stroke();ctx.fillStyle='#a5b4fc';ctx.font='900 10px Inter, sans-serif';ctx.textAlign='center';ctx.fillText('CITADEL CONTROL CHAMPION',470,40);ctx.fillStyle='#fff';ctx.font='900 24px Inter, sans-serif';ctx.fillText(winner.name.toUpperCase(),470,65)}if(flash>0){ctx.fillStyle=`rgba(255,255,255,${flash*.2})`;ctx.fillRect(0,0,W,H)}ctx.restore()}
+function drawPlayer(p,compact,now){const sc=p.r/14,bracing=now<p.braceUntil,stunned=now<p.knockUntil;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.angle+(stunned?Math.sin(frame*.4)*.22:0));ctx.scale(sc,sc);ctx.fillStyle='rgba(0,0,0,.42)';ctx.beginPath();ctx.ellipse(-2,8,17,6,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#172033';ctx.lineWidth=6;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-7,-2);ctx.lineTo(-12,10);ctx.moveTo(6,-1);ctx.lineTo(12,10);ctx.stroke();ctx.fillStyle=p.hitFlash>.05?'#fff':p.color;ctx.beginPath();ctx.roundRect(-14,-16,28,27,8);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.42)';ctx.lineWidth=1.5;ctx.stroke();ctx.fillStyle='#d6a47c';ctx.beginPath();ctx.arc(-2,-26,10,0,Math.PI*2);ctx.fill();ctx.fillStyle='#1f2937';ctx.beginPath();ctx.arc(-2,-29,10,Math.PI,Math.PI*2);ctx.lineTo(8,-25);ctx.lineTo(-12,-25);ctx.fill();ctx.strokeStyle='#d6a47c';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(-11,-9);ctx.lineTo(bracing?-22:-18,bracing?-2:-14);ctx.moveTo(11,-9);ctx.lineTo(bracing?22:19,bracing?-2:-13);ctx.stroke();ctx.rotate(-p.angle);ctx.fillStyle='#fff';ctx.font='900 7px Inter, sans-serif';ctx.textAlign='center';ctx.fillText(p.initials,0,3);ctx.restore();if(!compact){const label=p.name.length>12?p.name.slice(0,11)+'…':p.name;ctx.font='900 8px Inter, sans-serif';const w=ctx.measureText(label).width+12;ctx.fillStyle='rgba(3,4,8,.74)';ctx.fillRect(p.x-w/2,p.y-p.r*2.5-16,w,14);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(label,p.x,p.y-p.r*2.5-6);ctx.fillStyle='rgba(0,0,0,.7)';ctx.fillRect(p.x-17,p.y+p.r+7,34,3);ctx.fillStyle='#22d3ee';const top=Math.max(1,...players.map(q=>q.score));ctx.fillRect(p.x-17,p.y+p.r+7,34*Math.min(1,p.score/top),3)}}
+function drawControlPanel(){const ranked=[...players].sort((a,b)=>b.score-a.score);ctx.fillStyle='rgba(3,5,10,.91)';ctx.beginPath();ctx.roundRect(956,66,218,440,18);ctx.fill();ctx.strokeStyle='rgba(99,102,241,.2)';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#a5b4fc';ctx.font='900 10px Inter, sans-serif';ctx.textAlign='left';ctx.fillText('CITADEL SCOREBOARD',980,97);ctx.fillStyle='rgba(255,255,255,.07)';ctx.fillRect(980,113,170,1);ranked.slice(0,5).forEach((p,i)=>{const y=143+i*43;ctx.fillStyle='#64748b';ctx.font='900 9px Inter, sans-serif';ctx.textAlign='left';ctx.fillText('P'+(i+1),980,y);ctx.fillStyle=p.color;ctx.fillRect(1004,y-9,7,7);ctx.fillStyle='#fff';ctx.font='900 10px Inter, sans-serif';ctx.fillText((p.name.length>12?p.name.slice(0,11)+'…':p.name),1020,y);ctx.textAlign='right';ctx.fillText(p.score.toFixed(1),1149,y);ctx.fillStyle='rgba(255,255,255,.07)';ctx.fillRect(1020,y+8,129,3);ctx.fillStyle=i%2?'#6366f1':'#22d3ee';const best=Math.max(1,ranked[0].score);ctx.fillRect(1020,y+8,129*Math.min(1,p.score/best),3)});ctx.fillStyle='rgba(255,255,255,.07)';ctx.fillRect(980,369,170,1);ctx.fillStyle='#94a3b8';ctx.font='800 8px Inter, sans-serif';ctx.textAlign='left';ctx.fillText('CONTROL CHANGES',980,401);ctx.fillText('TACTICAL SHOVES',980,429);ctx.fillText('PLATFORM FALLS',980,457);ctx.fillStyle='#fff';ctx.textAlign='right';ctx.font='900 12px Inter, sans-serif';ctx.fillText(stats.controllerChanges,1150,401);ctx.fillText(totalShoves,1150,429);ctx.fillText(totalFalls,1150,457);ctx.fillStyle=overtime?'#e879f9':'#67e8f9';ctx.textAlign='center';ctx.font='900 10px Inter, sans-serif';ctx.fillText(overtime?'SUDDEN-CLAIM OVERTIME':phase,1065,487)}
+function showResult(now){if(resultShown)return;resultShown=true;showPhase('hill','winner');document.getElementById('hill-winner-name').textContent=winner?winner.name:'No one';document.getElementById('hill-winner-detail').textContent='KING OF THE HILL';const elapsed=Math.max(0,(now-startAt)/1000);document.getElementById('hill-winner-sub').textContent=(winner?winner.score.toFixed(1):'0.0')+' control points · '+(winner?winner.shoves:0)+' successful shoves · '+(winner?winner.falls:0)+' falls';const cards=[['Control Score',winner?winner.score.toFixed(1):'0.0',(winner?winner.controlMs/1000:0).toFixed(1)+'s commanding summit'],['Summit Claims',String(winner?winner.centerClaims:0),stats.controllerChanges+' control changes'],['Match Chaos',String(totalShoves),totalFalls+' platform falls']];document.getElementById('hill-result-cards').replaceChildren(...cards.map(([label,value,note])=>{const box=document.createElement('div');box.className='rounded-2xl border border-white/10 bg-white/[.035] p-4 text-left';box.innerHTML='<div class="text-[8px] text-indigo-400 font-black uppercase tracking-[0.18em]">'+label+'</div><div class="text-2xl font-black text-white mt-1">'+value+'</div><div class="text-[10px] text-gray-500 mt-2">'+note+'</div>';return box}))}
+function loop(now){const dt=Math.max(1,Math.min(34,now-last));last=now;update(now,dt);drawArena(now);if(finishAt&&now>=finishAt){showResult(now);return}requestAnimationFrame(loop)}updateHUD(performance.now(),{controller:null,count:0});requestAnimationFrame(loop)}
 
 /* ==================== DOWNHILL CHAOS (every entrant — dodge trees, outrun the avalanche) ==================== */
 function runDownhill() {
@@ -16938,6 +16882,6 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a303e4a12a8dfe8b',t:'MTc4NzU5MDYxNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a303f02179e6ffb3',t:'MTc4NzU5MTA4Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 >
