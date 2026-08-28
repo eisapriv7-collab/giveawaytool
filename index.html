@@ -6091,6 +6091,9 @@ const TEKKEN_MOVE_BASE = {
   throw:    { label:'Command Throw',  startup:175, active:55,  recover:430, dmg:15,   reach:64,  stun:0,   push:0,  height:'throw',anim:'throw', unblockable:true, knockdown:true },
   airjab:   { label:'Air Jab',        startup:70,  active:70,  recover:130, dmg:3.6,  reach:96,  stun:0,   push:0,  height:'air',  anim:'punch', air:true },
   airkick:  { label:'Air Kick',       startup:95,  active:80,  recover:170, dmg:5.4,  reach:110, stun:0,   push:0,  height:'air',  anim:'kick',  air:true, slam:true },
+  tornado:  { label:'Tornado Kick',    startup:300, active:190, recover:430, dmg:6.4,  reach:122, stun:0,   push:70, height:'high', anim:'tornado', knockdown:true },
+  elbow:    { label:'Skull Elbow',     startup:220, active:90,  recover:340, dmg:10.8, reach:80,  stun:640, push:24, height:'high', anim:'elbow', crumple:true },
+  jumpkick: { label:'Dive Kick',       startup:110, active:130, recover:250, dmg:9.8,  reach:124, stun:460, push:74, height:'mid',  anim:'jumpkick', air:true },
   rageart:  { label:'Rage Art',       startup:380, active:640, recover:520, dmg:34,   reach:165, stun:0,   push:130,height:'mid',  anim:'rage',  unblockable:true, rage:true }
 };
 function tekkenCharById(id){ for (const c of TEKKEN_ROSTER) if (c.id === id) return c; return null; }
@@ -6318,7 +6321,7 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
   if (p2cEl) p2cEl.textContent = c2.name + ' \u00b7 ' + c2.style;
   const stats = {
     matchStartReal: performance.now(), gameT: 0, roundsPlayed: 0, kos: 0, decisions: 0, perfects: 0,
-    throwsAttempted: 0, throwsLanded: 0, throwEscapes: 0, sidesteps: 0, blocks: 0, juggleHits: 0,
+    throwsAttempted: 0, throwsLanded: 0, throwEscapes: 0, sidesteps: 0, blocks: 0, juggleHits: 0, jumps: 0, tornadoHits: 0, elbowHits: 0, jumpkickHits: 0,
     launches: 0, walls: 0, rageArts: 0, rageRuleViolations: 0, invalidActions: 0,
     totalDamage: [0, 0], roundWins: [0, 0], rounds: [], maxCombo: 0, maxComboBy: '',
     maxDownMs: [0, 0], maxStunMs: [0, 0], maxAirMs: [0, 0], maxGetupMs: [0, 0], maxSideMs: [0, 0],
@@ -6342,7 +6345,7 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
       throwTarget: null, thrownBy: null, winPose: false,
       pose: {}, trail: [], ghosts: [], hitFlash: 0, aura: 0,
       stunRun: 0, downRun: 0, airRun: 0, getupRun: 0, sideRun: 0,
-      roundStartHp: char.hp, lastBlockAt: 0, chain: 0, openingDone: false, lastCloseT: 0
+      roundStartHp: char.hp, lastBlockAt: 0, chain: 0, openingDone: false, lastCloseT: 0, crumpleUntil: 0
     };
   }
   const p1 = makeFighter(p1Name, c1, 0), p2 = makeFighter(p2Name, c2, 1);
@@ -6358,7 +6361,7 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
     m.reach = Math.round(b.reach * f.char.size * f.rngMul);
     return m;
   }
-  function canAct(f, T) { return f.state === 'idle' || f.state === 'walk' || f.state === 'dash' || f.state === 'crouch' || f.state === 'block'; }
+  function canAct(f, T) { return f.state === 'idle' || f.state === 'walk' || f.state === 'dash' || f.state === 'crouch' || f.state === 'block' || f.state === 'jump'; }
   function setState(f, s, T) { f.state = s; f.stT = T; }
   function startAttack(f, key, T) {
     if (!canAct(f, T)) { stats.invalidActions++; return false; }
@@ -6368,6 +6371,8 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
     if (key === 'dashstrike') f.vx += f.facing * 330;
     else if (key === 'upper') f.vx += f.facing * 120;
     else if (key === 'rageart') f.vx += f.facing * 190;
+    else if (key === 'tornado') f.vx += f.facing * 210;
+    else if (key === 'jumpkick' && !f.air) { f.vy = -430; f.air = true; f.slam = false; f.vx += f.facing * 300; stats.jumps++; }
     if (m.rage) { f.rageArtUsed = true; stats.rageArts++; if (!f.rage) stats.rageRuleViolations++; tekkenSFX('rage'); popup(f.x + f.facing * 30, 210, 'RAGE ART', '#ff4b3e', 26, 900); announceMove(m.label === 'Rage Art' ? f.char.rageName : m.label, f); }
     else if (!m.air) tekkenSFX('whoosh');
     if (key === 'throw') stats.throwsAttempted++;
@@ -6382,6 +6387,13 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
     if (!canAct(f, T)) { stats.invalidActions++; return; }
     f.sideDir = Math.random() < .5 ? 1 : -1;
     f.sideUntil = T + 360; setState(f, 'sidestep', T); stats.sidesteps++; tekkenSFX('sidestep');
+  }
+  function startJump(f, T) {
+    if (!canAct(f, T) || f.air) return false;
+    f.air = true; f.slam = false; setState(f, 'jump', T);
+    f.vy = -620; f.vx = f.facing * 240; f.rot = 0; f.spin = 0;
+    stats.jumps++; tekkenSFX('whoosh');
+    return true;
   }
   function knockDown(f, dirVx, T, heavy) {
     f.attack = null; f.crouch = false; f.comboHits = 0; f.comboBy = null;
@@ -6494,6 +6506,29 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
       }
       return;
     }
+    if (m.key === 'tornado') {
+      const ticks = [0, 195];
+      while (at.tick < ticks.length && el >= m.startup + ticks[at.tick]) {
+        at.tick++;
+        a.x += a.facing * 30;
+        const dist2 = Math.abs(a.x - v.x);
+        if (dist2 > m.reach + 28 || (v.x - a.x) * a.facing < -20 || v.invulnUntil > T) continue;
+        if (v.state === 'sidestep' && !at.tracked) { popup(a.x + a.facing * 40, 260, 'WHIFF', '#94a3b8', 13, 600); continue; }
+        if (v.blockUntil > T) {
+          v.hp -= m.dmg * .12; stats.totalDamage[a.idx] += m.dmg * .12; stats.blocks++;
+          v.vx += a.facing * 130; blockSpark(v.x - v.facing * 16, 330); tekkenSFX('block'); popup(v.x, 280, 'GUARD', '#7dd3fc', 12, 550);
+          if (v.hp <= 0) { v.hp = 0; knockDown(v, a.facing * 150, T, true); beginKO(a, v, T, 'TORNADO KICK'); return; }
+          continue;
+        }
+        const dmg2 = m.dmg * (at.tick === 1 ? 1.25 : 1);
+        const dead = applyHit(a, v, m, dmg2, T, { method: 'TORNADO KICK' });
+        stats.tornadoHits++;
+        if (at.tick === 1 && !dead) { knockDown(v, a.facing * (m.push + 160), T, false); setComm(a.entrant + ' lands the TORNADO KICK \u2014 both spins connect and ' + v.entrant + ' crashes down!'); }
+        else if (!dead) setState(v, 'hitstun', T), v.stunUntil = T + 380, v.crouch = false, v.vx += a.facing * 90;
+        if (dead) return;
+      }
+      return;
+    }
     if (!(el >= m.startup && el <= m.startup + m.active)) return;
     at.hit = true;
     const dist = Math.abs(a.x - v.x);
@@ -6515,6 +6550,7 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
       if (v.comboHits >= 8 || v.invulnUntil > T) return;
       const dead = applyHit(a, v, m, dmg, T, { method: 'AIR COMBO', keepAir: true });
       stats.juggleHits++;
+      if (m.key === 'jumpkick') stats.jumpkickHits++;
       if (!dead) {
         if (m.slam || v.comboHits >= 5 || v.airRun > 900) {
           v.slam = true; v.vy = Math.max(v.vy, 600); v.vx = a.facing * 300;
@@ -6540,10 +6576,13 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
       if (!dead) { knockDown(v, a.facing * (m.push + 130), T, m.key !== 'sweep'); setComm(a.entrant + ' sweeps the legs \u2014 ' + v.entrant + ' crashes down hard!'); }
       return;
     }
-    const dead = applyHit(a, v, m, dmg, T, { method: 'STRIKE' });
+    const dead = applyHit(a, v, m, dmg, T, { method: m.key === 'elbow' ? 'SKULL ELBOW' : (m.key === 'jumpkick' ? 'DIVE KICK' : 'STRIKE') });
     if (!dead) {
       setState(v, 'hitstun', T);
       v.stunUntil = T + (v.stunUntil > T ? Math.min(m.stun, 320) : m.stun); v.crouch = false;
+      if (m.crumple) { stats.elbowHits++; v.crumpleUntil = T + 700; popup(v.x, 268, 'CRUNCH!', '#ff9f43', 16, 750); hitSpark(v.x - v.facing * 6, 296, 1.9, '#ffd166'); setComm(a.entrant + ' drives an elbow into the top of ' + v.entrant + '\u2019s skull \u2014 the head snaps down!'); }
+      else if (m.key === 'jumpkick') { stats.jumpkickHits++; setComm(a.entrant + ' leaps in with a diving kick and crashes it home!'); }
+      else if (m.key === 'elbow') setComm(a.entrant + ' smashes the elbow down!');
       v.vx += a.facing * (m.push || 20) * 2.3;
       if (wallCheck(v)) { v.stunUntil += 420; stats.walls++; popup(v.x, 300, 'WALL SLAM!', '#ff6b4a', 16, 750); tekkenSFX('wall'); camShake = Math.max(camShake, 12); }
       if (a.chain >= 1 && Math.random() < .5) setComm(a.entrant + ' strings together another clean hit!');
@@ -6571,6 +6610,11 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
   }
   function aiThink(f, o, T) {
     if (!canAct(f, T) || f.charging) return;
+    if (f.state === 'jump') {
+      const dist2 = Math.abs(f.x - o.x);
+      if (dist2 < 165 && f.vy > -140 && Math.random() < .5) startAttack(f, Math.random() < .6 ? 'jumpkick' : 'airjab', T);
+      return;
+    }
     const dist = Math.abs(f.x - o.x);
     if (dist < 140) f.lastCloseT = T;
     f.nextThink = T + f.react * (.62 + Math.random() * .5);
@@ -6605,21 +6649,25 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
     const step = (dir, w) => add(w, () => { f.state = 'walk'; f.walkDir = dir; f.stT = T; });
     const dashIn = w => add(w, () => { f.state = 'dash'; f.vx += (o.x >= f.x ? 1 : -1) * (dist > 240 ? 430 : 380); f.stT = T; });
     if (dist > 330) {
-      dashIn(13); step(f.facing, 5); add(1.5, () => startSidestep(f, T));
+      dashIn(12); step(f.facing, 5); add(1.5, () => startSidestep(f, T));
+      add(2.1, () => { if (startJump(f, T)) f.queue = ['jumpkick']; });
     } else if (dist > 195) {
-      dashIn(9); step(f.facing, 6);
+      dashIn(8); step(f.facing, 5);
       go('dashstrike', 5);
-      add(1.6, () => startSidestep(f, T));
-      step(-f.facing, .7);
+      add(2.6, () => { if (startJump(f, T)) f.queue = ['jumpkick']; });
+      go('tornado', 1.8);
+      add(1.4, () => startSidestep(f, T));
+      step(-f.facing, .6);
     } else if (dist > 92) {
-      go('jab', 3.4); go('cross', 2.8); go('bodykick', 2.4); go('upper', 2.6); go('highkick', 1.9); go('sweep', 1.8);
-      go('dashstrike', 2.4);
+      go('jab', 3.2); go('cross', 2.6); go('bodykick', 2.2); go('upper', 2.4); go('highkick', 1.8); go('sweep', 1.7);
+      go('elbow', 2.4); go('tornado', 1.5); go('dashstrike', 2.2);
       if (f.char.throwMaster) go('throw', 2.0); else go('throw', 1.3);
-      step(-f.facing, .8); add(1.1, () => startSidestep(f, T));
+      step(-f.facing, .7); add(1.0, () => startSidestep(f, T));
     } else {
-      go('jab', 3.4); go('upper', 2.6); go('sweep', 2.0); go('cross', 2.4);
-      if (f.char.throwMaster) go('throw', 3.0); else go('throw', 1.8);
-      step(-f.facing, 1.1); add(1.2, () => startSidestep(f, T));
+      go('jab', 3.2); go('upper', 2.4); go('sweep', 1.9); go('cross', 2.2);
+      go('elbow', 3.0);
+      if (f.char.throwMaster) go('throw', 2.8); else go('throw', 1.7);
+      step(-f.facing, 1.0); add(1.1, () => startSidestep(f, T));
     }
     let tot = 0; for (const [w] of wsum) tot += w;
     if (tot <= 0) { setState(f, 'dash', T); f.vx += f.facing * 400; return; }
@@ -6884,7 +6932,7 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
             if (iv > 330) groundImpact(f.x, clampN(iv / 750, .45, .95));
             setState(f, 'knockdown', T);
             if (!(f.downUntil > T + 5000)) f.downUntil = T + 900 + Math.random() * 260;
-          }
+          } else if (f.state === 'jump') setState(f, 'idle', T);
         }
       }
     } else {
@@ -6948,6 +6996,7 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
     F.forEach(f => {
       if (f.state === 'throwing' && f.throwTarget) updateThrowCinematic(f, T);
       if (f.state === 'launched' && !f.air) setState(f, 'knockdown', T);
+      if (f.state === 'jump' && !f.air) setState(f, 'idle', T);
       if (f.air && f.airRun > 2600) { f.air = false; f.y = FLOOR; f.vy = 0; f.rot = 0; f.spin = 0; setState(f, 'knockdown', T); f.downUntil = T + 900; }
       if ((f.state === 'throwing' || f.state === 'thrown') && T - f.stT > 1500) { if (f.throwTarget) f.throwTarget.thrownBy = null; f.throwTarget = null; f.thrownBy = null; f.attack = null; setState(f, 'idle', T); }
     });
@@ -6971,9 +7020,19 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
       P.aFa = .55 - .3 * Math.sin(ph); P.aBa = .25 + .3 * Math.sin(ph);
       P.lean = .12; P.dip = 3 + 1.6 * Math.sin(2 * ph);
     } else if (st === 'dash') { P.lean = .4; P.dip = 6; P.aFa = 1.0; P.aFb = .4; P.aBa = .7; P.aBb = .6; P.lFa = .7; P.lFb = .5; P.lBa = -.7; P.lBb = .9; }
+    else if (st === 'jump') {
+      const rising = f.vy < 0;
+      P.dip = 0; P.lean = .22;
+      P.lFa = rising ? 1.15 : .85; P.lFb = rising ? 1.6 : 1.15; P.lBa = -.35; P.lBb = rising ? 1.25 : .9;
+      P.aFa = -.55; P.aFb = .9; P.aBa = 1.0; P.aBb = .7; P.head = .08;
+    }
     else if (st === 'block') { P.aFa = 1.05; P.aFb = 1.75; P.aBa = .85; P.aBb = 1.95; P.lean = .12; P.dip = f.crouch ? 20 : 8; P.guardArc = 1; }
     else if (st === 'crouch') { P.dip = 22; P.lFb = 1.3; P.lBb = 1.3; P.aFa = 1.0; P.aFb = 2.0; }
-    else if (st === 'hitstun') { const k = clampN((f.stunUntil - T) / 420, .35, 1); P.lean = -.34 * k - .05; P.head = -.3 * k; P.aFa = 1.05; P.aFb = .6; P.aBa = -.15; P.aBb = .7; P.dip = 6; P.lFa = .3; P.lFb = .5; }
+    else if (st === 'hitstun') {
+      const k = clampN((f.stunUntil - T) / 420, .35, 1);
+      if (f.crumpleUntil > T) { const ck = clampN((f.crumpleUntil - T) / 700, 0, 1); P.lean = .34 * ck + .04; P.head = .95 * ck; P.aFa = 1.5; P.aFb = .4; P.aBa = 1.3; P.aBb = .5; P.dip = 10 + 8 * ck; P.lFa = .35; P.lFb = .6; P.lBa = -.2; P.lBb = .55; }
+      else { P.lean = -.34 * k - .05; P.head = -.3 * k; P.aFa = 1.05; P.aFb = .6; P.aBa = -.15; P.aBb = .7; P.dip = 6; P.lFa = .3; P.lFb = .5; }
+    }
     else if (st === 'thrown') { P.lean = -.15; P.head = -.35; P.aFa = .9; P.aFb = .35; P.aBa = -.5; P.aBb = .4; P.lFa = .5; P.lFb = .5; P.lBa = -.7; P.lBb = .55; P.dip = 0; }
     else if (st === 'launched') { P.aFa = 1.7; P.aFb = .3; P.aBa = -.9; P.aBb = .5; P.lFa = 1.0; P.lFb = .3; P.lBa = -.6; P.lBb = .6; P.dip = 0; P.lean = 0; }
     else if (st === 'knockdown') { P.aFa = .5; P.aFb = .3; P.aBa = -.4; P.aBb = .4; P.lFa = .25; P.lFb = .3; P.lBa = -.2; P.lBb = .35; P.lean = 0; }
@@ -7024,6 +7083,37 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
           break;
         }
         case 'throw': { P.aFa = lerpN(.55, 1.35, wr); P.aFb = .15; P.aBa = lerpN(.25, 1.15, wr); P.aBb = .2; P.lean = .18; break; }
+        case 'elbow': {
+          P.dip = 12 * wr * (1 - sr) + 10 * sr;
+          P.aFa = lerpN(lerpN(lerpN(.55, -1.9, wr), 1.02, sr), .55, rr);
+          P.aFb = lerpN(lerpN(lerpN(1.85, 2.45, wr), .12, sr), 1.85, rr);
+          P.aBa = .95; P.aBb = 1.7;
+          P.lean = lerpN(-.16 * wr, .34, sr) * (1 - rr * .6);
+          P.head = -.14 * wr + .3 * sr * (1 - rr);
+          P.twist = .3 * sr * (1 - rr);
+          P.tip = { j: 'handF', fx: 'power' };
+          break;
+        }
+        case 'tornado': {
+          const spinP = clampN(el2 / (m.startup + m.active), 0, 1);
+          P.twist = spinP * Math.PI * 4;
+          P.lift = 12 * Math.sin(spinP * Math.PI);
+          P.dip = 4;
+          P.lBa = lerpN(lerpN(-.14, -.5, wr), 1.62, Math.min(1, sr * 1.6)); P.lBb = .06;
+          P.lFa = 1.0; P.lFb = 1.5;
+          P.aFa = .35; P.aFb = 1.5; P.aBa = -.9; P.aBb = .8;
+          P.lean = .1; P.head = .05;
+          P.tip = { j: 'footB' };
+          break;
+        }
+        case 'jumpkick': {
+          P.lBa = lerpN(lerpN(-.3, -.7, wr), 1.5, sr); P.lBb = .04;
+          P.lFa = 1.1; P.lFb = 1.6;
+          P.aFa = -.5; P.aFb = .8; P.aBa = -1.1; P.aBb = .7;
+          P.lean = .38; P.dip = 0; P.twist = .15 * sr;
+          P.tip = { j: 'footB' };
+          break;
+        }
         case 'rage': {
           if (w < 1) { P.dip = 18 * wr; P.aFa = 1.0; P.aFb = 2.5; P.aBa = .9; P.aBb = 2.6; P.lean = .05; }
           else if (s < 1) {
@@ -7080,6 +7170,7 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
     c.translate(f.x, f.y + yo + ly);
     c.scale(S, S);
     c.scale(f.facing, 1);
+    if (P.twist) { const sq = Math.cos(P.twist); c.scale(Math.max(.22, Math.abs(sq)) * (sq < 0 ? -1 : 1), 1); }
     c.rotate(rotL);
     if (ch.devil && f.rage) {
       c.save(); c.globalAlpha = .8; c.fillStyle = '#4a1030';
@@ -18631,6 +18722,6 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3237789cc3e9f74',t:'MTc4NzkyMTY5MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3238cad1b3c806f',t:'MTc4NzkyMjU1Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 >
