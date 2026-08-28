@@ -1721,6 +1721,7 @@
             </div>
           </div>
           <div id="tekken-roll-status" class="text-[11px] font-black text-gray-400 uppercase tracking-wider mt-3">Rolling the entrant roster...</div>
+          <div id="tekken-start-row" class="hidden mt-3 flex justify-center"><button id="tekken-start-btn" type="button" onclick="tekkenStartFightNow()" class="streamer-start-btn" style="font-size:1.05rem;padding:.7rem 2.2rem;">▶ START GAME</button></div>
         </div>
         <div class="text-center text-[#f2cf63] text-xs font-black uppercase tracking-[0.28em] mb-4">Character Select — roll or pick your fighters</div>
         <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:gap-6 mb-5">
@@ -6124,6 +6125,14 @@ function tekkenRandomChar(excludeId) {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 let tekkenSelect = { p1:null, p2:null, active:1 };
+let tekkenPendingStart = null;
+function tekkenStartFightNow() {
+  if (!tekkenPendingStart) return;
+  const fn = tekkenPendingStart; tekkenPendingStart = null;
+  const row = document.getElementById('tekken-start-row');
+  if (row) row.classList.add('hidden');
+  fn();
+}
 function tekkenResolvedPicks() {
   let c1 = tekkenCharById(tekkenSelect.p1) || tekkenRandomChar();
   let c2 = tekkenCharById(tekkenSelect.p2);
@@ -6370,13 +6379,17 @@ function launchTekkenWith(p1Name, p2Name, pool) {
     const el = document.getElementById(id);
     if (el && el.classList && el.classList.remove) el.classList.remove('tekken-roll-locked');
   });
+  const row = document.getElementById('tekken-start-row');
+  if (row) row.classList.add('hidden');
+  hideStreamerStartButton();
   tekkenRunRollAnimation(p1Name, p2Name, pool || [p1Name, p2Name], () => {
     ['tekken-p1-name', 'tekken-select-p1-name'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = p1Name; });
     ['tekken-p2-name', 'tekken-select-p2-name'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = p2Name; });
-    armGameStart(() => {
+    tekkenPendingStart = () => {
       const picks = tekkenResolvedPicks();
       startTekkenFight(p1Name, p2Name, picks.c1.id, picks.c2.id);
-    });
+    };
+    if (row) row.classList.remove('hidden');
   });
 }
 function startTekkenFight(p1Name, p2Name, pick1, pick2) {
@@ -18929,6 +18942,6 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a323c09d6b72a12c',t:'MTc4NzkyNDY4NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a323d054ec8d9d2c',t:'MTc4NzkyNTMyOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 >
