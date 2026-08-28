@@ -1691,6 +1691,12 @@
   .tekken-slot { cursor:pointer;border-radius:18px;border:1px solid rgba(255,255,255,.1);background:linear-gradient(160deg,rgba(255,255,255,.04),rgba(0,0,0,.45));padding:14px 12px;transition:border-color .15s,box-shadow .15s; }
   .tekken-slot-active.red { border-color:rgba(248,113,113,.8);box-shadow:0 0 24px rgba(220,38,38,.3); }
   .tekken-slot-active.blue { border-color:rgba(56,189,248,.8);box-shadow:0 0 24px rgba(2,132,199,.3); }
+  .tekken-roll-name { transition:color .2s; }
+  .tekken-roll-name.locked { color:#ffd166 !important;text-shadow:0 0 18px rgba(242,207,99,.65);animation:tekkenLockIn .45s ease-out; }
+  @keyframes tekkenLockIn { 0%{transform:scale(1.32);} 100%{transform:scale(1);} }
+  @keyframes tekkenRollGlow { 0%,100%{box-shadow:0 0 10px rgba(242,207,99,.08) inset;} 50%{box-shadow:0 0 26px rgba(242,207,99,.4) inset;} }
+  .tekken-roll-slot { animation:tekkenRollGlow 1s ease-in-out infinite; }
+  .tekken-roll-slot.tekken-roll-locked { animation:none;border-color:rgba(242,207,99,.7);box-shadow:0 0 22px rgba(242,207,99,.28); }
 </style>
 <div id="tekken-overlay" class="hidden fixed inset-0 bg-[#04030a] z-50 overflow-hidden">
   <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 50% 12%,rgba(242,207,99,.1),transparent 36%),linear-gradient(160deg,rgba(220,38,38,.07),transparent 40%,rgba(37,99,235,.07));"></div>
@@ -1702,6 +1708,20 @@
       </header>
 
       <div id="tekken-phase-intro" class="glass rounded-3xl p-5 md:p-7 border border-[#f2cf63]/20">
+        <div id="tekken-roll" class="rounded-2xl border border-[#f2cf63]/30 bg-black/50 p-4 mb-5 text-center">
+          <div class="text-[10px] text-[#f2cf63] font-black uppercase tracking-[0.28em] mb-3">Iron Fist Roulette — choosing the two fighters</div>
+          <div class="grid grid-cols-2 gap-3 md:gap-6 max-w-2xl mx-auto">
+            <div id="tekken-roll-p1" class="tekken-roll-slot rounded-xl border border-red-400/30 bg-red-950/20 px-3 py-3">
+              <div class="text-[9px] text-red-400 font-black uppercase tracking-widest mb-1">Red Corner</div>
+              <div id="tekken-roll-p1-name" class="tekken-roll-name text-lg md:text-2xl font-black text-white truncate">???</div>
+            </div>
+            <div id="tekken-roll-p2" class="tekken-roll-slot rounded-xl border border-sky-400/30 bg-sky-950/20 px-3 py-3">
+              <div class="text-[9px] text-sky-400 font-black uppercase tracking-widest mb-1">Blue Corner</div>
+              <div id="tekken-roll-p2-name" class="tekken-roll-name text-lg md:text-2xl font-black text-white truncate">???</div>
+            </div>
+          </div>
+          <div id="tekken-roll-status" class="text-[11px] font-black text-gray-400 uppercase tracking-wider mt-3">Rolling the entrant roster...</div>
+        </div>
         <div class="text-center text-[#f2cf63] text-xs font-black uppercase tracking-[0.28em] mb-4">Character Select — roll or pick your fighters</div>
         <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:gap-6 mb-5">
           <div id="tekken-select-p1" class="tekken-slot red text-center" onclick="tekkenActivateSlot(1)">
@@ -6298,17 +6318,65 @@ function runTekkenFight() {
   const names = Array.from(entrants);
   if (names.length < 2) { alert('Need at least 2 entrants!'); return; }
   const shuffled = [...names].sort(() => Math.random() - 0.5);
-  launchTekkenWith(shuffled[0], shuffled[1]);
+  launchTekkenWith(shuffled[0], shuffled[1], shuffled);
 }
-function launchTekkenWith(p1Name, p2Name) {
+function tekkenRunRollAnimation(p1Name, p2Name, pool, onDone) {
+  const e1 = document.getElementById('tekken-roll-p1-name'), e2 = document.getElementById('tekken-roll-p2-name');
+  const s1 = document.getElementById('tekken-roll-p1'), s2 = document.getElementById('tekken-roll-p2');
+  const status = document.getElementById('tekken-roll-status');
+  const roster = document.getElementById('tekken-roster');
+  if (!e1 || !e2 || !onDone) { if (onDone) onDone(); return; }
+  if (roster) { roster.style.opacity = .35; roster.style.pointerEvents = 'none'; }
+  const cyc = (pool && pool.length >= 3 ? pool.slice() : [p1Name, p2Name]);
+  const startReal = performance.now(), DUR = 2150, BASE = 46;
+  function spin(el, slot, finalName, lockSfx, done) {
+    let idx = Math.floor(Math.random() * cyc.length);
+    function step() {
+      const el2 = performance.now() - startReal;
+      if (el2 >= DUR) {
+        el.textContent = finalName;
+        if (el.classList && el.classList.add) el.classList.add('locked');
+        if (slot && slot.classList && slot.classList.add) slot.classList.add('tekken-roll-locked');
+        tekkenSFX(lockSfx);
+        done(); return;
+      }
+      el.textContent = cyc[idx++ % cyc.length];
+      const prog = el2 / DUR;
+      setTimeout(step, BASE + 250 * prog * prog * prog + Math.random() * 34);
+    }
+    step();
+  }
+  if (status) status.textContent = 'Rolling the entrant roster...';
+  spin(e1, s1, p1Name, 'bell', () => {
+    if (status) status.textContent = p1Name + ' locked in! Rolling the blue corner...';
+    setTimeout(() => spin(e2, s2, p2Name, 'win', () => {
+      if (status) status.textContent = 'Fighters locked — now choose their characters!';
+      if (roster) { roster.style.opacity = 1; roster.style.pointerEvents = 'auto'; }
+      setTimeout(onDone, 620);
+    }), 420);
+  });
+}
+function launchTekkenWith(p1Name, p2Name, pool) {
   showOverlay('tekken-overlay'); showPhase('tekken', 'intro');
-  ['tekken-p1-name', 'tekken-select-p1-name'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = p1Name; });
-  ['tekken-p2-name', 'tekken-select-p2-name'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = p2Name; });
   buildTekkenSelect();
   tekkenRandomizeSlots();
-  armGameStart(() => {
-    const picks = tekkenResolvedPicks();
-    startTekkenFight(p1Name, p2Name, picks.c1.id, picks.c2.id);
+  ['tekken-p1-name', 'tekken-select-p1-name'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '???'; });
+  ['tekken-p2-name', 'tekken-select-p2-name'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '???'; });
+  ['tekken-roll-p1-name', 'tekken-roll-p2-name'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = '???'; if (el.classList && el.classList.remove) el.classList.remove('locked'); }
+  });
+  ['tekken-roll-p1', 'tekken-roll-p2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.classList && el.classList.remove) el.classList.remove('tekken-roll-locked');
+  });
+  tekkenRunRollAnimation(p1Name, p2Name, pool || [p1Name, p2Name], () => {
+    ['tekken-p1-name', 'tekken-select-p1-name'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = p1Name; });
+    ['tekken-p2-name', 'tekken-select-p2-name'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = p2Name; });
+    armGameStart(() => {
+      const picks = tekkenResolvedPicks();
+      startTekkenFight(p1Name, p2Name, picks.c1.id, picks.c2.id);
+    });
   });
 }
 function startTekkenFight(p1Name, p2Name, pick1, pick2) {
@@ -17971,7 +18039,7 @@ const GAME_PREVIEW_META = {
   diddy2: { scene: 'diddy2', title: '✨ Diddy 2.0', desc: 'The host walks to a tasting table, pours each oil, and delivers a different voiced reaction based on its score!' },
   boxing: { scene: 'boxing', title: '🥊 Boxing Match', desc: 'One fast 25-second round, no knockouts — the winner is decided on points!' },
   sword: { scene: 'sword', title: '⚔️ Sword Duel', desc: '1v1 fencing duel. Parry, lunge, and strike!' },
-  tekken: { scene: 'tekken', title: '🥋 Tekken 7 Arena', desc: 'Best-of-3 Iron Fist bout — random character select, juggles, throws and Rage Arts!' }
+  tekken: { scene: 'tekken', title: '🥋 Tekken 7 Arena', desc: 'The Iron Fist Roulette rolls 2 fighters, then random characters brawl with cinematic slow-mo specials — best of 3!' }
 };
 
 function getGamePreviews() {
@@ -18861,6 +18929,6 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a323b18cad4d0cce',t:'MTc4NzkyNDA2Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a323c09d6b72a12c',t:'MTc4NzkyNDY4NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 >
