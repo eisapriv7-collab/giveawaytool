@@ -6832,7 +6832,7 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
     flashAlpha = Math.max(flashAlpha, .3);
     if (label) announce(label, '#ffd166', 850, .58);
   }
-  let camX = W / 2, camZoom = 1, camShake = 0, flashAlpha = 0, lbT = 0, timeScale = 1, koSlow = false;
+  let camX = W / 2, camZoom = 1, camShake = 0, flashAlpha = 0, timeScale = 1, koSlow = false;
   let T = 0, lastReal = performance.now(), realNow = lastReal, running = true, animId = 0, frame = 0;
   const sparks = [], rings = [], dust = [], pops = [], bolts = [];
   const groundHits = [];
@@ -7726,12 +7726,6 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
     if (vigne && vigne.width) ctx.drawImage(vigne, 0, 0, W, H);
     drawHUD(ctx);
     drawAnnounce(ctx);
-    const lbTarget = cine ? 1 : 0;
-    lbT += (lbTarget - lbT) * Math.min(1, dtReal / 160);
-    if (lbT > .01) {
-      ctx.fillStyle = '#050408';
-      ctx.fillRect(0, 0, W, 52 * lbT); ctx.fillRect(0, H - 52 * lbT, W, 52 * lbT);
-    }
     if (flashAlpha > 0) {
       ctx.fillStyle = 'rgba(255,248,235,' + flashAlpha.toFixed(3) + ')';
       ctx.fillRect(0, 0, W, H);
@@ -18942,6 +18936,6 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a323d054ec8d9d2c',t:'MTc4NzkyNTMyOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a323e1d05d81a11c',t:'MTc4NzkyNjA0NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 >
