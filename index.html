@@ -6337,12 +6337,12 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
       comboHits: 0, comboBy: null, comboDmg: 0,
       rage: false, rageArtUsed: false,
       skill: .64 + Math.random() * .3, guardSkill: .58 + Math.random() * .3, aggro: .62 + Math.random() * .34,
-      react: 105 + Math.random() * 115, nextThink: 0, queue: [],
+      react: 88 + Math.random() * 95, nextThink: 0, queue: [],
       spdMul: 1.16 - char.spd * 0.068, powMul: 0.86 + char.pow * 0.072, rngMul: 1 + (char.rng - 3) * 0.03,
       throwTarget: null, thrownBy: null, winPose: false,
       pose: {}, trail: [], ghosts: [], hitFlash: 0, aura: 0,
       stunRun: 0, downRun: 0, airRun: 0, getupRun: 0, sideRun: 0,
-      roundStartHp: char.hp, lastBlockAt: 0, chain: 0, openingDone: false
+      roundStartHp: char.hp, lastBlockAt: 0, chain: 0, openingDone: false, lastCloseT: 0
     };
   }
   const p1 = makeFighter(p1Name, c1, 0), p2 = makeFighter(p2Name, c2, 1);
@@ -6375,7 +6375,7 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
   }
   function startBlock(f, low, T) {
     if (!canAct(f, T)) { stats.invalidActions++; return; }
-    f.crouch = !!low; f.blockUntil = T + 300 + Math.random() * 190; f.lastBlockAt = T;
+    f.crouch = !!low; f.blockUntil = T + 230 + Math.random() * 140; f.lastBlockAt = T;
     if (f.state !== 'block') setState(f, 'block', T);
   }
   function startSidestep(f, T) {
@@ -6572,9 +6572,10 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
   function aiThink(f, o, T) {
     if (!canAct(f, T) || f.charging) return;
     const dist = Math.abs(f.x - o.x);
-    f.nextThink = T + f.react * (.8 + Math.random() * .7);
+    if (dist < 140) f.lastCloseT = T;
+    f.nextThink = T + f.react * (.62 + Math.random() * .5);
     const oAttacking = o.state === 'attack' && o.attack && !o.attack.hit && T - o.attack.t0 < o.attack.move.startup + o.attack.move.active;
-    if (oAttacking && dist < o.attack.move.reach + 52 && Math.random() < f.guardSkill + .12) {
+    if (oAttacking && dist < o.attack.move.reach + 52 && Math.random() < f.guardSkill + .1) {
       startBlock(f, o.attack.move.height === 'low', T); return;
     }
     if (o.state === 'attack' && o.attack && dist < 74 && T - o.attack.t0 > o.attack.move.startup + o.attack.move.active) {
@@ -6591,48 +6592,45 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
       startAttack(f, r < .55 ? 'airjab' : 'airkick', T); return;
     }
     if (f.rage && !f.rageArtUsed && dist < 180 && (f.hp < f.maxHp * .24 || Math.random() < .45)) { startAttack(f, 'rageart', T); return; }
-    if (f.queue.length) { const nx = f.queue.shift(); if (dist < mkMove(f, nx).reach + 26) { startAttack(f, nx, T); return; } f.queue = []; }
+    if (f.queue.length) { const nx = f.queue.shift(); if (dist < mkMove(f, nx).reach + 30) { startAttack(f, nx, T); return; } f.queue = []; }
+    if (dist > 130 && T - (f.lastCloseT || 0) > 2200) {
+      f.nextThink = T + f.react * .55;
+      if (dist <= 265 && f.char.spd >= 3 && Math.random() < .45) { startAttack(f, 'dashstrike', T); return; }
+      setState(f, 'dash', T); f.vx += (o.x >= f.x ? 1 : -1) * 430; return;
+    }
     const wsum = [];
     const add = (w, fn) => wsum.push([w, fn]);
+    const canReach = key => dist <= mkMove(f, key).reach + 34;
+    const go = (key, w) => { if (key === 'dashstrike' ? dist <= 265 : canReach(key)) add(w, () => startAttack(f, key, T)); };
+    const step = (dir, w) => add(w, () => { f.state = 'walk'; f.walkDir = dir; f.stT = T; });
+    const dashIn = w => add(w, () => { f.state = 'dash'; f.vx += (o.x >= f.x ? 1 : -1) * (dist > 240 ? 430 : 380); f.stT = T; });
     if (dist > 330) {
-      add(12, () => { f.state = 'dash'; f.vx += f.facing * 380; f.stT = T; });
-      add(4, () => { f.state = 'walk'; f.walkDir = f.facing; f.stT = T; });
-      add(2, () => startSidestep(f, T));
-      if (f.char.spd >= 3) add(4, () => startAttack(f, 'dashstrike', T))
+      dashIn(13); step(f.facing, 5); add(1.5, () => startSidestep(f, T));
     } else if (dist > 195) {
-      add(6, () => { f.state = 'walk'; f.walkDir = f.facing; f.stT = T; });
-      add(7, () => { f.state = 'dash'; f.vx += f.facing * 360; f.stT = T; });
-      add(4, () => startAttack(f, 'dashstrike', T))
-      add(2, () => startAttack(f, 'bodykick', T));
-      add(2, () => startSidestep(f, T));
-      add(1.5, () => { f.state = 'walk'; f.walkDir = -f.facing; f.stT = T; });
+      dashIn(9); step(f.facing, 6);
+      go('dashstrike', 5);
+      add(1.6, () => startSidestep(f, T));
+      step(-f.facing, .7);
     } else if (dist > 92) {
-      add(3.2, () => startAttack(f, 'jab', T));
-      add(2.6, () => startAttack(f, 'cross', T));
-      add(2.2, () => startAttack(f, 'bodykick', T));
-      add(2.4, () => startAttack(f, 'upper', T));
-      add(1.7, () => startAttack(f, 'highkick', T));
-      add(1.6, () => startAttack(f, 'sweep', T));
-      add(1.2, () => { f.state = 'walk'; f.walkDir = -f.facing; f.stT = T; });
-      add(1.2, () => startSidestep(f, T));
-      if (dist < 150 && f.char.throwMaster) add(1.6, () => startAttack(f, 'throw', T));
+      go('jab', 3.4); go('cross', 2.8); go('bodykick', 2.4); go('upper', 2.6); go('highkick', 1.9); go('sweep', 1.8);
+      go('dashstrike', 2.4);
+      if (f.char.throwMaster) go('throw', 2.0); else go('throw', 1.3);
+      step(-f.facing, .8); add(1.1, () => startSidestep(f, T));
     } else {
-      add(3, () => startAttack(f, 'jab', T));
-      add(2.2, () => startAttack(f, 'upper', T));
-      add(1.8, () => startAttack(f, 'sweep', T));
-      if (f.char.throwMaster) add(3.4, () => startAttack(f, 'throw', T)); else add(2.0, () => startAttack(f, 'throw', T));
-      add(2, () => { f.state = 'walk'; f.walkDir = -f.facing; f.stT = T; });
-      add(1.4, () => startSidestep(f, T));
-      add(1.4, () => startAttack(f, 'cross', T));
+      go('jab', 3.4); go('upper', 2.6); go('sweep', 2.0); go('cross', 2.4);
+      if (f.char.throwMaster) go('throw', 3.0); else go('throw', 1.8);
+      step(-f.facing, 1.1); add(1.2, () => startSidestep(f, T));
     }
     let tot = 0; for (const [w] of wsum) tot += w;
+    if (tot <= 0) { setState(f, 'dash', T); f.vx += f.facing * 400; return; }
     let r = Math.random() * tot;
     for (const [w, fn] of wsum) { r -= w; if (r <= 0) { fn(); break; } }
-    if (f.state === 'attack' && (f.attack.key === 'jab' || f.attack.key === 'cross') && Math.random() < .5) {
+    if (f.state === 'attack' && (f.attack.key === 'jab' || f.attack.key === 'cross') && Math.random() < .65) {
       f.queue = [f.attack.key === 'jab' ? 'cross' : (Math.random() < .5 ? 'upper' : 'highkick')];
       f.nextThink = T + f.attack.move.startup + f.attack.move.active + 40;
     }
   }
+
   const G = 1750, FRICTION = 280, WALK_SPD = f => 150 + f.char.spd * 32;
   function hitSpark(x, y, power, color) {
     const n = Math.min(14, 6 + Math.round(power * 4));
@@ -6786,7 +6784,7 @@ function startTekkenFight(p1Name, p2Name, pick1, pick2) {
       f.hp = f.maxHp; f.hpShow = f.hp; f.rage = f.hp <= f.maxHp * .3; f.rageArtUsed = false; f.trail = []; f.ghosts = [];
       f.roundStartHp = f.hp;
     });
-    if (prevWinner) { prevWinner.hp = Math.max(18, Math.round(prevWinner.roundEndHp * .45)); prevWinner.hpShow = prevWinner.hp; prevWinner.rage = prevWinner.hp <= prevWinner.maxHp * .3; }
+    if (prevWinner) { const healed = Math.round(prevWinner.roundEndHp + (prevWinner.maxHp - prevWinner.roundEndHp) * .55); prevWinner.hp = Math.max(Math.round(prevWinner.maxHp * .4), healed); prevWinner.hpShow = prevWinner.hp; prevWinner.rage = prevWinner.hp <= prevWinner.maxHp * .3; }
   }
   function beginRound(n) {
     roundNum = n; resetForRound();
@@ -18633,6 +18631,6 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3236324ec84fe01',t:'MTc4NzkyMDg1NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3237789cc3e9f74',t:'MTc4NzkyMTY5MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 >
