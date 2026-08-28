@@ -1478,7 +1478,8 @@
       <div class="text-6xl mb-4">🏆</div>
       <div class="text-2xl text-[#fde047] font-bold mb-2">DIDDY 2.0 TOP RATING</div>
       <div id="diddy2-winner-name" class="text-5xl md:text-7xl font-black text-white mb-2"></div>
-      <div id="diddy2-winner-score" class="text-3xl text-[#fde047] font-bold mb-4"></div>
+      <div id="diddy2-winner-score" class="text-3xl text-[#fde047] font-bold mb-2"></div>
+      <div id="diddy2-winner-verdict" class="text-base md:text-lg text-gray-300 font-semibold mb-4 px-6"></div>
       <div class="mt-6 flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-lg font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-lg font-bold">✕ Close</button></div>
     </div>
   </div>
@@ -16538,10 +16539,94 @@ function startDiddy2(names) {
     durationScale: 0.58,
     layoutBottles: layoutDiddy2TableBottles,
     drawTable: drawDiddy2DisplayTable,
-    audioReaction: playDiddy2Reaction
+    audioReaction: playDiddy2Reaction,
+    comedy: true
   });
 }
 
+/* ---------- DIDDY 2.0 COMEDY KIT (synth gag SFX + funny text pools) ---------- */
+const DIDDY2_GAG_TEXTS = ['MODS CLIP THAT \ud83d\ude2d', 'BRO IS COOKING \ud83d\udc68\u200d\ud83c\udf73', 'SHEEEESH \ud83d\udd25', 'not the oil review \ud83d\udc80', 'THE SUIT \ud83d\ude14', 'certified? by WHO \ud83d\ude02', 'someone stop him \ud83d\udea8', 'POV: peak cinema', 'this stream is COOKED', 'HE COOKING OR HE BURNING', 'W suit tho', 'bro is built different', 'the paperwork alone \ud83d\udcc4', 'quality inspection arc'];
+const DIDDY2_CHAT_POOL = ['kekw', 'MODS', 'CLIP IT', 'brooo \ud83d\ude2d', 'W rating', 'L oil', 'STOPPP', 'so real for that', 'quality control \ud83d\udc80', 'the inspection unit has arrived', 'count the bottles chat', 'oil sommelier arc', 'chat is this real', 'no way he rates it 10'];
+const DIDDY2_SCENT_TAGS = ['notes of gym sock & victory', 'hints of Saturday-morning cartoon', 'essence of an unranked lobby', "smells like dad's garage", 'top note: regret', 'vintage 2024, locker-aged', 'smells like free wifi', 'essence of expired coupons', 'aroma: fresh launcher, no cap', "smells like a W in progress"];
+const DIDDY2_INSPECT_LINES = ['\ud83e\uddd0 Inspecting the lineup like a pro...', '\ud83d\uddec Running science on these bottles...', '\ud83e\uddd0 Checking viscosity, vibes, and shine...', '\ud83c\udf77 Swirling like a true connoisseur...', '\ud83e\uddd0 The nose knows...'];
+const DIDDY2_VERDICTS = {
+  bad: ['THE SUIT IS UPSET \ud83d\ude24', 'instant regret bottled \ud83e\udd22', 'calling the clean-up crew \ud83d\udea8'],
+  mid: ['perfectly... medium \u2705', "it exists. that's it.", 'MID. certified. \ud83d\udd7f'],
+  good: ['SMOOTH operator \ud83d\ude0e', 'the shine was SHINING \u2728', 'suit approved \ud83d\udc53'],
+  great: ['CERTIFIED FRESH \u2705', 'historical. send clips. \ud83c\udfc6', 'the suit demands an encore \ud83d\udc56']
+};
+function diddy2Hash(str) { let h = 0; for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) & 0x7fffffff; return Math.abs(h); }
+const DIDDY2_BIOS = ['once survived a flood \ud83c\udf0a', 'shaken, never stirred', 'voted most likely to spill', 'was lost at sea for 3 weeks', 'has 47 identical siblings', 'survived a 2-meter drop. barely.', 'certified by an unlicensed inspector', 'once fooled a customs officer', 'the last of its batch \ud83e\uddf8', 'allegedly. according to the label.'];
+const DIDDY2_CHAT_USERS = ['oil_bro', 'suit_inspector', 'mod_check', 'definitely_not_a_mod', 'gluglord', 'bottlefan42', 'smoothie_king', 'chat_cleaner', 'rate_me_daddy', 'clip_farmer'];
+function diddy2ClampN(v, a, b) { return Math.max(a, Math.min(b, v)); }
+function diddy2MilestonePop(r) {
+  if (r === 6.9) return '6.9... NICE \ud83d\ude0f';
+  if (r === 4.2) return '4.2 \ud83c\udf3f special batch detected';
+  if (r === 7) return 'LUCKY 7\u20e3';
+  if (r >= 9.5) return 'ALMOST. PERFECT. \ud83d\udc80';
+  if (r <= 3.1) return 'lower than my wifi \ud83d\udcf6';
+  return null;
+}
+function diddy2VerdictFor(r) {
+  const tier = r < 5 ? 'bad' : r < 7.5 ? 'mid' : r < 9 ? 'good' : 'great';
+  const pool = DIDDY2_VERDICTS[tier];
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+function diddy2GagSfx(kind) {
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!DIDDY2_AUDIO_CONTEXT) { try { DIDDY2_AUDIO_CONTEXT = new AC(); } catch (e) { return; } }
+    const ac = DIDDY2_AUDIO_CONTEXT;
+    if (!ac || ac.state === 'suspended') { if (ac) ac.resume().catch(() => {}); }
+    if (!ac) return;
+    const t = ac.currentTime;
+    if (kind === 'drumroll') {
+      for (let i = 0; i < 15; i++) {
+        const b = ac.createBuffer(1, 2205, ac.sampleRate), d = b.getChannelData(0);
+        for (let j = 0; j < d.length; j++) d[j] = (Math.random() * 2 - 1) * Math.exp(-j / 420);
+        const src = ac.createBufferSource(); src.buffer = b;
+        const f = ac.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 170 + Math.random() * 130; f.Q.value = 1.4;
+        const g = ac.createGain(); g.gain.value = .13;
+        src.connect(f); f.connect(g); g.connect(ac.destination); src.start(t + i * .07);
+      }
+    } else if (kind === 'sad') {
+      [[233, 0], [220, .42], [208, .84], [180, 1.4]].forEach(([fq, dt]) => {
+        const o = ac.createOscillator(), g = ac.createGain(); o.type = 'sawtooth';
+        o.frequency.setValueAtTime(fq, t + dt); o.frequency.linearRampToValueAtTime(fq * .93, t + dt + .4);
+        g.gain.setValueAtTime(0.0001, t + dt); g.gain.linearRampToValueAtTime(.11, t + dt + .05); g.gain.linearRampToValueAtTime(0.0001, t + dt + .46);
+        o.connect(g); g.connect(ac.destination); o.start(t + dt); o.stop(t + dt + .5);
+      });
+    } else if (kind === 'choir') {
+      [523, 659, 784, 1046].forEach((fq, i) => {
+        const o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine'; o.frequency.value = fq;
+        g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(.07, t + .25 + i * .14); g.gain.linearRampToValueAtTime(0.0001, t + 1.6);
+        o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + 1.7);
+      });
+    } else if (kind === 'horn') {
+      [[392, 0], [392, .22], [523, .46], [659, .74]].forEach(([fq, dt]) => {
+        const o = ac.createOscillator(), g = ac.createGain(); o.type = 'sawtooth'; o.frequency.value = fq;
+        g.gain.setValueAtTime(0.0001, t + dt); g.gain.linearRampToValueAtTime(.1, t + dt + .03); g.gain.setValueAtTime(.1, t + dt + .18); g.gain.linearRampToValueAtTime(0.0001, t + dt + .24);
+        o.connect(g); g.connect(ac.destination); o.start(t + dt); o.stop(t + dt + .28);
+      });
+    } else if (kind === 'boing') {
+      const o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine';
+      o.frequency.setValueAtTime(340, t); o.frequency.exponentialRampToValueAtTime(72, t + .34);
+      g.gain.setValueAtTime(.16, t); g.gain.exponentialRampToValueAtTime(0.0001, t + .4);
+      o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + .45);
+    } else if (kind === 'whistle') {
+      const o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine';
+      o.frequency.setValueAtTime(480, t); o.frequency.exponentialRampToValueAtTime(1250, t + .5);
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(.07, t + .08); g.gain.linearRampToValueAtTime(0.0001, t + .6);
+      o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + .65);
+    } else if (kind === 'pop') {
+      const o = ac.createOscillator(), g = ac.createGain(); o.type = 'square';
+      o.frequency.setValueAtTime(880, t); o.frequency.exponentialRampToValueAtTime(180, t + .09);
+      g.gain.setValueAtTime(.09, t); g.gain.exponentialRampToValueAtTime(0.0001, t + .12);
+      o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + .14);
+    }
+  } catch (e) {}
+}
 function startOilRatingGame(names, options) {
   const prefix = options.prefix;
   const drawHostFn = options.drawHost;
@@ -16554,6 +16639,7 @@ function startOilRatingGame(names, options) {
   const layoutBottlesFn = options.layoutBottles || layoutOilBottles;
   const drawTableFn = options.drawTable || null;
   const audioReactionFn = options.audioReaction || null;
+  const comedy = options.comedy === true;
   showPhase(prefix, 'play');
   const canvas = document.getElementById(prefix + '-canvas');
   const ctx = canvas.getContext('2d');
@@ -16572,6 +16658,7 @@ function startOilRatingGame(names, options) {
   let stage = 'spawn', stageT = 0, selected = null;
   let oilDrops = [], sparkles = [], confetti = [];
   let ratingUI = null, finale = null;
+  let gagPops = [], chatFeed = [], moonwalk = false, bigGlugDone = false, frameChatCounter = 0, susT = 0, finaleShake = 0;
 
   function pickRandomUntested() {
     const left = untested.filter(b => !b.tested);
@@ -16605,9 +16692,13 @@ function startOilRatingGame(names, options) {
     selected = pickRandomUntested();
     if (!selected) { stage = 'finale_pause'; stageT = 0; return; }
     selected.pendingRating = genRating();
+    if (comedy && !selected.scent) selected.scent = DIDDY2_SCENT_TAGS[diddy2Hash(selected.name) % DIDDY2_SCENT_TAGS.length];
+    if (comedy && !selected.bio) selected.bio = DIDDY2_BIOS[diddy2Hash(selected.name + 'b') % DIDDY2_BIOS.length];
     bottles.forEach(b => { b.glow = b === selected ? 1 : 0; b.dim = b === selected ? 0 : 0.35; });
     stage = 'think'; stageT = 0;
-    feed.textContent = '🤔 Inspecting bottles... (' + (untested.filter(b => !b.tested).length) + ' left)';
+    feed.textContent = comedy
+      ? DIDDY2_INSPECT_LINES[Math.floor(Math.random() * DIDDY2_INSPECT_LINES.length)] + ' (' + (untested.filter(b => !b.tested).length) + ' left)'
+      : '🤔 Inspecting bottles... (' + (untested.filter(b => !b.tested).length) + ' left)';
   }
 
   function finishWinner() {
@@ -16621,6 +16712,10 @@ function startOilRatingGame(names, options) {
     showPhase(prefix, 'winner');
     document.getElementById(prefix + '-winner-name').textContent = winner;
     document.getElementById(prefix + '-winner-score').textContent = '⭐ ' + (ratings[winner] || best).toFixed(1) + ' / 10';
+    if (comedy) {
+      const verdictEl = document.getElementById('diddy2-winner-verdict');
+      if (verdictEl) verdictEl.textContent = '🧴 ' + diddy2VerdictFor(ratings[winner] || best) + ' — officially the smoothest bottle of the night.';
+    }
   }
 
   function updateStage() {
@@ -16648,6 +16743,11 @@ function startOilRatingGame(names, options) {
       const look = Math.sin(stageT * 0.08) * 0.08;
       host.pose = { expr: 'think', thought: true, lean: look, armL: -0.4 + Math.sin(stageT * 0.1) * 0.2, armR: 0.3 };
       if (sel) sel.wobble = Math.sin(stageT * 0.2) * 0.03 * (stageT > dur(40) ? 2 : 0.5);
+      if (comedy && stageT === dur(30) && Math.random() < .45) {
+        diddy2GagSfx('boing');
+        gagPops.push({ x: host.x, y: host.y - 330, txt: 'ACHOO! \ud83e\udd27', life: 1, big: true });
+        bottles.forEach(b => { b.wobble = .12; });
+      }
       cam.tz = 1; cam.tx = 0; cam.ty = 0;
       if (stageT > dur(75)) { stage = 'point'; stageT = 0; }
       return;
@@ -16680,9 +16780,14 @@ function startOilRatingGame(names, options) {
       const ty = fullBodyHost ? Math.max(H * 0.78, sel.y + 70) : sel.y + 70;
       host.x = OIL_EASE.lerp(host.x, tx, 0.1);
       host.y = OIL_EASE.lerp(host.y, ty, 0.1);
-      const walk = stageT * 0.48;
-      host.pose = { expr: 'neutral', armR: -0.5, armL: 0.4, lean: Math.sin(walk) * 0.045, bounce: -Math.abs(Math.sin(walk)) * 6 };
-      if (stageT === 1 && fullBodyHost) feed.textContent = '🚶 Walking up to ' + sel.name + '\'s bottle...';
+      if (comedy && stageT === 1) moonwalk = Math.random() < 0.32;
+      const walk = stageT * (moonwalk ? 0.3 : 0.48);
+      host.pose = moonwalk
+        ? { expr: 'excited', armR: -0.9, armL: 0.9, lean: -0.06 - Math.sin(walk) * 0.05, bounce: -Math.abs(Math.cos(walk)) * 5 }
+        : { expr: 'neutral', armR: -0.5, armL: 0.4, lean: Math.sin(walk) * 0.045, bounce: -Math.abs(Math.sin(walk)) * 6 };
+      if (stageT === 1 && fullBodyHost) feed.textContent = moonwalk
+        ? '🌚 MOONWALKING to ' + sel.name + '\'s bottle...'
+        : '🚶 Walking up to ' + sel.name + '\'s bottle...';
       if (stageT > dur(48)) { stage = 'grab'; stageT = 0; }
       return;
     }
@@ -16700,6 +16805,18 @@ function startOilRatingGame(names, options) {
     }
 
     if (stage === 'inspect' && sel) {
+      if (comedy && stageT === 1) susT = Math.random() < .3 ? dur(24) : 0;
+      if (susT > 0) {
+        susT--;
+        host.pose = { expr: 'think', thought: true, armR: -1.2, bottleHeld: sel, bottleX: 32, bottleY: -125, bottleRot: 0, lean: Math.sin(stageT * .3) * .03 };
+        if (susT === dur(24) - 8) {
+          diddy2GagSfx('whistle');
+          gagPops.push({ x: host.x + 90, y: host.y - 300, txt: '\ud83d\udc40 SUS MOMENT', life: 1, big: true });
+          feed.textContent = '\ud83d\udc40 Chat, something about this bottle is OFF...';
+        }
+        if (stageT > dur(38)) { stage = 'pour'; stageT = 0; susT = 0; host.pose.oilShine = 0; }
+        return;
+      }
       host.pose = {
         expr: 'think', thought: stageT < dur(20), armR: -1.2,
         bottleHeld: sel, bottleX: 32, bottleY: -125, bottleRot: -0.35 + Math.sin(stageT * 0.12) * 0.08
@@ -16712,6 +16829,16 @@ function startOilRatingGame(names, options) {
       if (stageT === 1 && audioReactionFn) {
         const spokenReaction = audioReactionFn(sel.pendingRating);
         if (spokenReaction) feed.textContent = '🎙️ “' + spokenReaction + '”';
+      }
+      if (comedy && stageT === 1) diddy2GagSfx('whistle');
+      if (comedy && !bigGlugDone && stageT === dur(55)) {
+        bigGlugDone = true;
+        diddy2GagSfx('pop');
+        for (let i = 0; i < 10; i++) oilDrops.push({ x: host.x + 15 + (Math.random() - .5) * 20, y: host.y - 168, vx: (Math.random() - .5) * 5, vy: 2 + Math.random() * 3, r: 3 + Math.random() * 4, life: 1, kind: 'drop' });
+        gagPops.push({ x: host.x + 40, y: host.y - 250, txt: 'GLUG GLUG 🫗', life: 1, big: true });
+      }
+      if (comedy && (stageT === dur(20) || stageT === dur(80))) {
+        gagPops.push({ x: host.x + (Math.random() < .5 ? -120 : 90), y: host.y - 240 - Math.random() * 60, txt: DIDDY2_GAG_TEXTS[Math.floor(Math.random() * DIDDY2_GAG_TEXTS.length)], life: 1 });
       }
       const p = Math.min(1, stageT / dur(95));
       const tilt = -0.2 - p * 1.35;
@@ -16729,11 +16856,24 @@ function startOilRatingGame(names, options) {
 
     if (stage === 'rate_think' && sel) {
       host.pose = { expr: 'think', thought: true, armR: -0.6, bottleHeld: sel, bottleX: 40, bottleY: -110, bottleRot: 0.1, oilShine: host.pose.oilShine || 0.7 };
+      if (comedy && stageT === 1) { diddy2GagSfx('drumroll'); feed.textContent = '🥁 DRUMROLL PLEASE...'; }
+      if (comedy && stageT === dur(20)) host.pose.lean = -0.05;
       if (stageT > dur(40)) {
         const r = sel.pendingRating != null ? sel.pendingRating : genRating();
         ratings[sel.name] = r;
         sel.rating = r;
-        ratingUI = { value: 0, target: r, t: 0, expr: ratingReaction(r) };
+        ratingUI = { value: 0, target: r, t: 0, expr: ratingReaction(r), stamp: comedy ? diddy2VerdictFor(r) : null };
+        if (comedy) {
+          bigGlugDone = false;
+          if (r < 5) {
+            diddy2GagSfx('sad'); diddy2GagSfx('boing');
+            for (let i = 0; i < 14; i++) oilDrops.push({ x: host.x + (Math.random() - .5) * 30, y: host.y - 240, vx: (Math.random() - .5) * 9, vy: -3 - Math.random() * 4, r: 2 + Math.random() * 3.5, life: 1, kind: 'drop' });
+            gagPops.push({ x: host.x, y: host.y - 300, txt: '🤮 SPIT TAKE!', life: 1, big: true });
+          }
+          else if (r < 7.5) diddy2GagSfx('pop');
+          else if (r < 9) { diddy2GagSfx('choir'); gagPops.push({ x: host.x + 70, y: host.y - 280, txt: 'SHEEEESH 🔥', life: 1 }); }
+          else { diddy2GagSfx('choir'); diddy2GagSfx('horn'); gagPops.push({ x: host.x, y: host.y - 310, txt: '👑 GOATED WITH THE SAUCE', life: 1, big: true }); }
+        }
         stage = 'rate_reveal'; stageT = 0;
       }
       return;
@@ -16754,6 +16894,10 @@ function startOilRatingGame(names, options) {
             r: 2 + Math.random() * 3, life: 1, color: ratingUI.target >= 8 ? '#fde047' : '#94a3b8'
           });
         }
+      }
+      if (comedy && ratingUI.t === dur(30)) {
+        const m = diddy2MilestonePop(ratingUI.target);
+        if (m) { gagPops.push({ x: host.x - 100, y: host.y - 310, txt: m, life: 1, big: true }); diddy2GagSfx('pop'); }
       }
       if (ratingUI.t > dur(65) && Math.abs(ratingUI.value - ratingUI.target) < 0.05) {
         ratingUI.value = ratingUI.target;
@@ -16790,15 +16934,29 @@ function startOilRatingGame(names, options) {
       if (stageT > dur(55)) {
         let best = -1, winB = bottles[0];
         bottles.forEach(b => { if ((ratings[b.name] || 0) >= best) { best = ratings[b.name] || 0; winB = b; } });
-        finale = { bottle: winB, score: best, t: 0 };
+        finale = { bottle: winB, score: best, t: 0, stamp: comedy ? diddy2VerdictFor(best) : null };
         stage = 'finale'; stageT = 0;
-        feed.textContent = '🏆 AND THE WINNER IS...';
+        if (comedy) diddy2GagSfx('horn');
+        feed.textContent = comedy ? '🏆 AND THE WINNER IS... (the suit approves)' : '🏆 AND THE WINNER IS...';
       }
       return;
     }
 
     if (stage === 'finale' && finale) {
       finale.t++;
+      if (comedy) {
+        if (finale.t === 18 && !finale.misfired) {
+          finale.misfired = true;
+          if (Math.random() < .45) {
+            diddy2GagSfx('pop');
+            finaleShake = 10;
+            gagPops.push({ x: finale.bottle.x, y: finale.bottle.y - 90, txt: 'CONFETTI CANNON MISFIRED \ud83c\udf89', life: 1, big: true });
+            for (let i = 0; i < 40; i++) confetti.push({ x: finale.bottle.x + (Math.random() - .5) * 60, y: finale.bottle.y - 60, vx: (Math.random() - .5) * 14, vy: -6 - Math.random() * 7, r: 3 + Math.random() * 5, life: 1, color: ['#fde047', '#22c55e', '#fff', '#f472b6'][Math.floor(Math.random() * 4)], rot: Math.random() * 6, vr: (Math.random() - .5) * .3 });
+          }
+        }
+        if (finale.t === 30 && !finale.envelope) { finale.envelope = true; diddy2GagSfx('drumroll'); }
+        if (finale.t === 92 && !finale.envelopeOpen) { finale.envelopeOpen = true; diddy2GagSfx('horn'); }
+      }
       const wb = finale.bottle;
       bottles.forEach(b => { b.dim = b === wb ? 0 : 0.72; b.glow = b === wb ? 1.2 : 0; });
       cam.tx = OIL_EASE.lerp(cam.tx, fullBodyHost ? 0 : (W / 2 - wb.x) * 0.9, 0.04);
@@ -16806,13 +16964,14 @@ function startOilRatingGame(names, options) {
       cam.tz = OIL_EASE.lerp(cam.tz, finaleZoom, 0.035);
       wb.wobble = Math.sin(finale.t * 0.2) * 0.08;
       host.pose = { expr: 'wow', armR: -1.0, pointX: wb.x, pointY: wb.y, lean: 0.1 };
-      if (finale.t % 6 === 0) {
+      if (finale.t % (comedy ? 3 : 6) === 0) {
         confetti.push({
           x: wb.x, y: wb.y - 40, vx: (Math.random() - 0.5) * 5, vy: -3 - Math.random() * 4,
           r: 3 + Math.random() * 4, life: 1, color: ['#fde047', '#22c55e', '#fff', '#f472b6'][Math.floor(Math.random() * 4)],
           rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.2
         });
       }
+      if (comedy && finale.t === 40) gagPops.push({ x: wb.x, y: wb.y - 120, txt: 'THE SUIT HAS SPOKEN 🫡', life: 1, big: true });
       if (finale.t > dur(110)) finishWinner();
     }
   }
@@ -16828,6 +16987,7 @@ function startOilRatingGame(names, options) {
     ctx.translate(W / 2, H / 2);
     ctx.scale(cam.zoom, cam.zoom);
     ctx.translate(-W / 2 + cam.x, -H / 2 + cam.y);
+    if (finaleShake > 0) { ctx.translate((Math.random() - .5) * finaleShake, (Math.random() - .5) * finaleShake); finaleShake -= .45; }
 
     if (drawTableFn) drawTableFn(ctx, bottles, W, H);
     bottles.forEach(b => drawOilBottle(ctx, b, { selected: b === selected && stage !== 'spawn' }));
@@ -16859,13 +17019,100 @@ function startOilRatingGame(names, options) {
     });
     confetti = confetti.filter(c => c.life > 0).slice(0, 100);
 
+    if (comedy) {
+      frameChatCounter++;
+      if (frameChatCounter % 95 === 0) {
+        chatFeed.push({ txt: DIDDY2_CHAT_POOL[Math.floor(Math.random() * DIDDY2_CHAT_POOL.length)], life: 1, user: DIDDY2_CHAT_USERS[Math.floor(Math.random() * DIDDY2_CHAT_USERS.length)] });
+        if (chatFeed.length > 4) chatFeed.shift();
+      }
+      chatFeed.forEach(cl => { cl.life -= 0.0025; });
+      chatFeed = chatFeed.filter(cl => cl.life > 0);
+    }
+    gagPops.forEach(g => { g.y -= 0.8; g.life -= g.big ? 0.006 : 0.009; });
+    gagPops = gagPops.filter(g => g.life > 0).slice(0, 6);
+
     if (ratingUI && selected) {
       const bounce = ratingUI.t > dur(50) ? OIL_EASE.outElastic(Math.min(1, (ratingUI.t - dur(50)) / 20)) * 8 : 0;
       ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(host.x - 90, host.y - 250 - bounce, 180, 58, 12); ctx.fill();
       ctx.fillStyle = '#fde047'; ctx.font = 'bold 36px Inter'; ctx.textAlign = 'center';
       ctx.fillText(ratingUI.value.toFixed(1) + ' / 10', host.x, host.y - 212 - bounce);
+      if (ratingUI.stamp && ratingUI.t > dur(52)) {
+        ctx.save();
+        ctx.translate(host.x + 96, host.y - 246 - bounce);
+        ctx.rotate(-0.18);
+        ctx.font = 'bold 13px Inter';
+        const sw = ctx.measureText(ratingUI.stamp).width + 18;
+        ctx.fillStyle = ratingUI.target >= 8 ? 'rgba(34,197,94,.92)' : ratingUI.target >= 5 ? 'rgba(250,204,21,.92)' : 'rgba(239,68,68,.92)';
+        ctx.beginPath(); ctx.roundRect(-sw / 2, -13, sw, 26, 6); ctx.fill();
+        ctx.fillStyle = '#0c0c10'; ctx.fillText(ratingUI.stamp, 0, 5);
+        ctx.restore();
+      }
     }
 
+    if (comedy && selected && (stage === 'zoom' || stage === 'inspect' || stage === 'grab' || stage === 'approach')) {
+      ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center';
+      const tw2 = ctx.measureText('👃 ' + selected.scent).width + 16;
+      ctx.fillStyle = 'rgba(0,0,0,0.62)'; ctx.beginPath(); ctx.roundRect(selected.x - tw2 / 2, selected.y + 14, tw2, 20, 6); ctx.fill();
+      ctx.fillStyle = '#fef08a'; ctx.fillText('👃 ' + selected.scent, selected.x, selected.y + 28);
+      const tb = ctx.measureText('📖 ' + selected.bio).width + 16;
+      ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(selected.x - tb / 2, selected.y + 38, tb, 20, 6); ctx.fill();
+      ctx.fillStyle = '#c7d2fe'; ctx.fillText('📖 ' + selected.bio, selected.x, selected.y + 52);
+    }
+
+    if (comedy) {
+      gagPops.forEach(g => {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, Math.min(1, g.life * 1.4));
+        ctx.font = 'bold ' + (g.big ? 19 : 14) + 'px Inter'; ctx.textAlign = 'center';
+        ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(8,8,12,.9)';
+        ctx.strokeText(g.txt, g.x, g.y); ctx.fillStyle = g.big ? '#fde047' : '#fff';
+        ctx.fillText(g.txt, g.x, g.y);
+        ctx.restore();
+      });
+      ctx.save();
+      ctx.textAlign = 'right';
+      chatFeed.forEach((cl, i) => {
+        const cy = H - 24 - (chatFeed.length - 1 - i) * 20;
+        ctx.globalAlpha = Math.max(0, Math.min(1, cl.life * 1.6)) * .85;
+        ctx.font = 'bold 12px Inter';
+        ctx.fillStyle = 'rgba(0,0,0,.45)';
+        const cw = ctx.measureText(cl.user + ': ' + cl.txt).width + 16;
+        ctx.fillRect(W - cw - 12, cy - 13, cw, 18);
+        ctx.fillStyle = '#4ade80'; ctx.fillText(cl.user + ':', W - ctx.measureText(': ' + cl.txt).width - 14, cy);
+        ctx.fillStyle = '#e5e7eb'; ctx.fillText(cl.txt, W - 14, cy);
+      });
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    }
+
+    if (stage === 'finale' && finale && comedy && finale.envelope) {
+      const wb = finale.bottle;
+      const t = finale.t, openT = diddy2ClampN((t - 92) / 12, 0, 1);
+      const inT = diddy2ClampN((t - 30) / 14, 0, 1);
+      const ex = wb.x, ey = wb.y - wb.h - 130, ew = 150, eh = 92;
+      const wob = Math.sin(t * .25) * (1 - openT) * .06;
+      ctx.save();
+      ctx.translate(ex, ey);
+      ctx.rotate(wob);
+      ctx.scale(inT, inT);
+      ctx.fillStyle = '#f5f0e6'; ctx.strokeStyle = '#b45309'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.roundRect(-ew / 2, -eh / 2, ew, eh, 8); ctx.fill(); ctx.stroke();
+      if (openT > 0) {
+        ctx.fillStyle = '#fff7d6';
+        const rise = openT * eh * .8;
+        ctx.beginPath(); ctx.roundRect(-ew / 2 + 14, eh / 2 - rise, ew - 28, rise, 4); ctx.fill();
+        ctx.fillStyle = '#0c0c10'; ctx.font = 'bold ' + Math.min(17, 11 + openT * 7) + 'px Inter'; ctx.textAlign = 'center';
+        ctx.fillText('🏆 ' + wb.name, 0, eh / 2 - rise / 2 + 5);
+      }
+      ctx.fillStyle = '#eab308';
+      ctx.beginPath(); ctx.moveTo(-ew / 2, -eh / 2); ctx.lineTo(0, openT > 0 ? -eh / 2 - 16 * openT : 0); ctx.lineTo(ew / 2, -eh / 2); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = '#b45309'; ctx.stroke();
+      if (openT >= 1 && Math.sin(t * .4) > 0) {
+        ctx.font = 'bold 15px Inter'; ctx.fillStyle = '#fde047'; ctx.textAlign = 'center';
+        ctx.fillText('THE ENVELOPE HAS SPOKEN', 0, -eh / 2 - 30);
+      }
+      ctx.restore();
+    }
     if (stage === 'finale' && finale) {
       const wb = finale.bottle;
       ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.roundRect(wb.x - 110, wb.y - wb.h - 75, 220, 52, 12); ctx.fill();
@@ -18936,6 +19183,6 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a323e1d05d81a11c',t:'MTc4NzkyNjA0NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
 >
