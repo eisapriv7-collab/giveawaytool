@@ -404,6 +404,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <button onclick="launchBoxingMatch()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#dc2626,#991b1b);">🥊 Boxing Match</button>
         <button onclick="launchSwordDuel()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#64748b,#1e293b);">⚔️ Sword Duel</button>
+        <button onclick="launchTekkenFight()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f2cf63,#991b1b);color:#1c1917;">🥋 Tekken 7 Arena</button>
       </div>
     </div>
     </main>
@@ -2841,7 +2842,7 @@ function initGamePreviewHover() {
 
 /* ==================== POPUP LAUNCHER ==================== */
 function openGamePopup(gameType) {
-  const needsTwo = ['boxing','sword'];
+  const needsTwo = ['boxing','sword','tekken'];
   if (gameType !== 'race' && !entrants.size) { alert('No entrants yet! Add some test users or connect chat.'); return; }
   if (needsTwo.includes(gameType)) {
     if (entrants.size < 2) { alert('Need at least 2 entrants for a 1v1!'); return; }
@@ -16823,6 +16824,7 @@ const RETIRED_GAME_IDS = new Set([
       else if (game === 'bomb') runBombRoulette();
       else if (game === 'boxing') runBoxingMatch();
       else if (game === 'sword') runSwordDuel();
+      else if (game === 'tekken') runTekkenFight();
     }, 200);
     return;
   }
@@ -18509,6 +18511,6 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-title" class="game-preview-title"></div>
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a32305cd1b0097a7',t:'MTc4NzkxNzAzMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3230f109c4afce2',t:'MTc4NzkxNzQxMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 >
