@@ -17049,6 +17049,27 @@ function startOilRatingGame(names, options) {
     cam.zoom = OIL_EASE.lerp(cam.zoom, cam.tz, 0.1);
 
     drawBackgroundFn(ctx, W, H, frame);
+    if (comedy) {
+      for (let i = 0; i < 2; i++) {
+        const sx = W * (0.32 + i * 0.36) + Math.sin(frame / (210 + i * 90)) * 60;
+        const beam = ctx.createLinearGradient(sx, 0, sx, H);
+        beam.addColorStop(0, 'rgba(253,224,71,.085)');
+        beam.addColorStop(1, 'rgba(253,224,71,0)');
+        ctx.fillStyle = beam;
+        ctx.beginPath();
+        ctx.moveTo(sx - 26, -2); ctx.lineTo(sx + 26, -2);
+        ctx.lineTo(sx + 210, H); ctx.lineTo(sx - 210, H);
+        ctx.closePath(); ctx.fill();
+      }
+      for (let i = 0; i < 26; i++) {
+        const dx = (i * 173 + frame * (0.2 + (i % 3) * 0.12)) % (W + 40) - 20;
+        const dy = (i * 211 + frame * (0.35 + (i % 4) * 0.1)) % (H + 40) - 20;
+        ctx.globalAlpha = 0.05 + 0.06 * Math.abs(Math.sin(frame / 47 + i));
+        ctx.fillStyle = '#fef9c3';
+        ctx.fillRect(dx, dy, 2, 2);
+      }
+      ctx.globalAlpha = 1;
+    }
     ctx.save();
     ctx.translate(W / 2, H / 2);
     ctx.scale(cam.zoom, cam.zoom);
@@ -17069,6 +17090,18 @@ function startOilRatingGame(names, options) {
       ctx.beginPath(); ctx.ellipse(d.x, d.y, d.r, d.r * 1.3, 0, 0, Math.PI * 2); ctx.fill();
     });
     oilDrops = oilDrops.filter(d => d.life > 0 && d.y < H + 20).slice(0, 120);
+    if (comedy && stage === 'pour') {
+      const lz = { x: host.x, y: host.y - 55 };
+      const g2 = ctx.createRadialGradient(lz.x, lz.y, 2, lz.x, lz.y, 90);
+      g2.addColorStop(0, 'rgba(254,249,195,.28)');
+      g2.addColorStop(1, 'rgba(254,249,195,0)');
+      ctx.fillStyle = g2;
+      ctx.beginPath(); ctx.arc(lz.x, lz.y, 90, 0, Math.PI * 2); ctx.fill();
+      if (frame % 3 === 0) sparkles.push({ x: host.x + (Math.random() - .5) * 70, y: host.y - 60 + (Math.random() - .5) * 40, vx: (Math.random() - .5) * 1.2, vy: -0.4 - Math.random(), r: 1.5 + Math.random() * 2.2, life: 0.8, color: '#fef9c3' });
+    }
+    if (comedy && (stage === 'approach' || stage === 'return') && frame % 5 === 0) {
+      sparkles.push({ x: host.x + (Math.random() - .5) * 26, y: host.y + 8, vx: (Math.random() - .5) * 1.6, vy: -0.3 - Math.random() * 0.6, r: 2.5 + Math.random() * 2, life: 0.55, color: '#8a6a45' });
+    }
 
     sparkles.forEach(p => {
       p.x += p.vx; p.y += p.vy; p.vy += 0.06; p.life -= 0.022;
@@ -17097,6 +17130,40 @@ function startOilRatingGame(names, options) {
     gagPops.forEach(g => { g.y -= 0.8; g.life -= g.big ? 0.006 : 0.009; });
     gagPops = gagPops.filter(g => g.life > 0).slice(0, 6);
 
+    if (comedy && ratingUI && stage === 'rate_reveal') {
+      const rt2 = ratingUI.t, punch = Math.max(0, 1 - rt2 / 14);
+      const col = ratingUI.target >= 8 ? '#4ade80' : ratingUI.target >= 5 ? '#fde047' : '#f87171';
+      if (punch > 0) {
+        ctx.globalAlpha = punch * 0.8;
+        ctx.strokeStyle = col; ctx.lineWidth = 4 + 6 * punch;
+        ctx.beginPath(); ctx.arc(host.x, host.y - 223, 40 + (1 - punch) * 130, 0, Math.PI * 2); ctx.stroke();
+        if (ratingUI.target >= 9) {
+          for (let i = 0; i < 10; i++) {
+            const a0 = frame * 0.02 + i * Math.PI / 5;
+            ctx.globalAlpha = punch * 0.35;
+            ctx.fillStyle = '#fde047';
+            ctx.beginPath();
+            ctx.moveTo(host.x, host.y - 223);
+            ctx.lineTo(host.x + Math.cos(a0) * 260, host.y - 223 + Math.sin(a0) * 260);
+            ctx.lineTo(host.x + Math.cos(a0 + 0.12) * 260, host.y - 223 + Math.sin(a0 + 0.12) * 260);
+            ctx.closePath(); ctx.fill();
+          }
+        } else if (ratingUI.target <= 3.2) {
+          ctx.globalAlpha = punch * 0.4;
+          ctx.fillStyle = '#0b0e1a';
+          ctx.fillRect(-W, -H, 3 * W, 3 * H);
+        }
+        ctx.globalAlpha = 1;
+        if (Math.random() < 0.8) sparkles.push({ x: host.x + (Math.random() - .5) * 160, y: host.y - 223 + (Math.random() - .5) * 90, vx: (Math.random() - .5) * 3, vy: -1 - Math.random() * 2, r: 2 + Math.random() * 2.5, life: 0.9, color: col });
+      }
+      if (ratingUI.stamp && rt2 > dur(52) && rt2 < dur(52) + 12) {
+        const k = (rt2 - dur(52)) / 12;
+        ctx.globalAlpha = 1 - k;
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(host.x + 96, host.y - 246, 8 + k * 46, 0, Math.PI * 2); ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+    }
     if (ratingUI && selected) {
       const bounce = ratingUI.t > dur(50) ? OIL_EASE.outElastic(Math.min(1, (ratingUI.t - dur(50)) / 20)) * 8 : 0;
       ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(host.x - 90, host.y - 250 - bounce, 180, 58, 12); ctx.fill();
@@ -17195,6 +17262,28 @@ function startOilRatingGame(names, options) {
     ctx.fillStyle = '#86efac'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left';
     const tested = bottles.filter(b => b.tested).length;
     ctx.fillText('🧴 TESTED: ' + tested + ' / ' + bottles.length, 20, 30);
+    if (comedy) {
+      const vg = ctx.createRadialGradient(W / 2, H / 2, H * 0.42, W / 2, H / 2, H * 0.85);
+      vg.addColorStop(0, 'rgba(0,0,0,0)');
+      vg.addColorStop(1, 'rgba(0,0,0,.42)');
+      ctx.fillStyle = vg;
+      ctx.fillRect(0, 0, W, H);
+      if (ratingUI && stage === 'rate_reveal') {
+        const punch = Math.max(0, 1 - ratingUI.t / 12);
+        if (punch > 0) {
+          ctx.globalAlpha = punch * (ratingUI.target >= 5 ? 0.35 : 0.3);
+          ctx.fillStyle = ratingUI.target >= 9 ? '#fef9c3' : ratingUI.target >= 5 ? '#ffffff' : '#0b0e1a';
+          ctx.fillRect(0, 0, W, H);
+          ctx.globalAlpha = 1;
+        }
+      }
+      if (stage === 'finale') {
+        ctx.globalAlpha = 0.05 + 0.05 * Math.sin(frame / 30);
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect(0, 0, W, H);
+        ctx.globalAlpha = 1;
+      }
+    }
   }
 
   function loop() {
@@ -20058,7 +20147,7 @@ if (manualTournamentStandalonePage) {
   const BALL_R = 26, ORBIT_R = 50, ORBIT_SPIN = 4.6, BLADE_LEN = 28;
   const HOLD_MS = 5000, FIRST_SPAWN_MS = 5000, RESPAWN_MS = 1300, LAUNCH_MS = 1600, SUDDEN_MS = 75000;
   const ITEM_KINDS = ['pistol', 'smg', 'blaster', 'axe', 'saw', 'trident'];
-  const GUN_KINDS = { pistol: { every: 800, speed: 620, r: 4 }, smg: { every: 380, speed: 680, r: 3.2 }, blaster: { every: 1400, speed: 460, r: 7 } };
+  const GUN_KINDS = { pistol: { every: 800, speed: 700, r: 4 }, smg: { every: 380, speed: 780, r: 3.2 }, blaster: { every: 1400, speed: 560, r: 7 } };
   const ITEM_LABEL = { pistol: 'PISTOL', smg: 'SMG', blaster: 'PLASMA BLASTER', axe: 'AXE', saw: 'SAWBLADE', trident: 'TRIDENT' };
   const ITEM_COLOR = { pistol: '#e2e8f0', smg: '#f97316', blaster: '#a78bfa', axe: '#f87171', saw: '#fbbf24', trident: '#38bdf8' };
 
@@ -20171,15 +20260,15 @@ if (manualTournamentStandalonePage) {
   /* ---- engine ---- */
   let sim = null, rafId = 0, lastTs = 0;
   function makeBall(name, blue) {
-    const ang = Math.random() * Math.PI * 2, sp = 290 + Math.random() * 70;
+    const ang = Math.random() * Math.PI * 2, sp = 380 + Math.random() * 80;
     return { name, blue, x: blue ? W * 0.66 : W * 0.34, y: H * 0.5 + (Math.random() * 140 - 70),
       vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp * 0.8, r: BALL_R,
       hearts: 3, invuln: 0, picks: 0, hits: 0, trail: [], flash: 0, fizzle: 0, squash: 0, lastBlip: -999 };
   }
   function clampSpeed(b) {
     const sp = Math.hypot(b.vx, b.vy) || 0.001;
-    if (sp > 560) { b.vx *= 560 / sp; b.vy *= 560 / sp; }
-    else if (sp < 200) { b.vx *= 200 / sp; b.vy *= 200 / sp; }
+    if (sp > 680) { b.vx *= 680 / sp; b.vy *= 680 / sp; }
+    else if (sp < 270) { b.vx *= 270 / sp; b.vy *= 270 / sp; }
   }
   function burst(x, y, n, colors) {
     const out = [];
@@ -20775,4 +20864,3 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
 </body</html>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3335b244f3b3d80',t:'MTc4ODA4ODMwMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
