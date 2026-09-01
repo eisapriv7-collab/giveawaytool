@@ -407,6 +407,7 @@
         <button onclick="launchOrbitStrike()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#0ea5e9,#4f46e5);">🌀 Orbit Strike</button>
         <button onclick="launchSlapFight()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f59e0b,#b91c1c);">🖐 Slap Fight</button>
         <button onclick="launchTekkenFight()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#f2cf63,#991b1b);color:#1c1917;">🥋 Tekken 7 Arena</button>
+        <button onclick="launchOfficeBossFight()" class="btn-primary py-4 rounded-xl text-lg" style="background:linear-gradient(135deg,#22c55e,#166534);">💼 Office Boss Fight</button>
       </div>
     </div>
     </main>
@@ -1712,6 +1713,99 @@
   </div>
 </div>
 
+<!-- ==================== OFFICE BOSS FIGHT — CUBICLE COMBAT (1v1 + cutscene) ==================== -->
+<div id="office-overlay" class="hidden fixed inset-0 bg-[#04050a] z-50 overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 50% 16%,rgba(34,197,94,.10),transparent 34%),linear-gradient(135deg,rgba(34,197,94,.07),transparent 42%,rgba(239,68,68,.08));"></div>
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-3 md:p-5 overflow-hidden">
+    <div class="w-full max-w-6xl">
+      <header class="flex items-center justify-between gap-4 mb-3 px-1">
+        <div class="flex items-center gap-3"><div><div class="text-[#4ade80] text-[10px] font-black uppercase tracking-[0.24em]">Cubicle Combat Championship</div><h1 class="text-2xl md:text-3xl font-black text-white leading-tight">Office Boss Fight</h1></div></div>
+        <div class="hidden sm:flex items-center gap-2 text-[10px] font-black uppercase tracking-wider"><span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300">🎬 Pre-Game Cutscene</span><span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300">Office Prop Physics</span><span class="px-3 py-1.5 rounded-full bg-[#4ade80]/10 border border-[#4ade80]/20 text-[#4ade80]">60-Second Brawl</span></div>
+      </header>
+
+      <!-- PHASE 1 — ROULETTE INTRO -->
+      <div id="office-phase-intro" class="text-center glass rounded-3xl p-8 md:p-12 border border-[#4ade80]/20">
+        <div class="text-[#4ade80] text-xs font-black uppercase tracking-[0.28em] mb-5">The Main Event</div>
+        <div id="office-roll" class="rounded-2xl border border-[#4ade80]/30 bg-black/50 p-4 mb-5 text-center">
+          <div class="text-[10px] text-emerald-300 font-black uppercase tracking-[0.28em] mb-3">Entrant Roulette — rolling the employee and the boss</div>
+          <div class="grid grid-cols-2 gap-3 md:gap-6 max-w-2xl mx-auto">
+            <div id="office-roll-p1" class="tekken-roll-slot rounded-xl border border-green-400/30 bg-green-950/20 px-3 py-3">
+              <div class="text-[9px] text-green-400 font-black uppercase tracking-widest mb-1">👔 Employee</div>
+              <div id="office-roll-p1-name" class="tekken-roll-name text-lg md:text-2xl font-black text-white truncate">???</div>
+            </div>
+            <div id="office-roll-p2" class="tekken-roll-slot rounded-xl border border-red-400/30 bg-red-950/20 px-3 py-3">
+              <div class="text-[9px] text-red-400 font-black uppercase tracking-widest mb-1">👞 Boss</div>
+              <div id="office-roll-p2-name" class="tekken-roll-name text-lg md:text-2xl font-black text-white truncate">???</div>
+            </div>
+          </div>
+          <div id="office-roll-status" class="text-[11px] font-black text-gray-400 uppercase tracking-wider mt-3">Rolling the entrant roster...</div>
+        </div>
+        <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-4 max-w-3xl mx-auto">
+          <div><div class="text-[10px] text-green-400 font-black uppercase tracking-widest mb-2">👔 Employee</div><div id="office-intro-p1" class="text-2xl md:text-4xl font-black text-white break-words">EMPLOYEE</div></div>
+          <div class="w-16 h-16 rounded-full flex items-center justify-center bg-gradient-to-br from-[#4ade80] to-[#b91c1c] text-white font-black text-2xl shadow-[0_0_35px_rgba(74,222,128,.3)]">💼</div>
+          <div><div class="text-[10px] text-red-400 font-black uppercase tracking-widest mb-2">👞 Boss</div><div id="office-intro-p2" class="text-2xl md:text-4xl font-black text-white break-words">BOSS</div></div>
+        </div>
+      </div>
+
+      <!-- PHASE 2 — CINEMATIC CUTSCENE -->
+      <div id="office-phase-cutscene" class="hidden w-full">
+        <div class="relative max-w-5xl mx-auto rounded-2xl overflow-hidden border border-[#4ade80]/25 shadow-[0_25px_80px_rgba(0,0,0,.65)]">
+          <canvas id="office-cut-canvas" width="1000" height="500" class="block w-full bg-[#05070d] cursor-pointer" onclick="officeSkipCutscene()"></canvas>
+          <button onclick="officeSkipCutscene()" class="absolute top-3 right-3 px-4 py-2 rounded-xl bg-black/70 border border-white/15 text-white text-[10px] font-black uppercase tracking-widest hover:bg-black/90">Skip ⏭</button>
+          <div class="absolute top-3 left-3 px-3 py-1.5 rounded-full bg-black/70 border border-white/10 text-gray-400 text-[9px] font-black uppercase tracking-widest">🎬 Cinematic — click to skip</div>
+        </div>
+        <div class="mt-3 flex justify-center"><button id="office-audio-toggle-cut" onclick="toggleOfficeAudio()" class="text-[10px] font-black uppercase tracking-wider text-gray-500 hover:text-white">🔊 Office Noise</button></div>
+      </div>
+
+      <!-- PHASE 3 — FIGHT -->
+      <div id="office-phase-fight" class="hidden w-full">
+        <div class="grid grid-cols-[1fr_120px_1fr] sm:grid-cols-[1fr_170px_1fr] md:grid-cols-[1fr_200px_1fr] items-stretch rounded-2xl overflow-hidden border border-white/10 bg-black/70 mb-3 shadow-2xl">
+          <div class="relative p-3 md:px-5 md:py-3 border-r border-white/10" style="background:linear-gradient(90deg,rgba(22,101,52,.3),transparent);">
+            <div class="text-[9px] text-green-400 font-black uppercase tracking-[0.2em]">👔 Employee</div>
+            <div class="flex items-end justify-between gap-2"><div id="office-p1-name" class="text-lg md:text-2xl font-black text-white truncate">EMPLOYEE</div><div id="office-p1-held" class="text-xl" title="Held object">✊</div></div>
+            <div class="h-2.5 bg-white/10 rounded-full mt-2 overflow-hidden"><div id="office-p1-hp" class="h-full bg-gradient-to-r from-green-700 to-lime-300 transition-all duration-150" style="width:100%"></div></div>
+            <div class="flex justify-between mt-1 text-[8px] font-black uppercase tracking-wider text-gray-600"><span id="office-p1-hp-text">100 HEALTH</span><span id="office-p1-kd">KD 0</span></div>
+          </div>
+          <div class="flex flex-col items-center justify-center px-2 bg-[#07080c]">
+            <div class="text-[9px] font-black text-gray-500 uppercase tracking-[0.22em]">Brawl</div>
+            <div id="office-clock" class="text-3xl md:text-4xl font-black tabular-nums text-[#4ade80] leading-none my-1">1:00</div>
+            <button id="office-audio-toggle" onclick="toggleOfficeAudio()" class="text-[8px] font-black uppercase tracking-wider text-gray-500 hover:text-white">🔊 Office Noise</button>
+          </div>
+          <div class="relative p-3 md:px-5 md:py-3 border-l border-white/10 text-right" style="background:linear-gradient(270deg,rgba(127,29,29,.3),transparent);">
+            <div class="text-[9px] text-red-400 font-black uppercase tracking-[0.2em]">👞 Boss</div>
+            <div class="flex flex-row-reverse items-end justify-between gap-2"><div id="office-p2-name" class="text-lg md:text-2xl font-black text-white truncate">BOSS</div><div id="office-p2-held" class="text-xl" title="Held object">✊</div></div>
+            <div class="h-2.5 bg-white/10 rounded-full mt-2 overflow-hidden"><div id="office-p2-hp" class="h-full ml-auto bg-gradient-to-l from-red-800 to-orange-400 transition-all duration-150" style="width:100%"></div></div>
+            <div class="flex justify-between mt-1 text-[8px] font-black uppercase tracking-wider text-gray-600"><span id="office-p2-kd">KD 0</span><span id="office-p2-hp-text">125 HEALTH</span></div>
+          </div>
+        </div>
+
+        <div class="relative max-w-5xl mx-auto rounded-2xl overflow-hidden border border-[#4ade80]/25 shadow-[0_25px_80px_rgba(0,0,0,.65)]">
+          <canvas id="office-canvas" width="1000" height="500" class="block w-full bg-[#05070d]"></canvas>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-[1fr_minmax(280px,1.5fr)_1fr] gap-2 md:gap-3 mt-3 items-stretch">
+          <div class="rounded-xl border border-green-500/20 bg-green-950/20 px-4 py-2 flex items-center justify-between"><div><div class="text-[8px] text-gray-600 uppercase font-black tracking-wider">Hits Landed</div><div class="text-sm font-black text-white" id="office-p1-hits">0</div></div><div class="text-right"><div class="text-[8px] text-gray-600 uppercase font-black tracking-wider">Props Thrown</div><div id="office-p1-throws" class="text-sm font-black text-green-400">0</div></div></div>
+          <div class="rounded-xl border border-[#4ade80]/20 bg-black/60 px-4 py-2 flex items-center justify-center text-center"><div id="office-commentary" class="text-sm md:text-base font-black text-[#4ade80] truncate">The meeting could have been an email...</div></div>
+          <div class="rounded-xl border border-red-500/20 bg-red-950/20 px-4 py-2 flex items-center justify-between"><div><div class="text-[8px] text-gray-600 uppercase font-black tracking-wider">Hits Landed</div><div class="text-sm font-black text-white" id="office-p2-hits">0</div></div><div class="text-right"><div class="text-[8px] text-gray-600 uppercase font-black tracking-wider">Props Thrown</div><div id="office-p2-throws" class="text-sm font-black text-red-400">0</div></div></div>
+        </div>
+      </div>
+
+      <!-- PHASE 4 — WINNER -->
+      <div id="office-phase-winner" class="hidden">
+        <div class="max-w-3xl mx-auto glass rounded-3xl border border-[#4ade80]/25 p-7 md:p-10 text-center shadow-[0_30px_100px_rgba(0,0,0,.7)]">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#166534] text-white text-[10px] font-black uppercase tracking-[0.2em] mb-5"><span class="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse"></span>Official Result</div>
+          <div class="text-[#4ade80] text-sm font-black uppercase tracking-[0.25em] mb-2">Champion of the Office</div>
+          <div id="office-winner-name" class="text-5xl md:text-7xl font-black text-white mb-2 break-words"></div>
+          <div id="office-winner-method" class="text-xl md:text-2xl text-[#4ade80] font-black mb-2"></div>
+          <div id="office-winner-sub" class="text-sm text-gray-500 mb-6"></div>
+          <div id="office-result-cards" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-7"></div>
+          <div class="flex gap-4 justify-center"><button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-xl text-sm font-bold">🔄 Play Again</button><button onclick="window.close()" class="btn-secondary px-8 py-3 rounded-xl text-sm font-bold">✕ Close</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ==================== TEKKEN 7 ARENA ==================== -->
 <style>
   .tekken-card { text-align:center;padding:8px 4px 6px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(0,0,0,.4));cursor:pointer;transition:transform .12s,border-color .12s,box-shadow .12s;display:block;width:100%; }
@@ -2805,7 +2899,7 @@ const PREVIEW_LAUNCH_MAP = {
   launchCrystal:'crystal', launchWarp:'warp', launchStocks:'stocks', launchSlot:'slot', launchBingo:'bingo',
   launchHighCard:'highcard', launchPlinko:'plinko', launchThunder:'thunder', launchButts:'butts', launchFlush:'flush',
   launchTwerk:'twerk', launchBombRoulette:'bomb', launchChicken:'chicken', launchBabyOil:'babyoil', launchDiddy2:'diddy2',
-  launchBoxingMatch:'boxing', launchSwordDuel:'sword', launchTekkenFight:'tekken'
+  launchBoxingMatch:'boxing', launchSwordDuel:'sword', launchTekkenFight:'tekken', launchOfficeBossFight:'office'
 };
 
 let previewHoverTimer = null, previewAnimId = null, previewT = 0, previewActiveId = null;
@@ -2894,7 +2988,7 @@ function initGamePreviewHover() {
 
 /* ==================== POPUP LAUNCHER ==================== */
 function openGamePopup(gameType) {
-  const needsTwo = ['boxing','sword','tekken','orbit','slap'];
+  const needsTwo = ['boxing','sword','tekken','orbit','slap','office'];
   if (gameType !== 'race' && !entrants.size) { alert('No entrants yet! Add some test users or connect chat.'); return; }
   if (needsTwo.includes(gameType)) {
     if (entrants.size < 2) { alert('Need at least 2 entrants for a 1v1!'); return; }
@@ -2942,6 +3036,7 @@ function launchWipeout() { openGamePopup('wipeout'); }
 function launchHobbyHorse() { openGamePopup('hobbyhorse'); }
 function launchBoxingMatch() { openGamePopup('boxing'); }
 function launchSwordDuel() { openGamePopup('sword'); }
+function launchOfficeBossFight() { openGamePopup('office'); }
 function launchOrbitStrike() { openGamePopup('orbit'); }
 function launchSlapFight() { openGamePopup('slap'); }
 function launchTekkenFight() { openGamePopup('tekken'); }
@@ -3041,7 +3136,7 @@ function showOverlay(id) {
 }
 
 function hideAllPhases(prefix) {
-  ['waiting','collect','roll','flip','spin','show','question','reveal','resolve','intro','race','play','fight','winner'].forEach(p => {
+  ['waiting','collect','roll','flip','spin','show','question','reveal','resolve','intro','cutscene','race','play','fight','winner'].forEach(p => {
     const el = document.getElementById(prefix + '-phase-' + p);
     if (el) el.classList.add('hidden');
   });
@@ -6152,6 +6247,1393 @@ function startSwordDuel(p1Name,p2Name){
     ctx.save();if(cameraShake>.2){ctx.translate(Math.sin(frame*1.85)*cameraShake*.42,Math.cos(frame*1.47)*cameraShake*.26);cameraShake*=.84}if(defeat)drawDefeat(now);else{if(strikeZoom>.002){ctx.translate(W/2,H/2);ctx.scale(1+strikeZoom,1+strikeZoom);ctx.translate(-W/2,-H/2);strikeZoom*=.72}drawArena(now);drawFighter(p1);drawFighter(p2);drawEffects();drawCanvasHUD(now)}ctx.restore();if(flashAlpha>.005){ctx.fillStyle=`rgba(255,255,255,${flashAlpha})`;ctx.fillRect(0,0,W,H);flashAlpha*=.72}
     if(!resultShown)requestAnimationFrame(loop);
   }
+  requestAnimationFrame(loop);
+}
+
+/* ==================== OFFICE BOSS FIGHT — CUBICLE COMBAT (1v1 + cutscene) ==================== */
+let officeAudioEnabled = true;
+let officeAudioCtx = null;
+const officeVoices = new Set();
+let officeGame = null;
+
+function getOfficeAudioContext() {
+  if (!officeAudioEnabled) return null;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return null;
+  if (!officeAudioCtx) officeAudioCtx = new AC();
+  if (officeAudioCtx.state === 'suspended') officeAudioCtx.resume().catch(() => {});
+  return officeAudioCtx;
+}
+function officeNoiseBurst(ac, dur, freq, q, gain, type, sweepTo) {
+  const len = Math.max(1, Math.floor(ac.sampleRate * dur));
+  const buf = ac.createBuffer(1, len, ac.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+  const src = ac.createBufferSource(); src.buffer = buf;
+  const f = ac.createBiquadFilter(); f.type = type || 'bandpass'; f.frequency.value = freq; f.Q.value = q || 1;
+  if (sweepTo) f.frequency.exponentialRampToValueAtTime(Math.max(20, sweepTo), ac.currentTime + dur);
+  const g = ac.createGain(); g.gain.value = gain || .2;
+  g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime + dur);
+  src.connect(f); f.connect(g); g.connect(ac.destination);
+  officeVoices.add(src); src.onended = () => officeVoices.delete(src); src.start();
+}
+function officeTone(ac, f0, f1, dur, gain, type) {
+  const now = ac.currentTime;
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.type = type || 'sine'; o.frequency.setValueAtTime(Math.max(1, f0), now);
+  o.frequency.exponentialRampToValueAtTime(Math.max(1, f1), now + dur);
+  g.gain.setValueAtTime(gain || .2, now); g.gain.exponentialRampToValueAtTime(.0001, now + dur);
+  o.connect(g); g.connect(ac.destination);
+  officeVoices.add(o); o.onended = () => officeVoices.delete(o);
+  o.start(); o.stop(now + dur + .02);
+}
+function officeSFX(name, power) {
+  if (!officeAudioEnabled) return;
+  try {
+    const ac = getOfficeAudioContext(); if (!ac) return;
+    const p = power || 1;
+    if (name === 'creak') { officeTone(ac, 110, 70, .5, .05, 'sawtooth'); officeNoiseBurst(ac, .5, 300, 2, .03, 'lowpass', 120); }
+    else if (name === 'step') { officeNoiseBurst(ac, .05, 220, 1, .05, 'lowpass'); }
+    else if (name === 'snap') { officeTone(ac, 700, 180, .07, .12, 'square'); officeNoiseBurst(ac, .06, 1800, 1.5, .08, 'highpass'); }
+    else if (name === 'page') { officeNoiseBurst(ac, .09, 2600, 1, .07, 'highpass', 900); }
+    else if (name === 'pop') { officeTone(ac, 300, 70, .12, .15, 'sine'); }
+    else if (name === 'vein') { officeTone(ac, 900, 500, .06, .12, 'square'); setTimeout(() => officeTone(ac, 600, 300, .07, .12, 'square'), 70); }
+    else if (name === 'grab') { officeTone(ac, 160, 320, .09, .12, 'triangle'); }
+    else if (name === 'whoosh') { officeNoiseBurst(ac, .16, 500, 1.2, .14 * p, 'bandpass', 1600); }
+    else if (name === 'throw') { officeNoiseBurst(ac, .2, 400, 1.2, .16 * p, 'bandpass', 2000); }
+    else if (name === 'thud') { officeTone(ac, 110, 42, .18, .28 * p, 'sine'); officeNoiseBurst(ac, .08, 240, 1, .1 * p, 'lowpass'); }
+    else if (name === 'crash') { officeNoiseBurst(ac, .45, 380, .8, .4, 'lowpass', 90); officeTone(ac, 70, 28, .4, .4, 'sine'); officeNoiseBurst(ac, .2, 2400, 1, .12, 'highpass'); }
+    else if (name === 'clank') { officeTone(ac, 620, 300, .06, .14, 'square'); officeTone(ac, 930, 460, .05, .08, 'square'); }
+    else if (name === 'block') { officeTone(ac, 220, 140, .08, .16, 'triangle'); officeNoiseBurst(ac, .06, 700, 1, .1, 'bandpass'); }
+    else if (name === 'boom') { officeTone(ac, 80, 26, .6, .5, 'sine'); officeNoiseBurst(ac, .5, 260, .7, .3, 'lowpass', 60); }
+    else if (name === 'ding') { officeTone(ac, 880, 878, .5, .16, 'triangle'); officeTone(ac, 1318, 1315, .4, .07, 'sine'); }
+    else if (name === 'ding2') { officeTone(ac, 1108, 1105, .6, .18, 'triangle'); officeTone(ac, 1661, 1655, .5, .09, 'sine'); }
+    else if (name === 'cheer') { officeNoiseBurst(ac, 1.1, 900, .8, .16, 'bandpass', 1400); officeNoiseBurst(ac, .8, 500, .8, .1, 'lowpass', 200); }
+    else if (name === 'tick') { officeTone(ac, 1100, 1000, .03, .08, 'square'); }
+    else if (name === 'slide') { officeNoiseBurst(ac, .18, 1200, 1, .12, 'bandpass', 300); }
+    else if (name === 'boing') { officeTone(ac, 200, 500, .12, .1, 'sine'); officeTone(ac, 500, 260, .14, .08, 'sine'); }
+  } catch (e) {}
+}
+function toggleOfficeAudio() {
+  officeAudioEnabled = !officeAudioEnabled;
+  ['office-audio-toggle', 'office-audio-toggle-cut'].forEach(id => { const b = document.getElementById(id); if (b) b.textContent = officeAudioEnabled ? '🔊 Office Noise' : '🔇 Muted'; });
+  if (!officeAudioEnabled) { for (const v of officeVoices) { try { v.stop(); } catch (e) {} } officeVoices.clear(); }
+}
+function officeSkipCutscene() { if (officeGame && officeGame.skip) officeGame.skip(); }
+
+const OFFICE_PROPS = {
+  chair:  { label: 'Office Chair', dmg: 14, kb: 9,   speed: 15,   r: 26, w: 46, h: 42 },
+  box:    { label: 'Box',          dmg: 9,  kb: 6,   speed: 14.5, r: 22, w: 42, h: 36 },
+  trash:  { label: 'Trash Can',    dmg: 11, kb: 7.5, speed: 13.5, r: 20, w: 36, h: 42, lid: true },
+  lamp:   { label: 'Desk Lamp',    dmg: 8,  kb: 5,   speed: 15.5, r: 20, w: 34, h: 40, sharp: true },
+  mug:    { label: 'Coffee Mug',   dmg: 5,  kb: 3.5, speed: 18,   r: 11, w: 18, h: 20 },
+  papers: { label: 'Paper Stack',  dmg: 4,  kb: 2.5, speed: 19,   r: 14, w: 28, h: 18, flutter: true }
+};
+const OFFICE_EMOJI = { chair: '🪑', box: '📦', trash: '🗑️', lamp: '💡', mug: '☕', papers: '📄' };
+const OFFICE_COMMENTS = {
+  start: ['Time clock stamped. The meeting could have been an email.', 'The quarterly review of a lifetime begins!'],
+  grab: ['{n} arms themselves with a {w}! Policy violation: imminent.', '{n} chose violence... and a {w}.'],
+  hit: ['{w} to the face! That is a written warning!', '{m} just received a performance review.', 'PAIN! {m} has been reassigned to the floor!'],
+  hitBare: ['Bare knuckles! That is a policy violation.', 'A slap! The whole floor heard that.'],
+  block: ['{n} blocks. Very professional.', 'Blocked! HR approves of this coping mechanism.'],
+  kd: ['{n} is DOWN! Somebody call HR!', '{n} has been terminated! From standing, that is.'],
+  disarm: ['Knocked clean out of their hands! Property loss: catastrophic.'],
+  overtime: ['OVERTIME! Damage surge — this goes on the transcript.', 'FINAL NOTICE! Everything hits 40% harder!'],
+  ko: ['{n} wins the dispute! {m} is being escorted out by security!']
+};
+
+function drawOfficeRoom(ctx, W, H, t, room) {
+  let g = ctx.createLinearGradient(0, 0, 0, 430);
+  g.addColorStop(0, '#0d1220'); g.addColorStop(.72, '#131a2c'); g.addColorStop(1, '#0f1524');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, 430);
+  g = ctx.createLinearGradient(0, 430, 0, H);
+  g.addColorStop(0, '#1b2233'); g.addColorStop(1, '#10151f');
+  ctx.fillStyle = g; ctx.fillRect(0, 430, W, H - 430);
+  ctx.strokeStyle = 'rgba(255,255,255,.035)'; ctx.lineWidth = 1;
+  for (let x = 0; x <= W; x += 64) { ctx.beginPath(); ctx.moveTo(x, 430); ctx.lineTo(x - 40, H); ctx.stroke(); }
+  for (let y = 446; y <= H; y += 34) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  ctx.fillStyle = 'rgba(127,29,29,.16)'; ctx.beginPath(); ctx.roundRect(170, 440, 660, 46, 23); ctx.fill();
+  ctx.strokeStyle = 'rgba(251,191,36,.12)'; ctx.setLineDash([14, 10]); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = '#0a0e18'; ctx.fillRect(0, 424, W, 8);
+  // Ceiling + lights
+  ctx.fillStyle = '#0a0d16'; ctx.fillRect(0, 0, W, 64);
+  ctx.strokeStyle = 'rgba(255,255,255,.04)';
+  for (let x = 0; x < W; x += 125) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 64); ctx.stroke(); }
+  [170, 700].forEach(lx => {
+    const flick = (Math.floor(t / 900) % 23 === 0 && Math.random() < .4) ? .55 : 1;
+    ctx.fillStyle = 'rgba(226,236,255,' + (.85 * flick) + ')';
+    ctx.shadowColor = 'rgba(180,200,255,.8)'; ctx.shadowBlur = 24;
+    ctx.fillRect(lx, 20, 130, 14); ctx.shadowBlur = 0;
+    const lg = ctx.createLinearGradient(0, 34, 0, 430);
+    lg.addColorStop(0, 'rgba(200,215,255,' + (.07 * flick) + ')'); lg.addColorStop(1, 'rgba(200,215,255,0)');
+    ctx.fillStyle = lg;
+    ctx.beginPath(); ctx.moveTo(lx, 34); ctx.lineTo(lx + 130, 34); ctx.lineTo(lx + 195, 430); ctx.lineTo(lx - 65, 430); ctx.closePath(); ctx.fill();
+  });
+  // Window with city
+  ctx.fillStyle = '#1c2536'; ctx.fillRect(344, 89, 222, 158);
+  ctx.fillStyle = '#0a1120'; ctx.fillRect(350, 95, 210, 146);
+  const city = [[0, 44, 26], [26, 66, 22], [48, 32, 30], [78, 60, 20], [98, 74, 26], [124, 46, 22], [146, 68, 24], [170, 40, 24], [194, 56, 16]];
+  city.forEach(([cx, ch, cw], i) => {
+    ctx.fillStyle = '#141c30';
+    ctx.fillRect(350 + cx, 241 - ch, cw, ch);
+    for (let wy = 241 - ch + 5; wy < 236; wy += 9) for (let wx = 350 + cx + 3; wx < 350 + cx + cw - 3; wx += 7) {
+      if ((wx * 7 + wy * 13 + i * 31) % 5 < 2) { ctx.fillStyle = 'rgba(255,209,102,.7)'; ctx.fillRect(wx, wy, 3, 4); }
+    }
+  });
+  ctx.fillStyle = '#e2e8f0'; ctx.beginPath(); ctx.arc(534, 114, 9, 0, 7); ctx.fill();
+  ctx.fillStyle = '#0a1120'; ctx.beginPath(); ctx.arc(530, 111, 8, 0, 7); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.05)';
+  ctx.beginPath(); ctx.moveTo(360, 95); ctx.lineTo(398, 95); ctx.lineTo(356, 241); ctx.lineTo(342, 241); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#1c2536'; ctx.fillRect(453, 95, 6, 146);
+  // Bookshelf
+  ctx.fillStyle = '#241a12'; ctx.fillRect(228, 168, 104, 262);
+  ctx.fillStyle = '#2e2118'; ctx.fillRect(232, 172, 96, 254);
+  const bookCols = ['#7f1d1d', '#1e3a8a', '#14532d', '#7c2d12', '#4c1d95', '#9f1239'];
+  for (let s = 0; s < 4; s++) {
+    const sy = 184 + s * 60;
+    ctx.fillStyle = '#241a12'; ctx.fillRect(232, sy + 44, 96, 8);
+    let bx = 236;
+    for (let b = 0; b < 7; b++) {
+      const bw = 8 + ((s * 7 + b * 3) % 5) * 2, bh = 28 + ((s * 5 + b * 7) % 4) * 4;
+      ctx.fillStyle = bookCols[(s * 7 + b) % bookCols.length];
+      ctx.fillRect(bx, sy + 44 - bh, bw, bh);
+      bx += bw + 3;
+      if (bx > 316) break;
+    }
+    if (s === 2) { ctx.fillStyle = '#fbbf24'; ctx.fillRect(300, sy + 26, 10, 18); ctx.beginPath(); ctx.arc(305, sy + 23, 7, 0, 7); ctx.fill(); }
+  }
+  // Filing cabinet
+  ctx.fillStyle = '#3a4358'; ctx.fillRect(128, 250, 78, 180);
+  for (let d = 0; d < 4; d++) {
+    const dy = 256 + d * 44;
+    ctx.fillStyle = d === 2 ? '#1f2637' : '#465069';
+    ctx.fillRect(132, dy, 70, 38);
+    if (d === 2) { ctx.fillStyle = '#e5e7eb'; ctx.fillRect(138, dy + 4, 26, 6); }
+    ctx.fillStyle = '#2c3448'; ctx.fillRect(152, dy + 24, 30, 5);
+  }
+  // Door
+  ctx.fillStyle = '#2c3448'; ctx.fillRect(30, 126, 84, 304);
+  ctx.fillStyle = '#0c111d'; ctx.fillRect(38, 134, 68, 288);
+  const open = room.doorOpen || 0;
+  ctx.save();
+  ctx.translate(38, 134);
+  ctx.transform(1 - open * .78, 0, open * .2, 1, 0, 0);
+  ctx.fillStyle = '#37415a'; ctx.fillRect(0, 0, 68, 288);
+  ctx.fillStyle = '#2b3449'; ctx.fillRect(6, 8, 56, 100); ctx.fillRect(6, 122, 56, 158);
+  ctx.fillStyle = '#94a3b8'; ctx.beginPath(); ctx.arc(58, 148, 3.5, 0, 7); ctx.fill();
+  ctx.restore();
+  // Wall clock
+  ctx.fillStyle = '#e2e8f0'; ctx.beginPath(); ctx.arc(70, 100, 20, 0, 7); ctx.fill();
+  ctx.strokeStyle = '#334155'; ctx.lineWidth = 3; ctx.stroke();
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 2;
+  const mA = ((58 / 60) * 2 * Math.PI) - Math.PI / 2;
+  const hA = ((5.97 / 12) * 2 * Math.PI) - Math.PI / 2;
+  ctx.beginPath(); ctx.moveTo(70, 100); ctx.lineTo(70 + Math.cos(hA) * 9, 100 + Math.sin(hA) * 9); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(70, 100); ctx.lineTo(70 + Math.cos(mA) * 13, 100 + Math.sin(mA) * 13); ctx.stroke();
+  if (room.clockSpin) { const sA = (t * .02) % (Math.PI * 2); ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(70, 100); ctx.lineTo(70 + Math.cos(sA) * 15, 100 + Math.sin(sA) * 15); ctx.stroke(); }
+  if (room.clockGlow) { ctx.strokeStyle = 'rgba(251,191,36,.8)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(70, 100, 25, 0, 7); ctx.stroke(); }
+  // Poster
+  ctx.fillStyle = '#e8e2d4'; ctx.fillRect(838, 118, 116, 112);
+  ctx.strokeStyle = '#b91c1c'; ctx.lineWidth = 4; ctx.strokeRect(843, 123, 106, 102);
+  ctx.fillStyle = '#1f2937'; ctx.font = '900 17px Inter'; ctx.textAlign = 'center'; ctx.fillText('TEAMWORK', 896, 158);
+  ctx.font = '700 10px Inter'; ctx.fillStyle = '#6b7280'; ctx.fillText('synergy is key', 896, 178);
+  ctx.strokeStyle = '#b91c1c'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(872, 198, 5, 0, 7); ctx.moveTo(872, 203); ctx.lineTo(872, 216); ctx.moveTo(865, 209); ctx.lineTo(879, 209); ctx.moveTo(872, 216); ctx.lineTo(867, 226); ctx.moveTo(872, 216); ctx.lineTo(877, 226); ctx.stroke();
+  ctx.beginPath(); ctx.arc(916, 198, 5, 0, 7); ctx.moveTo(916, 203); ctx.lineTo(916, 216); ctx.moveTo(909, 209); ctx.lineTo(923, 209); ctx.moveTo(916, 216); ctx.lineTo(911, 226); ctx.moveTo(916, 216); ctx.lineTo(921, 226); ctx.stroke();
+  // Plant
+  ctx.fillStyle = '#7c2d12'; ctx.beginPath(); ctx.moveTo(578, 430); ctx.lineTo(606, 430); ctx.lineTo(601, 396); ctx.lineTo(583, 396); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#166534'; ctx.lineWidth = 4;
+  for (let i = 0; i < 5; i++) { const a = -1.2 + i * .6, sw = Math.sin(t * .001 + i) * 4; ctx.beginPath(); ctx.moveTo(592, 396); ctx.quadraticCurveTo(592 + Math.cos(a) * 22, 396 + Math.sin(a) * 30 - 18, 592 + Math.cos(a) * 40 + sw, 396 + Math.sin(a) * 46); ctx.stroke(); }
+  // Vignette
+  const vg = ctx.createRadialGradient(W / 2, H / 2, 240, W / 2, H / 2, 640);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.42)');
+  ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+}
+function drawOfficeDesk(ctx, room, now) {
+  ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(750, 432, 170, 9, 0, 0, 7); ctx.fill();
+  ctx.fillStyle = '#3b2c1e'; ctx.fillRect(612, 336, 14, 94); ctx.fillRect(874, 336, 14, 94);
+  ctx.fillStyle = '#463527'; ctx.fillRect(812, 336, 72, 94);
+  for (let d = 0; d < 3; d++) { ctx.fillStyle = '#52402f'; ctx.fillRect(818, 342 + d * 30, 60, 24); ctx.fillStyle = '#2c2118'; ctx.fillRect(838, 352 + d * 30, 20, 5); }
+  ctx.fillStyle = room.deskCrashed ? '#453423' : '#54402c'; ctx.fillRect(600, 318, 300, 18);
+  ctx.fillStyle = 'rgba(255,255,255,.07)'; ctx.fillRect(600, 318, 300, 5);
+  if (room.deskCrashed) {
+    ctx.strokeStyle = 'rgba(0,0,0,.55)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(700, 320); ctx.lineTo(722, 330); ctx.lineTo(712, 336); ctx.moveTo(748, 318); ctx.lineTo(740, 334); ctx.stroke();
+  }
+  ctx.fillStyle = '#1f2937'; ctx.fillRect(750, 310, 44, 8);
+  ctx.fillStyle = '#374151'; for (let i = 0; i < 8; i++) ctx.fillRect(753 + i * 5, 312, 3, 4);
+  ctx.fillStyle = '#111827'; ctx.fillRect(660, 252, 84, 56);
+  const scr = ctx.createLinearGradient(664, 256, 664, 304);
+  if (room.monitorErr) { scr.addColorStop(0, '#451a1a'); scr.addColorStop(1, '#1c0a0a'); } else { scr.addColorStop(0, '#0c2b1d'); scr.addColorStop(1, '#04140d'); }
+  ctx.fillStyle = scr; ctx.fillRect(665, 257, 74, 46);
+  if (room.monitorErr) { ctx.fillStyle = '#f87171'; ctx.font = '700 8px monospace'; ctx.textAlign = 'left'; ctx.fillText('FATAL ERROR:', 669, 274); ctx.fillText('OVERTIME.EXE', 669, 285); }
+  else { ctx.fillStyle = '#4ade80'; const tt = Math.floor(now / 400); for (let l = 0; l < 5; l++) ctx.fillRect(669, 262 + l * 8, 26 + ((l * 17 + tt * 7) % 40), 3); }
+  ctx.fillStyle = '#1f2937'; ctx.fillRect(696, 308, 14, 10);
+  if (!room.deskCrashed) { ctx.fillStyle = '#111827'; ctx.fillRect(616, 306, 26, 12); ctx.fillStyle = '#0b0f19'; ctx.fillRect(618, 308, 22, 8); }
+}
+function drawOfficeProp(ctx, o, now, px, py, angle, scale) {
+  ctx.save();
+  ctx.translate(px !== undefined ? px : o.x, py !== undefined ? py : o.y);
+  ctx.rotate(angle !== undefined ? angle : (o.angle || 0));
+  if (scale) ctx.scale(scale, scale);
+  const t = o.type;
+  ctx.lineCap = 'round';
+  if (t === 'chair') {
+    ctx.strokeStyle = '#6b7280'; ctx.lineWidth = 3.5;
+    ctx.beginPath(); ctx.moveTo(-14, 18); ctx.lineTo(0, 8); ctx.lineTo(14, 18); ctx.moveTo(-8, 20); ctx.lineTo(0, 8); ctx.lineTo(8, 20); ctx.stroke();
+    ctx.fillStyle = '#4b5563'; [[-14, 19], [14, 19], [-8, 21], [8, 21]].forEach(([x, y]) => { ctx.beginPath(); ctx.arc(x, y, 2.5, 0, 7); ctx.fill(); });
+    ctx.fillStyle = '#9ca3af'; ctx.fillRect(-2.5, -12, 5, 20);
+    ctx.fillStyle = '#374151'; ctx.beginPath(); ctx.roundRect(-16, -20, 32, 9, 3); ctx.fill();
+    ctx.fillStyle = '#4b5563'; ctx.fillRect(-16, -20, 32, 3);
+    ctx.fillStyle = '#374151'; ctx.beginPath(); ctx.roundRect(-19, -52, 8, 34, 3); ctx.fill();
+    ctx.fillStyle = '#4b5563'; ctx.fillRect(-19, -52, 3, 34);
+  } else if (t === 'box') {
+    ctx.fillStyle = '#9a6b33'; ctx.beginPath(); ctx.roundRect(-19, -17, 38, 34, 2); ctx.fill();
+    ctx.fillStyle = '#7c5222'; ctx.fillRect(-19, -4, 38, 8);
+    ctx.fillStyle = '#d6b072'; ctx.fillRect(-3, -17, 6, 34);
+    ctx.strokeStyle = '#5f3d17'; ctx.lineWidth = 1.5; ctx.strokeRect(-19, -17, 38, 34);
+    ctx.fillStyle = '#b91c1c'; ctx.beginPath(); ctx.moveTo(9, 5); ctx.lineTo(13, 11); ctx.lineTo(5, 11); ctx.closePath(); ctx.fill();
+  } else if (t === 'trash') {
+    ctx.fillStyle = '#4b5563'; ctx.beginPath(); ctx.moveTo(-13, -18); ctx.lineTo(13, -18); ctx.lineTo(10, 18); ctx.lineTo(-10, 18); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#374151'; ctx.lineWidth = 2;
+    for (let i = -1; i <= 1; i++) { ctx.beginPath(); ctx.moveTo(i * 6, -14); ctx.lineTo(i * 5, 14); ctx.stroke(); }
+    if (!o.lid) { ctx.fillStyle = '#6b7280'; ctx.beginPath(); ctx.ellipse(0, -18, 14, 4, 0, 0, 7); ctx.fill(); ctx.fillRect(-2, -24, 4, 5); }
+  } else if (t === 'lamp') {
+    ctx.fillStyle = '#334155'; ctx.beginPath(); ctx.ellipse(0, 16, 14, 5, 0, 0, 7); ctx.fill();
+    ctx.strokeStyle = '#475569'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, 14); ctx.quadraticCurveTo(-6, -2, 6, -14); ctx.stroke();
+    ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.moveTo(-8, -14); ctx.lineTo(20, -22); ctx.lineTo(26, -8); ctx.lineTo(2, -2); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = 'rgba(251,191,36,.22)'; ctx.beginPath(); ctx.moveTo(2, -6); ctx.lineTo(24, -10); ctx.lineTo(40, 18); ctx.lineTo(14, 20); ctx.closePath(); ctx.fill();
+  } else if (t === 'mug') {
+    ctx.fillStyle = '#f1f5f9'; ctx.beginPath(); ctx.roundRect(-8, -10, 16, 20, 3); ctx.fill();
+    ctx.strokeStyle = '#f1f5f9'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(10, 0, 6, -Math.PI / 2, Math.PI / 2); ctx.stroke();
+    ctx.fillStyle = '#b91c1c'; ctx.font = '900 7px Inter'; ctx.textAlign = 'center'; ctx.fillText('BOSS', 0, 3);
+  } else if (t === 'papers') {
+    for (let i = 3; i >= 0; i--) {
+      ctx.save(); ctx.rotate((i - 1.5) * .08);
+      ctx.fillStyle = i % 2 ? '#e2e8f0' : '#f8fafc';
+      ctx.beginPath(); ctx.roundRect(-13, -8 - i * 2, 26, 10, 1.5); ctx.fill();
+      ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = .8; ctx.stroke();
+      ctx.restore();
+    }
+    ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(-8, -5); ctx.lineTo(6, -5); ctx.moveTo(-8, -1); ctx.lineTo(2, -1); ctx.stroke();
+  } else if (t === 'lid') {
+    ctx.fillStyle = '#6b7280'; ctx.beginPath(); ctx.ellipse(0, 0, 14, 4, 0, 0, 7); ctx.fill();
+  }
+  ctx.restore();
+}
+function drawOfficeStar(ctx, x, y, r) {
+  ctx.beginPath();
+  for (let i = 0; i < 5; i++) {
+    const a = -Math.PI / 2 + i * 2.513;
+    ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r);
+    const a2 = a + 1.257;
+    ctx.lineTo(x + Math.cos(a2) * r * .45, y + Math.sin(a2) * r * .45);
+  }
+  ctx.closePath(); ctx.fill();
+}
+function drawOfficeVein(ctx, x, y, now) {
+  const pulse = 1 + Math.sin(now * .02) * .12;
+  ctx.save(); ctx.translate(x, y); ctx.scale(pulse, pulse);
+  ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2.4; ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(0, -6); ctx.lineTo(0, 6); ctx.moveTo(-6, 0); ctx.lineTo(6, 0);
+  ctx.moveTo(-4, -4); ctx.lineTo(4, 4); ctx.moveTo(4, -4); ctx.lineTo(-4, 4);
+  ctx.stroke(); ctx.restore();
+}
+function drawOfficeFace(ctx, ch, hx, hy, now) {
+  const mood = ch.mood, st = ch.state;
+  const e1 = hx + 4.5, e2 = hx + 11, ey = hy - 3;
+  let browAng = 0, eyeStyle = 'normal', mouthStyle = 'flat', sweat = ch.sweat || 0;
+  if (st === 'down' || st === 'defeat') { eyeStyle = 'x'; mouthStyle = 'wavy'; }
+  else if (st === 'hit') { eyeStyle = 'squint'; mouthStyle = 'open'; }
+  else if (st === 'victory') { eyeStyle = 'happy'; mouthStyle = 'grin'; }
+  else if (mood === 'furious' || (mood === 'angry' && ch.anger > .6)) { browAng = -1; eyeStyle = 'angry'; mouthStyle = 'grit'; }
+  else if (mood === 'angry') { browAng = -.5; mouthStyle = 'frown'; }
+  else if (mood === 'nervous') { browAng = 1; eyeStyle = 'wide'; mouthStyle = 'small'; sweat = Math.max(sweat, .8); }
+  else if (mood === 'tired') { eyeStyle = 'tired'; }
+  else if (mood === 'confused') { browAng = .6; mouthStyle = 'o'; sweat = Math.max(sweat, .5); }
+  else if (mood === 'disappointed') { browAng = -.3; eyeStyle = 'tired'; mouthStyle = 'frown'; }
+  else if (mood === 'smug') { eyeStyle = 'half'; mouthStyle = 'smirk'; }
+  else if (mood === 'alert') { eyeStyle = 'wide'; mouthStyle = 'small'; }
+  if (ch.role === 'boss' && mood === 'calm') { browAng = -.15; mouthStyle = 'smirk'; }
+  if (ch.role === 'employee' && mood === 'calm' && ch.anger < .3) eyeStyle = 'tired';
+  ctx.lineWidth = 1.6;
+  if (eyeStyle === 'x') {
+    ctx.strokeStyle = '#111';
+    [e1, e2].forEach(ex => { ctx.beginPath(); ctx.moveTo(ex - 2.4, ey - 2.4); ctx.lineTo(ex + 2.4, ey + 2.4); ctx.moveTo(ex + 2.4, ey - 2.4); ctx.lineTo(ex - 2.4, ey + 2.4); ctx.stroke(); });
+  } else {
+    const lid = eyeStyle === 'tired' ? .55 : eyeStyle === 'half' ? .35 : 0;
+    [e1, e2].forEach(ex => {
+      if (eyeStyle === 'wide') { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(ex, ey, 3.6, 4.2, 0, 0, 7); ctx.fill(); }
+      else { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(ex, ey, 3, 3.4, 0, 0, 7); ctx.fill(); }
+      ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(ex + .8, ey + .4, 1.5, 0, 7); ctx.fill();
+      if (lid > 0) {
+        ctx.fillStyle = ch.skin; ctx.fillRect(ex - 3.6, ey - 3.8, 7.2, 3.4 * lid + 1.2);
+        ctx.strokeStyle = '#111'; ctx.beginPath(); ctx.moveTo(ex - 3.2, ey - 3.4 * lid + .6); ctx.lineTo(ex + 3.2, ey - 3.4 * lid + .6); ctx.stroke();
+      }
+    });
+    if (eyeStyle === 'happy') {
+      ctx.strokeStyle = '#111'; ctx.lineWidth = 1.8;
+      [e1, e2].forEach(ex => { ctx.beginPath(); ctx.arc(ex, ey + 1, 2.6, Math.PI, 0); ctx.stroke(); });
+    } else if (eyeStyle === 'squint') {
+      ctx.strokeStyle = '#111'; ctx.lineWidth = 1.8;
+      [e1, e2].forEach(ex => { ctx.beginPath(); ctx.moveTo(ex - 3, ey); ctx.lineTo(ex + 3, ey); ctx.stroke(); });
+    } else {
+      if (browAng !== 0) {
+        ctx.strokeStyle = '#111'; ctx.lineWidth = 1.8;
+        [e1, e2].forEach(ex => { ctx.beginPath(); ctx.moveTo(ex - 3, ey - 5 - browAng * 1.6); ctx.lineTo(ex + 3, ey - 5 + browAng * 1.6); ctx.stroke(); });
+      }
+      if (eyeStyle === 'angry' || browAng < -.3) {
+        ctx.strokeStyle = '#111'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(e1 - 3, ey - 6); ctx.lineTo(e1 + 3, ey - 4); ctx.moveTo(e2 - 3, ey - 4); ctx.lineTo(e2 + 3, ey - 6); ctx.stroke();
+      }
+    }
+  }
+  const mx = hx + 8, my = hy + 6;
+  ctx.strokeStyle = '#7f1d1d'; ctx.lineWidth = 1.8;
+  if (mouthStyle === 'grin') { ctx.fillStyle = '#7f1d1d'; ctx.beginPath(); ctx.arc(mx, my - 1, 4.5, 0, Math.PI); ctx.fill(); }
+  else if (mouthStyle === 'open') { ctx.fillStyle = '#7f1d1d'; ctx.beginPath(); ctx.ellipse(mx, my + 1, 2.6, 4, 0, 0, 7); ctx.fill(); }
+  else if (mouthStyle === 'o') { ctx.fillStyle = '#7f1d1d'; ctx.beginPath(); ctx.ellipse(mx, my + 1, 2.4, 3, 0, 0, 7); ctx.fill(); }
+  else if (mouthStyle === 'grit') { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.roundRect(mx - 4, my - 1, 8, 4, 1.5); ctx.fill(); ctx.strokeStyle = '#7f1d1d'; ctx.stroke(); }
+  else if (mouthStyle === 'frown') { ctx.beginPath(); ctx.arc(mx, my + 3.5, 4, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+  else if (mouthStyle === 'smirk') { ctx.beginPath(); ctx.moveTo(mx - 3.5, my + 1); ctx.quadraticCurveTo(mx + 1, my + 3.5, mx + 4, my); ctx.stroke(); }
+  else if (mouthStyle === 'wavy') { ctx.beginPath(); ctx.moveTo(mx - 4, my); ctx.quadraticCurveTo(mx - 2, my - 2, mx, my); ctx.quadraticCurveTo(mx + 2, my + 2, mx + 4, my); ctx.stroke(); }
+  else if (mouthStyle === 'small') { ctx.beginPath(); ctx.moveTo(mx - 2.5, my + .5); ctx.lineTo(mx + 2.5, my + .5); ctx.stroke(); }
+  else { ctx.beginPath(); ctx.moveTo(mx - 3, my); ctx.lineTo(mx + 3, my); ctx.stroke(); }
+  if (sweat > .1) {
+    ctx.fillStyle = 'rgba(103,232,249,' + (.5 + .4 * Math.sin(now * .01)) + ')';
+    const sw = Math.min(1, sweat);
+    [hx - 9, hx + 14].forEach((sx, i) => {
+      const sy = hy - 9 + i * 6 + Math.sin(now * .005 + i) * 1.5;
+      ctx.beginPath(); ctx.ellipse(sx, sy, 1.8 * sw, 2.6 * sw, 0, 0, 7); ctx.fill();
+    });
+  }
+  if (st === 'down' || st === 'defeat') {
+    ctx.fillStyle = '#fde047';
+    for (let i = 0; i < 3; i++) { const a = now * .004 + i * 2.09; drawOfficeStar(ctx, hx + Math.cos(a) * 22, hy - 18 + Math.sin(a) * 7, 4); }
+  }
+}
+function drawOfficeChar(ctx, ch, now, opts) {
+  const cutscene = opts && opts.cutscene;
+  const sitting = opts && opts.sitting;
+  if (!ch.visible) return;
+  const t = now;
+  ctx.save();
+  let tx = ch.x, ty = ch.y;
+  if (cutscene && (ch.mood === 'nervous' || ch.mood === 'confused')) tx += Math.sin(t * .045) * 1.4;
+  ch.ghosts.forEach(g => {
+    ctx.save(); ctx.translate(g.x, g.y); ctx.scale(g.f, 1);
+    ctx.globalAlpha = Math.max(0, g.life) * .3;
+    ctx.fillStyle = ch.role === 'boss' ? '#f87171' : '#4ade80';
+    ctx.beginPath(); ctx.roundRect(-16, -128, 32, 128, 12); ctx.fill();
+    ctx.beginPath(); ctx.arc(6, -138, 14, 0, 7); ctx.fill();
+    ctx.restore();
+  });
+  ctx.globalAlpha = 1;
+  ctx.translate(tx, ty);
+  ctx.scale(ch.facing, 1);
+  ctx.fillStyle = 'rgba(0,0,0,.4)'; ctx.beginPath(); ctx.ellipse(0, 4, 34, 7, 0, 0, 7); ctx.fill();
+  let hop = 0;
+  if (ch.state === 'victory') hop = -Math.abs(Math.sin(t * .008)) * 14;
+  if (ch.fistShake) ctx.translate(Math.sin(t * .06) * 2.5, 0);
+  ctx.translate(0, hop);
+  if (ch.state === 'down' || ch.state === 'defeat') ctx.rotate(ch.rotation);
+  const crouch = ch.state === 'windup' ? .45 : ch.state === 'grab' || ch.state === 'lunge' ? .5 : ch.state === 'dodge' ? .3 : ch.state === 'getup' ? .4 : 0;
+  const crouchY = crouch * 12;
+  const isBoss = ch.role === 'boss';
+  const bw = isBoss ? 19 : 15;
+  const hipY = sitting ? -40 : -56 + crouchY;
+  const shY = sitting ? -88 : -102 + crouchY;
+  const headY = sitting ? -110 : -124 + crouchY;
+  const bob = (ch.state === 'idle' || ch.state === 'sit') ? Math.sin(t * .004 + ch.runPhase) * 1.6 : 0;
+  const downPose = ch.state === 'down' || ch.state === 'defeat';
+  ctx.lineCap = 'round';
+  const walking = ch.state === 'run' || ch.state === 'walk';
+  const swing = walking ? Math.sin(ch.runPhase) * 13 : 0;
+  ctx.strokeStyle = isBoss ? '#1e2536' : '#333a4a'; ctx.lineWidth = 11;
+  if (sitting) {
+    ctx.beginPath(); ctx.moveTo(2, hipY); ctx.lineTo(26, hipY + 4); ctx.lineTo(30, -6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-2, hipY); ctx.lineTo(-22, hipY + 6); ctx.lineTo(-18, -6); ctx.stroke();
+  } else if (downPose) {
+    ctx.beginPath(); ctx.moveTo(0, hipY); ctx.lineTo(20, -8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, hipY); ctx.lineTo(-16, -14); ctx.stroke();
+  } else {
+    ctx.beginPath(); ctx.moveTo(0, hipY); ctx.lineTo(8 + swing, -4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, hipY); ctx.lineTo(-8 - swing, -4); ctx.stroke();
+  }
+  ctx.fillStyle = '#111318';
+  const shoeY = sitting ? -6 : -4;
+  ctx.beginPath(); ctx.roundRect((sitting ? 26 : 4 + swing), shoeY - 4, 16, 7, 3); ctx.fill();
+  ctx.beginPath(); ctx.roundRect((sitting ? -22 : -12 - swing) - 14, downPose ? -14 : shoeY - 4, 15, 7, 3); ctx.fill();
+  const shirt = isBoss ? '#232c44' : '#dfe5f0';
+  const shirtD = isBoss ? '#1a2236' : '#c8d0e0';
+  ctx.fillStyle = shirt;
+  ctx.beginPath(); ctx.roundRect(-bw, shY + bob, bw * 2, hipY - shY + 8, 10); ctx.fill();
+  ctx.fillStyle = shirtD; ctx.fillRect(-bw, hipY - 6, bw * 2, 6);
+  if (isBoss) {
+    ctx.fillStyle = '#e5e7eb'; ctx.beginPath(); ctx.moveTo(2, shY + 2 + bob); ctx.lineTo(10, shY + 4 + bob); ctx.lineTo(4, shY + 26 + bob); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#dc2626'; ctx.beginPath(); ctx.moveTo(4, shY + 4 + bob); ctx.lineTo(8, shY + 6 + bob); ctx.lineTo(5, shY + 30 + bob); ctx.lineTo(2, shY + 28 + bob); ctx.closePath(); ctx.fill();
+  } else {
+    ctx.fillStyle = '#2563eb'; ctx.beginPath(); ctx.moveTo(3, shY + 3 + bob); ctx.lineTo(8, shY + 5 + bob); ctx.lineTo(4, shY + 32 + bob); ctx.lineTo(0, shY + 30 + bob); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#b91c1c'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(-8, shY + 2 + bob); ctx.lineTo(-10, shY + 20 + bob); ctx.stroke();
+    ctx.fillStyle = '#f8fafc'; ctx.fillRect(-15, shY + 20 + bob, 10, 13);
+    ctx.fillStyle = '#2563eb'; ctx.fillRect(-15, shY + 20 + bob, 10, 3);
+    ctx.fillStyle = '#94a3b8'; ctx.fillRect(-13, shY + 25 + bob, 6, 2); ctx.fillRect(-13, shY + 28 + bob, 6, 2);
+  }
+  ctx.fillStyle = '#111318'; ctx.fillRect(-bw, hipY - 2, bw * 2, 5);
+  let hF = { x: 18, y: -84 + bob }, hB = { x: -14, y: -84 + bob };
+  const A = ch.attack;
+  const q = A ? Math.min(1, A.t / A.dur) : 0;
+  if (sitting) {
+    if (ch.state === 'reach') { hF = { x: 44, y: -106 }; hB = { x: 24, y: -112 + Math.cos(t * .031) * 1.5 }; }
+    else if (ch.state === 'flip') { hF = { x: 30, y: -98 }; hB = { x: 36, y: -100 }; }
+    else { hF = { x: 32, y: -114 + Math.sin(t * .03) * 1.5 }; hB = { x: 24, y: -112 + Math.cos(t * .031) * 1.5 }; }
+  }
+  else if (ch.state === 'walk' || ch.state === 'run') { hF = { x: 14 + swing * .7, y: -86 + bob }; hB = { x: -14 - swing * .7, y: -86 + bob }; }
+  else if (ch.state === 'handoff' || ch.state === 'reach') { hF = { x: 44, y: -96 }; }
+  else if (ch.state === 'flip') { hF = { x: 30, y: -98 }; hB = { x: 36, y: -100 }; }
+  else if (ch.state === 'windup') {
+    if (ch.held) { hF = { x: -20 - q * 10, y: -108 - q * 18 }; hB = { x: -14, y: -80 }; }
+    else { hF = { x: 18 - q * 8, y: -98 }; hB = { x: -16, y: -88 }; }
+  }
+  else if (ch.state === 'throw') { hF = { x: 34, y: -94 }; hB = { x: -18, y: -88 }; }
+  else if (ch.state === 'punch') { const ext = Math.sin(q * Math.PI); hF = { x: 16 + ext * 22, y: -94 }; hB = { x: -16, y: -88 }; }
+  else if (ch.state === 'block') { hF = { x: 20, y: -98 }; hB = { x: 16, y: -88 }; }
+  else if (ch.state === 'hit') { hF = { x: 26, y: -102 }; hB = { x: -22, y: -100 }; }
+  else if (ch.state === 'dodge') { hF = { x: 14, y: -80 }; hB = { x: -18, y: -82 }; }
+  else if (ch.state === 'grab' || ch.state === 'lunge') { hF = { x: 12, y: -46 }; hB = { x: -4, y: -44 }; }
+  else if (downPose) { hF = { x: 26, y: -30 }; hB = { x: -24, y: -20 }; }
+  else if (ch.state === 'victory') { hF = { x: 14, y: -152 }; hB = { x: -16, y: -150 }; }
+  else if (ch.state === 'getup') { hF = { x: 16, y: -40 }; hB = { x: -12, y: -38 }; }
+  ctx.strokeStyle = shirt; ctx.lineWidth = 9;
+  ctx.beginPath(); ctx.moveTo(-6, shY + 6 + bob); ctx.quadraticCurveTo((hB.x - 6) / 2, (shY + hB.y) / 2 + 6, hB.x, hB.y); ctx.stroke();
+  ctx.fillStyle = ch.skin; ctx.beginPath(); ctx.arc(hB.x, hB.y, 5, 0, 7); ctx.fill();
+  ctx.strokeStyle = shirt; ctx.beginPath(); ctx.moveTo(6, shY + 6 + bob); ctx.quadraticCurveTo((hF.x + 6) / 2, (shY + hF.y) / 2 + 4, hF.x, hF.y); ctx.stroke();
+  ctx.fillStyle = ch.skin; ctx.beginPath(); ctx.arc(hF.x, hF.y, 5.5, 0, 7); ctx.fill();
+  if (ch.state === 'block') { ctx.strokeStyle = 'rgba(148,163,184,.7)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(24, -92, 20, -1.2, 1.2); ctx.stroke(); }
+  if (ch.held && !sitting) {
+    const wa = ch.state === 'windup' ? -1.2 - q * .8 : ch.state === 'punch' ? .3 : .5;
+    drawOfficeProp(ctx, ch.held, now, hF.x, hF.y, wa * (ch.facing === 1 ? 1 : 1), .92);
+  }
+  if (ch.holdingFolder) {
+    drawOfficeProp(ctx, { type: 'folder', cover: ch === bossRef ? folderCoverRef : 0 }, now, hF.x + 8, hF.y + 10, -.15, .8);
+  }
+  const headX = 6, hy = headY + bob;
+  const headRecoil = ch.state === 'hit' ? -6 : 0;
+  const lookX = ch.lookAt === 'clock' ? 4 : 0;
+  ctx.fillStyle = ch.skin; ctx.beginPath(); ctx.arc(headX + headRecoil + lookX, hy, isBoss ? 15.5 : 14, 0, 7); ctx.fill();
+  ctx.fillStyle = ch.hair;
+  if (isBoss) {
+    ctx.fillRect(headX + headRecoil + lookX - 14, hy - 8, 6, 9);
+    ctx.fillRect(headX + headRecoil + lookX + 8, hy - 8, 6, 9);
+    ctx.beginPath(); ctx.arc(headX + headRecoil + lookX - 11, hy - 7, 5, Math.PI * .6, Math.PI * 1.5); ctx.fill();
+    ctx.beginPath(); ctx.arc(headX + headRecoil + lookX + 11, hy - 7, 5, -Math.PI * .4, Math.PI * .5); ctx.fill();
+  } else {
+    ctx.beginPath(); ctx.arc(headX + headRecoil + lookX, hy - 4, 13, Math.PI, 0); ctx.fill();
+    ctx.strokeStyle = ch.hair; ctx.lineWidth = 4; ctx.lineCap = 'round';
+    for (let i = -2; i <= 2; i++) {
+      const a = -Math.PI / 2 + i * .5;
+      ctx.beginPath();
+      ctx.moveTo(headX + headRecoil + lookX + Math.cos(a) * 9, hy - 4 + Math.sin(a) * 9);
+      ctx.lineTo(headX + headRecoil + lookX + Math.cos(a + .16) * 18, hy - 4 + Math.sin(a + .16) * 18);
+      ctx.stroke();
+    }
+  }
+  drawOfficeFace(ctx, ch, headX + headRecoil + lookX, hy, now);
+  if (ch.anger > .05) { ctx.fillStyle = 'rgba(239,68,68,' + (ch.anger * .3) + ')'; ctx.beginPath(); ctx.arc(headX + headRecoil + lookX, hy, isBoss ? 15.5 : 14, 0, 7); ctx.fill(); }
+  if (ch.anger > .55) drawOfficeVein(ctx, headX + headRecoil + lookX - 13, hy - 15, now);
+  if (ch.hitFlash > .03) {
+    ctx.globalAlpha = ch.hitFlash * .5; ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(headX, hy, 16, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(-bw, shY, bw * 2, hipY - shY + 8, 10); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+  if (!cutscene) {
+    ctx.save(); ctx.scale(ch.facing, 1);
+    ctx.fillStyle = 'rgba(0,0,0,.72)'; ctx.beginPath(); ctx.roundRect(-50, -196, 100, 24, 7); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = '900 10px Inter'; ctx.textAlign = 'center';
+    ctx.fillText(String(ch.name).substring(0, 14).toUpperCase(), 0, -182);
+    ctx.fillStyle = 'rgba(255,255,255,.12)'; ctx.fillRect(-42, -178, 84, 3);
+    ctx.fillStyle = ch.role === 'boss' ? '#f87171' : '#4ade80';
+    ctx.fillRect(-42, -178, 84 * Math.max(0, ch.hp) / ch.hpMax, 3);
+    ctx.restore();
+  }
+  ctx.restore();
+}
+let bossRef = null, folderCoverRef = 0;
+function officeWrapText(text, maxChars) {
+  const words = String(text).split(' ');
+  const lines = []; let cur = '';
+  words.forEach(w => { if ((cur + ' ' + w).trim().length > maxChars) { if (cur.trim()) lines.push(cur.trim()); cur = w; } else cur += ' ' + w; });
+  if (cur.trim()) lines.push(cur.trim());
+  return lines;
+}
+
+/* ==================== OFFICE BOSS FIGHT — LAUNCHER ==================== */
+function runOfficeBossFight() {
+  const names = Array.from(entrants);
+  if (names.length < 2) { alert('Need at least 2 entrants!'); return; }
+  const shuffled = [...names].sort(() => Math.random() - 0.5);
+  launchOfficeBossWith(shuffled[0], shuffled[1], shuffled);
+}
+function launchOfficeBossWith(p1Name, p2Name, pool) {
+  showOverlay('office-overlay'); showPhase('office', 'intro');
+  resetRoulettePanel('office');
+  ['office-p1-name', 'office-intro-p1'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '???'; });
+  ['office-p2-name', 'office-intro-p2'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '???'; });
+  rouletteReveal({
+    p1NameId: 'office-roll-p1-name', p2NameId: 'office-roll-p2-name',
+    p1SlotId: 'office-roll-p1', p2SlotId: 'office-roll-p2',
+    statusId: 'office-roll-status', p1Name: p1Name, p2Name: p2Name, pool: pool,
+    msgDone: 'Employee and boss locked — press START for the cutscene!',
+    onDone() {
+      ['office-p1-name', 'office-intro-p1'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = p1Name; });
+      ['office-p2-name', 'office-intro-p2'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = p2Name; });
+      armGameStart(() => startOfficeBossFight(p1Name, p2Name));
+    }
+  });
+}
+
+/* ==================== OFFICE BOSS FIGHT — MAIN GAME ==================== */
+function startOfficeBossFight(p1Name, p2Name) {
+  showPhase('office', 'cutscene');
+  const cutCanvas = document.getElementById('office-cut-canvas');
+  const fightCanvas = document.getElementById('office-canvas');
+  let canvasEl = cutCanvas;
+  const cutCtx = cutCanvas.getContext('2d');
+  const fightCtx = fightCanvas.getContext('2d');
+  const W = 1000, H = 500, groundY = 430;
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  const easeIO = t => { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); };
+  const easeIn = t => { t = Math.max(0, Math.min(1, t)); return t * t; };
+  const easeOut = t => { t = Math.max(0, Math.min(1, t)); return 1 - (1 - t) * (1 - t); };
+
+  function makeChar(name, role) {
+    const h = (typeof hashStr === 'function') ? hashStr(name) : name.length * 7;
+    const skins = ['#e8b48c', '#d18b5b', '#b86f43', '#8b542f', '#f0c8a0', '#6f4028'];
+    const hairs = { employee: ['#2b2118', '#4a3423', '#111827', '#6b4423'], boss: ['#1f2937', '#111827', '#374151', '#cbd5e1'] };
+    return {
+      name, role, x: role === 'employee' ? 300 : 800, y: groundY, vx: 0, vy: 0, facing: role === 'employee' ? 1 : -1,
+      hp: role === 'employee' ? 100 : 125, hpMax: role === 'employee' ? 100 : 125, balance: 100, stamina: 100,
+      held: null, visible: role === 'employee' ? false : true,
+      state: role === 'employee' ? 'idle' : 'sit', attack: null,
+      blockUntil: 0, stunUntil: 0, kbUntil: 0, getupAt: 0, getupStart: 0, dodgeUntil: 0,
+      rotation: 0, angVel: 0, grounded: true,
+      runPhase: Math.random() * 6.28, hitFlash: 0, anger: 0, mood: role === 'employee' ? 'tired' : 'calm',
+      sweat: role === 'employee' ? .6 : 0,
+      skin: skins[h % skins.length], hair: hairs[role][h % hairs[role].length],
+      hits: 0, throws: 0, kdos: 0,
+      skill: .7 + Math.random() * .28, agi: (role === 'employee' ? .85 : .75) + Math.random() * .25,
+      nextThink: 0, ghosts: [], lookAt: null, holdingFolder: false, fistShake: 0
+    };
+  }
+  const emp = makeChar(p1Name, 'employee');
+  const boss = makeChar(p2Name, 'boss');
+  bossRef = boss;
+  const chars = [emp, boss];
+  globalThis.__officeBoss = { emp, boss };
+
+  function makeProp(type, x, y, opts) {
+    return Object.assign({ type, cfg: OFFICE_PROPS[type], x, y, vx: 0, vy: 0, angle: 0, angVel: 0, grounded: true, heldBy: null, dead: false, desk: false, lid: null }, opts || {});
+  }
+  let throwChair = makeProp('chair', 430, groundY - 22);
+  const props = [
+    throwChair,
+    makeProp('box', 165, groundY - 18),
+    makeProp('box', 930, groundY - 18),
+    makeProp('trash', 500, groundY - 20)
+  ];
+  const deskItems = [
+    makeProp('papers', 807, 312, { desk: true }),
+    makeProp('lamp', 830, 302, { desk: true }),
+    makeProp('mug', 866, 308, { desk: true })
+  ];
+  let deskSettled = false, bossChairAdded = false;
+
+  const room = { doorOpen: 0, deskCrashed: false, monitorErr: false, lampOn: true, clockGlow: false, clockSpin: false };
+  let bubbles = [];
+  let particles = [], popups = [], rings = [], papers = [];
+  let folderCover = 0, folderT = 0, folderHolder = 'emp';
+  let pagesFlipped = 0, pageFlipStart = -1;
+  let cameraShake = 0, strikeZoom = 0, flashAlpha = 0;
+  let hitstopUntil = 0, timescale = 1;
+  let mode = 'cutscene', cutT = 0, stepIdx = 0;
+  let decisive = false, overTimeShown = 0;
+  let fightStartAt = 0, combatT0 = 0, introStage = 0;
+  let ko = null;
+  let camera = { x: 500, z: 1.05 };
+  let resultDone = false, lastHud = 0;
+  const commentaryEl = document.getElementById('office-commentary');
+  function setCommentary(text) { if (commentaryEl) commentaryEl.textContent = text; }
+
+  const steps = [
+    { d: 1.0, id: 'bossWork', caption: 'Monday, 5:58 PM. The office is quiet. The work is done. (Is it?)',
+      enter() { room.doorOpen = 0; },
+      frame() {} },
+    { d: .6, id: 'door', caption: 'The door creaks open.',
+      enter() { officeSFX('creak'); },
+      frame(k) { room.doorOpen = easeIO(k); } },
+    { d: .5, id: 'enter', caption: 'He finally finished the work.',
+      enter() { emp.visible = true; emp.x = 86; emp.y = groundY; emp.facing = 1; emp.mood = 'nervous'; emp.holdingFolder = true; emp.state = 'idle'; emp.__lastX = 86; } },
+    { d: 1.9, id: 'walk', caption: 'Step. Step. Step. Five years of meetings.',
+      frame(k) {
+        const nx = 86 + (560 - 86) * easeIO(k);
+        if (emp.__lastX !== undefined && Math.floor(nx / 44) !== Math.floor(emp.__lastX / 44)) officeSFX('step');
+        emp.__lastX = nx; emp.x = nx; emp.state = 'walk';
+        emp.runPhase += (nx - (emp.__prevX || nx)) * .06; emp.__prevX = nx;
+        if (k > .75) emp.mood = 'tired';
+      } },
+    { d: .7, id: 'handoff', caption: '"Here. It is done. All of it."',
+      frame(k) {
+        emp.state = k < .35 ? 'walk' : 'handoff';
+        boss.state = 'reach';
+        folderT = k < .4 ? 0 : easeIO((k - .4) / .5);
+        if (k >= .9 && folderHolder === 'emp') { folderHolder = 'boss'; emp.holdingFolder = false; boss.holdingFolder = true; officeSFX('pop'); }
+      } },
+    { d: .4, id: 'open', caption: 'The boss opens the folder.',
+      enter() { boss.state = 'flip'; officeSFX('snap'); },
+      frame(k) { folderCover = easeOut(k) * 1.9; folderCoverRef = folderCover; } },
+    { d: 1.5, id: 'flip1', caption: 'Page after page. His face tells the story.',
+      enter() { pageFlipStart = cutT; },
+      frame(k) {
+        for (let i = 0; i < 3; i++) { const s = (k * 1.5 - i * .4); if (s > 0 && s < .42) boss.flipBob = Math.sin((s / .42) * Math.PI) * 4; }
+        const done = Math.min(3, Math.floor((k * 1.5 + .02) / .4));
+        if (done > pagesFlipped) { pagesFlipped = done; officeSFX('page'); }
+        boss.mood = k < .5 ? 'calm' : 'disappointed';
+        boss.state = 'flip';
+      } },
+    { d: 1.2, id: 'what', caption: '',
+      enter() { bubbles.push({ who: 'boss', text: 'What have you done?', until: cutT + 2.2 }); emp.mood = 'confused'; emp.sweat = 1; },
+      frame() { boss.mood = 'disappointed'; boss.state = 'flip'; boss.flipBob = 0; } },
+    { d: .9, id: 'flip2', caption: 'He keeps flipping. Why does he keep flipping?',
+      frame(k) {
+        for (let i = 0; i < 2; i++) { const s = (k * .9 - i * .4); if (s > 0 && s < .4) boss.flipBob = Math.sin((s / .4) * Math.PI) * 5; }
+        const done = Math.min(2, Math.floor((k * .9 + .02) / .4));
+        if (done > (pagesFlipped - 3)) { const tot = 3 + done; if (tot > pagesFlipped) { pagesFlipped = tot; officeSFX('page'); } }
+        boss.mood = 'disappointed'; boss.state = 'flip';
+      } },
+    { d: 2.0, id: 'overtime', caption: '',
+      enter() { bubbles.push({ who: 'boss', text: 'I think you need to do some overtime... We still have some things left to do.', until: cutT + 2.7 }); },
+      frame() { boss.mood = 'smug'; boss.state = 'flip'; boss.flipBob = 0; emp.mood = 'nervous'; } },
+    { d: .4, id: 'beat', caption: '...the clock keeps ticking.', frame() { emp.mood = 'confused'; } },
+    { d: .7, id: 'anger', enter() { officeSFX('vein'); },
+      frame(k) { emp.anger = easeIO(k); emp.mood = 'angry'; emp.sweat = 0; } },
+    { d: .8, id: 'clock', enter() { room.clockGlow = true; room.clockSpin = true; officeSFX('tick'); },
+      frame(k) {
+        emp.lookAt = k < .55 ? 'clock' : null; emp.mood = 'angry';
+        if (k < .55 && Math.random() < .12) officeSFX('tick');
+        if (k > .55) { room.clockGlow = false; room.clockSpin = false; emp.mood = 'furious'; }
+      } },
+    { d: .45, id: 'pause', caption: 'A pause for comedic effect.',
+      frame(k) { emp.fistShake = k > .3 ? 1 : 0; emp.mood = 'furious'; boss.mood = 'confused'; } },
+    { d: .45, id: 'lunge', caption: 'Then it happened.',
+      enter() { emp.fistShake = 0; },
+      frame(k) { emp.x = 560 + (470 - 560) * easeIn(k); emp.state = 'lunge'; emp.mood = 'furious'; } },
+    { d: .35, id: 'grabChair',
+      enter() { throwChair.heldBy = emp; emp.held = throwChair; officeSFX('grab'); emp.state = 'grab'; } },
+    { d: .4, id: 'windup',
+      frame(k) { emp.state = 'windup'; emp.raiseK = k; boss.mood = k > .4 ? 'alert' : 'confused'; if (k > .6) cameraShake = Math.max(cameraShake, 1.6); } },
+    { d: .5, id: 'throwChair',
+      enter() {
+        emp.state = 'throw'; emp.held = null;
+        throwChair.heldBy = null;
+        throwChair.x = emp.x + 30; throwChair.y = groundY - 118;
+        throwChair.vx = 13.8; throwChair.vy = -6.2; throwChair.angVel = .38; throwChair.grounded = false;
+        officeSFX('whoosh', 1); officeSFX('throw', 1);
+        emp.vx = 3;
+      } },
+    { d: .45, id: 'dodge',
+      enter() { boss.state = 'dodge'; boss.mood = 'alert'; officeSFX('slide'); boss.__dodgeFrom = boss.x; },
+      frame(k) {
+        boss.x = (boss.__dodgeFrom || 800) + 70 * easeOut(k);
+        if (Math.floor(k * 10) !== Math.floor((k - .1) * 10)) boss.ghosts.push({ x: boss.x - 8, y: boss.y, f: boss.facing, life: .35 });
+      } },
+    { d: .55, id: 'crash', caption: '', frame() {} },
+    { d: .85, id: 'bossUp',
+      enter() {
+        boss.state = 'stand'; boss.mood = 'furious'; boss.anger = 1;
+        officeSFX('thud', 1);
+        bubbles.push({ who: 'boss', text: 'THIS IS YOUR OVERTIME.', until: cutT + 2.4 });
+        if (!bossChairAdded) { props.push(makeProp('chair', 840, groundY - 22, { angle: .5 })); bossChairAdded = true; }
+      },
+      frame() { boss.state = 'idle'; } }
+  ];
+  const totalCutDur = steps.reduce((s, st) => s + st.d, 0);
+  const stepOf = id => steps.findIndex(s => s.id === id);
+
+  function deskCrash(now) {
+    if (room.deskCrashed) return;
+    room.deskCrashed = true; room.monitorErr = true; room.lampOn = false;
+    officeSFX('crash'); cameraShake = 16; flashAlpha = .25;
+    const fly = [[0, -4, -7], [1, 3, -8], [2, 6, -9]];
+    deskItems.forEach((o, i) => {
+      o.desk = false; o.grounded = false;
+      o.vx = fly[i][1]; o.vy = fly[i][2]; o.angVel = (Math.random() - .5) * .3;
+      props.push(o);
+    });
+    deskSettled = true;
+    paperBurst(790, 300, 24);
+    dustBurst(760, 430, true);
+  }
+  function settleWorld() {
+    room.deskCrashed = true; room.monitorErr = true; room.lampOn = false;
+    room.doorOpen = 0; room.clockGlow = false; room.clockSpin = false;
+    if (throwChair) {
+      throwChair.heldBy = null; emp.held = emp.held === throwChair ? null : emp.held;
+      throwChair.vx = 0; throwChair.vy = 0; throwChair.grounded = true;
+      throwChair.y = groundY - 22; throwChair.x = Math.max(560, Math.min(700, throwChair.x)); throwChair.angle = .4;
+    }
+    if (!deskSettled) {
+      deskItems.forEach(o => { o.desk = false; o.grounded = true; o.y = groundY - 12; o.vx = 0; o.vy = 0; o.angle = (Math.random() - .5) * .8; props.push(o); });
+      deskSettled = true;
+    }
+    if (!bossChairAdded) { props.push(makeProp('chair', 840, groundY - 22, { angle: .5 })); bossChairAdded = true; }
+  }
+
+  function updateProp(o, dtf, now) {
+    if (o.heldBy) {
+      const ch = o.heldBy;
+      o.x = ch.x + ch.facing * 26; o.y = ch.y - 92 + Math.sin(now * .008) * 2;
+      o.angle = ch.state === 'windup' ? (ch.facing === 1 ? -1 : Math.PI + 1) : (ch.facing === 1 ? .5 : Math.PI - .5);
+      return;
+    }
+    if (o.desk) return;
+    o.vy += .22 * dtf; o.x += o.vx * dtf; o.y += o.vy * dtf; o.angle += o.angVel * dtf;
+    const r = o.cfg.r * .5;
+    if (o.x < 40 + r) { o.x = 40 + r; o.vx = Math.abs(o.vx) * .5; }
+    if (o.x > W - 40 - r) { o.x = W - 40 - r; o.vx = -Math.abs(o.vx) * .5; }
+    if (o.y >= groundY - r) {
+      o.y = groundY - r;
+      const sp = Math.hypot(o.vx, o.vy);
+      if (o.vy > 2.2) {
+        o.vy = -o.vy * .55; o.vx *= .9; o.angVel *= .75; o.grounded = false;
+        dustBurst(o.x, groundY, sp > 8);
+        if (sp > 7) officeSFX('thud', .4);
+        if (o.cfg.lid && !o.lid && sp > 6) { o.lid = { x: o.x, y: o.y - 26, vx: o.vx * .4 + 2, vy: -5, spin: 0, av: .4, life: 200 }; officeSFX('boing'); }
+      } else { o.vy = 0; o.grounded = true; o.vx *= Math.pow(.88, dtf); o.angVel *= Math.pow(.86, dtf); }
+    } else o.grounded = false;
+    if (o.lid) {
+      const L = o.lid;
+      L.vy += .4 * dtf; L.x += L.vx * dtf; L.y += L.vy * dtf; L.spin += L.av * dtf; L.life -= dtf;
+      if (L.y > groundY - 4) { L.y = groundY - 4; L.vy = -L.vy * .4; L.vx *= .7; }
+      if (L.life <= 0 || L.x > W + 30 || L.x < -30) o.lid = null;
+    }
+  }
+
+  function sparkBurst(x, y, big, color) {
+    const n = big ? 26 : 14;
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, s = (big ? 4 : 2.5) + Math.random() * (big ? 7 : 4);
+      particles.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 1, life: 16 + Math.random() * 18, maxLife: 34, size: 1 + Math.random() * 2, color: color || '#f8fafc' });
+    }
+    rings.push({ x, y, life: big ? 20 : 13, maxLife: big ? 20 : 13, big });
+  }
+  function paperBurst(x, y, n) {
+    for (let i = 0; i < n; i++) papers.push({ x: x + (Math.random() - .5) * 40, y: y + (Math.random() - .5) * 30, vx: (Math.random() - .5) * 5, vy: -2 - Math.random() * 4, spin: Math.random() * 6, av: (Math.random() - .5) * .3 });
+  }
+  function dustBurst(x, y, big) {
+    for (let i = 0; i < (big ? 10 : 6); i++) particles.push({ x: x + (Math.random() - .5) * 24, y, vx: (Math.random() - .5) * (big ? 3.5 : 2), vy: -.5 - Math.random() * (big ? 2.5 : 1.5), life: 20 + Math.random() * 14, maxLife: 34, size: 2 + Math.random() * 3, color: '#6b7280', dust: true });
+  }
+  function popup(x, y, text, color, big) {
+    const dup = popups.find(p => p.text === text && Math.abs(p.x - x) < 90 && p.life > .5);
+    if (dup) { dup.life = 1; return; }
+    popups.push({ x, y, text, color, big, life: 1 });
+    if (popups.length > 10) popups.shift();
+  }
+  function updateFX(dtf) {
+    particles = particles.filter(p => { p.x += p.vx * dtf; p.y += p.vy * dtf; p.vy += .13 * dtf; p.vx *= Math.pow(.985, dtf); p.life -= dtf; return p.life > 0; });
+    rings = rings.filter(r => (r.life -= dtf) > 0);
+    popups = popups.filter(p => { p.y -= .55 * dtf; p.life -= .02 * dtf; return p.life > 0; });
+    papers = papers.filter(p => { p.y += p.vy * dtf; p.x += (p.vx + Math.sin(p.y * .05) * .5) * dtf; p.spin += p.av * dtf; p.vy += .02 * dtf; return p.y < H + 30; });
+    if (particles.length > 260) particles.splice(0, particles.length - 260);
+  }
+
+  function knockDown(ch, dir, power, now) {
+    if (ch.state === 'down' || ko) return;
+    ch.attack = null; ch.blockUntil = 0;
+    if (ch.held) { ch.held.heldBy = null; ch.held.vx = dir * 4; ch.held.vy = -4; ch.held.angVel = .3; ch.held.grounded = false; ch.held = null; }
+    ch.state = 'down'; ch.grounded = false;
+    ch.vx = dir * (4.5 + power * .55); ch.vy = -(4 + power * .5);
+    ch.angVel = dir * (.14 + power * .018);
+    ch.kbUntil = now + 300; ch.kdos++;
+    ch.getupAt = now + 1050 + Math.random() * 350; ch.getupStart = 0;
+    ch.stunUntil = ch.getupAt;
+    cameraShake += 6;
+    dustBurst(ch.x, ch.y, true);
+    officeSFX('thud', 1);
+    setCommentary(pick(OFFICE_COMMENTS.kd).replace('{n}', ch.name));
+    popup(ch.x, ch.y - 170, 'KNOCKDOWN!', '#fbbf24', true);
+  }
+  function startKO(loser, weaponLabel, now) {
+    if (ko) return;
+    ko = { t0: now, loser, winner: loser === emp ? boss : emp, weapon: weaponLabel, winnerShown: false, done: false };
+    mode = 'ko';
+    timescale = .3;
+    loser.hp = 0;
+    loser.attack = null;
+    if (loser.held) { loser.held.heldBy = null; loser.held.vx = -loser.facing * 6; loser.held.vy = -6; loser.held.angVel = .4; loser.held.grounded = false; loser.held = null; }
+    loser.state = 'down'; loser.grounded = false;
+    loser.vx = (loser === emp ? -1 : 1) * 12;
+    loser.vy = -9; loser.angVel = (loser.vx > 0 ? 1 : -1) * .22;
+    loser.mood = 'ko';
+    cameraShake = 18; flashAlpha = .5; strikeZoom = .08;
+    officeSFX('boom'); officeSFX('crash');
+    paperBurst(loser.x, loser.y - 90, 30);
+    setCommentary(pick(OFFICE_COMMENTS.ko).replace('{n}', ko.winner.name).replace('{m}', loser.name));
+  }
+
+  function hitCharWithProp(ch, o, now, sp) {
+    const dir = Math.sign(o.vx) || 1;
+    const holder = o.heldBy;
+    o.heldBy = null;
+    const blocked = ch.state === 'block' && now < ch.blockUntil;
+    let dmg = o.cfg.dmg * (0.85 + Math.random() * .3) * (holder ? (holder.role === 'boss' ? 1.1 : 1) : .75) * (decisive ? 1.4 : 1);
+    let kb = o.cfg.kb * (0.9 + Math.random() * .2) * (sp > 10 ? 1.15 : 1);
+    if (blocked) {
+      dmg *= .3; kb *= .4;
+      officeSFX('block');
+      popup(ch.x, ch.y - 160, 'BLOCKED!', '#94a3b8', false);
+      sparkBurst(o.x, o.y, false, '#94a3b8');
+      if (holder && Math.random() < .5) setCommentary(pick(OFFICE_COMMENTS.block).replace('{n}', ch.name));
+    } else {
+      officeSFX('thud', Math.min(1, kb / 9));
+      ch.state = 'hit'; ch.stunUntil = now + 150 + kb * 22; ch.attack = null;
+      hitstopUntil = now + (kb > 6 ? 90 : 45);
+      cameraShake += kb * 1.15;
+      if (kb > 6) { strikeZoom = .05; flashAlpha = Math.max(flashAlpha, .1); }
+      sparkBurst(o.x, o.y, kb > 6, o.cfg.sharp ? '#fbbf24' : '#e2e8f0');
+      if (o.cfg.flutter) paperBurst(o.x, o.y, 14);
+      popup(o.x, o.y - 44, '-' + Math.round(dmg), o.cfg.sharp ? '#fbbf24' : '#f87171', kb > 6);
+      if (Math.random() < .5) setCommentary(holder ? pick(OFFICE_COMMENTS.hit).replace('{w}', o.cfg.label).replace('{m}', ch.name) : pick(OFFICE_COMMENTS.hitBare).replace('{m}', ch.name));
+    }
+    ch.hp = Math.max(0, ch.hp - dmg);
+    ch.balance = Math.max(0, ch.balance - (blocked ? 5 : dmg * 1.3 + kb * .8));
+    ch.anger = Math.min(1, ch.anger + .25);
+    ch.vx += dir * kb; ch.kbUntil = now + 180 + kb * 16;
+    ch.hitFlash = 1;
+    if (holder) holder.hits++;
+    if (ch.held && !blocked && Math.random() < .5) {
+      const h = ch.held; ch.held = null;
+      h.heldBy = null; h.vx = -dir * (4 + Math.random() * 5); h.vy = -5 - Math.random() * 3; h.angVel = (Math.random() - .5) * .4; h.grounded = false;
+      popup(ch.x, ch.y - 175, 'KNOCKED OUT OF HANDS!', '#fbbf24', true);
+      setCommentary(pick(OFFICE_COMMENTS.disarm));
+    }
+    o.vx = -dir * (2.5 + sp * .3); o.vy = -3.5; o.grounded = false; o.angVel = dir * .2;
+    if (!blocked && (ch.balance <= 0 || (o.cfg.kb >= 7.5 && Math.random() < .5))) knockDown(ch, dir, o.cfg.kb, now);
+    if (ch.hp <= 0) startKO(ch, o.cfg.label, now);
+  }
+  function updateProjectileHits(now) {
+    for (const o of props) {
+      if (o.heldBy || o.desk || o.dead) continue;
+      const sp = Math.hypot(o.vx, o.vy);
+      if (sp < 4.5) continue;
+      for (const ch of chars) {
+        if (ko && ch === ko.loser && ch.hp <= 0) continue;
+        const dChest = Math.hypot(o.x - ch.x, o.y - (ch.y - 88));
+        const dTorso = Math.hypot(o.x - ch.x, o.y - (ch.y - 42));
+        if (dChest < 42 + o.cfg.r * .55 || dTorso < 36 + o.cfg.r * .55) { hitCharWithProp(ch, o, now, sp); break; }
+      }
+    }
+  }
+
+  function startPunch(p, now) {
+    p.attack = { type: 'punch', t: 0, dur: 24, hitDone: false };
+    p.state = 'punch';
+    p.stamina = Math.max(0, p.stamina - 6);
+    p.nextThink = now + 420 + rand(0, 300);
+  }
+  function tryPunch(p, opp, now) {
+    const A = p.attack; if (!A || A.type !== 'punch' || A.hitDone) return;
+    const q = A.t / A.dur;
+    if (q < .35 || q > .7) return;
+    if (Math.abs(opp.x - p.x) < 76) {
+      A.hitDone = true;
+      const blocked = opp.state === 'block' && now < opp.blockUntil;
+      const dmg = (p.role === 'boss' ? 4.5 : 3.5) * (decisive ? 1.4 : 1) * (blocked ? .3 : 1);
+      const kb = (blocked ? 1.2 : 2.6) * (p.role === 'boss' ? 1.15 : 1);
+      opp.hp = Math.max(0, opp.hp - dmg);
+      opp.balance = Math.max(0, opp.balance - dmg * 1.2 + kb);
+      opp.vx += p.facing * kb; opp.kbUntil = now + 140;
+      opp.hitFlash = 1; opp.anger = Math.min(1, opp.anger + .15);
+      if (!blocked) { opp.state = 'hit'; opp.stunUntil = now + 160; hitstopUntil = now + 40; }
+      officeSFX(blocked ? 'block' : 'thud', .6);
+      cameraShake += blocked ? 2 : 3.5;
+      sparkBurst(opp.x - opp.facing * 10, opp.y - 92, false, blocked ? '#94a3b8' : '#fca5a5');
+      popup(opp.x, opp.y - (blocked ? 160 : 150), blocked ? 'BLOCKED!' : '-' + Math.round(dmg), blocked ? '#94a3b8' : '#fca5a5', false);
+      p.hits++;
+      if (Math.random() < .3) setCommentary(blocked ? pick(OFFICE_COMMENTS.block).replace('{n}', p.name) : pick(OFFICE_COMMENTS.hitBare).replace('{m}', opp.name));
+      if (opp.balance <= 0 && !blocked) knockDown(opp, p.facing, 5, now);
+      if (opp.hp <= 0) startKO(opp, 'Bare Fists', now);
+    }
+  }
+  function startThrow(ch, opp, now) {
+    if (!ch.held) return;
+    ch.attack = { type: 'throw', t: 0, dur: 30, released: false };
+    ch.state = 'windup';
+    ch.stamina = Math.max(0, ch.stamina - 8);
+    ch.nextThink = now + 620 + rand(0, 340);
+  }
+  function releaseThrow(ch, opp, now) {
+    const o = ch.held; if (!o) return;
+    ch.held = null; o.heldBy = null;
+    o.x = ch.x + ch.facing * 30; o.y = ch.y - 120;
+    const c = o.cfg;
+    const dx = opp.x - o.x, dy = (opp.y - 88) - o.y;
+    const ang = Math.atan2(dy, dx);
+    o.vx = Math.cos(ang) * c.speed; o.vy = Math.sin(ang) * c.speed - 1;
+    o.angVel = ch.facing * .35; o.grounded = false;
+    ch.throws++;
+    officeSFX('throw', 1);
+    if (Math.random() < .35) setCommentary(pick(OFFICE_COMMENTS.hit).replace('{n}', ch.name).replace('{w}', c.label).replace('{m}', opp.name));
+  }
+  function tryGrab(p) {
+    let best = null, bd = 54;
+    for (const o of props) if (!o.heldBy && !o.desk && o.grounded && !o.dead) {
+      const d = Math.abs(o.x - p.x);
+      if (d < bd) { bd = d; best = o; }
+    }
+    if (!best) return false;
+    p.attack = { type: 'grab', t: 0, dur: 20, hitDone: false, obj: best };
+    p.state = 'grab';
+    p.nextThink = performance.now() + 700 + rand(0, 300);
+    return true;
+  }
+  function moveToward(ch, tx, sp) {
+    const dir = tx > ch.x ? 1 : -1;
+    if (ch.grounded) { ch.vx += dir * .6 * ch.agi * (sp || 1); if (ch.state !== 'block') ch.state = 'run'; }
+  }
+  function think(ch, opp, now) {
+    if (mode !== 'fight' || ko || ch.state === 'down' || ch.state === 'getup' || ch.attack || now < ch.stunUntil || now < ch.kbUntil - 100) return;
+    const dist = Math.abs(opp.x - ch.x);
+    if (opp.attack && opp.attack.type === 'throw' && opp.attack.t < opp.attack.dur * .5 && dist < 380) {
+      const roll = Math.random();
+      if (roll < .42) { ch.blockUntil = now + 620 + Math.random() * 320; ch.state = 'block'; ch.nextThink = now + 380; return; }
+      if (roll < .68) {
+        ch.vx -= ch.facing * (8 + ch.agi * 2); ch.dodgeUntil = now + 260; ch.state = 'dodge';
+        ch.ghosts.push({ x: ch.x, y: ch.y, f: ch.facing, life: .4 });
+        ch.nextThink = now + 340; officeSFX('slide');
+        return;
+      }
+    }
+    if (ch.held) {
+      if (dist < 460) { startThrow(ch, opp, now); return; }
+      moveToward(ch, opp.x, 1.15); return;
+    }
+    if (dist < 70) {
+      if (now >= ch.nextThink && ch.stamina > 10) { startPunch(ch, now); return; }
+    }
+    let best = null, bd = 240;
+    for (const o of props) if (!o.heldBy && !o.desk && o.grounded && !o.dead) {
+      const d = Math.abs(o.x - ch.x);
+      if (d < bd) { bd = d; best = o; }
+    }
+    if (best) {
+      if (Math.abs(best.x - ch.x) < 52) { if (tryGrab(ch)) return; }
+      else if (Math.random() < .8) { moveToward(ch, best.x); return; }
+    }
+    if (dist > 250) moveToward(ch, opp.x);
+    else if (dist < 110 && Math.random() < .35) { ch.vx -= ch.facing * 3; ch.state = 'run'; }
+    ch.nextThink = now + (210 + Math.random() * 300) * (decisive ? .65 : 1) * (0.75 + ch.skill * .5);
+  }
+  function updateChar(ch, opp, dtf, now) {
+    ch.facing = opp.x >= ch.x ? 1 : -1;
+    ch.hitFlash *= .78;
+    ch.anger = Math.max(0, ch.anger - .002 * dtf);
+    if (ch.state === 'block' && now >= ch.blockUntil) ch.state = 'idle';
+    if (ch.state === 'hit' && now >= ch.stunUntil) ch.state = 'idle';
+    if (ch.state === 'dodge' && now >= ch.dodgeUntil) ch.state = 'idle';
+    if (ch.state === 'down') {
+      if (now >= ch.getupAt && !ko) { ch.state = 'getup'; ch.getupStart = now; ch.rotation *= .3; }
+    } else if (ch.state === 'getup') {
+      if (now >= ch.getupStart + 480) { ch.state = 'idle'; ch.rotation = 0; }
+    }
+    if (ch.attack) {
+      const A = ch.attack; A.t += dtf;
+      const q = Math.min(1, A.t / A.dur);
+      if (A.type === 'throw') {
+        ch.state = q < .45 ? 'windup' : 'throw';
+        if (!A.released && q >= .45) { A.released = true; releaseThrow(ch, opp, now); }
+      } else if (A.type === 'punch') {
+        ch.state = 'punch';
+        tryPunch(ch, opp, now);
+      } else if (A.type === 'grab') {
+        ch.state = 'grab';
+        if (q >= 1 && A.obj && !A.obj.heldBy) {
+          ch.held = A.obj; A.obj.heldBy = ch;
+          officeSFX('grab');
+          popup(ch.x, ch.y - 170, 'GOT THE ' + A.obj.cfg.label.toUpperCase() + '!', ch.role === 'boss' ? '#f87171' : '#4ade80', false);
+          if (Math.random() < .5) setCommentary(pick(OFFICE_COMMENTS.grab).replace('{n}', ch.name).replace('{w}', A.obj.cfg.label));
+        }
+      }
+      if (A.t >= A.dur) { ch.attack = null; if (['down', 'getup', 'hit'].indexOf(ch.state) < 0) ch.state = 'idle'; }
+    }
+    const knock = now < ch.kbUntil;
+    if (ch.grounded) {
+      ch.vx *= Math.pow(knock ? .985 : .86, dtf);
+      if (!knock) {
+        const maxSp = (ch.state === 'run' ? (ch.role === 'boss' ? 4.1 : 4.7) : 2.2) * ch.agi;
+        if (ch.vx > maxSp) ch.vx = maxSp; else if (ch.vx < -maxSp) ch.vx = -maxSp;
+      }
+      ch.vy = 0; ch.y = groundY;
+      ch.x += ch.vx * dtf;
+    }
+    if (!ch.grounded || ch.vy < 0) {
+      ch.vy += .5 * dtf; ch.x += ch.vx * dtf; ch.y += ch.vy * dtf;
+      if (ch.state === 'down') ch.rotation += ch.angVel * dtf;
+      if (ch.y >= groundY) {
+        ch.y = groundY;
+        if (ch.state === 'down') {
+          if (Math.abs(ch.vy) > 2.5) { ch.vy = -ch.vy * .4; ch.angVel *= .75; dustBurst(ch.x, groundY, true); officeSFX('thud', .8); }
+          else { ch.vy = 0; ch.grounded = true; ch.vx *= Math.pow(.9, dtf); ch.angVel *= .8; }
+        } else { ch.vy = 0; ch.grounded = true; }
+      }
+    }
+    ch.x = Math.max(60, Math.min(W - 60, ch.x));
+    if ((ch.state === 'run' || ch.state === 'walk') && ch.grounded) ch.runPhase += Math.abs(ch.vx) * .045 * dtf;
+    ch.stamina = Math.min(100, ch.stamina + .32 * dtf * (ch.attack ? .3 : 1));
+    ch.balance = Math.min(100, ch.balance + .25 * dtf);
+    ch.ghosts = ch.ghosts.filter(g => (g.life -= .03 * dtf) > 0);
+    if (ch.state !== 'victory' && ch.state !== 'ko' && !ko) {
+      if (ch.state === 'victory') ch.mood = 'win';
+      else if (ch.hp < ch.hpMax * .3) ch.mood = 'furious';
+      else if (ch.anger > .5) ch.mood = 'angry';
+      else ch.mood = ch.role === 'employee' ? 'tired' : 'calm';
+    }
+  }
+  function pushApart(a, b) {
+    if (a.state === 'down' || b.state === 'down') return;
+    const d = b.x - a.x, min = 46;
+    if (Math.abs(d) < min) {
+      const push = (min - Math.abs(d)) / 2 * (d >= 0 ? 1 : -1);
+      a.x -= push; b.x += push;
+      a.x = Math.max(60, Math.min(W - 60, a.x)); b.x = Math.max(60, Math.min(W - 60, b.x));
+    }
+  }
+  function updateFight(dtf, now) {
+    const rem = 60 - (now - fightStartAt) / 1000;
+    if (rem <= 0 && !decisive) {
+      decisive = true; overTimeShown = now;
+      officeSFX('ding');
+      setCommentary(pick(OFFICE_COMMENTS.overtime));
+      cameraShake = 8; flashAlpha = .2;
+    }
+    think(emp, boss, now);
+    think(boss, emp, now);
+    updateChar(emp, boss, dtf, now);
+    updateChar(boss, emp, dtf, now);
+    pushApart(emp, boss);
+    props.forEach(o => updateProp(o, dtf, now));
+    updateProjectileHits(now);
+    updateFX(dtf);
+    const mid = (emp.x + boss.x) / 2, dist = Math.abs(emp.x - boss.x);
+    const tz = Math.max(1.02, Math.min(1.14, 1.35 - dist / 420));
+    camera.z += (tz - camera.z) * .04 * dtf;
+    camera.x += (mid - camera.x) * .05 * dtf;
+  }
+  function updateKO(dtf, now) {
+    const e = now - ko.t0;
+    if (e < 900) timescale = .3; else timescale = Math.min(1, timescale + .05 * dtf);
+    updateChar(ko.loser, ko.winner, dtf, now);
+    updateChar(ko.winner, ko.loser, dtf, now);
+    props.forEach(o => updateProp(o, dtf, now));
+    updateFX(dtf);
+    if (e > 1300 && !ko.winnerShown) {
+      ko.winnerShown = true;
+      ko.winner.state = 'victory'; ko.winner.mood = 'win'; ko.winner.attack = null; ko.winner.anger = 0;
+      officeSFX('cheer');
+    }
+    if (ko.winnerShown && Math.random() < .12) papers.push({ x: rand(80, 920), y: -10, vx: rand(-1, 1), vy: rand(.8, 1.8), spin: rand(0, 6), av: rand(-.2, .2) });
+    if (e > 4400 && !ko.done) { ko.done = true; finishGame(); }
+  }
+  function beginFight(now) {
+    settleWorld();
+    mode = 'intro'; combatT0 = now; introStage = 0;
+    canvasEl = fightCanvas;
+    showPhase('office', 'fight');
+    emp.x = 340; emp.y = groundY; emp.facing = 1; emp.state = 'idle'; emp.grounded = true; emp.vx = 0; emp.anger = 1; emp.mood = 'calm'; emp.holdingFolder = false; emp.lookAt = null;
+    boss.x = 780; boss.y = groundY; boss.facing = -1; boss.state = 'idle'; boss.grounded = true; boss.vx = 0; boss.anger = 1; boss.mood = 'calm'; boss.holdingFolder = false;
+    camera = { x: 500, z: 1.05 };
+    setCommentary(pick(OFFICE_COMMENTS.start));
+    officeSFX('boom');
+  }
+  function combatUpdateIntro(now) {
+    const t = (now - combatT0) / 1000;
+    if (t >= .9 && introStage === 0) { introStage = 1; officeSFX('snap'); }
+    if (t >= 1.8 && introStage === 1) { introStage = 2; officeSFX('ding'); }
+    if (t >= 2.3) {
+      mode = 'fight'; fightStartAt = now;
+      emp.nextThink = now + 500; boss.nextThink = now + 500;
+      setCommentary('WEAPONS: EVERYTHING IN THIS OFFICE!');
+      officeSFX('ding2');
+    }
+  }
+  function updateCutscene(dt, now) {
+    cutT += dt / 1000;
+    let t = cutT;
+    while (stepIdx < steps.length - 1 && t >= steps[stepIdx].d) { t -= steps[stepIdx].d; stepIdx++; if (steps[stepIdx].enter) steps[stepIdx].enter(); }
+    const st = steps[stepIdx], k = Math.min(1, t / st.d);
+    if (st.frame) st.frame(k, dt / 1000, now);
+    if (throwChair && !throwChair.heldBy && !throwChair.desk) {
+      updateProp(throwChair, dt / 16.667, now);
+      if (throwChair.x > 655) deskCrash(now);
+    }
+    props.forEach(o => { if (o !== throwChair && !o.heldBy && !o.desk) updateProp(o, dt / 16.667, now); });
+    chars.forEach(c => { c.ghosts = c.ghosts.filter(g => (g.life -= .03 * dt / 16.667) > 0); });
+    bubbles = bubbles.filter(b => cutT < b.until);
+    updateFX(dt / 16.667);
+    if (cutT >= totalCutDur) beginFight(now);
+  }
+  function skipCutscene() {
+    if (mode !== 'cutscene') return;
+    settleWorld();
+    cutT = totalCutDur;
+    beginFight(performance.now());
+  }
+  officeGame = { skip: skipCutscene };
+
+  function finishGame() {
+    if (resultDone) return;
+    resultDone = true;
+    showPhase('office', 'winner');
+    const w = ko.winner, l = ko.loser;
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set('office-winner-name', w.name);
+    set('office-winner-method', w.role === 'employee' ? 'EMPLOYEE WINS!' : 'BOSS WINS!');
+    set('office-winner-sub', l.name + ' was clocked out of the office. Security will handle the paperwork.');
+    const c = document.getElementById('office-result-cards');
+    if (c) {
+      c.replaceChildren();
+      const add = (label, value, note) => {
+        const box = document.createElement('div'); box.className = 'rounded-xl border border-white/10 bg-black/45 p-3';
+        const l2 = document.createElement('div'); l2.className = 'text-[9px] text-gray-500 font-black uppercase tracking-wider mb-2'; l2.textContent = label;
+        const v2 = document.createElement('div'); v2.className = 'text-xl font-black text-white'; v2.textContent = value;
+        const n2 = document.createElement('div'); n2.className = 'text-[8px] text-gray-600 mt-1 truncate'; n2.textContent = note;
+        box.append(l2, v2, n2); c.appendChild(box);
+      };
+      const secs = Math.max(1, Math.min(999, Math.floor((ko.t0 - (fightStartAt || ko.t0)) / 1000)));
+      add('Hits Landed', w.hits + ' – ' + l.hits, w.name + ' / ' + l.name);
+      add('Props Thrown', w.throws + ' – ' + l.throws, 'chairs, boxes, regrets');
+      add('Knockdowns', w.kdos + ' – ' + l.kdos, 'finish: ' + ko.weapon + ' · ' + Math.floor(secs / 60) + ':' + String(secs % 60).padStart(2, '0'));
+    }
+  }
+
+  function updateHUD(now) {
+    if (now - lastHud < 100) return;
+    lastHud = now;
+    const up = (ch, i) => {
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      const hpEl = document.getElementById('office-p' + i + '-hp');
+      if (hpEl) hpEl.style.width = Math.max(0, ch.hp) + '%';
+      set('office-p' + i + '-hp-text', Math.max(0, Math.round(ch.hp)) + ' HEALTH');
+      set('office-p' + i + '-held', ch.held ? (OFFICE_EMOJI[ch.held.type] || '✊') : '✊');
+      set('office-p' + i + '-kd', 'KD ' + ch.kdos);
+      set('office-p' + i + '-hits', ch.hits);
+      set('office-p' + i + '-throws', ch.throws);
+    };
+    up(emp, 1); up(boss, 2);
+    if (mode === 'fight' || mode === 'ko') {
+      const rem = Math.max(0, 60 - (now - fightStartAt) / 1000);
+      const c = document.getElementById('office-clock');
+      if (c) c.textContent = Math.floor(rem / 60) + ':' + String(Math.floor(rem % 60)).padStart(2, '0');
+    }
+  }
+
+  function drawBubbles(ctx, now) {
+    bubbles.forEach(b => {
+      const ch = b.who === 'boss' ? boss : emp;
+      const age = (now - (b.bornNow || 0)) / 1000;
+      const scale = Math.min(1, age / .25) * (0.7 + 0.3 * Math.min(1, age / .2));
+      const lines = officeWrapText(b.text, 34);
+      ctx.font = '700 11px Inter';
+      const bw2 = Math.max(...lines.map(l => ctx.measureText(l).width)) + 24;
+      const bh2 = lines.length * 15 + 14;
+      const bx = ch.x + (ch.facing === 1 ? 26 : -26), by = ch.y - 208;
+      ctx.save();
+      ctx.translate(bx, by); ctx.scale(scale, scale);
+      ctx.fillStyle = 'rgba(255,255,255,.96)';
+      ctx.beginPath(); ctx.roundRect(-bw2 / 2, -bh2, bw2, bh2, 8); ctx.fill();
+      ctx.beginPath();
+      const tailX = ch.x - bx;
+      ctx.moveTo(tailX - 7, 0); ctx.lineTo(ch.x - bx, 12); ctx.lineTo(tailX + 7, 0);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#111827'; ctx.textAlign = 'center';
+      lines.forEach((l, i) => ctx.fillText(l, 0, -bh2 + 16 + i * 15));
+      ctx.restore();
+    });
+  }
+  function drawFolderAndPages(ctx, now) {
+    const empHand = { x: emp.x + 40, y: emp.y - 92 };
+    const bossHand = { x: boss.x - 28, y: groundY - 100 };
+    const fx = empHand.x + (bossHand.x - empHand.x) * folderT;
+    const fy = empHand.y + (bossHand.y - empHand.y) * folderT;
+    drawOfficeProp(ctx, { type: 'folder', cover: folderCover }, now, fx, fy, -.12, 1);
+    if (folderCover > .5) {
+      const pv = { x: fx + 12, y: fy + 16 };
+      for (let i = 0; i < 5; i++) {
+        let a = 0;
+        if (i < 3) a = Math.min(1, Math.max(0, (cutT - (pageFlipStart + i * .5)) / .45));
+        else a = Math.min(1, Math.max(0, (cutT - (pageFlipStart + 1.9 - .4 + (i - 3) * .45)) / .4));
+        if (a <= 0) continue;
+        const ang = a * Math.PI + (a > .2 && a < .8 ? Math.sin(a * Math.PI) * .15 : 0);
+        ctx.save();
+        ctx.translate(pv.x, pv.y);
+        ctx.rotate(-ang);
+        ctx.fillStyle = i % 2 ? '#eef2f7' : '#f8fafc';
+        ctx.beginPath(); ctx.roundRect(-10, -30, 20, 30, 2); ctx.fill();
+        ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = .8; ctx.stroke();
+        ctx.strokeStyle = '#64748b';
+        ctx.beginPath(); ctx.moveTo(-6, -24); ctx.lineTo(6, -24); ctx.moveTo(-6, -19); ctx.lineTo(4, -19); ctx.stroke();
+        ctx.restore();
+      }
+    }
+  }
+  function drawBannerBig(ctx, text, color, scale, sub, subColor) {
+    ctx.save();
+    ctx.translate(W / 2, H / 2 - 16);
+    ctx.scale(scale, scale);
+    ctx.font = '900 88px Inter'; ctx.textAlign = 'center';
+    ctx.lineWidth = 12; ctx.strokeStyle = 'rgba(0,0,0,.85)';
+    ctx.strokeText(text, 0, 0);
+    ctx.fillStyle = color; ctx.fillText(text, 0, 0);
+    if (sub) {
+      ctx.font = '900 26px Inter'; ctx.lineWidth = 7;
+      ctx.strokeText(sub, 0, 46);
+      ctx.fillStyle = subColor || '#fff'; ctx.fillText(sub, 0, 46);
+    }
+    ctx.restore();
+  }
+  function drawVSIntro(ctx, t) {
+    ctx.font = '900 54px Inter'; ctx.textAlign = 'center';
+    ctx.lineWidth = 10; ctx.strokeStyle = 'rgba(0,0,0,.85)';
+    const y = H / 2 - 30;
+    ctx.strokeText('EMPLOYEE', 300, y); ctx.strokeText('VS', 500, y); ctx.strokeText('BOSS', 700, y);
+    ctx.fillStyle = '#4ade80'; ctx.fillText('EMPLOYEE', 300, y);
+    ctx.fillStyle = '#e5e7eb'; ctx.fillText('VS', 500, y);
+    ctx.fillStyle = '#f87171'; ctx.fillText('BOSS', 700, y);
+    ctx.font = '900 20px Inter';
+    ctx.strokeText(String(emp.name).toUpperCase(), 300, y + 40);
+    ctx.strokeText(String(boss.name).toUpperCase(), 700, y + 40);
+    ctx.fillStyle = '#fff';
+    ctx.fillText(String(emp.name).toUpperCase(), 300, y + 40);
+    ctx.fillText(String(boss.name).toUpperCase(), 700, y + 40);
+  }
+
+  function render(now) {
+    const ctx = mode === 'cutscene' ? cutCtx : fightCtx;
+    ctx.clearRect(0, 0, W, H);
+    ctx.save();
+    if (mode !== 'cutscene') {
+      const cx = Math.max(300, Math.min(700, camera.x));
+      ctx.translate(W / 2, H * .56); ctx.scale(camera.z, camera.z); ctx.translate(-cx, -H * .56);
+      if (cameraShake > .2) ctx.translate(Math.sin(frame * 1.85) * cameraShake * .4, Math.cos(frame * 1.47) * cameraShake * .25);
+      if (strikeZoom > .002) { ctx.translate(W / 2, H / 2); ctx.scale(1 + strikeZoom, 1 + strikeZoom); ctx.translate(-W / 2, -H / 2); strikeZoom *= .72; }
+    } else if (cameraShake > .2) {
+      ctx.translate(Math.sin(frame * 1.85) * cameraShake * .4, Math.cos(frame * 1.47) * cameraShake * .25);
+    }
+    drawOfficeRoom(ctx, W, H, now, room);
+    const bossSitting = mode === 'cutscene' && stepIdx < stepOf('bossUp');
+    if (bossSitting) {
+      drawOfficeProp(ctx, { type: 'chair' }, now, 800, groundY - 22, 0, 1);
+      drawOfficeChar(ctx, boss, now, { cutscene: true, sitting: true });
+      drawOfficeDesk(ctx, room, now);
+      deskItems.forEach(o => { if (o.desk) drawOfficeProp(ctx, o, now); });
+    } else {
+      drawOfficeDesk(ctx, room, now);
+    }
+    props.forEach(o => { if (!o.desk) { drawOfficeProp(ctx, o, now); if (o.lid) drawOfficeProp(ctx, { type: 'lid' }, now, o.lid.x, o.lid.y, o.lid.spin, 1); } });
+    if (!bossSitting) drawOfficeChar(ctx, boss, now, { cutscene: mode === 'cutscene' });
+    drawOfficeChar(ctx, emp, now, { cutscene: mode === 'cutscene' });
+    if (mode === 'cutscene' && (emp.holdingFolder || boss.holdingFolder || folderT < 1)) drawFolderAndPages(ctx, now);
+    // Particles
+    particles.forEach(p => {
+      const a = Math.max(0, p.life / p.maxLife);
+      if (p.dust) { ctx.globalAlpha = a * .4; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size * (1.4 - a * .4), 0, 7); ctx.fill(); }
+      else { ctx.globalAlpha = a; ctx.strokeStyle = p.color; ctx.lineWidth = p.size; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - p.vx * 2.4, p.y - p.vy * 2.4); ctx.stroke(); }
+    });
+    ctx.globalAlpha = 1;
+    rings.forEach(r => {
+      const q2 = 1 - r.life / r.maxLife, rad = 10 + q2 * (r.big ? 62 : 35);
+      ctx.strokeStyle = 'rgba(255,255,255,' + (r.life / r.maxLife * .7) + ')';
+      ctx.lineWidth = r.big ? 4 : 2;
+      ctx.beginPath(); ctx.arc(r.x, r.y, rad, 0, 7); ctx.stroke();
+    });
+    papers.forEach(p => {
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.spin);
+      ctx.fillStyle = '#e2e8f0'; ctx.fillRect(-5, -3.5, 10, 7);
+      ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = .7; ctx.strokeRect(-5, -3.5, 10, 7);
+      ctx.restore();
+    });
+    popups.forEach(p => {
+      ctx.globalAlpha = Math.min(1, p.life * 2);
+      ctx.fillStyle = 'rgba(0,0,0,.78)';
+      ctx.font = '900 ' + (p.big ? 16 : 12) + 'px Inter'; ctx.textAlign = 'center';
+      const w2 = ctx.measureText(p.text).width + 18;
+      ctx.fillRect(p.x - w2 / 2, p.y - 19, w2, 24);
+      ctx.fillStyle = p.color; ctx.fillText(p.text, p.x, p.y);
+    });
+    ctx.globalAlpha = 1;
+    if (mode === 'cutscene') {
+      drawBubbles(ctx, now);
+      ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, 42); ctx.fillRect(0, H - 42, W, 42);
+      ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.font = '900 10px Inter'; ctx.textAlign = 'right';
+      ctx.fillText('CINEMATIC', W - 14, 26);
+      const cap = steps[stepIdx] && steps[stepIdx].caption;
+      if (cap) { ctx.fillStyle = 'rgba(226,232,240,.75)'; ctx.font = '700 12px Inter'; ctx.textAlign = 'left'; ctx.fillText(cap, 14, H - 16); }
+    }
+    if (mode === 'intro') {
+      const t = (now - combatT0) / 1000;
+      if (t < .9) drawBannerBig(ctx, 'BOSS FIGHT!', '#ef4444', 2.4 - (t / .9) * 1.4, 'the meeting has ended', '#fbbf24');
+      else if (t < 1.8) { const sc = 1.6 - Math.min(1, (t - .9) / .3) * .6; drawBannerBig(ctx, '', 'rgba(0,0,0,0)', 1, null); ctx.save(); ctx.scale(1, 1); ctx.translate(0, 0); drawVSIntro(ctx, t); ctx.restore(); }
+      else drawBannerBig(ctx, 'FIGHT!', '#fbbf24', 2.2 - Math.min(1, (t - 1.8) / .3) * 1.2, null);
+    }
+    if (mode === 'fight') {
+      ctx.fillStyle = 'rgba(0,0,0,.64)'; ctx.beginPath(); ctx.roundRect(18, 16, 200, 30, 8); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = '900 11px Inter'; ctx.textAlign = 'left';
+      ctx.fillText('CUBICLE CAM — HR PREVIEW', 31, 36);
+      const rec = Math.floor(now / 800) % 2 === 0;
+      if (rec) { ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(W - 84, 30, 5, 0, 7); ctx.fill(); }
+      ctx.fillStyle = rec ? '#fca5a5' : '#64748b'; ctx.font = '900 11px Inter'; ctx.textAlign = 'left';
+      ctx.fillText('REC', W - 74, 34);
+      if (decisive && now - overTimeShown < 1700) {
+        ctx.fillStyle = 'rgba(185,28,28,.25)'; ctx.fillRect(0, 0, W, 9);
+        ctx.fillStyle = 'rgba(0,0,0,.72)'; ctx.beginPath(); ctx.roundRect(W / 2 - 170, 18, 340, 36, 9); ctx.fill();
+        ctx.fillStyle = '#fb7185'; ctx.font = '900 14px Inter'; ctx.textAlign = 'center';
+        ctx.fillText('OVERTIME — DAMAGE SURGE  +40%', W / 2, 41);
+      }
+    }
+    if (mode === 'ko') {
+      const e = now - ko.t0;
+      if (e < 1300) drawBannerBig(ctx, 'K.O.!', '#ef4444', 2.6 - Math.min(1, e / 300) * 1.5, null);
+      else {
+        const sc2 = 1.8 - Math.min(1, (e - 1300) / 350) * .8;
+        drawBannerBig(ctx, ko.winner.role === 'employee' ? 'EMPLOYEE WINS!' : 'BOSS WINS!', '#fbbf24', sc2, ko.winner.name + ' is the champion', '#fff');
+      }
+    }
+    ctx.restore();
+    if (flashAlpha > .005) { ctx.fillStyle = 'rgba(255,255,255,' + flashAlpha + ')'; ctx.fillRect(0, 0, W, H); }
+  }
+
+  let last = performance.now(), frame = 0;
+  function loop(now) {
+    if (globalThis.__officeBoss) { globalThis.__officeBoss.mode = mode; globalThis.__officeBoss.koActive = !!ko; }
+    const dtRaw = Math.max(1, Math.min(40, now - last)); last = now; frame++;
+    const dt = dtRaw * timescale;
+    const dtf = dt / 16.667;
+    if (now >= hitstopUntil) {
+      if (mode === 'cutscene') updateCutscene(dt, now);
+      else if (mode === 'intro') combatUpdateIntro(now);
+      else if (mode === 'fight') updateFight(dtf, now);
+      else if (mode === 'ko') updateKO(dtf, now);
+    }
+    cameraShake *= .84;
+    if (flashAlpha > .004) flashAlpha *= .72;
+    render(now);
+    updateHUD(now);
+    if (!resultDone) requestAnimationFrame(loop);
+  }
+  setCommentary('The meeting could have been an email...');
   requestAnimationFrame(loop);
 }
 
@@ -17662,6 +19144,7 @@ const RETIRED_GAME_IDS = new Set([
       else if (game === 'bomb') runBombRoulette();
       else if (game === 'boxing') runBoxingMatch();
       else if (game === 'sword') runSwordDuel();
+      else if (game === 'office') runOfficeBossFight();
       else if (game === 'tekken') runTekkenFight();
       else if (game === 'orbit') runOrbitStrike();
       else if (game === 'slap') runSlapFight();
@@ -18463,7 +19946,56 @@ const GAME_PREVIEW_META = {
   sword: { scene: 'sword', title: '⚔️ Sword Duel', desc: '1v1 fencing duel. Parry, lunge, and strike!' },
   tekken: { scene: 'tekken', title: '🥋 Tekken 7 Arena', desc: 'The Iron Fist Roulette rolls 2 fighters, then random characters brawl with cinematic slow-mo specials — best of 3!' },
   orbit: { scene: 'orbit', title: '🌀 Orbit Strike', desc: 'Two balls bounce inside the gun box — grab orbiting guns that open fire, or melee weapons, and blast your rival down to zero. 3 hearts each!' },
-  slap: { scene: 'slap', title: '🖐 Slap Fight', desc: 'Two fighters, giant palms, one stool each — wind-up, BRACE, and first to slap the rival off the stool 3 times wins!' }
+  slap: { scene: 'slap', title: '🖐 Slap Fight', desc: 'Two fighters, giant palms, one stool each — wind-up, BRACE, and first to slap the rival off the stool 3 times wins!' },
+  office: { scene: 'office', title: '💼 Office Boss Fight', desc: 'Cutscene: the overtime demand. Then the chair flies. Pick up office props, throw them, block, dodge — KO your rival in ~60s!' }
+};
+
+function drawOfficePreviewChar(ctx, x, y, f, frame, tie, boss) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(f, 1);
+  const s = Math.sin(frame * .15);
+  ctx.strokeStyle = boss ? '#1e2536' : '#333a4a'; ctx.lineWidth = 9; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(0, -52); ctx.lineTo(7 + s * 10, -4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, -52); ctx.lineTo(-7 - s * 10, -4); ctx.stroke();
+  ctx.fillStyle = boss ? '#232c44' : '#dfe5f0';
+  ctx.beginPath(); ctx.roundRect(boss ? -19 : -15, -98, boss ? 38 : 30, 48, 9); ctx.fill();
+  ctx.fillStyle = tie; ctx.fillRect(2, -94, 5, 26);
+  ctx.fillStyle = '#e8b48c'; ctx.beginPath(); ctx.arc(6, -116, 13, 0, 7); ctx.fill();
+  ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(10, -118, 1.6, 0, 7); ctx.fill();
+  ctx.restore();
+}
+PV_SCENES.office = {
+  gw: 900, gh: 500,
+  init() { return { frame: 0, chair: { x: 200, y: 380, vx: 7, vy: -8, angle: 0, av: .25 } }; },
+  tick(st) {
+    st.frame++;
+    const c = st.chair;
+    c.vy += .5; c.x += c.vx; c.y += c.vy; c.angle += c.av;
+    if (c.y > 400) { c.y = 400; c.vy = -c.vy * .5; c.vx *= .92; c.av *= .8; }
+    if (c.x > 950 || st.frame > 420) st.chair = { x: 160, y: 380, vx: 7.2, vy: -8, angle: 0, av: .25 };
+  },
+  draw(ctx, W, H, st) {
+    const g = ctx.createLinearGradient(0, 0, 0, 430);
+    g.addColorStop(0, '#0d1220'); g.addColorStop(1, '#131a2c');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, 430);
+    ctx.fillStyle = '#1b2233'; ctx.fillRect(0, 430, W, H - 430);
+    ctx.fillStyle = '#0a1120'; ctx.fillRect(340, 90, 220, 150);
+    ctx.fillStyle = '#141c30';
+    for (let i = 0; i < 8; i++) ctx.fillRect(348 + i * 26, 240 - (30 + (i * 13) % 40), 20, 60);
+    ctx.fillStyle = '#54402c'; ctx.fillRect(600, 320, 290, 16);
+    ctx.fillStyle = '#3b2c1e'; ctx.fillRect(612, 336, 12, 94); ctx.fillRect(872, 336, 12, 94);
+    ctx.fillStyle = '#111827'; ctx.fillRect(660, 260, 80, 54);
+    ctx.fillStyle = '#0c2b1d'; ctx.fillRect(665, 265, 70, 44);
+    drawOfficePreviewChar(ctx, 250, 430, 1, st.frame, '#2563eb', false);
+    drawOfficePreviewChar(ctx, 770, 430, -1, st.frame + 30, '#dc2626', true);
+    ctx.save(); ctx.translate(st.chair.x, st.chair.y); ctx.rotate(st.chair.angle);
+    ctx.fillStyle = '#374151';
+    if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(-16, -20, 32, 9, 3); ctx.fill(); ctx.beginPath(); ctx.roundRect(-19, -52, 8, 34, 3); ctx.fill(); }
+    else { ctx.fillRect(-16, -20, 32, 9); ctx.fillRect(-19, -52, 8, 34); }
+    ctx.fillStyle = '#9ca3af'; ctx.fillRect(-2.5, -12, 5, 20);
+    ctx.restore();
+    ctx.fillStyle = 'rgba(255,255,255,.14)'; ctx.font = '900 13px Inter'; ctx.textAlign = 'center';
+    ctx.fillText('EMPLOYEE VS BOSS — chairs fly, dignity flies too', W / 2, 42);
+  }
 };
 
 function getGamePreviews() {
@@ -20864,3 +22396,4 @@ if (manualTournamentStandalonePage) {
   <div id="game-preview-desc" class="game-preview-desc"></div>
 </div>
 </body</html>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a343af145da70a06',t:'MTc4ODI1OTUxMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
